@@ -1,9 +1,3 @@
-(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
-(setq inhibit-startup-message t)
-
 ;; packages
 (require 'package)
 (add-to-list 'package-archives
@@ -26,7 +20,7 @@
 (require 'wgrep)
 (require 'paredit)
 (require 'visual-regexp)
-(require 'dired-details)
+(require 'dired+)
 (require 'ido-at-point)
 (require 'beginend)
 (require 'smex)
@@ -40,7 +34,6 @@
   (ido-at-point-mode t)
   (setq ido-enable-flex-matching t))
 
-(dired-details-install)
 (delete-selection-mode 1)
 (global-linum-mode t)
 (show-paren-mode 1)
@@ -48,15 +41,17 @@
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
       apropos-do-all t
-      dired-details-hidden-string ""
+      dired-dwim-target t
       mouse-yank-at-point t
       require-final-newline t
       load-prefer-newer t
+      font-lock-maximum-decoration nil
       ediff-window-setup-function 'ediff-setup-windows-plain
       save-place-file (concat user-emacs-directory "places")
       backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       expand-region-fast-keys-enabled nil
       er--show-expansion-message t
+      inhibit-startup-message t
       uniquify-buffer-name-style 'forward)
 
 (put 'downcase-region 'disabled nil)
@@ -79,10 +74,12 @@
 (load custom-file)
 
 ;; keybindings
+(global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x C-/") 'rgrep)
+(define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
 
 (global-set-key (kbd "C-s") 'isearch-forward-regexp)
 (global-set-key (kbd "C-r") 'isearch-backward-regexp)
@@ -105,7 +102,12 @@
 (global-set-key (kbd "C-x m b") 'mc/edit-beginnings-of-lines)
 (global-set-key (kbd "C-x m e") 'mc/edit-beginnings-of-lines)
 (global-set-key (kbd "C-x m r") 'mc/mark-all-in-region-regexp)
+(global-set-key (kbd "C-x m SPC") 'set-rectangular-region-anchor)
 
 (global-set-key (kbd "M-x") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (global-set-key (kbd "C-x M-x") 'execute-extended-command)
+
+(global-set-key (kbd "C-x f") 'find-dired)
+(define-key dired-mode-map (kbd "<backspace>") 'diredp-up-directory)
+(define-key dired-mode-map (kbd "C-t") 'avy-goto-word-or-subword-1)
