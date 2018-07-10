@@ -7,12 +7,15 @@
         paredit-backward
         paredit-backward-kill-word
         paredit-doublequote
+        paredit-forward
         paredit-forward-delete
         paredit-meta-doublequote
         paredit-open-round
+        paredit-raise-sexp
         paredit-semicolon
         paredit-wrap-round
         slime-autodoc-space
+        smex
         wdired-finish-edit
         wgrep-abort-changes
         ))
