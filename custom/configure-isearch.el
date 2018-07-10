@@ -22,7 +22,6 @@
   (isearch-expand (- arg)))
 
 
-
 (global-set-key (kbd "C-s") 'isearch-forward-regexp)
 (global-set-key (kbd "C-r") 'isearch-backward-regexp)
 (global-set-key (kbd "C-M-s") 'isearch-forward)
@@ -31,8 +30,8 @@
 (global-set-key (kbd "C-S-s") 'anzu-isearch-query-replace)
 (global-set-key (kbd "M-%") 'anzu-query-replace-at-cursor)
 (global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
-(global-set-key (kbd "M-o") 'isearch-occur)
-(global-set-key (kbd "C-M-o") 'occur)
+(global-set-key (kbd "M-o") 'occur)
+(define-key isearch-mode-map (kbd "M-o") 'isearch-occur)
 (define-key isearch-mode-map (kbd "C-.") 'isearch-expand)
 (define-key isearch-mode-map (kbd "C-,") 'isearch-shrink)
 
