@@ -19,20 +19,20 @@
 (require 'multiple-cursors)
 (require 'wgrep)
 (require 'paredit)
-(require 'visual-regexp)
 (require 'dired+)
 (require 'ido-at-point)
 (require 'beginend)
 (require 'smex)
 (require 'uniquify)
 (require 'saveplace)
-
 (require 'slime)
 (require 'ac-slime)
 (require 'slime-company)
 (require 'slime-autoloads)
 
+;; ./custom
 (require 'configure-highlight)
+(require 'configure-isearch)
 
 (unless (fboundp 'helm-mode)
   (ido-mode t)
@@ -127,17 +127,12 @@
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "C-x C-o") 'other-window)
 (global-set-key (kbd "C-x C-/") 'rgrep)
 (define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
 
-(global-set-key (kbd "C-s") 'isearch-forward-regexp)
-(global-set-key (kbd "C-r") 'isearch-backward-regexp)
-(global-set-key (kbd "C-M-s") 'isearch-forward)
-(global-set-key (kbd "C-M-r") 'isearch-backward)
-
-(global-set-key (kbd "M-%") 'vr/query-replace)
-(global-set-key (kbd "C-@") 'er/expand-region)
 (global-set-key (kbd "C-?") 'er/expand-region)
+(global-set-key (kbd "C-.") 'er/expand-region)
 
 (global-set-key (kbd "C-t") 'avy-goto-word-or-subword-1)
 (global-set-key (kbd "M-g g") 'avy-goto-line)
@@ -147,6 +142,7 @@
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-x m a") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-:") 'mc/mark-all-like-this)
 (global-set-key (kbd "C-x m l") 'mc/edit-lines)
 (global-set-key (kbd "C-x m b") 'mc/edit-beginnings-of-lines)
 (global-set-key (kbd "C-x m e") 'mc/edit-beginnings-of-lines)
