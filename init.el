@@ -50,7 +50,6 @@
       mouse-yank-at-point t
       require-final-newline t
       load-prefer-newer t
-      font-lock-maximum-decoration nil
       ediff-window-setup-function 'ediff-setup-windows-plain
       save-place-file (concat user-emacs-directory "places")
       backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
@@ -133,6 +132,7 @@
 
 (global-set-key (kbd "C-?") 'er/expand-region)
 (global-set-key (kbd "C-.") 'er/expand-region)
+(global-set-key (kbd "C-,") 'er/contract-region)
 
 (global-set-key (kbd "C-t") 'avy-goto-word-or-subword-1)
 (global-set-key (kbd "M-g g") 'avy-goto-line)

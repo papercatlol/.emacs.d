@@ -4,6 +4,7 @@
 (setq mc/cmds-to-run-for-all
       '(
         dired-toggle-read-only
+        isearch-abort
         isearch-forward-regexp
         isearch-printing-char
         paredit-backward
