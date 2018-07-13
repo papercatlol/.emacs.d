@@ -42,7 +42,7 @@
 
 (defun highlight-region-or-symbol ()
   "Highlight regexp using active region or symbol-at-point as an argument.
-   With prefix arg select color interactively(TODO: use ido for color selection)."
+   With prefix arg select color interactively."
   (interactive)
   (if (region-active-p)
       (let* ((hi-lock-auto-select-face t)
@@ -61,12 +61,19 @@
         (unhighlight-regexp (hi-lock-regexp-okay
                              (find-tag-default-as-symbol-regexp)))))
 
+(defun highlight-lines-matching-regexp-autocolor (arg)
+  "Same as `highlight-lines-matching-regexp' but with automatic color selection.
+   With prefix arg behaves exactly like `highlight-lines-matching-regexp'."
+  (interactive "p")
+  (let ((hi-lock-auto-select-face arg))
+    (call-interactively 'highlight-lines-matching-regexp)))
+
 (global-hi-lock-mode 1)
 (global-set-key (kbd "<f5>") 'highlight-region-or-symbol)
 (global-set-key (kbd "M-h") 'highlight-region-or-symbol)
 (global-set-key (kbd "<f6>") 'unhighlight-region-or-symbol)
 (global-set-key (kbd "M-u") 'unhighlight-region-or-symbol)
-(global-set-key (kbd "M-l") 'highlight-lines-matching-regexp)
+(global-set-key (kbd "M-l") 'highlight-lines-matching-regexp-autocolor)
 
 
 

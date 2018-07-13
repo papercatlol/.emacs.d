@@ -22,6 +22,7 @@
 (require 'dired+)
 (require 'ido-at-point)
 (require 'ido-vertical-mode)
+(require 'ido-completing-read+)
 (require 'beginend)
 (require 'smex)
 (require 'uniquify)
@@ -37,6 +38,7 @@
   (ido-mode t)
   (ido-at-point-mode t)
   (ido-vertical-mode t)
+  (ido-ubiquitous-mode t)
   (setq ido-vertical-define-keys 'C-n-and-C-p-only
         ido-vertical-show-count t
         ido-max-prospects 7
