@@ -39,7 +39,35 @@
 (make-hl-face :fg "white" :bg "navy")
 (make-hl-face :fg "white" :bg "maroon")
 
+
+(defun highlight-region-or-symbol ()
+  "Highlight regexp using active region or symbol-at-point as an argument.
+   With prefix arg select color interactively(TODO: use ido for color selection)."
+  (interactive)
+  (if (region-active-p)
+      (let* ((hi-lock-auto-select-face t)
+             (face (hi-lock-read-face-name)))
+        (or (facep face) (setq face 'hl-white-red))
+        (highlight-regexp (buffer-substring (mark) (point)) face))
+    (highlight-symbol-at-point)))
+
+(defun unhighlight-region-or-symbol (arg)
+  "Unhighlight regexp using active region or symbol-at-point as an argument.
+   With prefix arg unhighlight everything."
+  (interactive "p")
+  (cond (arg (unhighlight-regexp t))
+        ((region-active-p)
+         (unhighlight-regexp (buffer-substring (mark) (point))))
+        (unhighlight-regexp (hi-lock-regexp-okay
+                             (find-tag-default-as-symbol-regexp)))))
+
 (global-hi-lock-mode 1)
-(global-set-key (kbd "<f5>") 'highlight-symbol-at-point)
+(global-set-key (kbd "<f5>") 'highlight-region-or-symbol)
+(global-set-key (kbd "M-h") 'highlight-region-or-symbol)
+(global-set-key (kbd "<f6>") 'unhighlight-region-or-symbol)
+(global-set-key (kbd "M-u") 'unhighlight-region-or-symbol)
+(global-set-key (kbd "M-l") 'highlight-lines-matching-regexp)
+
+
 
 (provide 'configure-highlight)
