@@ -3,7 +3,10 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        completion-at-point
+        delete-indentation
         dired-toggle-read-only
+        indent-for-tab-command
         isearch-abort
         isearch-forward-regexp
         isearch-printing-char

@@ -21,13 +21,12 @@
 (require 'paredit)
 (require 'dired+)
 (require 'ido-at-point)
+(require 'ido-vertical-mode)
 (require 'beginend)
 (require 'smex)
 (require 'uniquify)
 (require 'saveplace)
 (require 'slime)
-(require 'ac-slime)
-(require 'slime-company)
 (require 'slime-autoloads)
 
 ;; ./custom
@@ -37,7 +36,11 @@
 (unless (fboundp 'helm-mode)
   (ido-mode t)
   (ido-at-point-mode t)
-  (setq ido-enable-flex-matching t))
+  (ido-vertical-mode t)
+  (setq ido-vertical-define-keys 'C-n-and-C-p-only
+        ido-vertical-show-count t
+        ido-max-prospects 7
+        ido-enable-flex-matching t))
 
 (delete-selection-mode 1)
 (global-linum-mode t)
@@ -64,9 +67,18 @@
 
 ;; lisp
 (setq inferior-lisp-program (getenv "LISP_BINARY"))
-(add-hook 'slime-mode-hook 'set-up-slime-ac)
-(add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
-(add-to-list 'slime-contribs 'slime-fancy)
+(setq slime-contribs '(slime-repl
+                       slime-autodoc
+                       slime-editing-commands
+                       slime-fancy-inspector
+                       slime-fancy-trace
+                       ;; slime-mdot-fu
+                       ;;slime-macrostep
+                       slime-presentations
+                       ;; slime-scratch
+                       slime-references
+                       ;; slime-fontifying-fu
+                       slime-trace-dialog))
 (slime-setup slime-contribs)
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
