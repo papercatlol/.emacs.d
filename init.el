@@ -61,6 +61,7 @@
       expand-region-fast-keys-enabled nil
       er--show-expansion-message t
       inhibit-startup-message t
+      wgrep-auto-save-buffer t
       uniquify-buffer-name-style 'forward)
 
 (put 'downcase-region 'disabled nil)

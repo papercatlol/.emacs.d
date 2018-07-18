@@ -15,6 +15,7 @@
         paredit-doublequote
         paredit-forward
         paredit-forward-delete
+        paredit-kill
         paredit-meta-doublequote
         paredit-open-round
         paredit-raise-sexp

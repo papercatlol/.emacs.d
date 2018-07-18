@@ -46,6 +46,10 @@
  '(trailing-whitespace ((t (:background "firebrick"))))
  '(show-paren-match ((t (:background "white" :foreground "black" :weight extra-bold))))
  '(default ((t (:foreground "light gray" :background "black"))))
- '(idle-highlight ((t (:inherit region :weight extra-bold)))))
+ '(idle-highlight ((t (:inherit region :weight extra-bold))))
+ '(dired-directory ((t (:inherit font-lock-function-name-face :underline t))))
+ '(success ((t (:foreground "white" :weight bold))))
+ '(show-paren-mismatch ((t (:background "firebrick3" :foreground "white" :weight bold))))
+ )
 
 (provide-theme 'quasi-monochrome)

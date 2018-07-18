@@ -27,7 +27,6 @@
 (make-hl-face :fg "white" :bg "red")
 (make-hl-face :fg "white" :bg "DarkOrange")
 (make-hl-face :fg "white" :bg "gold")
-(make-hl-face :fg "white" :bg "cyan")
 (make-hl-face :fg "white" :bg "blue")
 (make-hl-face :fg "white" :bg "DarkViolet")
 (make-hl-face :fg "white" :bg "magenta")
@@ -35,7 +34,6 @@
 (make-hl-face :fg "white" :bg "sienna")
 (make-hl-face :fg "white" :bg "DarkGreen")
 (make-hl-face :fg "white" :bg "LimeGreen")
-(make-hl-face :fg "white" :bg "aquamarine")
 (make-hl-face :fg "white" :bg "navy")
 (make-hl-face :fg "white" :bg "maroon")
 
@@ -54,12 +52,12 @@
 (defun unhighlight-region-or-symbol (arg)
   "Unhighlight regexp using active region or symbol-at-point as an argument.
    With prefix arg unhighlight everything."
-  (interactive "p")
+  (interactive "P")
   (cond (arg (unhighlight-regexp t))
         ((region-active-p)
          (unhighlight-regexp (buffer-substring (mark) (point))))
-        (unhighlight-regexp (hi-lock-regexp-okay
-                             (find-tag-default-as-symbol-regexp)))))
+        (t (unhighlight-regexp (hi-lock-regexp-okay
+                                (find-tag-default-as-symbol-regexp))))))
 
 (defun highlight-lines-matching-regexp-autocolor (arg)
   "Same as `highlight-lines-matching-regexp' but with automatic color selection.
