@@ -15,16 +15,12 @@
 (require 'avy)
 (require 'expand-region)
 (require 'delsel)
-;; (require 'magit)
+(require 'magit)
 (require 'multiple-cursors)
 (require 'wgrep)
 (require 'paredit)
 (require 'dired+)
-(require 'ido-at-point)
-(require 'ido-vertical-mode)
-(require 'ido-completing-read+)
 (require 'beginend)
-(require 'smex)
 (require 'uniquify)
 (require 'saveplace)
 (require 'slime)
@@ -33,16 +29,7 @@
 ;; ./custom
 (require 'configure-highlight)
 (require 'configure-isearch)
-
-(unless (fboundp 'helm-mode)
-  (ido-mode t)
-  (ido-at-point-mode t)
-  (ido-vertical-mode t)
-  (ido-ubiquitous-mode t)
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only
-        ido-vertical-show-count t
-        ido-max-prospects 7
-        ido-enable-flex-matching t))
+(require 'configure-ivy)
 
 (delete-selection-mode 1)
 (global-linum-mode t)
@@ -56,6 +43,7 @@
       require-final-newline t
       load-prefer-newer t
       ediff-window-setup-function 'ediff-setup-windows-plain
+      frame-title-format "%b"
       save-place-file (concat user-emacs-directory "places")
       backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       expand-region-fast-keys-enabled nil
@@ -134,15 +122,14 @@
    (2 . defclass*)
    ))
 
-
-
 ;; keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x C-o") 'other-window)
-(global-set-key (kbd "C-x C-/") 'rgrep)
+(global-set-key (kbd "M-n") 'next-error)
+(global-set-key (kbd "M-p") 'previous-error)
 (define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
 
 (global-set-key (kbd "C-?") 'er/expand-region)
@@ -164,12 +151,10 @@
 (global-set-key (kbd "C-x m r") 'mc/mark-all-in-region-regexp)
 (global-set-key (kbd "C-x m SPC") 'set-rectangular-region-anchor)
 
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-X") 'smex-major-mode-commands)
-(global-set-key (kbd "C-x M-x") 'execute-extended-command)
-
-(global-set-key (kbd "C-x f") 'find-dired)
+(global-set-key (kbd "C-x C-d") 'dired)
 (define-key dired-mode-map (kbd "<backspace>") 'diredp-up-directory)
 (define-key dired-mode-map (kbd "C-t") 'avy-goto-word-or-subword-1)
+(define-key dired-mode-map (kbd "<tab>") 'other-window)
 
 (global-set-key (kbd "C-c <f5>") 'slime-restart-inferior-lisp)
+(global-set-key (kbd "C-x g") 'magit-status)
