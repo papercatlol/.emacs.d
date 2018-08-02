@@ -4,7 +4,10 @@
 
 (ivy-mode t)
 (setq ivy-use-virtual-buffers t
-      ivy-count-format "[%d/%d] ")
+      ivy-count-format "[%d/%d] "
+      ivy-re-builders-alist '((t . ivy--regex-ignore-order))
+      ivy-initial-inputs-alist (delete (assoc 'counsel-M-x ivy-initial-inputs-alist)
+                                       ivy-initial-inputs-alist))
 
 (defun ivy-add-prompt-count* (next-fn prompt)
   "fix alignment of current match number"
@@ -82,6 +85,11 @@ With prefix arg prompt for INITIAL-DIRECTORY."
     (when symbol
       (insert (symbol-name symbol)))))
 
+(defun counsel-rg-current-dir (&optional initial-input initial-directory extra-rg-args rg-prompt)
+  "Same as `counsel-rg' but search starting from current directory instead of the repo root."
+  (interactive)
+  (counsel-rg initial-input default-directory extra-rg-args rg-prompt))
+
 
 (global-set-key (kbd "C-s") 'swiper)
 (global-set-key (kbd "C-r") 'swiper-at-point)
@@ -89,7 +97,8 @@ With prefix arg prompt for INITIAL-DIRECTORY."
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
 (global-set-key (kbd "C-x f") 'counsel-files)
 (global-set-key (kbd "C-x d") 'counsel-dired-jump)
-(global-set-key (kbd "C-x C-/") 'counsel-rg)
+(global-set-key (kbd "C-x /") 'counsel-rg)
+(global-set-key (kbd "C-x C-/") 'counsel-rg-current-dir)
 
 (global-set-key (kbd "C-h f") 'counsel-describe-function)
 (global-set-key (kbd "C-h v") 'counsel-describe-variable)
