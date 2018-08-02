@@ -39,7 +39,6 @@
  '(mode-line-inactive ((((class color) (type tty)) (:background "black" :foreground "white")) (t (:background "gray20" :foreground "black" :box nil))))
  '(next-error ((t (:inherit (region)))))
  '(query-replace ((t (:inherit (isearch)))))
- '(region ((t (:foreground "black" :background "gold"))))
  '(secondary-selection ((t (:background "gray15"))))
  '(shadow ((t (:foreground "gray60"))))
  '(tooltip ((t (:inherit (variable-pitch) :foreground "black" :background "lightyellow"))))

@@ -47,14 +47,14 @@ With prefix arg prompt for INITIAL-DIRECTORY."
    (list nil
          (when current-prefix-arg
            (read-directory-name "From directory: "))))
-  (counsel-require-program (car (split-string counsel-files-base-command " ")))
+  (counsel-require-program (car (split-string counsel-files-base-cmd " ")))
   (let* ((default-directory (expand-file-name (or initial-directory
-                                                  (vc-root-dir)
+                                                  ;; (vc-root-dir) emacs 25+?
                                                   (locate-dominating-file default-directory ".git")
                                                   default-directory))))
     (ivy-read "Find file: "
               (split-string
-               (shell-command-to-string counsel-files-base-command)
+               (shell-command-to-string counsel-files-base-cmd)
                "\n" t)
               :matcher #'counsel--find-file-matcher
               :initial-input initial-input
