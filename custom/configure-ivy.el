@@ -85,10 +85,16 @@ With prefix arg prompt for INITIAL-DIRECTORY."
     (when symbol
       (insert (symbol-name symbol)))))
 
-(defun counsel-rg-current-dir (&optional initial-input initial-directory extra-rg-args rg-prompt)
+(defun counsel-rg-dir (&optional initial-input initial-directory extra-rg-args rg-prompt)
   "Same as `counsel-rg' but search starting from current directory instead of the repo root."
   (interactive)
-  (counsel-rg initial-input default-directory extra-rg-args rg-prompt))
+  (counsel-rg (or initial-input (and (symbol-at-point)
+                                     (symbol-name (symbol-at-point))))
+              (if current-prefix-arg
+                  default-directory
+                (read-directory-name "rg in directory: "))
+              (or extra-rg-args "")
+              rg-prompt))
 
 
 (global-set-key (kbd "C-s") 'swiper)
@@ -98,7 +104,7 @@ With prefix arg prompt for INITIAL-DIRECTORY."
 (global-set-key (kbd "C-x f") 'counsel-files)
 (global-set-key (kbd "C-x d") 'counsel-dired-jump)
 (global-set-key (kbd "C-x /") 'counsel-rg)
-(global-set-key (kbd "C-x C-/") 'counsel-rg-current-dir)
+(global-set-key (kbd "C-x C-/") 'counsel-rg-dir)
 
 (global-set-key (kbd "C-h f") 'counsel-describe-function)
 (global-set-key (kbd "C-h v") 'counsel-describe-variable)

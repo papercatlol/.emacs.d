@@ -13,6 +13,7 @@
   (package-refresh-contents))
 
 (require 'avy)
+(require 'ace-window)
 (require 'expand-region)
 (require 'delsel)
 (require 'magit)
@@ -50,11 +51,15 @@
       er--show-expansion-message t
       inhibit-startup-message t
       wgrep-auto-save-buffer t
-      uniquify-buffer-name-style 'forward)
+      uniquify-buffer-name-style 'forward
+      aw-scope 'frame
+      aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
+      aw-ignore-current t)
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
+(put 'dired-find-alternate-file 'disabled nil)
 
 ;; lisp
 (setq inferior-lisp-program (getenv "LISP_BINARY"))
@@ -128,6 +133,7 @@
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x C-o") 'other-window)
+(global-set-key [remap other-window] 'ace-window)
 (global-set-key (kbd "M-n") 'next-error)
 (global-set-key (kbd "M-p") 'previous-error)
 (define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
@@ -144,7 +150,7 @@
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-x m a") 'mc/mark-all-like-this)
-(global-set-key (kbd "C-:") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-:") 'mc/mark-all-like-this-dwim)
 (global-set-key (kbd "C-x m l") 'mc/edit-lines)
 (global-set-key (kbd "C-x m b") 'mc/edit-beginnings-of-lines)
 (global-set-key (kbd "C-x m e") 'mc/edit-beginnings-of-lines)
@@ -160,4 +166,7 @@
 (global-set-key (kbd "C-x g g") 'magit-status)
 (global-set-key (kbd "C-x g l") 'magit-log)
 (global-set-key (kbd "C-x g f") 'magit-log-buffer-file)
-(put 'dired-find-alternate-file 'disabled nil)
+(global-set-key (kbd "C-x g b") 'magit-blame)
+
+(global-set-key (kbd "C-7") 'point-to-register)
+(global-set-key (kbd "C-8") 'jump-to-register)
