@@ -33,6 +33,7 @@
 (require 'configure-isearch)
 (require 'configure-ivy)
 
+
 (delete-selection-mode 1)
 (global-linum-mode t)
 (key-chord-mode 1)
@@ -56,7 +57,9 @@
       uniquify-buffer-name-style 'forward
       aw-scope 'frame
       aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
-      aw-ignore-current t)
+      aw-ignore-current t
+      view-read-only t
+      enable-recursive-minibuffers t)
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -71,7 +74,7 @@
                        slime-fancy-inspector
                        slime-fancy-trace
                        ;; slime-mdot-fu
-                       ;;slime-macrostep
+                       ;; slime-macrostep
                        slime-presentations
                        ;; slime-scratch
                        slime-references
@@ -153,13 +156,14 @@
 (global-unset-key (kbd "C-x m"))
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-x m a") 'mc/mark-all-like-this)
 (global-set-key (kbd "C-:") 'mc/mark-all-like-this-dwim)
 (global-set-key (kbd "C-x m l") 'mc/edit-lines)
 (global-set-key (kbd "C-x m b") 'mc/edit-beginnings-of-lines)
 (global-set-key (kbd "C-x m e") 'mc/edit-beginnings-of-lines)
 (global-set-key (kbd "C-x m r") 'mc/mark-all-in-region-regexp)
 (global-set-key (kbd "C-x m SPC") 'set-rectangular-region-anchor)
+(global-set-key (kbd "C-x m h") 'mc-hide-unmatched-lines-mode)
+
 
 (global-set-key (kbd "C-x C-d") 'dired)
 (define-key dired-mode-map (kbd "<backspace>") 'diredp-up-directory)

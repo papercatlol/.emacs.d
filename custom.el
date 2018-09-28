@@ -30,25 +30,24 @@
  '(ibuffer-saved-filters
    (quote
     (("gnus"
-      ((or
-        (mode . message-mode)
-        (mode . mail-mode)
-        (mode . gnus-group-mode)
-        (mode . gnus-summary-mode)
-        (mode . gnus-article-mode))))
+      ((or (mode . message-mode)
+           (mode . mail-mode)
+           (mode . gnus-group-mode)
+           (mode . gnus-summary-mode)
+           (mode . gnus-article-mode))))
      ("programming"
-      ((or
-        (mode . emacs-lisp-mode)
-        (mode . cperl-mode)
-        (mode . c-mode)
-        (mode . java-mode)
-        (mode . idl-mode)
-        (mode . lisp-mode)))))))
+      ((or (mode . emacs-lisp-mode)
+           (mode . cperl-mode)
+           (mode . c-mode)
+           (mode . java-mode)
+           (mode . idl-mode)
+           (mode . lisp-mode)))))))
  '(linum-format " %d")
  '(menu-bar-mode nil)
+ '(package-hidden-regexps (quote ("available")))
  '(package-selected-packages
    (quote
-    (ivy-hydra hydra counsel ivy wgrep smex slime paredit multiple-cursors magit ido-vertical-mode ido-completing-read+ ido-at-point expand-region beginend avy anzu)))
+    (key-chord ivy-hydra hydra counsel ivy wgrep smex slime paredit multiple-cursors magit ido-vertical-mode ido-completing-read+ ido-at-point expand-region beginend avy anzu)))
  '(ring-bell-function (quote ignore) t)
  '(save-place-mode t nil (saveplace))
  '(scroll-bar-mode nil)
@@ -59,5 +58,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "xos4 Terminus")))))
- '(aw-leading-char-face ((t (:background "black" :foreground "white" :weight extra-bold)))))
+ )

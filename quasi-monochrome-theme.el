@@ -3,6 +3,7 @@
 
 (custom-theme-set-faces
  'quasi-monochrome
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "xos4 Terminus"))))
  '(button ((t (:inherit (link)))))
  '(cursor ((t (:background "gainsboro" :foreground "black"))))
  '(bold ((t (:inherit (default) :weight bold))))
@@ -12,7 +13,7 @@
  '(font-lock-comment-face ((t (:background "gray20" :foreground "gray60"))))
  '(font-lock-constant-face ((t (:weight bold :foreground "light gray"))))
  '(font-lock-doc-face ((t (:inherit (font-lock-string-face)))))
- '(font-lock-function-name-face ((t (:foreground "white"))))
+ '(font-lock-function-name-face ((t (:foreground "white" :weight bold))))
  '(font-lock-keyword-face ((((class color) (type tty)) (:foreground "blue")) (t (:weight bold :foreground "white"))))
  '(font-lock-negation-char-face ((t nil)))
  '(font-lock-preprocessor-face ((t (:inherit (font-lock-builtin-face)))))
@@ -44,13 +45,13 @@
  '(tooltip ((t (:inherit (variable-pitch) :foreground "black" :background "lightyellow"))))
  '(trailing-whitespace ((t (:background "firebrick"))))
  '(show-paren-match ((t (:background "white" :foreground "black" :weight extra-bold))))
- '(default ((t (:foreground "light gray" :background "black"))))
  '(idle-highlight ((t (:inherit region :weight extra-bold))))
  '(dired-directory ((t (:inherit font-lock-function-name-face :underline t))))
  '(success ((t (:foreground "white" :weight bold))))
  '(show-paren-mismatch ((t (:background "firebrick3" :foreground "white" :weight bold))))
  '(match ((t (:background "white" :foreground "black" :weight bold))))
  '(region ((t (:background "dark orange" :foreground "black"))))
+ '(aw-leading-char-face ((t (:background "black" :foreground "white" :weight extra-bold))))
  )
 
 (provide-theme 'quasi-monochrome)
