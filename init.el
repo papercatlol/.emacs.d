@@ -16,7 +16,6 @@
 (require 'ace-window)
 (require 'expand-region)
 (require 'delsel)
-(require 'key-chord)
 (require 'magit)
 (require 'multiple-cursors)
 (require 'wgrep)
@@ -29,6 +28,7 @@
 (require 'slime-autoloads)
 
 ;; ./custom
+(require 'configure-evil)
 (require 'configure-highlight)
 (require 'configure-isearch)
 (require 'configure-ivy)
@@ -138,8 +138,6 @@
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x C-o") 'other-window)
-(key-chord-define-global "ww" 'other-window)
-(key-chord-define-global "qq" 'delete-window)
 (global-set-key [remap other-window] 'ace-window)
 (global-set-key (kbd "M-n") 'next-error)
 (global-set-key (kbd "M-p") 'previous-error)
@@ -149,7 +147,7 @@
 (global-set-key (kbd "C-.") 'er/expand-region)
 (global-set-key (kbd "C-,") 'er/contract-region)
 
-(global-set-key (kbd "C-t") 'avy-goto-word-or-subword-1)
+(global-set-key (kbd "C-t") 'avy-goto-char-timer)
 (global-set-key (kbd "M-g g") 'avy-goto-line)
 (global-set-key (kbd "M-g M-g") 'avy-goto-line)
 
