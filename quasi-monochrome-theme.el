@@ -53,6 +53,13 @@
  '(region ((t (:background "dark orange" :foreground "black"))))
  '(aw-leading-char-face ((t (:background "black" :foreground "white" :weight extra-bold))))
  '(popup-tip-face ((t (:inherit font-lock-comment-face))))
+ '(popup-face ((t (:background "gray12" :foreground "white"))))
+ '(popup-isearch-match ((t (:inherit isearch))))
+ '(popup-menu-face ((t (:inherit popup-face :inverse-video nil :weight normal))))
+ '(popup-menu-mouse-face ((t (:inherit popup-menu-selection-face :background "blue"))))
+ '(popup-menu-selection-face ((t (:inherit popup-menu-face :inverse-video t :weight ultra-bold))))
+ '(popup-menu-summary-face ((t (:inherit popup-menu-face :weight normal))))
+ '(popup-tip-face ((t (:inherit font-lock-comment-face :weight normal))))
  )
 
 (provide-theme 'quasi-monochrome)
