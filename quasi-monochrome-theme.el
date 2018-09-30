@@ -52,6 +52,7 @@
  '(match ((t (:background "white" :foreground "black" :weight bold))))
  '(region ((t (:background "dark orange" :foreground "black"))))
  '(aw-leading-char-face ((t (:background "black" :foreground "white" :weight extra-bold))))
+ '(popup-tip-face ((t (:inherit font-lock-comment-face))))
  )
 
 (provide-theme 'quasi-monochrome)
