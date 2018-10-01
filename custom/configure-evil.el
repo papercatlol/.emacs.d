@@ -12,6 +12,8 @@
 
 (define-key evil-normal-state-map (kbd "M-.") nil)
 (define-key evil-normal-state-map (kbd "M-,") nil)
+(define-key evil-normal-state-map (kbd "C-.") nil)
+(define-key evil-normal-state-map (kbd "C-,") nil)
 (define-key evil-normal-state-map (kbd "DEL") 'beginning-of-defun)
 (define-key evil-normal-state-map (kbd "RET") 'end-of-defun)
 (define-key evil-normal-state-map (kbd "RET") 'end-of-defun)

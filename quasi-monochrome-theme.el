@@ -44,7 +44,7 @@
  '(shadow ((t (:foreground "gray60"))))
  '(tooltip ((t (:inherit (variable-pitch) :foreground "black" :background "lightyellow"))))
  '(trailing-whitespace ((t (:background "firebrick"))))
- '(show-paren-match ((t (:foreground "white" :background "black" :weight extra-bold))))
+ '(show-paren-match ((t (:underline t :foreground "white" :background "black"))))
  '(idle-highlight ((t (:inherit region :weight extra-bold))))
  '(dired-directory ((t (:inherit font-lock-function-name-face :underline t))))
  '(success ((t (:foreground "white" :weight bold))))

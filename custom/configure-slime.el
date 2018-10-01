@@ -14,7 +14,8 @@
                        ;; slime-scratch
                        slime-references
                        ;; slime-fontifying-fu
-                       slime-trace-dialog))
+                       slime-trace-dialog
+                       slime-cl-indent))
 (slime-setup slime-contribs)
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
@@ -75,10 +76,9 @@
   "Adapted from `slime-edit-definition-cont'. Use `popup.el' to select a candidate if multiple."
   (let* ((symbol-name (slime-read-symbol-name "Edit definition of: "))
          (xrefs (slime-find-definitions symbol-name)))
-
     (cl-destructuring-bind (same-loc file-alist) (slime-analyze-xrefs xrefs)
       (cond ((null xrefs)
-             (error "No known definition for: %s (in %s)" name (slime-current-package)))
+             (error "No known definition for: %s (in %s)" symbol-name (slime-current-package)))
             (same-loc
              (slime-push-definition-stack)
              (slime-pop-to-location (slime-xref.location (car xrefs))))
@@ -86,25 +86,28 @@
             ((slime-length= xrefs 1)
              (error "%s" (cadr (slime-xref.location (car xrefs) where))))
             (t
-             (slime-push-definition-stack)
              (let* ((items (mapcar (lambda (xref)
                                      (let* ((spec (downcase
                                                    (replace-regexp-in-string "[\n ]+" " " (slime-xref.dspec xref))))
                                             (location (slime-xref.location xref))
                                             (file (second (assoc :file (cdr location))))
                                             (line (line-number-at-pos (second (assoc :position (cdr location))))))
-                                       (list spec file line location)))
+                                       (and spec file line location (list spec file line location))))
                                    xrefs))
-                    (sorted-items (sort items (lambda (i1 i2)
-                                              (if (string= (second i1) (second i2))
-                                                  (< (third i1) (third i2))
-                                                (string< (second i1) (second i2))))))
+                    (sorted-items (sort (remove nil items)
+                                        (lambda (i1 i2)
+                                          (if (string= (second i1) (second i2))
+                                              (< (third i1) (third i2))
+                                            (string< (second i1) (second i2))))))
                     (menu-items (mapcar (lambda (item)
                                           (popup-make-item (first item)
                                                            :value (fourth item)
                                                            :summary (format "%s:%s" (second item) (third item))))
-                                        items)))
-               (slime-pop-to-location (popup-menu* menu-items) where)))))))
+                                        sorted-items))
+                    (selected-location (popup-menu* menu-items)))
+               (when selected-location
+                 (slime-push-definition-stack)
+                 (slime-pop-to-location selected-location where))))))))
 
 (defun slime-edit-definition-popup (arg)
   "Like `slime-edit-definition' but use `popup.el' to select a candidate."

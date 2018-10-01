@@ -58,7 +58,8 @@
       aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
       aw-ignore-current t
       view-read-only t
-      enable-recursive-minibuffers t)
+      enable-recursive-minibuffers t
+      slime-description-autofocus t)
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
