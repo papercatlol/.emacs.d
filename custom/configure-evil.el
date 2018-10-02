@@ -6,9 +6,21 @@
       evil-move-beyond-eol t)
 
 (require 'evil)
+(require 'expand-region)
 
 (evil-mode t)
 (evil-set-initial-state 'slime-popup-buffer-mode 'emacs)
+
+(defun evil-visual-char-or-expand-region ()
+  (interactive)
+  (if (region-active-p)
+        (call-interactively 'er/expand-region)
+    (evil-visual-char)))
+
+(define-key evil-normal-state-map "v" 'evil-visual-char-or-expand-region)
+(define-key evil-visual-state-map "v" 'evil-visual-char-or-expand-region)
+(define-key evil-visual-state-map (kbd "M-v") 'er/contract-region)
+(define-key evil-visual-state-map [escape] 'evil-visual-char)
 
 (define-key evil-normal-state-map (kbd "M-.") nil)
 (define-key evil-normal-state-map (kbd "M-,") nil)
