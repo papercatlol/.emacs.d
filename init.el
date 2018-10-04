@@ -69,6 +69,37 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file)
 
+;; modeline
+(defvar minor-mode-lighters
+  '((paredit-mode " Par")
+    (auto-revert-mode "")
+    (undo-tree-mode "")
+    (ivy-mode "")
+    (anzu-mode "")))
+
+(defun cleaner-minor-modes ()
+  (mapcar (lambda (mode)
+            (or (assoc (car mode) minor-mode-lighters)
+                mode))
+          minor-mode-alist))
+
+(setq-default mode-line-format
+              (list "%e"
+                    mode-line-front-space
+                    mode-line-mule-info
+                    mode-line-client
+                    mode-line-modified
+                    mode-line-remote
+                    mode-line-frame-identification
+                    (list (propertize "%b" 'face 'mode-line-buffer-id))
+                    " at %l (%p) "
+                    evil-mode-line-tag
+                    '(:eval (when slime-mode (slime-current-package)))
+                    '(vc-mode vc-mode)
+                    (format " [%s] " mode-name)
+                    "%f -"
+                    '(:eval (cleaner-minor-modes))
+                    " %-"))
 
 ;; keybindings
 (global-unset-key (kbd "C-z"))
