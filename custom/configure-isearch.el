@@ -1,5 +1,6 @@
 (require 'anzu)
 (require 'expand-region)
+(require 'loccur)
 (global-anzu-mode 1)
 
 (defun occur-more-context (arg)
@@ -30,6 +31,7 @@
 (global-set-key (kbd "M-%") 'anzu-query-replace-at-cursor)
 (global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
 (global-set-key (kbd "M-o") 'occur)
+(global-set-key (kbd "C-x M-o") 'loccur)
 (define-key occur-mode-map (kbd "n") 'occur-show-next)
 (define-key occur-mode-map (kbd "p") 'occur-show-prev)
 (define-key occur-mode-map (kbd "+") 'occur-more-context)

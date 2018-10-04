@@ -137,6 +137,7 @@
 (define-key dired-mode-map (kbd "C-t") 'avy-goto-word-or-subword-1)
 (define-key dired-mode-map (kbd "<tab>") 'other-window)
 
+(define-key magit-file-mode-map (kbd "C-x g") nil)
 (global-set-key (kbd "C-x g g") 'magit-status)
 (global-set-key (kbd "C-x g l") 'magit-log)
 (global-set-key (kbd "C-x g f") 'magit-log-buffer-file)
