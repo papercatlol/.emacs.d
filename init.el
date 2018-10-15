@@ -57,6 +57,8 @@
       aw-scope 'frame
       aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
       aw-ignore-current t
+      avy-style 'pre
+      avy-keys (number-sequence ?a ?z)
       view-read-only t
       enable-recursive-minibuffers t)
 
@@ -96,7 +98,7 @@
                     evil-mode-line-tag
                     '(:eval (when slime-mode (slime-current-package)))
                     '(vc-mode vc-mode)
-                    (format " [%s] " mode-name)
+                    '(:eval (format " [%s] " mode-name))
                     "%f -"
                     '(:eval (cleaner-minor-modes))
                     " %-"))
