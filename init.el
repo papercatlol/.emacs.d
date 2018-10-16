@@ -59,7 +59,8 @@
       aw-ignore-current t
       view-read-only t
       enable-recursive-minibuffers t
-      slime-description-autofocus t)
+      slime-description-autofocus t
+      show-paren-priority -1)
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -76,6 +77,7 @@
     (auto-revert-mode "")
     (undo-tree-mode "")
     (ivy-mode "")
+    (slime-mode " slime")
     (anzu-mode "")))
 
 (defun cleaner-minor-modes ()
@@ -146,3 +148,4 @@
 
 (global-set-key (kbd "C-7") 'point-to-register)
 (global-set-key (kbd "C-8") 'jump-to-register)
+(global-set-key (kbd "<f5>") 'revert-buffer)

@@ -81,7 +81,7 @@
              (error "No known definition for: %s (in %s)" symbol-name (slime-current-package)))
             (same-loc
              (slime-push-definition-stack)
-             (slime-pop-to-location (slime-xref.location (car xrefs))))
+             (slime-pop-to-location (slime-xref.location (car xrefs)) where))
             ;; ((:error "..."))
             ((slime-length= xrefs 1)
              (error "%s" (cadr (slime-xref.location (car xrefs) where))))

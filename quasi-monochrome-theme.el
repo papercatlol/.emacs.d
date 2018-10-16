@@ -3,7 +3,7 @@
 
 (custom-theme-set-faces
  'quasi-monochrome
- '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "xos4 Terminus"))))
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "Terminus"))))
  '(button ((t (:inherit (link)))))
  '(cursor ((t (:background "gainsboro" :foreground "black"))))
  '(bold ((t (:inherit (default) :weight bold))))
@@ -60,6 +60,7 @@
  '(popup-menu-selection-face ((t (:inherit popup-menu-face :inverse-video t :weight ultra-bold))))
  '(popup-menu-summary-face ((t (:inherit popup-menu-face :weight normal))))
  '(popup-tip-face ((t (:inherit font-lock-comment-face :weight normal))))
+ '(error ((t (:foreground "firebrick" :weight bold))))
  )
 
 (provide-theme 'quasi-monochrome)
