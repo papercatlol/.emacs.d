@@ -64,6 +64,7 @@
       slime-description-autofocus t
       show-paren-priority -1)
 
+(defalias 'yes-or-no-p 'y-or-n-p)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
@@ -101,7 +102,9 @@
                     evil-mode-line-tag
                     '(:eval (when slime-mode (slime-current-package)))
                     '(vc-mode vc-mode)
-                    '(:eval (format " [%s] " mode-name))
+                    " ["
+                    '(:eval mode-name)
+                    "] "
                     "%f -"
                     '(:eval (cleaner-minor-modes))
                     " %-"))

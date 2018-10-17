@@ -33,7 +33,8 @@
      slurp/barf-cp
      additional-insert
      (escape insert)
-     (additional-movement normal visual motion))))
+;;     (additional-movement normal visual motion)
+     )))
 
 (defun end-of-defun-spammable ()
   (interactive)
@@ -58,6 +59,7 @@
 (define-key evil-normal-state-map (kbd "M-,") nil)
 (define-key evil-normal-state-map (kbd "C-.") nil)
 (define-key evil-normal-state-map (kbd "C-,") nil)
+(define-key evil-normal-state-map (kbd "DEL") 'lispyville-beginning-of-defun)
 (define-key evil-motion-state-map (kbd "DEL") 'lispyville-beginning-of-defun)
 (define-key evil-motion-state-map (kbd "RET") 'end-of-defun-spammable)
 (define-key evil-normal-state-map (kbd "RET") 'end-of-defun-spammable)
