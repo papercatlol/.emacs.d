@@ -22,6 +22,7 @@
 (require 'wgrep)
 (require 'paredit)
 (require 'dired+)
+(require 'dired-subtree)
 (require 'beginend)
 (require 'uniquify)
 (require 'saveplace)
@@ -37,6 +38,7 @@
 (delete-selection-mode 1)
 (global-linum-mode t)
 (show-paren-mode 1)
+(minibuffer-depth-indicate-mode 1)
 (setq-default save-place t)
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
@@ -144,6 +146,8 @@
 (define-key dired-mode-map (kbd "<backspace>") 'diredp-up-directory)
 (define-key dired-mode-map (kbd "C-t") 'avy-goto-word-or-subword-1)
 (define-key dired-mode-map (kbd "<tab>") 'other-window)
+(define-key dired-mode-map (kbd "i") 'dired-subtree-toggle)
+(define-key dired-mode-map (kbd "I") 'dired-subtree-remove)
 
 (define-key magit-file-mode-map (kbd "C-x g") nil)
 (global-set-key (kbd "C-x g g") 'magit-status)
