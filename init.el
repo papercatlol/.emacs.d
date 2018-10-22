@@ -26,6 +26,7 @@
 (require 'beginend)
 (require 'uniquify)
 (require 'saveplace)
+(require 'shell-pop)
 
 ;; ./custom
 (require 'configure-evil)
@@ -64,8 +65,14 @@
       view-read-only t
       enable-recursive-minibuffers t
       slime-description-autofocus t
-      show-paren-priority -1)
+      show-paren-priority -1
+      shell-pop-window-size 50
+      shell-pop-window-position "bottom")
 
+(shell-pop--set-universal-key 'shell-pop-universal-key "<f12>")
+(shell-pop--set-shell-type 'shell-pop-shell-type  '("ansi-term" "*ansi-term*"
+                                                    (lambda nil
+                                                      (ansi-term shell-pop-term-shell))))
 (defalias 'yes-or-no-p 'y-or-n-p)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
