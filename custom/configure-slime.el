@@ -15,7 +15,8 @@
                        slime-references
                        ;; slime-fontifying-fu
                        slime-trace-dialog
-                       slime-cl-indent))
+                       slime-cl-indent
+                       slime-uncompiled-fringe))
 (slime-setup slime-contribs)
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
