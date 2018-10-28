@@ -61,6 +61,12 @@
  '(popup-menu-summary-face ((t (:inherit popup-menu-face :weight normal))))
  '(popup-tip-face ((t (:inherit font-lock-comment-face :weight normal))))
  '(error ((t (:foreground "firebrick" :weight bold))))
+ '(hl-line ((t (:background "gray10"))))
+ '(ivy-minibuffer-match-face-1 ((t (:inherit lazy-highlight))))
+ '(ivy-minibuffer-match-face-2 ((t (:inherit lazy-highlight))))
+ '(ivy-minibuffer-match-face-3 ((t (:inherit lazy-highlight))))
+ '(ivy-minibuffer-match-face-4 ((t (:inherit lazy-highlight))))
+ '(ivy-current-match ((t (:background "white" :foreground "black" :weight extra-bold))))
  )
 
 (provide-theme 'quasi-monochrome)

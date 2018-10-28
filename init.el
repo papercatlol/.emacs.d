@@ -67,7 +67,8 @@
       slime-description-autofocus t
       show-paren-priority -1
       shell-pop-window-size 50
-      shell-pop-window-position "bottom")
+      shell-pop-window-position "bottom"
+      global-hl-line-mode t)
 
 (shell-pop--set-universal-key 'shell-pop-universal-key "<f12>")
 (shell-pop--set-shell-type 'shell-pop-shell-type  '("ansi-term" "*ansi-term*"
