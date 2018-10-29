@@ -126,6 +126,15 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
               (or extra-rg-args "")
               rg-prompt))
 
+(defhydra hydra-M-g (global-map "M-g")
+  "M-g"
+  ("j" next-error)
+  ("k" previous-error)
+  ("n" next-error)
+  ("p" previous-error)
+  ("g" avy-goto-line)
+  ("c" goto-char))
+
 (global-set-key (kbd "C-s") 'swiper-at-point)
 (global-set-key (kbd "C-r") 'counsel-grep-or-swiper)
 (global-set-key (kbd "M-x") 'counsel-M-x)
@@ -134,6 +143,11 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
 (global-set-key (kbd "C-x d") 'counsel-dirs)
 (global-set-key (kbd "C-x /") 'counsel-rg)
 (global-set-key (kbd "C-x C-/") 'counsel-rg-dir)
+(global-set-key (kbd "M-y") 'counsel-yank-pop)
+(global-set-key (kbd "C-c C-s") 'counsel-imenu)
+(global-set-key (kbd "C-c s") 'counsel-imenu)
+(global-set-key (kbd "C-c b") 'counsel-bookmark)
+(global-set-key (kbd "C-h C-i") 'counsel-info-lookup-symbol)
 
 (global-set-key (kbd "C-h f") 'counsel-describe-function)
 (global-set-key (kbd "C-h v") 'counsel-describe-variable)
@@ -143,6 +157,7 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
 (define-key ivy-minibuffer-map (kbd "C-,") 'ivy-yank-symbol-at-point)
 (define-key ivy-minibuffer-map (kbd "C-.") 'ivy-yank-word)
 (define-key ivy-minibuffer-map (kbd "M-o") 'ivy-occur)
+(define-key ivy-minibuffer-map (kbd "M-a") 'ivy-dispatching-done)
 
 
 (provide 'configure-ivy)
