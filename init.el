@@ -14,6 +14,7 @@
 (server-start)
 
 (require 'avy)
+(require 'ace-link)
 (require 'ace-window)
 (require 'expand-region)
 (require 'delsel)
@@ -40,6 +41,9 @@
 (global-linum-mode t)
 (show-paren-mode 1)
 (minibuffer-depth-indicate-mode 1)
+(recentf-mode 1)
+(global-hl-line-mode 1)
+(ace-link-setup-default (kbd "C-t"))
 (setq-default save-place t)
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
@@ -68,7 +72,7 @@
       show-paren-priority -1
       shell-pop-window-size 50
       shell-pop-window-position "bottom"
-      global-hl-line-mode t)
+      recentf-max-saved-items 50)
 
 (shell-pop--set-universal-key 'shell-pop-universal-key "<f12>")
 (shell-pop--set-shell-type 'shell-pop-shell-type  '("ansi-term" "*ansi-term*"

@@ -147,6 +147,8 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
 (global-set-key (kbd "C-c C-s") 'counsel-imenu)
 (global-set-key (kbd "C-c s") 'counsel-imenu)
 (global-set-key (kbd "C-c b") 'counsel-bookmark)
+(global-set-key (kbd "C-c v") 'ivy-push-view)
+(global-set-key (kbd "C-c M-v") 'ivy-pop-view)
 (global-set-key (kbd "C-h C-i") 'counsel-info-lookup-symbol)
 
 (global-set-key (kbd "C-h f") 'counsel-describe-function)

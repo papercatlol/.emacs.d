@@ -94,8 +94,8 @@
 (define-key evil-visual-state-map (kbd "M-v") 'er/contract-region)
 (define-key evil-visual-state-map [escape] 'evil-visual-char)
 
-(dolist (map (list evil-normal-state-map evil-motion-state-map evil-insert-state-map))
-  (define-key map (kbd "C-t") (and (fboundp 'lispy-mode) 'lispy-ace-paren)))
+(evil-define-key '(insert motion normal visual) lispy-mode-map (kbd "C-t") 'lispy-ace-paren)
+
 (define-key evil-normal-state-map (kbd "M-.") nil)
 (define-key evil-normal-state-map (kbd "M-,") nil)
 (define-key evil-normal-state-map (kbd "C-.") nil)
