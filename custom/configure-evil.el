@@ -110,6 +110,7 @@
 (define-key evil-window-map (kbd "w") 'ace-window)
 (define-key evil-window-map (kbd "C-q") 'evil-window-delete)
 (define-key evil-window-map (kbd "q") 'evil-window-delete)
+(define-key dired-mode-map (kbd "q") 'quit-window)
 
 (define-key swiper-map (kbd "M-;") 'swiper-evil-ex)
 
