@@ -131,6 +131,12 @@
       (call-interactively #'slime-edit-definition-other-frame)
     (slime--edit-definition-popup 'frame)))
 
+(defun slime-kill-package-name ()
+  (interactive)
+  (let ((package (string-trim-left (slime-current-package) ":")))
+    (message package)
+    (kill-new package)))
+
 
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation-popup)
@@ -138,8 +144,15 @@
   (define-key keymap [remap slime-edit-definition-other-window] 'slime-edit-definition-other-window-popup)
   (define-key keymap [remap slime-edit-definition-other-frame] 'slime-edit-definition-other-frame-popup))
 
-(define-key slime-repl-mode-map (kbd "C-c <f5>") 'slime-restart-inferior-lisp)
 
+(define-key slime-mode-map (kbd "C-c M-w") 'slime-kill-package-name)
+
+(define-key slime-repl-mode-map (kbd "<f5>") 'slime-restart-inferior-lisp)
+
+(define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
+(dolist (keymap (list slime-inspector-mode-map sldb-mode-map))
+  (define-key keymap (kbd "k") 'previous-line)
+  (define-key keymap (kbd "j") 'next-line))
 
 
 
