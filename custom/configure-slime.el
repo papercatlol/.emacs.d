@@ -149,8 +149,10 @@
 
 (define-key slime-repl-mode-map (kbd "<f5>") 'slime-restart-inferior-lisp)
 
+(define-key sldb-mode-map (kbd "<tab>") 'sldb-toggle-details)
+
 (define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
-(dolist (keymap (list slime-inspector-mode-map sldb-mode-map))
+(dolist (keymap (list slime-inspector-mode-map sldb-mode-map slime-trace-dialog-mode-map))
   (define-key keymap (kbd "k") 'previous-line)
   (define-key keymap (kbd "j") 'next-line))
 

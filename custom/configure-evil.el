@@ -12,8 +12,8 @@
 (require 'ivy)
 
 (evil-mode t)
-(evil-set-initial-state 'slime-popup-buffer-mode 'emacs)
-(add-to-list 'evil-emacs-state-modes 'slime-popup-buffer-mode)
+(dolist (mode '(slime-popup-buffer-mode slime-trace-dialog-mode))
+  (evil-set-initial-state mode 'emacs))
 
 ;; lispyville
 (require 'lispyville)
