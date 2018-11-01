@@ -5,7 +5,7 @@
  'quasi-monochrome
  '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "Terminus"))))
  '(button ((t (:inherit (link)))))
- '(cursor ((t (:background "gainsboro" :foreground "black"))))
+ '(cursor ((t (:background "orange red"))))
  '(bold ((t (:inherit (default) :weight bold))))
  '(escape-glyph ((t (:foreground "light gray"))))
  '(font-lock-builtin-face ((t (:foreground "light gray"))))
@@ -50,7 +50,7 @@
  '(success ((t (:foreground "white" :weight bold))))
  '(show-paren-mismatch ((t (:background "firebrick3" :foreground "white" :weight extra-bold))))
  '(match ((t (:background "white" :foreground "black" :weight bold))))
- '(region ((t (:background "dark orange" :foreground "black"))))
+ '(region ((t (:background "orange red" :foreground "black" :weight bold))))
  '(aw-leading-char-face ((t (:background "black" :foreground "white" :weight extra-bold))))
  '(popup-tip-face ((t (:inherit font-lock-comment-face))))
  '(popup-face ((t (:background "gray12" :foreground "white"))))
