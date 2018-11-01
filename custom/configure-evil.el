@@ -114,5 +114,10 @@
 
 (define-key swiper-map (kbd "M-;") 'swiper-evil-ex)
 
+(define-key evil-ex-completion-map (kbd "C-a") nil)
+(define-key evil-ex-completion-map (kbd "C-b") nil)
+(define-key evil-ex-completion-map (kbd "C-k") nil)
+(define-key evil-ex-completion-map (kbd "C-d") nil)
+
 
 (provide 'configure-evil)
