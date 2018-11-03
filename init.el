@@ -16,18 +16,19 @@
 (require 'avy)
 (require 'ace-link)
 (require 'ace-window)
-(require 'expand-region)
+(require 'beginend)
 (require 'delsel)
-(require 'magit)
-(require 'multiple-cursors)
-(require 'wgrep)
-(require 'paredit)
 (require 'dired+)
 (require 'dired-subtree)
-(require 'beginend)
-(require 'uniquify)
+(require 'expand-region)
+(require 'hl-todo)
+(require 'magit)
+(require 'multiple-cursors)
+(require 'paredit)
 (require 'saveplace)
 (require 'shell-pop)
+(require 'uniquify)
+(require 'wgrep)
 
 ;; ./custom
 (require 'configure-evil)
@@ -42,7 +43,7 @@
 (show-paren-mode 1)
 (minibuffer-depth-indicate-mode 1)
 (recentf-mode 1)
-(global-hl-line-mode 1)
+(global-hl-todo-mode 1)
 (ace-link-setup-default (kbd "C-t"))
 (setq-default save-place t)
 (setq-default indent-tabs-mode nil)
@@ -64,8 +65,8 @@
       aw-scope 'frame
       aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
       aw-ignore-current t
-      avy-style 'pre
-      avy-keys (number-sequence ?a ?z)
+      avy-style 'de-bruijn
+      avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v)
       view-read-only t
       enable-recursive-minibuffers t
       slime-description-autofocus t
@@ -138,7 +139,7 @@
 (global-set-key (kbd "C-.") 'er/expand-region)
 (global-set-key (kbd "C-,") 'er/contract-region)
 
-(global-set-key (kbd "C-t") 'avy-goto-char-timer)
+(global-set-key (kbd "C-t") 'avy-goto-char-2)
 (global-set-key (kbd "M-g g") 'avy-goto-line)
 (global-set-key (kbd "M-g M-g") 'avy-goto-line)
 

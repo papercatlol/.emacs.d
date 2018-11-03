@@ -128,11 +128,12 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
 
 (defhydra hydra-M-g (global-map "M-g")
   "M-g"
-  ("j" next-error)
-  ("k" previous-error)
   ("n" next-error)
+  ("M-n" next-error)
   ("p" previous-error)
+  ("M-p" previous-error)
   ("g" avy-goto-line)
+  ("M-g" avy-goto-line)
   ("c" goto-char))
 
 (global-set-key (kbd "C-s") 'swiper-at-point)

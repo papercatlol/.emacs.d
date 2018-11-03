@@ -8,15 +8,16 @@
       lispy-avy-style-paren 'pre)
 
 (require 'evil)
-(require 'expand-region)
-(require 'ivy)
 
 (evil-mode t)
 (dolist (mode '(slime-popup-buffer-mode slime-trace-dialog-mode))
   (evil-set-initial-state mode 'emacs))
 
-;; lispyville
+
+;;* `LISPYVILLE'
 (require 'lispyville)
+
+(setq lispy-avy-keys avy-keys)
 
 (add-hook 'lisp-mode-hook #'lispyville-mode)
 (add-hook 'emacs-lisp-mode-hook #'lispyville-mode)
@@ -26,30 +27,48 @@
    '(operators
      prettify
      text-objects
-;; a    lispyville-inner-atom
-;; l	lispyville-inner-list
-;; x	lispyville-inner-sexp
-;; f	lispyville-inner-function
-;; c	lispyville-inner-comment
-;; S	lispyville-inner-string
+     c-w
      (atom-movement t)
      slurp/barf-cp
      additional-insert
      (escape insert)
-;;     (additional-movement normal visual motion)
+;;   (additional-movement normal visual motion)
      )))
 
+;;* `DEFUNS'
+;; -----------------------------------------------------------------------------
 (defun end-of-defun-spammable ()
   (interactive)
   (forward-char)
   (call-interactively #'end-of-defun)
   (backward-char))
 
+(defun C-w-dwim ()
+  "Kill region if active, else delete a word backward."
+  (interactive)
+  (if (region-active-p)
+      (evil-delete (point) (mark))
+    (evil-delete-backward-word)))
+
+(defun q-dwim ()
+  "Quit window if in read-only, else record a macro."
+  (interactive)
+  (call-interactively
+   (if buffer-read-only
+       #'quit-window
+     #'evil-record-macro)))
+
+;;** `evil-visual-char-or-expand-region'
+(require 'expand-region)
+
 (defun evil-visual-char-or-expand-region ()
   (interactive)
   (if (region-active-p)
         (call-interactively 'er/expand-region)
     (evil-visual-char)))
+
+;;** `swiper-evil-ex'
+(require 'swiper)
 
 (defvar swiper-ex-keymap
   (let ((map (make-sparse-keymap)))
@@ -89,35 +108,55 @@
         (setf (ivy-state-collection ivy-recursive-last) (swiper--candidates)))
       (ivy-recursive-restore))))
 
+;;* `KEYS'
+;; -----------------------------------------------------------------------------
+;;** `lispyville'
+(define-key lispyville-mode-map (kbd "C-t") 'lispy-ace-paren)
+
+(evil-define-minor-mode-key 'motion lispyville-mode
+  "[" 'lispyville-previous-opening
+  "]" 'lispyville-next-closing)
+
+(evil-define-minor-mode-key 'normal lispyville-mode
+  (kbd "<backspace>") 'lispyville-beginning-of-defun
+  (kbd "<return>") 'end-of-defun-spammable)
+
+(evil-define-key '(operator visual) lispyville-mode-map
+  "s" 'evil-a-paren
+  "x" 'lispyville-a-sexp)
+
+;;** `visual-or-expand-region'
 (define-key evil-normal-state-map "v" 'evil-visual-char-or-expand-region)
 (define-key evil-visual-state-map "v" 'evil-visual-char-or-expand-region)
 (define-key evil-visual-state-map (kbd "M-v") 'er/contract-region)
 (define-key evil-visual-state-map [escape] 'evil-visual-char)
 
-(evil-define-key '(insert motion normal visual) lispy-mode-map (kbd "C-t") 'lispy-ace-paren)
-
-(define-key evil-normal-state-map (kbd "M-.") nil)
-(define-key evil-normal-state-map (kbd "M-,") nil)
-(define-key evil-normal-state-map (kbd "C-.") nil)
-(define-key evil-normal-state-map (kbd "C-,") nil)
-(define-key evil-normal-state-map (kbd "DEL") 'lispyville-beginning-of-defun)
-(define-key evil-motion-state-map (kbd "DEL") 'lispyville-beginning-of-defun)
-(define-key evil-motion-state-map (kbd "RET") 'end-of-defun-spammable)
-(define-key evil-normal-state-map (kbd "RET") 'end-of-defun-spammable)
-(define-key evil-motion-state-map (kbd "/") 'avy-goto-char-timer)
-(define-key evil-motion-state-map (kbd "C-e") nil)
+;;** `evil-window-map'
 (define-key evil-window-map (kbd "C-w") 'ace-window)
 (define-key evil-window-map (kbd "w") 'ace-window)
 (define-key evil-window-map (kbd "C-q") 'evil-window-delete)
 (define-key evil-window-map (kbd "q") 'evil-window-delete)
-(define-key dired-mode-map (kbd "q") 'quit-window)
 
-(define-key swiper-map (kbd "M-;") 'swiper-evil-ex)
-
+;;** `ex'
 (define-key evil-ex-completion-map (kbd "C-a") nil)
 (define-key evil-ex-completion-map (kbd "C-b") nil)
 (define-key evil-ex-completion-map (kbd "C-k") nil)
 (define-key evil-ex-completion-map (kbd "C-d") nil)
+(define-key swiper-map (kbd "M-;") 'swiper-evil-ex)
 
+;;** `unbind'
+(define-key evil-normal-state-map (kbd "M-.") nil)
+(define-key evil-normal-state-map (kbd "M-,") nil)
+(define-key evil-normal-state-map (kbd "C-.") nil)
+(define-key evil-normal-state-map (kbd "C-,") nil)
+(define-key evil-motion-state-map (kbd "C-b") nil)
+(define-key evil-motion-state-map (kbd "C-e") nil)
+
+;;** `other'
+(define-key evil-normal-state-map "q" 'q-dwim)
+(define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
+(define-key evil-motion-state-map (kbd "C-f") 'avy-goto-char-2)
+(define-key evil-motion-state-map (kbd "M-j") 'evil-scroll-down)
+(define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-up)
 
 (provide 'configure-evil)
