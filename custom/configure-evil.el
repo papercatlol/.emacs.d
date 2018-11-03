@@ -19,8 +19,7 @@
 
 (setq lispy-avy-keys avy-keys)
 
-(add-hook 'lisp-mode-hook #'lispyville-mode)
-(add-hook 'emacs-lisp-mode-hook #'lispyville-mode)
+(add-hook 'paredit-mode-hook #'lispyville-mode)
 
 (with-eval-after-load 'lispyville
   (lispyville-set-key-theme

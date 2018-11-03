@@ -3,8 +3,6 @@
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/"))
 
-(add-to-list 'load-path (expand-file-name "custom" user-emacs-directory))
-
 (when (< emacs-major-version 24)
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize)
@@ -14,15 +12,14 @@
 (server-start)
 
 (require 'avy)
-(require 'ace-link)
 (require 'ace-window)
 (require 'beginend)
 (require 'delsel)
-(require 'dired+)
 (require 'dired-subtree)
 (require 'expand-region)
 (require 'hl-todo)
 (require 'magit)
+(require 'magit-todos)
 (require 'multiple-cursors)
 (require 'paredit)
 (require 'saveplace)
@@ -30,7 +27,13 @@
 (require 'uniquify)
 (require 'wgrep)
 
-;; ./custom
+;;* ./custom
+;;** local packages
+(add-to-list 'load-path (expand-file-name "custom" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "custom/ace-link/" user-emacs-directory))
+(require 'ace-link)
+(require 'dired+)
+;;** configuration
 (require 'configure-evil)
 (require 'configure-highlight)
 (require 'configure-isearch)
@@ -44,7 +47,8 @@
 (minibuffer-depth-indicate-mode 1)
 (recentf-mode 1)
 (global-hl-todo-mode 1)
-(ace-link-setup-default (kbd "C-t"))
+(magit-todos-mode 1)
+(ace-link-setup-default (kbd "C-f"))
 (setq-default save-place t)
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
