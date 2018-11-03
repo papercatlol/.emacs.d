@@ -126,6 +126,46 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
               (or extra-rg-args "")
               rg-prompt))
 
+
+(defun counsel-ibuffer-or-recentf (&optional name where)
+  "Switch to buffer using `ibuffer' or find a file on `recetf' list.
+NAME specifies the name of the `ibuffer' buffer (defaults to \"*Ibuffer*\")."
+  (interactive)
+  (require 'recentf)
+  (recentf-mode)
+  (setq counsel-ibuffer--buffer-name (or name "*Ibuffer*"))
+  (let ((alive-buffers (cdr (counsel-ibuffer--get-buffers))) ; remove current buffer
+        (recent-buffers (mapcar (lambda (filename)
+                                  (let ((filename (substring-no-properties filename)))
+                                    (cons (format "Recentf: %s" filename)
+                                          filename)))
+                                recentf-list)))
+    (ivy-read "Switch to buffer: "
+              (append alive-buffers recent-buffers)
+              :history 'counsel-ibuffer-or-recentf-history
+              :action (lambda (item) (visit-buffer-or-file (cdr item) where))
+              :caller 'counsel-ibuffer-or-recentf)))
+
+(defun counsel-ibuffer-or-recentf-other-window (&optional name where)
+  (interactive)
+  (counsel-ibuffer-or-recentf name :window))
+
+(defun counsel-ibuffer-or-recentf-other-frame (&optional name where)
+  (interactive)
+  (counsel-ibuffer-or-recentf name :frame))
+
+(defun visit-buffer-or-file (item &optional where)
+  (typecase item
+    (buffer (case where
+              (:window (switch-to-buffer-other-window item))
+              (:frame (switch-to-buffer-other-frame item))
+              (t (switch-to-buffer item))))
+    (string (case where
+              (:window (find-file-other-window item))
+              (:frame (find-file-other-frame item))
+              (t (find-file item))))))
+
+;;* `KEYS'
 (defhydra hydra-M-g (global-map "M-g")
   "M-g"
   ("n" next-error)
@@ -136,6 +176,9 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
   ("M-g" avy-goto-line)
   ("c" goto-char))
 
+(global-set-key (kbd "C-x b") 'counsel-ibuffer-or-recentf)
+(global-set-key (kbd "C-x 4 b") 'counsel-ibuffer-or-recentf-other-window)
+(global-set-key (kbd "C-x 5 b") 'counsel-ibuffer-or-recentf-other-frame)
 (global-set-key (kbd "C-s") 'swiper-at-point)
 (global-set-key (kbd "C-r") 'counsel-grep-or-swiper)
 (global-set-key (kbd "M-x") 'counsel-M-x)
@@ -149,7 +192,7 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
 (global-set-key (kbd "C-c s") 'counsel-imenu)
 (global-set-key (kbd "C-c b") 'counsel-bookmark)
 (global-set-key (kbd "C-c v") 'ivy-push-view)
-(global-set-key (kbd "C-c M-v") 'ivy-pop-view)
+(global-set-key (kbd "C-c V") 'ivy-pop-view)
 (global-set-key (kbd "C-h C-i") 'counsel-info-lookup-symbol)
 
 (global-set-key (kbd "C-h f") 'counsel-describe-function)
