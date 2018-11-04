@@ -161,14 +161,22 @@ already exists, override it."
                            :require-match nil
                            :caller 'slime-save-presentation-at-point
                            :history 'slime-saved-presentations-history)))
-      (slime-save-presentation name str))))
+      (slime-save-presentation name str presentation))))
 
-(defun slime-save-presentation (name str)
-  (let ((item (cons name str))
+(defun slime-save-presentation (name str presentation)
+  (let ((id (slime-presentation-id presentation))
         (member (cl-member name slime-saved-presentations :key #'car :test #'string=)))
-    (if member
-        (setf (car member) item)
-      (push item slime-saved-presentations))))
+    (unless (numberp id)
+      (setq id (slime-eval `(swank:lookup-and-save-presented-object-or-lose ',id))))
+    (let ((item (cons name (list str id))))
+      (if member
+          (setf (car member) item)
+        (push item slime-saved-presentations)))))
+
+(defun slime-insert-saved-presentation-action (item)
+  ;; TODO: update presentation str?
+  (destructuring-bind (str id) (cdr item)
+    (slime-insert-presentation str id)))
 
 (defun slime-insert-saved-presentation ()
   "Insert presentation saved under prompted name."
@@ -176,7 +184,7 @@ already exists, override it."
   (ivy-read "Insert presentation: " slime-saved-presentations
             :history 'slime-saved-presentations-history
             :caller 'slime-insert-saved-presentation
-            :action (lambda (item) (insert (cdr item)))))
+            :action #'slime-insert-saved-presentation-action))
 
 (defun slime-saved-presentation-remove-action (presentation)
   (setq slime-saved-presentations
@@ -247,6 +255,7 @@ otherwise insert a saved presentation."
 (define-key slime-presentation-map "j" 'slime-next-presentation)
 (define-key slime-presentation-map "n" 'slime-next-presentation)
 (define-key slime-presentation-map "v" 'slime-save-presentation-at-point)
+(define-key slime-presentation-map "m" 'slime-mark-presentation)
 
 (define-key slime-presentation-command-map (kbd "C-v") 'slime-saved-presentation-dwim)
 

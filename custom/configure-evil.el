@@ -10,8 +10,8 @@
 (require 'evil)
 
 (evil-mode t)
-(dolist (mode '(slime-popup-buffer-mode slime-trace-dialog-mode))
-  (evil-set-initial-state mode 'emacs))
+;; (dolist (mode '(slime-popup-buffer-mode slime-trace-dialog-mode))
+;;   (evil-set-initial-state mode 'emacs))
 
 
 ;;* `LISPYVILLE'
@@ -159,7 +159,7 @@
 
 (global-set-key (kbd "C-f") 'evil-avy-goto-char-2)
 (evil-define-key 'motion 'global (kbd "C-f") nil)
-(evil-define-key '(emacs insert) 'global (kbd "C-f") 'forward-char)
+(evil-define-key 'insert 'global (kbd "C-f") 'forward-char)
 
 
 (provide 'configure-evil)
