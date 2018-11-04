@@ -71,6 +71,7 @@
       aw-ignore-current t
       avy-style 'de-bruijn
       avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v)
+      lispy-avy-keys avy-keys
       view-read-only t
       enable-recursive-minibuffers t
       slime-description-autofocus t

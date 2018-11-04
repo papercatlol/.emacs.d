@@ -139,6 +139,84 @@
     (message package)
     (kill-new package)))
 
+;;** `slime-saved-presentations'
+(defvar slime-saved-presentations nil
+  "Saved slime-presentations. List of pairs (name . presentation).
+Doesn't work properly with multiple lisp connections.")
+(defvar slime-saved-presentations-history nil)
+
+(defun slime-saved-presentations-reset ()
+  (setq slime-saved-presentations nil))
+(add-hook 'slime-inferior-process-start-hook #'slime-saved-presentations-reset)
+
+(defun slime-save-presentation-at-point (point)
+  "Save a presentation at point under prompted name. If presentation with the same name
+already exists, override it."
+  (interactive "d")
+  (multiple-value-bind (presentation start end)
+      (slime-presentation-around-or-before-point-or-error point)
+    (let* ((str (buffer-substring start end))
+           (name (ivy-read "Save presentation as: " (mapcar #'car slime-saved-presentations)
+                           :initial-input (substring-no-properties str)
+                           :require-match nil
+                           :caller 'slime-save-presentation-at-point
+                           :history 'slime-saved-presentations-history)))
+      (slime-save-presentation name str))))
+
+(defun slime-save-presentation (name str)
+  (let ((item (cons name str))
+        (member (cl-member name slime-saved-presentations :key #'car :test #'string=)))
+    (if member
+        (setf (car member) item)
+      (push item slime-saved-presentations))))
+
+(defun slime-insert-saved-presentation ()
+  "Insert presentation saved under prompted name."
+  (interactive)
+  (ivy-read "Insert presentation: " slime-saved-presentations
+            :history 'slime-saved-presentations-history
+            :caller 'slime-insert-saved-presentation
+            :action (lambda (item) (insert (cdr item)))))
+
+(defun slime-saved-presentation-remove-action (presentation)
+  (setq slime-saved-presentations
+        (remove presentation slime-saved-presentations)))
+
+(ivy-add-actions 'slime-save-presentation-at-point '(("d" slime-saved-presentation-remove-action "remove")))
+(ivy-add-actions 'slime-insert-saved-presentation '(("d" slime-saved-presentation-remove-action "remove")))
+
+(defun slime-saved-presentation-dwim (point)
+  "Save presentation if there is one around or before point,
+otherwise insert a saved presentation."
+  (interactive "d")
+  (call-interactively
+   (if (slime-presentation-around-or-before-point-p)
+       #'slime-save-presentation-at-point
+     #'slime-insert-saved-presentation)))
+
+;;** `avy-actions'
+(defun avy-action-copy-to-repl (pt)
+  (when (number-or-marker-p pt)
+    (case major-mode
+      (slime-inspector-mode
+       (goto-char pt)
+       (call-interactively #'slime-inspector-copy-down-to-repl))
+      ((or slime-mode slime-popup-buffer-mode slime-trace-dialog-mode sldb-mode slime-repl-mode)
+       (slime-copy-presentation-at-point-to-repl pt)))))
+
+(defun avy-action-inspect (pt)
+  (when (number-or-marker-p pt)
+    (case major-mode
+      (slime-inspector-mode
+       (goto-char pt)
+       (call-interactively #'slime-inspector-operate-on-point))
+      ((or slime-mode slime-popup-buffer-mode slime-trace-dialog-mode sldb-mode slime-repl-mode)
+       (slime-inspect-presentation-at-point pt)))))
+
+(add-to-list 'avy-dispatch-alist (cons ?C #'avy-action-copy-to-repl))
+
+(add-to-list 'avy-dispatch-alist (cons ?I #'avy-action-inspect))
+
 ;;* `KEYS'
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation-popup)
@@ -155,6 +233,22 @@
 (define-key slime-repl-mode-map (kbd "<f5>") 'slime-restart-inferior-lisp)
 (define-key sldb-mode-map (kbd "<tab>") 'sldb-toggle-details)
 (define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
+
+;;** `presentations'
+(define-key slime-presentation-map "r" 'slime-copy-presentation-at-point-to-repl)
+(define-key slime-presentation-map "c" 'slime-copy-presentation-at-point-to-repl)
+(define-key slime-presentation-map "w" 'slime-copy-presentation-at-point-to-kill-ring)
+(define-key slime-presentation-map "d" 'slime-describe-presentation-at-point)
+(define-key slime-presentation-map "P" 'slime-pretty-print-presentation-at-point)
+(define-key slime-presentation-map "i" 'slime-inspect-presentation-at-point)
+(define-key slime-presentation-map "." 'slime-edit-definition-popup)
+(define-key slime-presentation-map "k" 'slime-previous-presentation)
+(define-key slime-presentation-map "p" 'slime-previous-presentation)
+(define-key slime-presentation-map "j" 'slime-next-presentation)
+(define-key slime-presentation-map "n" 'slime-next-presentation)
+(define-key slime-presentation-map "v" 'slime-save-presentation-at-point)
+
+(define-key slime-presentation-command-map (kbd "C-v") 'slime-saved-presentation-dwim)
 
 
 (provide 'configure-slime)
