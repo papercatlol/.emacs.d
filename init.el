@@ -48,7 +48,6 @@
 (recentf-mode 1)
 (global-hl-todo-mode 1)
 (magit-todos-mode 1)
-(ace-link-setup-default (kbd "C-f"))
 (setq-default save-place t)
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
@@ -176,3 +175,7 @@
 (global-set-key (kbd "C-7") 'point-to-register)
 (global-set-key (kbd "C-8") 'jump-to-register)
 (global-set-key (kbd "<f5>") 'revert-buffer)
+
+(ace-link-setup-default (kbd "C-f"))
+(dolist (keymap (list help-mode-map package-menu-mode-map compilation-mode-map grep-mode-map))
+  (define-key keymap (kbd "C-f") 'ace-link))

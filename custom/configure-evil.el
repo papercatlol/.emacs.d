@@ -17,8 +17,6 @@
 ;;* `LISPYVILLE'
 (require 'lispyville)
 
-(setq lispy-avy-keys avy-keys)
-
 (add-hook 'paredit-mode-hook #'lispyville-mode)
 
 (with-eval-after-load 'lispyville
@@ -31,7 +29,7 @@
      slurp/barf-cp
      additional-insert
      (escape insert)
-;;   (additional-movement normal visual motion)
+     ;;   (additional-movement normal visual motion)
      )))
 
 ;;* `DEFUNS'
@@ -110,19 +108,21 @@
 ;;* `KEYS'
 ;; -----------------------------------------------------------------------------
 ;;** `lispyville'
-(define-key lispyville-mode-map (kbd "C-t") 'lispy-ace-paren)
+(with-eval-after-load 'lispyville
+  (evil-define-key '(normal insert) lispyville-mode-map
+    (kbd "C-t") 'lispy-ace-paren)
 
-(evil-define-minor-mode-key 'motion lispyville-mode
-  "[" 'lispyville-previous-opening
-  "]" 'lispyville-next-closing)
+  (evil-define-key 'motion lispyville-mode-map
+    "[" 'lispyville-previous-opening
+    "]" 'lispyville-next-closing)
 
-(evil-define-minor-mode-key 'normal lispyville-mode
-  (kbd "<backspace>") 'lispyville-beginning-of-defun
-  (kbd "<return>") 'end-of-defun-spammable)
+  (evil-define-key 'normal lispyville-mode-map
+    (kbd "<backspace>") 'lispyville-beginning-of-defun
+    (kbd "<return>") 'end-of-defun-spammable)
 
-(evil-define-key '(operator visual) lispyville-mode-map
-  "s" 'evil-a-paren
-  "x" 'lispyville-a-sexp)
+  (evil-define-key '(operator visual) lispyville-mode-map
+    "s" 'evil-a-paren
+    "x" 'lispyville-a-sexp))
 
 ;;** `visual-or-expand-region'
 (define-key evil-normal-state-map "v" 'evil-visual-char-or-expand-region)
@@ -154,8 +154,12 @@
 ;;** `other'
 (define-key evil-normal-state-map "q" 'q-dwim)
 (define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
-(define-key evil-motion-state-map (kbd "C-f") 'avy-goto-char-2)
 (define-key evil-motion-state-map (kbd "M-j") 'evil-scroll-down)
 (define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-up)
+
+(global-set-key (kbd "C-f") 'evil-avy-goto-char-2)
+(evil-define-key 'motion 'global (kbd "C-f") nil)
+(evil-define-key '(emacs insert) 'global (kbd "C-f") 'forward-char)
+
 
 (provide 'configure-evil)

@@ -140,11 +140,12 @@ NAME specifies the name of the `ibuffer' buffer (defaults to \"*Ibuffer*\")."
                                     (cons (format "Recentf: %s" filename)
                                           filename)))
                                 recentf-list)))
-    (ivy-read "Switch to buffer: "
-              (append alive-buffers recent-buffers)
-              :history 'counsel-ibuffer-or-recentf-history
-              :action (lambda (item) (visit-buffer-or-file (cdr item) where))
-              :caller 'counsel-ibuffer-or-recentf)))
+    (lexical-let ((where where))
+      (ivy-read "Switch to buffer: "
+               (append alive-buffers recent-buffers)
+               :history 'counsel-ibuffer-or-recentf-history
+               :action (lambda (item) (visit-buffer-or-file (cdr item) where))
+               :caller 'counsel-ibuffer-or-recentf))))
 
 (defun counsel-ibuffer-or-recentf-other-window (&optional name where)
   (interactive)
