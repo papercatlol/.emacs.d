@@ -128,6 +128,14 @@
                     '(:eval (cleaner-minor-modes))
                     " %-"))
 
+;;
+(defun window-as-frame ()
+  "Pop current window as a new frame."
+  (interactive)
+  (let ((frame (make-frame)))
+    (delete-window (get-buffer-window (current-buffer)))
+    (select-frame frame)))
+
 ;; keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -135,6 +143,7 @@
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x C-o") 'other-window)
 (global-set-key [remap other-window] 'ace-window)
+(global-set-key (kbd "C-x 5 5") 'window-as-frame)
 (global-set-key (kbd "M-n") 'next-error)
 (global-set-key (kbd "M-p") 'previous-error)
 (define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
@@ -172,8 +181,6 @@
 (global-set-key (kbd "C-x g f") 'magit-log-buffer-file)
 (global-set-key (kbd "C-x g b") 'magit-blame)
 
-(global-set-key (kbd "C-7") 'point-to-register)
-(global-set-key (kbd "C-8") 'jump-to-register)
 (global-set-key (kbd "<f5>") 'revert-buffer)
 
 (ace-link-setup-default (kbd "C-f"))

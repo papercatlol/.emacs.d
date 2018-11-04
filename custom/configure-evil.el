@@ -160,6 +160,7 @@
 (global-set-key (kbd "C-f") 'evil-avy-goto-char-2)
 (evil-define-key 'motion 'global (kbd "C-f") nil)
 (evil-define-key 'insert 'global (kbd "C-f") 'forward-char)
+(define-key minibuffer-local-map (kbd "C-f") 'forward-char)
 
 
 (provide 'configure-evil)
