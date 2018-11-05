@@ -156,11 +156,10 @@
 (define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
 (define-key evil-motion-state-map (kbd "M-j") 'evil-scroll-down)
 (define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-up)
+(define-key evil-motion-state-map (kbd "C-f") 'evil-avy-goto-char-2)
 
-(global-set-key (kbd "C-f") 'evil-avy-goto-char-2)
-(evil-define-key 'motion 'global (kbd "C-f") nil)
-(evil-define-key 'insert 'global (kbd "C-f") 'forward-char)
-(define-key minibuffer-local-map (kbd "C-f") 'forward-char)
-
+;; Do not override `ace-link' binding by motion-state `C-f' binding
+(dolist (map (list help-mode-map compilation-mode-map grep-mode-map))
+  (evil-make-overriding-map map 'motion))
 
 (provide 'configure-evil)
