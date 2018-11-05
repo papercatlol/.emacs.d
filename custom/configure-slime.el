@@ -17,7 +17,8 @@
                        ;; slime-fontifying-fu
                        slime-trace-dialog
                        slime-cl-indent
-                       slime-uncompiled-fringe))
+                       slime-uncompiled-fringe
+                       slime-tramp))
 (slime-setup slime-contribs)
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
@@ -27,6 +28,23 @@
 (add-hook 'slime-repl-mode-hook       #'enable-paredit-mode)
 (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
 (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+
+;; TODO: fix regex
+;; upper -> lower pathname tail
+;; (setq slime-filename-translations
+;;       (list (list
+;;              ".*"
+;;              #'downcase
+;;              (lambda (pathname)
+;;                (let ((case-fold-search nil))
+;;                  (message (format "path::\"%s\"" pathname))
+;;                  (if (string-match (rx line-start
+;;                                        (group (minimal-match (1+ any)))
+;;                                        (group (1+ "/" (1+ (or upper "."))))
+;;                                        line-end)
+;;                                    pathname)
+;;                      (concat (match-string 1 pathname) (downcase (match-string 2 pathname)))
+;;                    pathname))))))
 
 ;; indentation  (c) igord
 (defun lisp-add-keywords (face-name keyword-rules)
