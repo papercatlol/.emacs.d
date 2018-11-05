@@ -55,6 +55,14 @@
        #'quit-window
      #'evil-record-macro)))
 
+(defun C-f-dwim ()
+  "Avy-goto-char-2 if in read-only, else forward-char."
+  (interactive)
+  (call-interactively
+   (if buffer-read-only
+       #'avy-goto-char-2
+     #'forward-char)))
+
 ;;** `evil-visual-char-or-expand-region'
 (require 'expand-region)
 
@@ -159,7 +167,7 @@
 
 (global-set-key (kbd "C-f") 'evil-avy-goto-char-2)
 (evil-define-key 'motion 'global (kbd "C-f") nil)
-(evil-define-key 'insert 'global (kbd "C-f") 'forward-char)
+(evil-define-key '(insert emacs) 'global (kbd "C-f") 'C-f-dwim)
 (define-key minibuffer-local-map (kbd "C-f") 'forward-char)
 
 

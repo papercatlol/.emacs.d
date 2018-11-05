@@ -257,6 +257,7 @@ otherwise insert a saved presentation."
 
 (define-key slime-mode-map (kbd "C-c M-w") 'slime-kill-package-name)
 (define-key slime-repl-mode-map (kbd "<f5>") 'slime-restart-inferior-lisp)
+(define-key slime-repl-mode-map (kbd "(") 'self-insert-command)
 (define-key sldb-mode-map (kbd "<tab>") 'sldb-toggle-details)
 (define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
 
