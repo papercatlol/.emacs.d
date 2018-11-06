@@ -105,6 +105,31 @@
         (setf (ivy-state-collection ivy-recursive-last) (swiper--candidates)))
       (ivy-recursive-restore))))
 
+;;** `avy-goto-symbol-in-line'
+(defun avy-goto-symbol-in-line ()
+  "Jump to start of a symbol in current line. Exclude symbol at point."
+  (interactive)
+  (let* ((avy-all-windows nil)
+         (regex (rx (and symbol-start any)))
+         (beg (line-beginning-position))
+         (end (line-end-position))
+         (candidates (avy--regex-candidates regex beg end))
+         (redundant (list (point) (1+ (point)))))
+    (when-let (bounds (bounds-of-thing-at-point 'symbol))
+      (push (car bounds) redundant)
+      (push (cdr bounds) redundant))
+    (setq candidates
+          (loop for candidate in candidates
+                unless (member (caar candidate) redundant)
+                collect candidate))
+    (avy-with avy-goto-symbol-in-line
+      (avy--process candidates (avy--style-fn 'at)))))
+
+(add-to-list 'avy-styles-alist '(avy-goto-symbol-in-line . at))
+(add-to-list 'avy-keys-alist
+             (cons 'avy-goto-symbol-in-line (list ?f ?c ?d ?g ?s ?a  ?e ?v ?q ?w ?z ?x ?r
+                                                  ?j ?n ?k ?h ?l ?\; ?i ?u)))
+
 ;;* `KEYS'
 ;; -----------------------------------------------------------------------------
 ;;** `lispyville'
@@ -157,6 +182,8 @@
 (define-key evil-motion-state-map (kbd "M-j") 'evil-scroll-down)
 (define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-up)
 (define-key evil-motion-state-map (kbd "C-f") 'evil-avy-goto-char-2)
+(define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
+(define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
 
 ;; Do not override `ace-link' binding by motion-state `C-f' binding
 (dolist (map (list help-mode-map compilation-mode-map grep-mode-map))

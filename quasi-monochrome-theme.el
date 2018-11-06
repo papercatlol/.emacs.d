@@ -68,7 +68,7 @@
  '(ivy-minibuffer-match-face-3 ((t (:inherit lazy-highlight))))
  '(ivy-minibuffer-match-face-4 ((t (:inherit lazy-highlight))))
  '(ivy-current-match ((t (:background "white" :foreground "black" :weight extra-bold))))
- '(avy-lead-face ((t (:background "white" :foreground "gray30" :weight extra-bold))))
+ '(avy-lead-face ((t (:background "white" :foreground "black" :weight extra-bold))))
  '(avy-lead-face-0 ((t (:inherit avy-lead-face :foreground "black"))))
  '(avy-lead-face-2 ((t (:inherit avy-lead-face :foreground "dark red")))))
 
