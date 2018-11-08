@@ -143,6 +143,17 @@
     (delete-window (get-buffer-window (current-buffer)))
     (select-frame frame)))
 
+;;** hippie-expand + paredit fix
+(require 'hippie-exp)
+
+(defun he-paredit-fix (str &optional trans-case)
+  "Remove extra paren when expanding line in paredit.
+https://www.emacswiki.org/emacs/HippieExpand#toc9"
+  (if (and paredit-mode (equal (substring str -1) ")"))
+      (progn (backward-delete-char 1) (forward-char))))
+
+(advice-add #'he-substitute-string :after #'he-paredit-fix)
+
 ;; keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
