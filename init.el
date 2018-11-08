@@ -77,7 +77,14 @@
       show-paren-priority -1
       shell-pop-window-size 50
       shell-pop-window-position "bottom"
-      recentf-max-saved-items 50)
+      recentf-max-saved-items 50
+      hl-todo-keyword-faces '(("TODO" . "#cc9393")
+                              ("FAIL" . "#8c5353")
+                              ("NOTE" . "#d0bf8f")
+                              ("KLUDGE" . "#d0bf8f")
+                              ("HACK" . "#d0bf8f")
+                              ("TEMP" . "#d0bf8f")
+                              ("FIXME" . "#cc9393")))
 
 (shell-pop--set-universal-key 'shell-pop-universal-key "<f12>")
 (shell-pop--set-shell-type 'shell-pop-shell-type  '("ansi-term" "*ansi-term*"
@@ -186,3 +193,4 @@
 (ace-link-setup-default (kbd "C-f"))
 (dolist (keymap (list help-mode-map package-menu-mode-map compilation-mode-map grep-mode-map))
   (define-key keymap (kbd "C-f") 'ace-link))
+(put 'magit-clean 'disabled nil)
