@@ -110,25 +110,27 @@
   "Jump to start of a symbol in current line. Exclude symbol at point."
   (interactive)
   (let* ((avy-all-windows nil)
-         (regex (rx (and symbol-start any)))
-         (beg (line-beginning-position))
-         (end (line-end-position))
-         (candidates (avy--regex-candidates regex beg end))
+         (re-symbol-start (rx symbol-start any))
+         (re-word-start (rx word-start any))
+         (beg (1+ (line-beginning-position)))
+         (end (1- (line-end-position)))
          (redundant (list (point) (1+ (point)))))
-    (when-let (bounds (bounds-of-thing-at-point 'symbol))
-      (push (car bounds) redundant)
-      (push (cdr bounds) redundant))
-    (setq candidates
-          (loop for candidate in candidates
-                unless (member (caar candidate) redundant)
-                collect candidate))
-    (avy-with avy-goto-symbol-in-line
-      (avy--process candidates (avy--style-fn 'at)))))
+    (flet ((%filter (candidates)
+             (loop for candidate in candidates
+                   unless (member (caar candidate) redundant)
+                   collect candidate)))
+      (when-let (bounds (bounds-of-thing-at-point 'symbol))
+       (push (car bounds) redundant)
+       (push (cdr bounds) redundant))
+      (let ((candidates (or (%filter (avy--regex-candidates re-symbol-start beg end))
+                            (%filter (avy--regex-candidates re-word-start beg end)))))
+        (avy-with avy-goto-symbol-in-line
+          (avy--process candidates (avy--style-fn 'at)))))))
 
 (add-to-list 'avy-styles-alist '(avy-goto-symbol-in-line . at))
 (add-to-list 'avy-keys-alist
              (cons 'avy-goto-symbol-in-line (list ?f ?c ?d ?g ?s ?a  ?e ?v ?q ?w ?z ?x ?r
-                                                  ?j ?n ?k ?h ?l ?\; ?i ?u)))
+                                                  ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\;)))
 
 ;;* `KEYS'
 ;; -----------------------------------------------------------------------------
@@ -186,7 +188,9 @@
 (define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
 
 ;; Do not override `ace-link' binding by motion-state `C-f' binding
-(dolist (map (list helpful-mode-map help-mode-map compilation-mode-map grep-mode-map))
+(require 'slime)
+(dolist (map (list helpful-mode-map help-mode-map compilation-mode-map grep-mode-map
+                   sldb-mode-map slime-inspector-mode-map slime-trace-dialog-mode-map slime-xref-mode-map))
   (evil-make-overriding-map map 'motion))
 
 (provide 'configure-evil)

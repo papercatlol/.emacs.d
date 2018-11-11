@@ -78,7 +78,14 @@
       show-paren-priority -1
       shell-pop-window-size 50
       shell-pop-window-position "bottom"
-      recentf-max-saved-items 50)
+      recentf-max-saved-items 50
+      hl-todo-keyword-faces '(("TODO" . "#cc9393")
+                              ("FAIL" . "#8c5353")
+                              ("NOTE" . "#d0bf8f")
+                              ("KLUDGE" . "#d0bf8f")
+                              ("HACK" . "#d0bf8f")
+                              ("TEMP" . "#d0bf8f")
+                              ("FIXME" . "#cc9393")))
 
 (shell-pop--set-universal-key 'shell-pop-universal-key "<f12>")
 (shell-pop--set-shell-type 'shell-pop-shell-type  '("ansi-term" "*ansi-term*"
@@ -89,6 +96,7 @@
 (put 'upcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 (put 'dired-find-alternate-file 'disabled nil)
+(put 'magit-clean 'disabled nil)
 
 ;; custom-file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
