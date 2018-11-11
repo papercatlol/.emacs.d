@@ -17,6 +17,7 @@
 (require 'delsel)
 (require 'dired-subtree)
 (require 'expand-region)
+(require 'helpful)
 (require 'hl-todo)
 (require 'magit)
 (require 'magit-todos)
@@ -197,3 +198,8 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (ace-link-setup-default (kbd "C-f"))
 (dolist (keymap (list help-mode-map package-menu-mode-map compilation-mode-map grep-mode-map))
   (define-key keymap (kbd "C-f") 'ace-link))
+
+;;** Helpful
+(global-set-key (kbd "C-h f") #'helpful-callable)
+(global-set-key (kbd "C-h v") #'helpful-variable)
+(global-set-key (kbd "C-h k") #'helpful-key)

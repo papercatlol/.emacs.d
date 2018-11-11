@@ -186,7 +186,7 @@
 (define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
 
 ;; Do not override `ace-link' binding by motion-state `C-f' binding
-(dolist (map (list help-mode-map compilation-mode-map grep-mode-map))
+(dolist (map (list helpful-mode-map help-mode-map compilation-mode-map grep-mode-map))
   (evil-make-overriding-map map 'motion))
 
 (provide 'configure-evil)
