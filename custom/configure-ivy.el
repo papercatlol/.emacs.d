@@ -196,8 +196,8 @@ NAME specifies the name of the `ibuffer' buffer (defaults to \"*Ibuffer*\")."
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
 (global-set-key (kbd "C-h C-i") 'counsel-info-lookup-symbol)
 
-(global-set-key (kbd "C-h f") 'counsel-describe-function)
-(global-set-key (kbd "C-h v") 'counsel-describe-variable)
+;; (global-set-key (kbd "C-h f") 'counsel-describe-function)
+;; (global-set-key (kbd "C-h v") 'counsel-describe-variable)
 
 (define-key swiper-map (kbd "C-:") 'swiper-mc)
 (define-key swiper-map (kbd "C-t") 'swiper-avy)

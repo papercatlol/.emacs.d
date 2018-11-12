@@ -189,7 +189,7 @@
 
 ;; Do not override `ace-link' binding by motion-state `C-f' binding
 (require 'slime)
-(dolist (map (list help-mode-map compilation-mode-map grep-mode-map
+(dolist (map (list helpful-mode-map help-mode-map compilation-mode-map grep-mode-map
                    sldb-mode-map slime-inspector-mode-map slime-trace-dialog-mode-map slime-xref-mode-map))
   (evil-make-overriding-map map 'motion))
 

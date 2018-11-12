@@ -17,6 +17,7 @@
 (require 'delsel)
 (require 'dired-subtree)
 (require 'expand-region)
+(require 'helpful)
 (require 'hl-todo)
 (require 'magit)
 (require 'magit-todos)
@@ -96,6 +97,7 @@
 (put 'upcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 (put 'dired-find-alternate-file 'disabled nil)
+(put 'magit-clean 'disabled nil)
 
 ;; custom-file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -209,4 +211,8 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (ace-link-setup-default (kbd "C-f"))
 (dolist (keymap (list help-mode-map package-menu-mode-map compilation-mode-map grep-mode-map))
   (define-key keymap (kbd "C-f") 'ace-link))
-(put 'magit-clean 'disabled nil)
+
+;;** Helpful
+(global-set-key (kbd "C-h f") #'helpful-callable)
+(global-set-key (kbd "C-h v") #'helpful-variable)
+(global-set-key (kbd "C-h k") #'helpful-key)
