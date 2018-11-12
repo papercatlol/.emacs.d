@@ -68,7 +68,6 @@
 
 (global-hi-lock-mode 1)
 (global-set-key (kbd "M-h") 'highlight-region-or-symbol)
-(global-set-key (kbd "<f6>") 'unhighlight-region-or-symbol)
 (global-set-key (kbd "M-u") 'unhighlight-region-or-symbol)
 (global-set-key (kbd "M-l") 'highlight-lines-matching-regexp-autocolor)
 

@@ -24,6 +24,7 @@
 (require 'paredit)
 (require 'saveplace)
 (require 'shell-pop)
+(require 'string-edit)
 (require 'uniquify)
 (require 'wgrep)
 
@@ -200,6 +201,10 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "C-x g b") 'magit-blame)
 
 (global-set-key (kbd "<f5>") 'revert-buffer)
+
+;; TODO: keymap for M-z prefix
+(global-unset-key (kbd "M-z"))
+(global-set-key (kbd "M-z s") 'string-edit-at-point)
 
 (ace-link-setup-default (kbd "C-f"))
 (dolist (keymap (list help-mode-map package-menu-mode-map compilation-mode-map grep-mode-map))
