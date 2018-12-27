@@ -80,6 +80,7 @@
       shell-pop-window-size 50
       shell-pop-window-position "bottom"
       recentf-max-saved-items 50
+      magit-section-visibility-indicator (quote (magit-fringe-bitmap+ . magit-fringe-bitmap-))
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
@@ -98,6 +99,11 @@
 (put 'narrow-to-region 'disabled nil)
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'magit-clean 'disabled nil)
+
+(defun magit-status-set-wide-fringe ()
+  (set-window-fringes nil 11 5))
+
+(add-hook 'magit-status-sections-hook #'magit-status-set-wide-fringe)
 
 ;; custom-file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
