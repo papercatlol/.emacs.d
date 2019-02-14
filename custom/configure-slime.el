@@ -153,7 +153,9 @@
 
 (defun slime-kill-package-name ()
   (interactive)
-  (let ((package (string-trim-left (slime-current-package) ":")))
+  (let ((package (slime-pretty-package-name (slime-current-package))
+                 ;; (string-trim-left (slime-current-package) ":")
+                 ))
     (message package)
     (kill-new package)))
 
@@ -220,6 +222,17 @@ otherwise insert a saved presentation."
        #'slime-save-presentation-at-point
      #'slime-insert-saved-presentation)))
 
+(defun slime-repl-set-default-package ()
+  (interactive)
+  (slime-repl-set-package "cl-user"))
+
+(defun sldb-sync-frame-package ()
+  "Set Lisp package to that of the current frame."
+  (interactive)
+  (let* ((frame (sldb-frame-number-at-point))
+         (pkg (slime-eval `(swank:frame-package-name ,frame))))
+    (slime-repl-set-package pkg)))
+
 ;;** `avy-actions'
 (defun avy-action-copy-to-repl (pt)
   (when (number-or-marker-p pt)
@@ -255,11 +268,18 @@ otherwise insert a saved presentation."
   (define-key keymap (kbd "j") 'next-line)
   (define-key keymap (kbd "C-f") 'ace-link))
 
-(define-key slime-mode-map (kbd "C-c w") 'slime-kill-package-name)
 (define-key slime-repl-mode-map (kbd "<f5>") 'slime-restart-inferior-lisp)
 (define-key slime-repl-mode-map (kbd "(") 'self-insert-command)
 (define-key sldb-mode-map (kbd "<tab>") 'sldb-toggle-details)
 (define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
+(define-key slime-mode-map (kbd "C-c p") 'slime-pprint-eval-last-expression)
+
+;; package-related utils
+(define-key slime-mode-map (kbd "C-c w") 'slime-kill-package-name)
+(define-key slime-mode-map (kbd "C-c C-p") 'slime-sync-package-and-default-directory)
+(define-key sldb-mode-map (kbd "C-c C-p") 'sldb-sync-frame-package)
+(define-key slime-repl-mode-map (kbd "C-c C-p") 'slime-repl-set-default-package)
+
 
 ;;** `presentations'
 (define-key slime-presentation-map "r" 'slime-copy-presentation-at-point-to-repl)
@@ -269,9 +289,9 @@ otherwise insert a saved presentation."
 (define-key slime-presentation-map "P" 'slime-pretty-print-presentation-at-point)
 (define-key slime-presentation-map "i" 'slime-inspect-presentation-at-point)
 (define-key slime-presentation-map "." 'slime-edit-definition-popup)
-(define-key slime-presentation-map "k" 'slime-previous-presentation)
+;; (define-key slime-presentation-map "k" 'slime-previous-presentation)
 (define-key slime-presentation-map "p" 'slime-previous-presentation)
-(define-key slime-presentation-map "j" 'slime-next-presentation)
+;; (define-key slime-presentation-map "j" 'slime-next-presentation)
 (define-key slime-presentation-map "n" 'slime-next-presentation)
 (define-key slime-presentation-map "v" 'slime-save-presentation-at-point)
 (define-key slime-presentation-map "m" 'slime-mark-presentation)
