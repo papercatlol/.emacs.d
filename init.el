@@ -100,10 +100,12 @@
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'magit-clean 'disabled nil)
 
-(defun magit-status-set-wide-fringe ()
+(defun magit-status-set-wide-fringe (&optional arg)
   (set-window-fringes nil 11 5))
 
 (add-hook 'magit-status-sections-hook #'magit-status-set-wide-fringe)
+(add-hook 'magit-refs-mode-hook #'magit-status-set-wide-fringe)
+(add-hook 'magit-revision-sections-hook #'magit-status-set-wide-fringe)
 
 ;; custom-file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))

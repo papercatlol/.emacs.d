@@ -12,6 +12,7 @@
 (evil-mode t)
 ;; (dolist (mode '(slime-popup-buffer-mode slime-trace-dialog-mode))
 ;;   (evil-set-initial-state mode 'emacs))
+(evil-set-initial-state 'slime-trace-dialog-mode 'emacs)
 
 
 ;;* `LISPYVILLE'
@@ -54,6 +55,17 @@
    (if buffer-read-only
        #'quit-window
      #'evil-record-macro)))
+
+;; TODO
+;;** `evil-visual-block-mc-or-ret'
+(require 'multiple-cursors)
+
+(defun visual-block-mc-or-ret ()
+  (interactive)
+  (if (eq (evil-visual-type) 'block)
+      ;; enable mc
+      nil
+    (evil-ret)))
 
 ;;** `evil-visual-char-or-expand-region'
 (require 'expand-region)
@@ -115,13 +127,13 @@
          (beg (1+ (line-beginning-position)))
          (end (1- (line-end-position)))
          (redundant (list (point) (1+ (point)))))
-    (flet ((%filter (candidates)
-             (loop for candidate in candidates
-                   unless (member (caar candidate) redundant)
-                   collect candidate)))
+    (cl-flet ((%filter (candidates)
+                      (loop for candidate in candidates
+                            unless (member (caar candidate) redundant)
+                            collect candidate)))
       (when-let (bounds (bounds-of-thing-at-point 'symbol))
-       (push (car bounds) redundant)
-       (push (cdr bounds) redundant))
+        (push (car bounds) redundant)
+        (push (cdr bounds) redundant))
       (let ((candidates (or (%filter (avy--regex-candidates re-symbol-start beg end))
                             (%filter (avy--regex-candidates re-word-start beg end)))))
         (avy-with avy-goto-symbol-in-line
@@ -190,7 +202,7 @@
 ;; Do not override `ace-link' binding by motion-state `C-f' binding
 (require 'slime)
 (dolist (map (list helpful-mode-map help-mode-map compilation-mode-map grep-mode-map
-                   sldb-mode-map slime-inspector-mode-map slime-trace-dialog-mode-map slime-xref-mode-map))
+                   sldb-mode-map slime-inspector-mode-map slime-xref-mode-map))
   (evil-make-overriding-map map 'motion))
 
 (provide 'configure-evil)
