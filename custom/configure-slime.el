@@ -233,6 +233,11 @@ otherwise insert a saved presentation."
          (pkg (slime-eval `(swank:frame-package-name ,frame))))
     (slime-repl-set-package pkg)))
 
+(defun slime-repl-bury-buffer ()
+  (interactive)
+  (bury-buffer)
+  (other-window 1))
+
 ;;** `avy-actions'
 (defun avy-action-copy-to-repl (pt)
   (when (number-or-marker-p pt)
@@ -270,6 +275,7 @@ otherwise insert a saved presentation."
 
 (define-key slime-repl-mode-map (kbd "<f5>") 'slime-restart-inferior-lisp)
 (define-key slime-repl-mode-map (kbd "(") 'self-insert-command)
+(define-key slime-repl-mode-map (kbd "C-c C-z") 'slime-repl-bury-buffer)
 (define-key sldb-mode-map (kbd "<tab>") 'sldb-toggle-details)
 (define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
 (define-key slime-mode-map (kbd "C-c p") 'slime-pprint-eval-last-expression)
