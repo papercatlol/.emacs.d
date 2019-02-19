@@ -93,8 +93,8 @@
                :truncate nil
                :height 60)))
 
-(defun slime--edit-definition-popup (&optional where)
-  "Adapted from `slime-edit-definition-cont'. Use `popup.el' to select a candidate if multiple."
+(defun slime--edit-definition-ivy (&optional where)
+  "Adapted from `slime-edit-definition-cont'. Use `ivy' to select a candidate if multiple."
   (let* ((symbol-name (slime-read-symbol-name "Edit definition of: "))
          (xrefs (slime-find-definitions symbol-name)))
     (cl-destructuring-bind (same-loc file-alist) (slime-analyze-xrefs xrefs)
@@ -105,7 +105,7 @@
              (slime-pop-to-location (slime-xref.location (car xrefs)) where))
             ;; ((:error "..."))
             ((slime-length= xrefs 1)
-             (error "%s" (cadr (slime-xref.location (car xrefs) where))))
+             (error "%s" (second (slime-xref.location (car xrefs)))))
             (t
              (let* ((items (mapcar (lambda (xref)
                                      (let* ((spec (downcase
@@ -119,43 +119,37 @@
                                         (lambda (i1 i2)
                                           (if (string= (second i1) (second i2))
                                               (< (third i1) (third i2))
-                                            (string< (second i1) (second i2))))))
-                    (menu-items (mapcar (lambda (item)
-                                          (popup-make-item (first item)
-                                                           :value (fourth item)
-                                                           :summary (format "%s:%s" (second item) (third item))))
-                                        sorted-items))
-                    (selected-location (popup-menu* menu-items)))
-               (when selected-location
-                 (slime-push-definition-stack)
-                 (slime-pop-to-location selected-location where))))))))
+                                            (string< (second i1) (second i2)))))))
+               (ivy-read "Edit definition of: "
+                         sorted-items
+                         :action (lambda (item)
+                                   (slime-push-definition-stack)
+                                   (slime-pop-to-location (fourth item) where)))))))))
 
-(defun slime-edit-definition-popup (arg)
-  "Like `slime-edit-definition' but use `popup.el' to select a candidate."
+(defun slime-edit-definition-ivy (arg)
+  "Like `slime-edit-definition' but use `ivy' to select a candidate."
   (interactive "p")
   (if (minusp arg)
       (call-interactively #'slime-edit-definition)
-    (slime--edit-definition-popup nil)))
+    (slime--edit-definition-ivy nil)))
 
-(defun slime-edit-definition-other-window-popup (arg)
-  "Like `slime-edit-definition-popup' but switch to other window."
+(defun slime-edit-definition-other-window-ivy (arg)
+  "Like `slime-edit-definition-ivy' but switch to other window."
   (interactive "p")
   (if (minusp arg)
       (call-interactively #'slime-edit-definition-other-window)
-    (slime--edit-definition-popup 'window)))
+    (slime--edit-definition-ivy 'window)))
 
-(defun slime-edit-definition-other-frame-popup (arg)
-  "Like `slime-edit-definition-popup' but switch to other frame."
+(defun slime-edit-definition-other-frame-ivy (arg)
+  "Like `slime-edit-definition-ivy' but switch to other frame."
   (interactive "p")
   (if (minusp arg)
       (call-interactively #'slime-edit-definition-other-frame)
-    (slime--edit-definition-popup 'frame)))
+    (slime--edit-definition-ivy 'frame)))
 
 (defun slime-kill-package-name ()
   (interactive)
-  (let ((package (slime-pretty-package-name (slime-current-package))
-                 ;; (string-trim-left (slime-current-package) ":")
-                 ))
+  (let ((package (slime-pretty-package-name (slime-current-package))))
     (message package)
     (kill-new package)))
 
@@ -264,9 +258,9 @@ otherwise insert a saved presentation."
 ;;* `KEYS'
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation-popup)
-  (define-key keymap [remap slime-edit-definition] 'slime-edit-definition-popup)
-  (define-key keymap [remap slime-edit-definition-other-window] 'slime-edit-definition-other-window-popup)
-  (define-key keymap [remap slime-edit-definition-other-frame] 'slime-edit-definition-other-frame-popup))
+  (define-key keymap [remap slime-edit-definition] 'slime-edit-definition-ivy)
+  (define-key keymap [remap slime-edit-definition-other-window] 'slime-edit-definition-other-window-ivy)
+  (define-key keymap [remap slime-edit-definition-other-frame] 'slime-edit-definition-other-frame-ivy))
 
 (dolist (keymap (list sldb-mode-map slime-inspector-mode-map slime-trace-dialog-mode-map slime-xref-mode-map))
   (define-key keymap (kbd "k") 'previous-line)
@@ -276,6 +270,7 @@ otherwise insert a saved presentation."
 (define-key slime-repl-mode-map (kbd "<f5>") 'slime-restart-inferior-lisp)
 (define-key slime-repl-mode-map (kbd "(") 'self-insert-command)
 (define-key slime-repl-mode-map (kbd "C-c C-z") 'slime-repl-bury-buffer)
+(define-key slime-mode-map (kbd "C-x C-e") 'slime-eval-last-expression-in-repl)
 (define-key sldb-mode-map (kbd "<tab>") 'sldb-toggle-details)
 (define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
 (define-key slime-mode-map (kbd "C-c p") 'slime-pprint-eval-last-expression)
@@ -294,7 +289,7 @@ otherwise insert a saved presentation."
 (define-key slime-presentation-map "d" 'slime-describe-presentation-at-point)
 (define-key slime-presentation-map "P" 'slime-pretty-print-presentation-at-point)
 (define-key slime-presentation-map "i" 'slime-inspect-presentation-at-point)
-(define-key slime-presentation-map "." 'slime-edit-definition-popup)
+(define-key slime-presentation-map "." 'slime-edit-definition-ivy)
 ;; (define-key slime-presentation-map "k" 'slime-previous-presentation)
 (define-key slime-presentation-map "p" 'slime-previous-presentation)
 ;; (define-key slime-presentation-map "j" 'slime-next-presentation)
