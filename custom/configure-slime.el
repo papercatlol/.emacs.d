@@ -9,6 +9,7 @@
                        slime-editing-commands
                        slime-fancy-inspector
                        slime-fancy-trace
+                       ;; slime-fuzzy
                        ;; slime-mdot-fu
                        ;; slime-macrostep
                        slime-presentations
@@ -153,6 +154,36 @@
     (message package)
     (kill-new package)))
 
+;;** `slime-find-all-symbols'
+(defun slime-find-all-symbols (&optional internal)
+  "Return symbol-names of symbols from all registered packages."
+  (let* ((scope (if internal '(:external :internal) '(:external)))
+         (symbols (slime-eval
+                   `(cl:let ((packages (cl:remove (cl:find-package :keyword) (cl:list-all-packages)))
+                             (symbols))
+                            (cl:with-package-iterator (next packages ,@scope)
+                                                      (cl:loop (cl:multiple-value-bind (morep symbol) (next)
+                                                                                       (cl:push symbol symbols)
+                                                                                       (cl:unless morep (cl:return)))))
+                            (cl:mapcar (cl:lambda (symbol) (cl:string-downcase (cl:format nil "~s" symbol)))
+                                       (cl:remove-duplicates symbols)))
+                   "CL-USER")))
+    symbols))
+
+;; TODO: xref and documentation lookups in completion buffer
+(defun slime-complete-symbol-global (internal)
+  "Complete a symbol searching symbols from all visible packages.
+If INTERNAL is T, also search internal symbols."
+  (interactive "P")
+  (let* ((bounds (bounds-of-thing-at-point 'symbol))
+         (start (and bounds (car bounds)))
+         (end (and bounds (cdr bounds)))
+         (initial-input (and bounds (buffer-substring-no-properties start end)))
+         (symbol (completing-read "Find symbol: " (slime-find-all-symbols internal) nil nil initial-input)))
+    (when bounds
+      (delete-region start end))
+    (insert symbol)))
+
 ;;** `slime-saved-presentations'
 (defvar slime-saved-presentations nil
   "Saved slime-presentations. List of pairs (name . presentation).
@@ -274,6 +305,8 @@ otherwise insert a saved presentation."
 (define-key sldb-mode-map (kbd "<tab>") 'sldb-toggle-details)
 (define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
 (define-key slime-mode-map (kbd "C-c p") 'slime-pprint-eval-last-expression)
+(define-key slime-mode-map (kbd "C-c C-i") 'slime-complete-symbol-global)
+(define-key slime-repl-mode-map (kbd "C-c C-i") 'slime-complete-symbol-global)
 
 ;; package-related utils
 (define-key slime-mode-map (kbd "C-c w") 'slime-kill-package-name)
