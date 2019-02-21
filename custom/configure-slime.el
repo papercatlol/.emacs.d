@@ -247,6 +247,33 @@ otherwise insert a saved presentation."
        #'slime-save-presentation-at-point
      #'slime-insert-saved-presentation)))
 
+(cl-defun slime-collect-presentations (&optional (buffer (current-buffer)))
+  "Return a list of (start-pos . end-pos) pairs for each slime presentation in BUFFER."
+  (let ((positions))
+    (slime-for-each-presentation-in-region (window-start) (window-end)
+                                           (lambda (presentation start end whole-p)
+                                             (push (cons start end) positions))
+                                           buffer)
+    (reverse positions)))
+
+(defun slime-avy-copy-presentation-to-point ()
+  (interactive)
+  (let* ((candidates (mapcan (lambda (window)
+                               (with-selected-window window
+                                 (message (format "window %s buffer %s" window (current-buffer)))
+                                 (mapcar (lambda (bounds)
+                                           (cons (car bounds) window))
+                                         (slime-collect-presentations))))
+                             (avy-window-list))))
+    (avy-with slime-avy-copy-presentation-to-point
+      (avy--process
+       candidates
+       (avy--style-fn 'de-bruijn)))
+    (slime-copy-presentation-at-point-to-kill-ring (point))
+    (avy-pop-mark)
+    (with-current-buffer (slime-repl-buffer)
+      (call-interactively #'yank))))
+
 (defun slime-repl-set-default-package ()
   (interactive)
   (slime-repl-set-package "cl-user"))
@@ -330,7 +357,7 @@ otherwise insert a saved presentation."
 (define-key slime-presentation-map "v" 'slime-save-presentation-at-point)
 (define-key slime-presentation-map "m" 'slime-mark-presentation)
 
-(define-key slime-presentation-command-map (kbd "C-v") 'slime-saved-presentation-dwim)
+(define-key slime-presentation-command-map (kbd "C-v") 'slime-avy-copy-presentation-to-point)
 
 
 (provide 'configure-slime)
