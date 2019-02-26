@@ -44,7 +44,8 @@
 
 
 (delete-selection-mode 1)
-(global-linum-mode t)
+;; (global-linum-mode t)
+(global-display-line-numbers-mode t)
 (show-paren-mode 1)
 (minibuffer-depth-indicate-mode 1)
 (recentf-mode 1)
@@ -87,7 +88,8 @@
                               ("KLUDGE" . "#d0bf8f")
                               ("HACK" . "#d0bf8f")
                               ("TEMP" . "#d0bf8f")
-                              ("FIXME" . "#cc9393")))
+                              ("FIXME" . "#cc9393")
+                              ("DONE" . "#98fb98")))
 
 (shell-pop--set-universal-key 'shell-pop-universal-key "<f12>")
 (shell-pop--set-shell-type 'shell-pop-shell-type  '("ansi-term" "*ansi-term*"

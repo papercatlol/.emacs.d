@@ -260,7 +260,6 @@ otherwise insert a saved presentation."
   (interactive)
   (let* ((candidates (mapcan (lambda (window)
                                (with-selected-window window
-                                 (message (format "window %s buffer %s" window (current-buffer)))
                                  (mapcar (lambda (bounds)
                                            (cons (car bounds) window))
                                          (slime-collect-presentations))))
