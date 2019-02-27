@@ -19,7 +19,9 @@
                        slime-trace-dialog
                        slime-cl-indent
                        slime-uncompiled-fringe
-                       slime-tramp))
+                       slime-tramp
+                       ;; slime-xref-browser
+                       ))
 (slime-setup slime-contribs)
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
@@ -169,6 +171,17 @@
                                        (cl:remove-duplicates symbols)))
                    "CL-USER")))
     symbols))
+
+(defun slime-read-symbol-name-global (prompt &optional query)
+  (cond ((or current-prefix-arg query (not (slime-symbol-at-point)))
+         (let ((internal (= 16 (prefix-numeric-value current-prefix-arg))))
+           (completing-read prompt
+                            (slime-find-all-symbols internal)
+                            nil nil
+                            (slime-symbol-at-point))))
+        (t (slime-symbol-at-point))))
+
+(defalias 'slime-read-symbol-name 'slime-read-symbol-name-global) 
 
 ;; TODO: xref and documentation lookups in completion buffer
 (defun slime-complete-symbol-global (internal)
