@@ -1,8 +1,10 @@
 (require 'ivy)
 (require 'ivy-hydra)
 (require 'counsel)
+(require 'ivy-prescient)
 
 (ivy-mode t)
+(ivy-prescient-mode t)
 (setq ivy-use-virtual-buffers t
       ivy-count-format "[%d/%d] "
       ivy-re-builders-alist '((t . ivy--regex-ignore-order))
