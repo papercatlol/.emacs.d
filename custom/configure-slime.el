@@ -271,12 +271,12 @@ otherwise insert a saved presentation."
 
 (defun slime-avy-copy-presentation-to-point ()
   (interactive)
-  (let* ((candidates (mapcan (lambda (window)
-                               (with-selected-window window
-                                 (mapcar (lambda (bounds)
-                                           (cons (car bounds) window))
-                                         (slime-collect-presentations))))
-                             (avy-window-list))))
+  (let ((candidates (mapcan (lambda (window)
+                              (with-selected-window window
+                                (mapcar (lambda (bounds)
+                                          (cons (car bounds) window))
+                                        (slime-collect-presentations))))
+                            (avy-window-list))))
     (avy-with slime-avy-copy-presentation-to-point
       (avy--process
        candidates
@@ -301,6 +301,41 @@ otherwise insert a saved presentation."
   (interactive)
   (bury-buffer)
   (other-window 1))
+
+;;* Code refactoring utils
+;;** `lisp-toggle-*-form'
+(defvar lisp-keywords-with-*-variant nil
+  "Keywords that have a *-variant. Assoc list ((major-mode . keywords)).")
+
+(defmacro define-*-keywords (mode &rest keywords)
+  (let ((regexps (mapcar (lambda (keyword)
+                           `(and "(" symbol-start ,keyword (? "*") symbol-end))
+                         keywords)))
+    `(setf (alist-get ',mode lisp-keywords-with-*-variant) (rx (or ,@regexps)))))
+
+(define-*-keywords lisp-mode "let" "do" "list" "prog")
+(define-*-keywords emacs-lisp-mode "let" "if-let" "when-let" "do" "list" "prog")
+
+(defun lisp-toggle-*-form (arg)
+  "Toggle * of ARGth nearest enclosing form that has a *-variant."
+  (interactive "p")
+  (when-let* ((regexp (alist-get major-mode lisp-keywords-with-*-variant)))
+    (save-excursion
+      (condition-case err
+          (cl-loop do (up-list -1 t t)
+                   counting (looking-at regexp) into i
+                   when (= i arg)
+                   do (progn (forward-symbol 1)
+                             (if (looking-back "\\*")
+                                 (backward-delete-char 1)
+                               (insert "*"))
+                             (up-list -1 t t)
+                             (indent-sexp)
+                             (return)))
+        (scan-error nil)))))
+
+(dolist (map (list lisp-mode-map emacs-lisp-mode-map slime-mode-map))
+  (define-key map (kbd "C-c C-8") 'lisp-toggle-*-form))
 
 ;;** `avy-actions'
 (defun avy-action-copy-to-repl (pt)
