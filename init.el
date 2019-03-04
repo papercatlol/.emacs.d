@@ -89,7 +89,8 @@
                               ("HACK" . "#d0bf8f")
                               ("TEMP" . "#d0bf8f")
                               ("FIXME" . "#cc9393")
-                              ("DONE" . "#98fb98")))
+                              ("DONE" . "#98fb98")
+                              ("MAYBE" . "#d0bf8f")))
 
 (shell-pop--set-universal-key 'shell-pop-universal-key "<f12>")
 (shell-pop--set-shell-type 'shell-pop-shell-type  '("ansi-term" "*ansi-term*"
@@ -211,6 +212,8 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "C-x g l") 'magit-log)
 (global-set-key (kbd "C-x g f") 'magit-log-buffer-file)
 (global-set-key (kbd "C-x g b") 'magit-blame)
+(global-set-key (kbd "C-x g d") 'magit-diff-buffer-file)
+(global-set-key (kbd "C-x g D") 'vc-ediff)
 
 (global-set-key (kbd "<f5>") 'revert-buffer)
 

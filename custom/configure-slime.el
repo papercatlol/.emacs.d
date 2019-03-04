@@ -319,7 +319,7 @@ otherwise insert a saved presentation."
 (defun lisp-toggle-*-form (arg)
   "Toggle * of ARGth nearest enclosing form that has a *-variant."
   (interactive "p")
-  (when-let* ((regexp (alist-get major-mode lisp-keywords-with-*-variant)))
+  (when-let ((regexp (alist-get major-mode lisp-keywords-with-*-variant)))
     (save-excursion
       (condition-case err
           (cl-loop do (up-list -1 t t)
