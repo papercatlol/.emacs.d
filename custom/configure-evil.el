@@ -151,6 +151,9 @@
   (evil-define-key '(normal insert) lispyville-mode-map
     (kbd "C-t") 'lispy-ace-paren)
 
+  (evil-define-key '(insert) slime-repl-mode-map
+    (kbd "C-t") 'evil-avy-goto-char-2)
+
   (evil-define-key 'motion lispyville-mode-map
     "[" 'lispyville-previous-opening
     "]" 'lispyville-next-closing)

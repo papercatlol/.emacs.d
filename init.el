@@ -82,6 +82,7 @@
       shell-pop-window-position "bottom"
       recentf-max-saved-items 50
       magit-section-visibility-indicator (quote (magit-fringe-bitmap+ . magit-fringe-bitmap-))
+      magit-todos-auto-group-items 1000
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
@@ -214,6 +215,9 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "C-x g b") 'magit-blame)
 (global-set-key (kbd "C-x g d") 'magit-diff-buffer-file)
 (global-set-key (kbd "C-x g D") 'vc-ediff)
+(global-set-key (kbd "C-x =") 'magit-diff-buffer-file)
+
+(define-key magit-mode-map (kbd "C-c C-l") 'magit-toggle-buffer-lock)
 
 (global-set-key (kbd "<f5>") 'revert-buffer)
 
