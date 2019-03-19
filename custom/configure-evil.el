@@ -144,6 +144,35 @@
              (cons 'avy-goto-symbol-in-line (list ?f ?c ?d ?g ?s ?a  ?e ?v ?q ?w ?z ?x ?r
                                                   ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\;)))
 
+;;** `evil-move'
+(evil-define-command evil-move-forward (beg end n)
+  "Move lines in BEG END N lines forward (backward of N is negative)."
+  :motion evil-line
+  (interactive "<r>p")
+  (evil-move beg end (+ n (line-number-at-pos (1- (if (plusp n) end beg)))))
+  (evil-normal-state)
+  (evil-visual-restore))
+
+(evil-define-command evil-move-backward (beg end n)
+  "Move lines in BEG END N lines backward (forward of N is negative)."
+  :motion evil-line
+  :keep-visual t
+  (interactive "<r>p")
+  (evil-move-forward beg end (- n)))
+
+;;** `scrolling'
+(defun evil-scroll-line-up-dwim ()
+  (interactive)
+  (evil-scroll-line-up (or (and current-prefix-arg
+                                  (prefix-numeric-value current-prefix-arg))
+                             4)))
+
+(defun evil-scroll-line-down-dwim ()
+  (interactive)
+  (evil-scroll-line-down (or (and current-prefix-arg
+                                  (prefix-numeric-value current-prefix-arg))
+                             4)))
+
 ;;* `KEYS'
 ;; -----------------------------------------------------------------------------
 ;;** `lispyville'
@@ -196,8 +225,8 @@
 ;;** `other'
 (define-key evil-normal-state-map "q" 'q-dwim)
 (define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
-(define-key evil-motion-state-map (kbd "M-j") 'evil-scroll-down)
-(define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-up)
+(define-key evil-motion-state-map (kbd "M-j") 'evil-scroll-line-down-dwim)
+(define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
 (define-key evil-motion-state-map (kbd "C-f") 'evil-avy-goto-char-2)
 (define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
 (define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
@@ -207,5 +236,25 @@
 (dolist (map (list helpful-mode-map help-mode-map compilation-mode-map grep-mode-map
                    sldb-mode-map slime-inspector-mode-map slime-xref-mode-map))
   (evil-make-overriding-map map 'motion))
+
+;;** `move-text'
+(defhydra move-text-hydra ()
+  ("j" evil-move-forward "down")
+  ("k" evil-move-backward "up")
+  ("C-g" nil "exit"))
+
+(defun evil-move-forward-and-hydra ()
+  (interactive)
+  (call-interactively #'evil-move-forward)
+  (move-text-hydra/body))
+
+(defun evil-move-backward-and-hydra ()
+  (interactive)
+  (call-interactively #'evil-move-backward)
+  (move-text-hydra/body))
+
+(define-key evil-visual-state-map (kbd "C-c j") 'evil-move-forward-and-hydra)
+(define-key evil-visual-state-map (kbd "C-c k") 'evil-move-backward-and-hydra)
+
 
 (provide 'configure-evil)
