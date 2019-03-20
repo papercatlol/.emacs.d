@@ -224,6 +224,9 @@
 
 ;;** `other'
 (define-key evil-normal-state-map "q" 'q-dwim)
+(define-key evil-normal-state-map "Q" "@q")
+(define-key evil-visual-state-map "Q" ":norm @q RET")
+(define-key evil-visual-state-map "." ":norm . RET")
 (define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
 (define-key evil-motion-state-map (kbd "M-j") 'evil-scroll-line-down-dwim)
 (define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
