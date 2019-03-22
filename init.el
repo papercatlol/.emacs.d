@@ -152,13 +152,22 @@
                     '(:eval (cleaner-minor-modes))
                     " %-"))
 
-;;
+;; kludges
 (defun window-as-frame ()
   "Pop current window as a new frame."
   (interactive)
   (let ((frame (make-frame)))
     (delete-window (get-buffer-window (current-buffer)))
     (select-frame frame)))
+
+(defun kill-buffer-file-name ()
+  "Add current buffer file name to kill ring."
+  (interactive)
+  (when-let ((filename (if (eq major-mode 'dired-mode)
+                           default-directory
+                         (buffer-file-name))))
+    (kill-new filename)
+    (message "%s" filename)))
 
 ;;** hippie-expand + paredit fix
 (require 'hippie-exp)
@@ -179,6 +188,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "C-x C-o") 'other-window)
 (global-set-key [remap other-window] 'ace-window)
 (global-set-key (kbd "C-x 5 5") 'window-as-frame)
+(global-set-key (kbd "C-x M-w") 'kill-buffer-file-name)
 (global-set-key (kbd "M-n") 'next-error)
 (global-set-key (kbd "M-p") 'previous-error)
 (define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
