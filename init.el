@@ -41,6 +41,7 @@
 (require 'configure-isearch)
 (require 'configure-ivy)
 (require 'configure-slime)
+(require 'configure-go)
 
 
 (delete-selection-mode 1)
