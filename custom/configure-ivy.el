@@ -8,6 +8,7 @@
 (setq ivy-use-virtual-buffers t
       ivy-count-format "[%d/%d] "
       ivy-re-builders-alist '((t . ivy--regex-ignore-order))
+      ivy-magic-tilde nil
       ivy-initial-inputs-alist (delete (assoc 'counsel-M-x ivy-initial-inputs-alist)
                                        ivy-initial-inputs-alist))
 

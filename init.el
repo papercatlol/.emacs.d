@@ -84,6 +84,7 @@
       recentf-max-saved-items 50
       magit-section-visibility-indicator (quote (magit-fringe-bitmap+ . magit-fringe-bitmap-))
       magit-todos-auto-group-items 1000
+      magit-diff-buffer-file-locked t
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
@@ -210,8 +211,9 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key dired-mode-map (kbd "I") 'dired-subtree-remove)
 
 (define-key magit-file-mode-map (kbd "C-x g") nil)
+(global-set-key (kbd "C-x G") 'magit-file-dispatch)
 (global-set-key (kbd "C-x g g") 'magit-status)
-(global-set-key (kbd "C-x g l") 'magit-log)
+(global-set-key (kbd "C-x g l") 'magit-log-buffer-file)
 (global-set-key (kbd "C-x g f") 'magit-find-file)
 (global-set-key (kbd "C-x g b") 'magit-blame)
 (global-set-key (kbd "C-x g d") 'magit-diff-buffer-file)

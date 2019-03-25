@@ -115,7 +115,7 @@ If N is negative, undo previous N expansions."
   (interactive "P")
   (compile (format "go build %s" (if read-file-name
                                      (read-file-name "go build: ")
-                                     (buffer-file-name)))))
+                                   (buffer-file-name)))))
 
 (defun go-run (read-file-name)
   (interactive "P")
