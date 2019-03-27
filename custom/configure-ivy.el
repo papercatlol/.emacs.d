@@ -169,6 +169,40 @@ NAME specifies the name of the `ibuffer' buffer (defaults to \"*Ibuffer*\")."
               (:frame (find-file-other-frame item))
               (t (find-file item))))))
 
+
+(defvar symbol-start-regex (rx symbol-start))
+
+
+(defun ivy-minibuffer-toggle-symbol-start ()
+  "Insert or remove `symbol-start' regex. If there is a symbol at point,
+prepend regex to it, otherwise insert at point. With prefix arg
+always insert at point."
+  (interactive)
+  (let* ((point (point))
+         (re-start (rx symbol-start))
+         (re-end (rx symbol-end))
+         (re-start-literal (rx-to-string re-start))
+         (re-end-literal (rx-to-string re-end)))
+    (if current-prefix-arg
+        (insert re-start)
+      (when (looking-back re-end-literal)
+        (backward-char (length re-end)))
+      (when-let ((symbol-bounds (bounds-of-thing-at-point 'symbol)))
+        (goto-char (1- (car symbol-bounds))))
+      (cond ((looking-at re-start-literal)
+             (delete-char (length re-start))
+             (goto-char (- point (length re-start))))
+            (t (forward-char)
+               (insert re-start)
+               (goto-char (+ point (length re-start))))))))
+
+(defun ivy-minibuffer-insert-symbol-end ()
+  (interactive)
+  (let ((regex (rx symbol-end)))
+    (if (looking-back (rx-to-string regex))
+        (backward-delete-char (length regex))
+      (insert regex))))
+
 ;;* `KEYS'
 (defhydra hydra-M-g (global-map "M-g")
   "M-g"
@@ -204,8 +238,10 @@ NAME specifies the name of the `ibuffer' buffer (defaults to \"*Ibuffer*\")."
 
 (define-key swiper-map (kbd "C-:") 'swiper-mc)
 (define-key swiper-map (kbd "C-t") 'swiper-avy)
-(define-key ivy-minibuffer-map (kbd "C-,") 'ivy-yank-symbol-at-point)
-(define-key ivy-minibuffer-map (kbd "C-.") 'ivy-yank-word)
+;; (define-key ivy-minibuffer-map (kbd "C-,") 'ivy-yank-symbol-at-point)
+;; (define-key ivy-minibuffer-map (kbd "C-.") 'ivy-yank-word)
+(define-key ivy-minibuffer-map (kbd "C-,") 'ivy-minibuffer-toggle-symbol-start)
+(define-key ivy-minibuffer-map (kbd "C-.") 'ivy-minibuffer-insert-symbol-end)
 (define-key ivy-minibuffer-map (kbd "M-o") 'ivy-occur)
 (define-key ivy-minibuffer-map (kbd "M-a") 'ivy-dispatching-done)
 
