@@ -233,6 +233,7 @@
 (define-key evil-motion-state-map (kbd "C-f") 'evil-avy-goto-char-2)
 (define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
 (define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
+(define-key evil-visual-state-map (kbd "C-c i") 'edit-indirect-region)
 
 ;; Do not override `ace-link' binding by motion-state `C-f' binding
 (require 'slime)

@@ -169,6 +169,47 @@
     (kill-new filename)
     (message "%s" filename)))
 
+;;** `edit-indirect'
+(require 'edit-indirect)
+
+(defun edit-indirect-inherit-major-mode (buffer beg end)
+  (let ((major-mode (with-current-buffer buffer major-mode)))
+    (condition-case nil
+        (funcall major-mode)
+      (error nil))))
+
+(defun edit-indirect-visit-indirect-buffer ()
+  "Visit indirect buffer linked to overlay at point."
+  (interactive)
+  (when-let ((buffer (loop for ov in (overlays-at (point))
+                           thereis (overlay-get ov 'edit-indirect-buffer))))
+    (switch-to-buffer-other-window buffer)))
+
+(defun edit-indirect--rename-buffer ()
+  (let* ((parent-buffer (overlay-buffer edit-indirect--overlay))
+         (ov-start (overlay-start edit-indirect--overlay))
+         (line (with-current-buffer parent-buffer
+                 (line-number-at-pos ov-start))))
+    (rename-buffer (format "*[IND] %s:%d*" parent-buffer line) t)))
+
+(defun edit-indirect--set-keymap ()
+  (overlay-put edit-indirect--overlay 'keymap edit-indirect--overlay-map))
+
+(setq edit-indirect-guess-mode-function #'edit-indirect-inherit-major-mode)
+(add-hook 'edit-indirect-after-creation-hook #'edit-indirect--rename-buffer)
+(add-hook 'edit-indirect-after-creation-hook #'edit-indirect--set-keymap)
+
+(defvar edit-indirect--overlay-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "I" 'edit-indirect-visit-indirect-buffer)
+    map))
+
+(define-key edit-indirect-mode-map (kbd "C-c C-c") nil)
+(define-key edit-indirect-mode-map (kbd "C-c C-k") nil)
+(define-key edit-indirect-mode-map (kbd "C-x C-w") 'edit-indirect-commit)
+(define-key edit-indirect-mode-map (kbd "C-x q") 'bury-buffer)
+(define-key edit-indirect-mode-map (kbd "C-x ESC") 'edit-indirect-abort)
+
 ;;** hippie-expand + paredit fix
 (require 'hippie-exp)
 
