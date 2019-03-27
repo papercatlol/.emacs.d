@@ -381,6 +381,10 @@ otherwise insert a saved presentation."
 (define-key slime-mode-map (kbd "C-c p") 'slime-pprint-eval-last-expression)
 (define-key slime-mode-map (kbd "C-c C-i") 'slime-complete-symbol-global)
 (define-key slime-repl-mode-map (kbd "C-c C-i") 'slime-complete-symbol-global)
+(define-key slime-repl-mode-map (kbd "C-c C-v") nil)
+(define-key slime-mode-map (kbd "C-c C-t") 'slime-trace-dialog-toggle-trace)
+(define-key slime-mode-map (kbd "C-c t") 'slime-trace-dialog)
+(define-key slime-mode-map (kbd "C-c M-t") 'slime-toggle-trace-fdefinition)
 
 ;; package-related utils
 (define-key slime-mode-map (kbd "C-c w") 'slime-kill-package-name)
