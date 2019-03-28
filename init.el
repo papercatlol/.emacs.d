@@ -169,6 +169,10 @@
     (kill-new filename)
     (message "%s" filename)))
 
+(defun magit-stage-buffer-file ()
+  (interactive)
+  (magit-stage-file (buffer-file-name)))
+
 ;;** `edit-indirect'
 (require 'edit-indirect)
 
@@ -261,18 +265,23 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key dired-mode-map (kbd "i") 'dired-subtree-toggle)
 (define-key dired-mode-map (kbd "I") 'dired-subtree-remove)
 
-(define-key magit-file-mode-map (kbd "C-x g") nil)
-(global-set-key (kbd "C-x G") 'magit-file-dispatch)
-(global-set-key (kbd "C-x g g") 'magit-status)
-(global-set-key (kbd "C-x g l") 'magit-log-buffer-file)
-(global-set-key (kbd "C-x g f") 'magit-find-file)
-(global-set-key (kbd "C-x g b") 'magit-blame)
-(global-set-key (kbd "C-x g d") 'magit-diff-buffer-file)
-(global-set-key (kbd "C-x g D") 'vc-ediff)
-(global-set-key (kbd "C-x =") 'magit-diff-buffer-file)
 
+;;** magit
+(define-key magit-file-mode-map (kbd "C-x =") 'magit-diff-buffer-file)
+(define-key magit-file-mode-map (kbd "C-x G") 'magit-file-dispatch)
 (define-key magit-mode-map (kbd "C-c C-l") 'magit-toggle-buffer-lock)
 
+(define-prefix-command 'magit-file-prefix-map)
+(define-key magit-file-mode-map (kbd "C-x g") 'magit-file-prefix-map)
+(define-key magit-file-prefix-map "g" 'magit-status)
+(define-key magit-file-prefix-map "l" 'magit-log-buffer-file)
+(define-key magit-file-prefix-map "f" 'magit-find-file)
+(define-key magit-file-prefix-map "b" 'magit-blame)
+(define-key magit-file-prefix-map "s" 'magit-stage-buffer-file)
+(define-key magit-file-prefix-map "d" 'magit-diff-buffer-file)
+(define-key magit-file-prefix-map "D" 'vc-ediff)
+
+;;
 (global-set-key (kbd "<f5>") 'revert-buffer)
 
 ;; TODO: keymap for M-z prefix
