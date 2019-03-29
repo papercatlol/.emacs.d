@@ -172,7 +172,7 @@ NAME specifies the name of the `ibuffer' buffer (defaults to \"*Ibuffer*\")."
 
 (defvar symbol-start-regex (rx symbol-start))
 
-
+;; MAYBE: make more generic and handle symbol-end the same way
 (defun ivy-minibuffer-toggle-symbol-start ()
   "Insert or remove `symbol-start' regex. If there is a symbol at point,
 prepend regex to it, otherwise insert at point. With prefix arg

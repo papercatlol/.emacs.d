@@ -3,7 +3,7 @@
 
 (custom-theme-set-faces
  'quasi-monochrome
- '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "xos4 Terminus"))))
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "Terminus"))))
  '(button ((t (:inherit (link)))))
  '(cursor ((t (:background "orange red"))))
  '(bold ((t (:inherit (default) :weight bold))))
@@ -28,11 +28,12 @@
  '(header-line ((t (:background "gray15" :foreground "white"))))
  '(highlight ((t (:background "gray20"))))
  '(isearch ((t (:background "dark red" :foreground "black" :weight bold))))
- '(lazy-highlight ((t (:background "firebrick" :foreground "white" :weight bold))))
+ '(lazy-highlight ((t (:inherit match))))
+ ;; '(lazy-highlight ((t (:background "firebrick" :foreground "white" :weight bold))))
  '(isearch-fail ((t (:background "red4"))))
  '(link ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
  '(link-visited ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
- '(match ((t (:background "RoyalBlue3"))))
+ '(match ((t (:background "white" :foreground "black" :weight bold))))
  '(minibuffer-prompt ((t (:weight bold :foreground "light gray"))))
  ;; mode-line(from kaolin-mono-dark theme)
  '(mode-line ((t (:background "#1621C" :foreground "#c5c9c0" :bold nil

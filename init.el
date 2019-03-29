@@ -40,8 +40,8 @@
 (require 'configure-highlight)
 (require 'configure-isearch)
 (require 'configure-ivy)
-(require 'configure-slime)
 (require 'configure-go)
+(require 'configure-lisp)
 
 
 (delete-selection-mode 1)
@@ -107,6 +107,7 @@
 (put 'magit-clean 'disabled nil)
 
 (defun magit-status-set-wide-fringe (&optional arg)
+  (display-line-numbers-mode -1)
   (set-window-fringes nil 11 5))
 
 (add-hook 'magit-status-sections-hook #'magit-status-set-wide-fringe)

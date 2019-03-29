@@ -334,8 +334,27 @@ otherwise insert a saved presentation."
                              (return)))
         (scan-error nil)))))
 
+(defun toggle-char (char pos &optional after)
+  "Toggle CHAR before POS. If AFTER is T, toggle after POS."
+  (save-excursion
+    (goto-char pos)
+    (if (eq char (if after (char-after) (char-before)))
+        (if after (delete-char 1) (backward-delete-char 1))
+      (insert char))))
+
+(defun lisp-toggle-tick ()
+  "Toggle ' at the start of current region(if active) or symbol."
+  (interactive)
+  (when-let ((pos (if (region-active-p)
+                      (region-beginning)
+                    (car (bounds-of-thing-at-point 'symbol)))))
+    (toggle-char ?\' pos)))
+
 (dolist (map (list lisp-mode-map emacs-lisp-mode-map slime-mode-map))
-  (define-key map (kbd "C-c C-8") 'lisp-toggle-*-form))
+  (define-key map (kbd "C-c C-8") 'lisp-toggle-*-form)
+  (define-key map (kbd "C-c '") 'lisp-toggle-tick)
+  (define-key map (kbd "C-c '") 'lisp-toggle-tick))
+
 
 ;;** `avy-actions'
 (defun avy-action-copy-to-repl (pt)
@@ -411,4 +430,4 @@ otherwise insert a saved presentation."
 (define-key slime-presentation-command-map (kbd "C-v") 'slime-avy-copy-presentation-to-point)
 
 
-(provide 'configure-slime)
+(provide 'configure-lisp)
