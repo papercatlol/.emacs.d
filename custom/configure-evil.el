@@ -232,6 +232,7 @@
 (define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
 (define-key evil-motion-state-map (kbd "C-f") 'evil-avy-goto-char-2)
 (define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
+(define-key evil-normal-state-map (kbd "S") 'lispy-ace-paren)
 (define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
 (define-key evil-visual-state-map (kbd "C-c i") 'edit-indirect-region)
 

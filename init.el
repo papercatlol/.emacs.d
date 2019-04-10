@@ -161,6 +161,12 @@
     (delete-window (get-buffer-window (current-buffer)))
     (select-frame frame)))
 
+;; Fix for i3wm(not gaps) and emacs 26 where display doesn't refresh when switching
+;; to an existing frame in tabbed or stacked layout.
+(defun make-frame-visible-advice (&rest args)
+  (make-frame-visible))
+(advice-add 'select-frame-set-input-focus :after #'make-frame-visible-advice)
+
 (defun kill-buffer-file-name ()
   "Add current buffer file name to kill ring."
   (interactive)
@@ -262,7 +268,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "C-x C-d") 'dired)
 (define-key dired-mode-map (kbd "<backspace>") 'diredp-up-directory)
 (define-key dired-mode-map (kbd "C-t") 'avy-goto-word-or-subword-1)
-(define-key dired-mode-map (kbd "<tab>") 'other-window)
+(define-key dired-mode-map (kbd "<tab>") 'dired-subtree-toggle)
 (define-key dired-mode-map (kbd "i") 'dired-subtree-toggle)
 (define-key dired-mode-map (kbd "I") 'dired-subtree-remove)
 
