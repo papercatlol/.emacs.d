@@ -18,24 +18,24 @@
       `(unless (facep ',facename)
          (push ,facename-string hi-lock-face-defaults)
          (defface ,facename
-           '((t (:foreground ,fg :background ,bg)))
+           '((t (:foreground ,fg :background ,bg :weight bold)))
            ,docstring
            :group ',group)))))
 
 (setq hi-lock-face-defaults nil)
 
+(make-hl-face :fg "white" :bg "maroon")
 (make-hl-face :fg "white" :bg "red")
 (make-hl-face :fg "white" :bg "DarkOrange")
 (make-hl-face :fg "white" :bg "gold")
-(make-hl-face :fg "white" :bg "blue")
-(make-hl-face :fg "white" :bg "DarkViolet")
 (make-hl-face :fg "white" :bg "magenta")
-(make-hl-face :fg "white" :bg "tomato")
 (make-hl-face :fg "white" :bg "sienna")
 (make-hl-face :fg "white" :bg "DarkGreen")
 (make-hl-face :fg "white" :bg "LimeGreen")
+(make-hl-face :fg "white" :bg "tomato")
+(make-hl-face :fg "white" :bg "blue")
 (make-hl-face :fg "white" :bg "navy")
-(make-hl-face :fg "white" :bg "maroon")
+(make-hl-face :fg "white" :bg "DarkViolet")
 
 
 (defun highlight-region-or-symbol ()

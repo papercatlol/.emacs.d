@@ -82,9 +82,15 @@
  '(swiper-match-face-2 ((t (:inherit lazy-highlight))))
  '(swiper-match-face-3 ((t (:inherit lazy-highlight :background "dark violet"))))
  '(swiper-match-face-4 ((t (:inherit swiper-match-face-3))))
- '(ivy-current-match ((t (:background "white" :foreground "black" :weight extra-bold))))
+ '(ivy-current-match ((t (:background "white" :foreground "black"))))
  '(avy-lead-face ((t (:background "white" :foreground "black" :weight extra-bold))))
  '(avy-lead-face-0 ((t (:inherit avy-lead-face :foreground "black"))))
- '(avy-lead-face-2 ((t (:inherit avy-lead-face :foreground "dark red")))))
+ '(avy-lead-face-2 ((t (:inherit avy-lead-face :foreground "dark red"))))
+ ;; magit
+ '(magit-header-line ((t (:foreground "white" :background "black" :weight regular ;; :underline t
+                                      :box t
+                                      ))))
+ '(magit-section-heading ((t (:inherit magit-header-line))))
+ )
 
 (provide-theme 'quasi-monochrome)
