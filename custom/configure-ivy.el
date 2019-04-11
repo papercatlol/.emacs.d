@@ -129,10 +129,30 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
               (or extra-rg-args "")
               rg-prompt))
 
+(defun ivy-new-view (name)
+  "Same as `ivy-push-view' but don't prompt for name."
+  (let ((view (cl-labels
+                  ((ft (tr)
+                       (if (consp tr)
+                           (if (eq (car tr) t)
+                               (cons 'vert
+                                     (mapcar #'ft (cddr tr)))
+                             (cons 'horz
+                                   (mapcar #'ft (cddr tr))))
+                         (with-current-buffer (window-buffer tr)
+                           (cond (buffer-file-name
+                                  (list 'file buffer-file-name (point)))
+                                 ((eq major-mode 'dired-mode)
+                                  (list 'file default-directory (point)))
+                                 (t
+                                  (list 'buffer (buffer-name) (point))))))))
+                (ft (car (window-tree))))))
+    (push (list name view) ivy-views)))
 
 (defun counsel-ibuffer-or-recentf (&optional name where)
   "Switch to buffer using `ibuffer' or find a file on `recetf' list.
-NAME specifies the name of the `ibuffer' buffer (defaults to \"*Ibuffer*\")."
+NAME specifies the name of the `ibuffer' buffer (defaults to \"*Ibuffer*\").
+Now also supports ivy-views."
   (interactive)
   (require 'recentf)
   (recentf-mode)
@@ -145,10 +165,15 @@ NAME specifies the name of the `ibuffer' buffer (defaults to \"*Ibuffer*\")."
                                 recentf-list)))
     (lexical-let ((where where))
       (ivy-read "Switch to buffer: "
-               (append alive-buffers recent-buffers)
-               :history 'counsel-ibuffer-or-recentf-history
-               :action (lambda (item) (visit-buffer-or-file (cdr item) where))
-               :caller 'counsel-ibuffer-or-recentf))))
+                (append alive-buffers recent-buffers ivy-views)
+                :history 'counsel-ibuffer-or-recentf-history
+                :action (lambda (item)
+                          (typecase item
+                            (string (ivy-new-view (if (string-prefix-p "{}" item)
+                                                      item
+                                                    (format "{} %s" item))))
+                            (cons (visit-buffer-or-file (cdr item) where))))
+                :caller 'counsel-ibuffer-or-recentf))))
 
 (defun counsel-ibuffer-or-recentf-other-window (&optional name where)
   (interactive)
@@ -167,7 +192,12 @@ NAME specifies the name of the `ibuffer' buffer (defaults to \"*Ibuffer*\")."
     (string (case where
               (:window (find-file-other-window item))
               (:frame (find-file-other-frame item))
-              (t (find-file item))))))
+              (t (find-file item))))
+    (cons (case where
+            (:window (other-window 1))
+            (:frame (select-frame-set-input-focus (make-frame)))
+            (t (delete-other-windows)))
+          (ivy-set-view-recur (car item)))))
 
 
 (defvar symbol-start-regex (rx symbol-start))
@@ -229,7 +259,7 @@ always insert at point."
 (global-set-key (kbd "C-c C-s") 'counsel-imenu)
 (global-set-key (kbd "C-c s") 'counsel-imenu)
 (global-set-key (kbd "C-c b") 'counsel-bookmark)
-(global-set-key (kbd "C-c v") 'ivy-push-view)
+(global-set-key (kbd "C-c C-v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
 (global-set-key (kbd "C-h C-i") 'counsel-info-lookup-symbol)
 

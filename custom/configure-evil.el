@@ -214,6 +214,14 @@
 (define-key evil-ex-completion-map (kbd "C-d") nil)
 (define-key swiper-map (kbd "M-;") 'swiper-evil-ex)
 
+;;** `leader'
+(defvar leader-map (make-sparse-keymap))
+
+(define-key evil-normal-state-map (kbd "SPC") leader-map)
+(define-key leader-map (kbd "SPC") 'evil-avy-goto-char-timer)
+(define-key leader-map "f" 'evil-avy-goto-char-2)
+(define-key leader-map "b" 'counsel-ibuffer-or-recentf-other-frame)
+
 ;;** `unbind'
 (define-key evil-normal-state-map (kbd "M-.") nil)
 (define-key evil-normal-state-map (kbd "M-,") nil)
