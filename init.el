@@ -85,6 +85,7 @@
       magit-section-visibility-indicator (quote (magit-fringe-bitmap+ . magit-fringe-bitmap-))
       magit-todos-auto-group-items 1000
       magit-diff-buffer-file-locked t
+      magit-log-arguments '("-n64" "--graph" "--decorate" "--patch")
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
