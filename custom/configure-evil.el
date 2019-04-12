@@ -184,12 +184,20 @@
     (kbd "C-t") 'evil-avy-goto-char-2)
 
   (evil-define-key 'motion lispyville-mode-map
-    "[" 'lispyville-previous-opening
-    "]" 'lispyville-next-closing)
+    "[" #'lispyville-previous-opening
+    "]" #'lispyville-next-closing
+    "(" #'lispyville-backward-up-list
+    ")" #'lispyville-up-list)
 
   (evil-define-key 'normal lispyville-mode-map
     (kbd "<backspace>") 'lispyville-beginning-of-defun
-    (kbd "<return>") 'end-of-defun-spammable)
+    (kbd "<return>") 'lispyville-beginning-of-next-defun
+    ;; (kbd "<return>") 'end-of-defun-spammable
+    [remap paredit-comment-dwim] 'lispyville-comment-or-uncomment
+    "gy" 'lispyville-comment-and-clone-dwim
+    (kbd "M-R") 'lispyville-raise-list
+    "H" 'lispyville-drag-backward
+    "L" 'lispyville-drag-forward)
 
   (evil-define-key '(operator visual) lispyville-mode-map
     "s" 'evil-a-paren
@@ -218,6 +226,7 @@
 (defvar leader-map (make-sparse-keymap))
 
 (define-key evil-normal-state-map (kbd "SPC") leader-map)
+(define-key evil-motion-state-map (kbd "SPC") leader-map)
 (define-key leader-map (kbd "SPC") 'evil-avy-goto-char-timer)
 (define-key leader-map "f" 'evil-avy-goto-char-2)
 (define-key leader-map "b" 'counsel-ibuffer-or-recentf-other-frame)
