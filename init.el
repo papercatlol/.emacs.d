@@ -181,6 +181,17 @@
   (interactive)
   (magit-stage-file (buffer-file-name)))
 
+(defun ace-window-dwim (vertically)
+  "Same as `ace-window', but splits window horizontally before jumping
+if there is only one window. With prefix arg splits vertically."
+  (interactive "P")
+  (cond ((one-window-p)
+         (if vertically
+             (split-window-below)
+           (split-window-right))
+         (other-window 1))
+        (t (call-interactively #'ace-window))))
+
 ;;** `edit-indirect'
 (require 'edit-indirect)
 
@@ -239,7 +250,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x C-o") 'other-window)
-(global-set-key [remap other-window] 'ace-window)
+(global-set-key [remap other-window] 'ace-window-dwim)
 (global-set-key (kbd "C-x 5 5") 'window-as-frame)
 (global-set-key (kbd "C-x M-w") 'kill-buffer-file-name)
 (global-set-key (kbd "M-n") 'next-error)
