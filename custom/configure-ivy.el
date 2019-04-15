@@ -103,12 +103,13 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
 
 (defun swiper-at-point ()
   (interactive)
-  (counsel-grep-or-swiper
-   (cond (current-prefix-arg nil)
-         ((region-active-p)
-          (buffer-substring (point) (mark)))
-         ((symbol-at-point)
-          (symbol-name (symbol-at-point))))))
+  (let ((isearch-forward t)) ; evil search direction
+    (counsel-grep-or-swiper
+     (cond (current-prefix-arg nil)
+           ((region-active-p)
+            (buffer-substring (point) (mark)))
+           ((symbol-at-point)
+            (symbol-name (symbol-at-point)))))))
 
 (defun ivy-yank-symbol-at-point ()
   (interactive)
