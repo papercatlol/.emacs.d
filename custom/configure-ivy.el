@@ -170,9 +170,9 @@ Now also supports ivy-views."
                 :history 'counsel-ibuffer-or-recentf-history
                 :action (lambda (item)
                           (typecase item
-                            (string (ivy-new-view (if (string-prefix-p "{}" item)
-                                                      item
-                                                    (format "{} %s" item))))
+                            (string (if (string-prefix-p "{}" item)
+                                        (ivy-new-view item)
+                                      (visit-buffer-or-file item where)))
                             (cons (visit-buffer-or-file (cdr item) where))))
                 :caller 'counsel-ibuffer-or-recentf))))
 
@@ -184,16 +184,21 @@ Now also supports ivy-views."
   (interactive)
   (counsel-ibuffer-or-recentf name :frame))
 
+(defun visit-buffer (buffer &optional where)
+  (case where
+    (:window (switch-to-buffer-other-window item))
+    (:frame (switch-to-buffer-other-frame item))
+    (t (switch-to-buffer item))))
+
 (defun visit-buffer-or-file (item &optional where)
   (typecase item
-    (buffer (case where
-              (:window (switch-to-buffer-other-window item))
-              (:frame (switch-to-buffer-other-frame item))
-              (t (switch-to-buffer item))))
-    (string (case where
-              (:window (find-file-other-window item))
-              (:frame (find-file-other-frame item))
-              (t (find-file item))))
+    (buffer (visit-buffer item where))
+    (string (if (file-exists-p item)
+                (case where
+                  (:window (find-file-other-window item))
+                  (:frame (find-file-other-frame item))
+                  (t (find-file item)))
+              (visit-buffer item where)))
     (cons (case where
             (:window (other-window 1))
             (:frame (select-frame-set-input-focus (make-frame)))
