@@ -6,6 +6,7 @@
 (setq inferior-lisp-program (getenv "LISP_BINARY"))
 (setq slime-contribs '(slime-repl
                        slime-autodoc
+                       slime-asdf
                        slime-editing-commands
                        slime-fancy-inspector
                        slime-fancy-trace
@@ -13,6 +14,7 @@
                        ;; slime-mdot-fu
                        ;; slime-macrostep
                        slime-presentations
+                       slime-package-fu
                        ;; slime-scratch
                        slime-references
                        ;; slime-fontifying-fu
@@ -22,7 +24,17 @@
                        slime-tramp
                        ;; slime-xref-browser
                        ))
+
 (slime-setup slime-contribs)
+
+;; slime-package-fu
+(setq slime-defpackage-regexp
+             (rx line-start "("
+                 (or (and (? (or "cl:" "common-lisp:")) "defpackage")
+                     (and (? (or "uiop:" "uiop/package:" "package:")) "define-package"))
+                 symbol-end
+                 (* space)))
+
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
 (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
@@ -355,6 +367,33 @@ otherwise insert a saved presentation."
   (define-key map (kbd "C-c '") 'lisp-toggle-tick)
   (define-key map (kbd "C-c '") 'lisp-toggle-tick))
 
+(defun slime-call-toplevel ()
+  "Like `slime-call-defun', but treat unknown forms as function definitions."
+  (interactive)
+  (condition-case nil
+      (call-interactively #'slime-call-defun)
+    (error
+     (when-let ((toplevel (slime-parse-toplevel-form))
+                (qualified-name (and (symbolp toplevel)
+                                     (slime-qualify-cl-symbol-name toplevel))))
+       (slime-switch-to-output-buffer)
+       (goto-char slime-repl-input-start-mark)
+       (insert (format "(%s )" qualified-name))
+       (backward-char 1)))))
+
+(define-key slime-mode-map [remap slime-call-defun] 'slime-call-toplevel)
+
+(with-eval-after-load 'slime-asdf
+  (defun slime-load-system-dwim (reload)
+    "Compile and load an ASDF system. With prefix arg reload it instead."
+    (interactive "P")
+    (when-let* ((prompt (if reload "Reload system" "Load system"))
+                (system (slime-read-system-name prompt nil t)))
+      (if reload
+          (slime-reload-system system)
+        (slime-load-system system))))
+
+  (define-key slime-mode-map (kbd "C-c L") 'slime-load-system-dwim))
 
 ;;** `avy-actions'
 (defun avy-action-copy-to-repl (pt)
@@ -410,6 +449,7 @@ otherwise insert a saved presentation."
 (define-key slime-mode-map (kbd "C-c C-p") 'slime-sync-package-and-default-directory)
 (define-key sldb-mode-map (kbd "C-c C-p") 'sldb-sync-frame-package)
 (define-key slime-repl-mode-map (kbd "C-c C-p") 'slime-repl-set-default-package)
+(define-key slime-mode-map (kbd "C-c C-x C-s") 'slime-export-symbol-at-point)
 
 
 ;;** `presentations'
