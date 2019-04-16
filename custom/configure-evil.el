@@ -172,6 +172,21 @@
   (evil-scroll-line-down (or (and current-prefix-arg
                                   (prefix-numeric-value current-prefix-arg))
                              4)))
+;;** smarter `M-w'
+(defun evil-append-symbol ()
+  "Switch to Insert state just after next symbol."
+  (interactive "p")
+  (forward-symbol 1)
+  (call-interactively #'evil-insert))
+
+(defun M-w-dwim ()
+  "Save region to kill ring if active, else call `evil-append-symbol'."
+  (interactive)
+  (call-interactively (if (region-active-p)
+                          #'kill-ring-save
+                        #'evil-append-symbol)))
+
+(global-set-key [remap kill-ring-save] 'M-w-dwim)
 
 ;;* `KEYS'
 ;; -----------------------------------------------------------------------------
