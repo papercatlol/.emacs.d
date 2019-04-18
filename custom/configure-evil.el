@@ -67,17 +67,6 @@
        #'quit-window
      #'evil-record-macro)))
 
-;; TODO
-;;** `evil-visual-block-mc-or-ret'
-(require 'multiple-cursors)
-
-(defun visual-block-mc-or-ret ()
-  (interactive)
-  (if (eq (evil-visual-type) 'block)
-      ;; enable mc
-      nil
-    (evil-ret)))
-
 ;;** `evil-visual-char-or-expand-region'
 (require 'expand-region)
 
@@ -199,6 +188,42 @@
 
 (global-set-key [remap kill-ring-save] 'M-w-dwim)
 
+;;** `evil-show-jumps-ivy'
+;; TODO: move ivy-file-jumping-related logic to separate package
+(defun evil-show-jumps-ivy ()
+  "Use `ivy' to navigate evil jump list."
+  (interactive)
+  (let* ((jumps (cl-remove-duplicates (evil--jumps-savehist-sync)
+                                      :test #'equal))
+         (ivy-items (mapcar (lambda (jump)
+                              (destructuring-bind (pos file) jump
+                                (list (format "%s:%s" file pos) pos file)))
+                            jumps))
+         (initial-pos (point)))
+    (cl-labels ((%jump (item)
+                       (find-file (third item))
+                       (goto-char (second item))))
+      (ivy-read "Jump: " ivy-items
+                :action #'%jump
+                :update-fn (lambda ()
+                             (with-ivy-window
+                               ;; TODO: less ugly way to get current ivy item
+                               (%jump (elt (ivy-state-collection ivy-last)
+                                           (get-text-property 0 'idx (ivy-state-current ivy-last))))))
+                :unwind (lambda ()
+                          (unless (eq ivy-exit 'done)
+                            (goto-char initial-pos)))))))
+
+(defun evil-jump-backward-dwim (arg)
+  (interactive "P")
+  (if arg (evil-show-jumps-ivy)
+    (call-interactively #'evil-jump-backward)))
+
+(defun evil-jump-forward-dwim (arg)
+  (interactive "P")
+  (if arg (evil-show-jumps-ivy)
+    (call-interactively #'evil-jump-forward)))
+
 ;;* `KEYS'
 ;; -----------------------------------------------------------------------------
 ;;** `lispyville'
@@ -281,6 +306,8 @@
 (define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
 (define-key evil-normal-state-map (kbd "S") 'lispy-ace-paren)
 (define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
+(define-key evil-motion-state-map [remap evil-jump-backward] 'evil-jump-backward-dwim)
+(define-key evil-motion-state-map [remap evil-jump-forward] 'evil-jump-forward-dwim)
 (define-key evil-visual-state-map (kbd "C-c i") 'edit-indirect-region)
 
 ;; Do not override `ace-link' binding by motion-state `C-f' binding
