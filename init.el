@@ -302,6 +302,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 
 ;;
 (global-set-key (kbd "<f5>") 'revert-buffer)
+(global-set-key (kbd "<f6>") 'counsel-org-capture)
 
 ;; TODO: keymap for M-z prefix
 (global-unset-key (kbd "M-z"))

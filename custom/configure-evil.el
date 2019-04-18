@@ -33,6 +33,17 @@
      ;;   (additional-movement normal visual motion)
      )))
 
+;;* `EVIL-MC'
+(require 'evil-mc)
+
+(setq evil-mc-undo-cursors-on-keyboard-quit t)
+(setq evil-mc-custom-known-commands
+      (mapcar (lambda (symbol)
+                (cons symbol '((:default . evil-mc-execute-default-call-with-count))))
+              mc/cmds-to-run-for-all))
+
+(global-evil-mc-mode 1)
+
 ;;* `DEFUNS'
 ;; -----------------------------------------------------------------------------
 (defun end-of-defun-spammable ()
@@ -246,6 +257,10 @@
 (define-key leader-map "f" 'evil-avy-goto-char-2)
 (define-key leader-map "b" 'counsel-ibuffer-or-recentf-other-frame)
 
+;; `evil-mc'
+(define-key evil-visual-state-map (kbd "I") 'evil-mc-make-cursor-in-visual-selection-beg)
+(define-key evil-visual-state-map (kbd "A") 'evil-mc-make-cursor-in-visual-selection-end)
+
 ;;** `unbind'
 (define-key evil-normal-state-map (kbd "M-.") nil)
 (define-key evil-normal-state-map (kbd "M-,") nil)
@@ -262,7 +277,7 @@
 (define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
 (define-key evil-motion-state-map (kbd "M-j") 'evil-scroll-line-down-dwim)
 (define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
-(define-key evil-motion-state-map (kbd "C-f") 'evil-avy-goto-char-2)
+;; (define-key evil-motion-state-map (kbd "C-f") 'evil-avy-goto-char-2)
 (define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
 (define-key evil-normal-state-map (kbd "S") 'lispy-ace-paren)
 (define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
