@@ -37,7 +37,8 @@
  '(minibuffer-prompt ((t (:weight bold :foreground "light gray"))))
  ;; mode-line(from kaolin-mono-dark theme)
  '(mode-line ((t (:background "#1621C" :foreground "#c5c9c0" :bold nil
-                              ;; :box (:line-width 2 :color "#1B2822")
+                              :box (:line-width 1 :color "gray30")
+                              ;; :overline "gray30"
                               ))))
  '(mode-line-inactive ((t (:background "#16211C" :foreground "#41544B" :bold nil
                                        ;; :box (:line-width 2 :color "#1B2822")
@@ -87,7 +88,8 @@
  '(avy-lead-face-2 ((t (:inherit avy-lead-face :foreground "dark red"))))
  ;; magit
  '(magit-header-line ((t (:foreground "white" :background "black" :weight regular ;; :underline t
-                                      :box t
+                                      ;; :box t
+                                      :underline t
                                       ))))
  ;; '(magit-section-heading ((t (:inherit magit-header-line))))
  )

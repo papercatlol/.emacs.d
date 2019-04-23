@@ -145,12 +145,12 @@
                     (list (propertize "%b" 'face 'mode-line-buffer-id))
                     " at %l (%p) "
                     evil-mode-line-tag
-                    '(:eval (when slime-mode (slime-current-package)))
+                    ;; '(:eval (when slime-mode (slime-current-package)))
                     '(vc-mode vc-mode)
                     " ["
                     '(:eval mode-name)
-                    "] "
-                    "%f -"
+                    "] -"
+                    ;; "%f -"
                     '(:eval (cleaner-minor-modes))
                     " %-"))
 
