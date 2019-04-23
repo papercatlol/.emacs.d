@@ -11,6 +11,17 @@
   (package-refresh-contents))
 (server-start)
 
+;;** GC hacks
+(defun gc-with-time ()
+  (let ((time (current-time)))
+    (garbage-collect)
+    (message "GC took %.06f sec" (float-time (time-since time)))))
+
+(setq gc-cons-threshold #x40000000) ; 1GB
+
+(defvar gc-timer (run-with-idle-timer 30 t #'gc-with-time))
+
+;;;
 (require 'avy)
 (require 'ace-window)
 (require 'beginend)
