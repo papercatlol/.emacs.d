@@ -370,16 +370,20 @@ otherwise insert a saved presentation."
 (defun slime-call-toplevel ()
   "Like `slime-call-defun', but treat unknown forms as function definitions."
   (interactive)
-  (condition-case nil
-      (call-interactively #'slime-call-defun)
-    (error
-     (when-let ((toplevel (slime-parse-toplevel-form))
-                (qualified-name (and (symbolp toplevel)
-                                     (slime-qualify-cl-symbol-name toplevel))))
-       (slime-switch-to-output-buffer)
-       (goto-char slime-repl-input-start-mark)
-       (insert (format "(%s )" qualified-name))
-       (backward-char 1)))))
+  ;; Reuse frame when popping to repl.
+  (let ((display-buffer-alist
+         (cons '("\\*slime-repl" nil (reusable-frames . t))
+               display-buffer-alist)))
+    (condition-case nil
+        (call-interactively #'slime-call-defun)
+      (error
+       (when-let ((toplevel (slime-parse-toplevel-form))
+                  (qualified-name (and (symbolp toplevel)
+                                       (slime-qualify-cl-symbol-name toplevel))))
+         (slime-switch-to-output-buffer)
+         (goto-char slime-repl-input-start-mark)
+         (insert (format "(%s )" qualified-name))
+         (backward-char 1))))))
 
 (define-key slime-mode-map [remap slime-call-defun] 'slime-call-toplevel)
 
