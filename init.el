@@ -47,6 +47,7 @@
 (require 'ace-link)
 (require 'dired+)
 ;;** configuration
+(require 'configure-ace-window)
 (require 'configure-evil)
 (require 'configure-highlight)
 (require 'configure-isearch)
@@ -82,7 +83,6 @@
       uniquify-buffer-name-style 'forward
       aw-scope 'frame
       aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
-      aw-ignore-current t
       avy-style 'de-bruijn
       avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v)
       lispy-avy-keys avy-keys
@@ -152,9 +152,9 @@
                     mode-line-client
                     mode-line-modified
                     mode-line-remote
-                    mode-line-frame-identification
+                    '(:eval (ace-window-path-lighter))
                     (list (propertize "%b" 'face 'mode-line-buffer-id))
-                    " at %l (%p) "
+                    ":%l %p "
                     evil-mode-line-tag
                     ;; '(:eval (when slime-mode (slime-current-package)))
                     '(vc-mode vc-mode)
@@ -191,17 +191,6 @@
 (defun magit-stage-buffer-file ()
   (interactive)
   (magit-stage-file (buffer-file-name)))
-
-(defun ace-window-dwim (vertically)
-  "Same as `ace-window', but splits window horizontally before jumping
-if there is only one window. With prefix arg splits vertically."
-  (interactive "P")
-  (cond ((one-window-p)
-         (if vertically
-             (split-window-below)
-           (split-window-right))
-         (other-window 1))
-        (t (call-interactively #'ace-window))))
 
 ;;** `edit-indirect'
 (require 'edit-indirect)
@@ -260,8 +249,8 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
-(global-set-key (kbd "C-x C-o") 'other-window)
-(global-set-key [remap other-window] 'ace-window-dwim)
+(global-set-key (kbd "C-x C-o") 'ace-window)
+(global-set-key (kbd "C-x C-c") 'ace-window)
 (global-set-key (kbd "C-x 5 5") 'window-as-frame)
 (global-set-key (kbd "C-x M-w") 'kill-buffer-file-name)
 (global-set-key (kbd "M-n") 'next-error)

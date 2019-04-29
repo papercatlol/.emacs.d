@@ -281,6 +281,8 @@
 (define-key leader-map (kbd "SPC") 'evil-avy-goto-char-timer)
 (define-key leader-map "f" 'evil-avy-goto-char-2)
 (define-key leader-map "b" 'counsel-ibuffer-or-recentf-other-frame)
+(define-key leader-map "c" 'ace-window)
+(define-key leader-map (kbd "TAB") 'other-window)
 
 ;; `evil-mc'
 (define-key evil-visual-state-map (kbd "I") 'evil-mc-make-cursor-in-visual-selection-beg)
