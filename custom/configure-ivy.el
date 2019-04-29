@@ -280,6 +280,9 @@ always insert at point."
 (define-key ivy-minibuffer-map (kbd "C-.") 'ivy-minibuffer-insert-symbol-end)
 (define-key ivy-minibuffer-map (kbd "M-o") 'ivy-occur)
 (define-key ivy-minibuffer-map (kbd "M-a") 'ivy-dispatching-done)
+(define-key ivy-minibuffer-map (kbd "M-j") 'ivy-next-line)
+(define-key ivy-minibuffer-map (kbd "M-k") 'ivy-previous-line)
+
 
 
 (provide 'configure-ivy)

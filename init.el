@@ -289,6 +289,10 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key magit-file-mode-map (kbd "C-x =") 'magit-diff-buffer-file)
 (define-key magit-file-mode-map (kbd "C-x G") 'magit-file-dispatch)
 (define-key magit-mode-map (kbd "C-c C-l") 'magit-toggle-buffer-lock)
+(define-key magit-mode-map (kbd "j") 'magit-section-forward)
+(define-key magit-mode-map (kbd "k") 'magit-section-backward)
+(define-key magit-status-mode-map (kbd "j") 'magit-section-forward)
+(define-key magit-status-mode-map (kbd "k") 'magit-section-backward)
 
 (define-prefix-command 'magit-file-prefix-map)
 (define-key magit-file-mode-map (kbd "C-x g") 'magit-file-prefix-map)

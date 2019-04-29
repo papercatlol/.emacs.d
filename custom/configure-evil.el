@@ -304,6 +304,8 @@
 (define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
 (define-key evil-motion-state-map (kbd "M-j") 'evil-scroll-line-down-dwim)
 (define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
+(define-key magit-mode-map (kbd "M-j") 'evil-scroll-line-down-dwim)
+(define-key magit-mode-map (kbd "M-k") 'evil-scroll-line-up-dwim)
 ;; (define-key evil-motion-state-map (kbd "C-f") 'evil-avy-goto-char-2)
 (define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
 (define-key evil-normal-state-map (kbd "S") 'lispy-ace-paren)
