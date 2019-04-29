@@ -3,6 +3,9 @@
 (require 'popup)
 (require 'ace-link)
 
+(require 'eros)
+(add-hook 'emacs-lisp-mode-hook #'eros-mode)
+
 (setq inferior-lisp-program (getenv "LISP_BINARY"))
 (setq slime-contribs '(slime-repl
                        slime-autodoc
@@ -367,6 +370,12 @@ otherwise insert a saved presentation."
   (define-key map (kbd "C-c '") 'lisp-toggle-tick)
   (define-key map (kbd "C-c '") 'lisp-toggle-tick))
 
+;; copy to repl
+(defun slime--repl-insert-string (string)
+  (slime-switch-to-output-buffer)
+  (goto-char slime-repl-input-start-mark)
+  (insert string))
+
 (defun slime-call-toplevel ()
   "Like `slime-call-defun', but treat unknown forms as function definitions."
   (interactive)
@@ -375,18 +384,43 @@ otherwise insert a saved presentation."
          (cons '("\\*slime-repl" nil (reusable-frames . t))
                display-buffer-alist)))
     (condition-case nil
-        (call-interactively #'slime-call-defun)
+        (progn (call-interactively #'slime-call-defun) t)
       (error
        (when-let ((toplevel (slime-parse-toplevel-form))
                   (qualified-name (and (symbolp toplevel)
                                        (slime-qualify-cl-symbol-name toplevel))))
-         (slime-switch-to-output-buffer)
-         (goto-char slime-repl-input-start-mark)
-         (insert (format "(%s )" qualified-name))
-         (backward-char 1))))))
+         (slime--repl-insert-string (format "(%s )" qualified-name))
+         (backward-char 1)
+         t)))))
 
-(define-key slime-mode-map [remap slime-call-defun] 'slime-call-toplevel)
+(defun slime-copy-to-repl (toplevel)
+  "Copy region to repl if active, else copy last sexp.
+With prefix arg, copy toplevel form."
+  (interactive "P")
+  (cond ((region-active-p)
+         (slime--repl-insert-string
+          (buffer-substring-no-properties (region-beginning) (region-end))))
+        (toplevel
+         (or (slime-call-toplevel)
+             (destructuring-bind (beg end) (slime-region-for-defun-at-point)
+               (slime--repl-insert-string
+                (buffer-substring-no-properties beg end)))))
+        (t (slime--repl-insert-string (slime-last-expression)))))
 
+(define-key slime-mode-map [remap slime-call-defun] 'slime-copy-to-repl)
+
+;; evaluation
+(defun slime-eval-last-expression-eros ()
+  (interactive)
+  (destructuring-bind (output value)
+      (slime-eval `(swank:eval-and-grab-output ,(slime-last-expression)))
+    (eros--make-result-overlay (concat output value)
+      :where (point)
+      :duration eros-eval-result-duration)))
+
+(define-key slime-mode-map (kbd "C-x C-e") 'slime-eval-last-expression-eros)
+
+;; asdf
 (with-eval-after-load 'slime-asdf
   (defun slime-load-system-dwim (reload)
     "Compile and load an ASDF system. With prefix arg reload it instead."
@@ -437,7 +471,6 @@ otherwise insert a saved presentation."
 (define-key slime-repl-mode-map (kbd "<f5>") 'slime-restart-inferior-lisp)
 (define-key slime-repl-mode-map (kbd "(") 'self-insert-command)
 (define-key slime-repl-mode-map (kbd "C-c C-z") 'slime-repl-bury-buffer)
-(define-key slime-mode-map (kbd "C-x C-e") 'slime-eval-last-expression-in-repl)
 (define-key sldb-mode-map (kbd "<tab>") 'sldb-toggle-details)
 (define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
 (define-key slime-mode-map (kbd "C-c p") 'slime-pprint-eval-last-expression)
