@@ -250,8 +250,11 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
+;; experimental
 (global-set-key (kbd "C-x C-o") 'ace-window)
 (global-set-key (kbd "C-x C-c") 'ace-window)
+(global-set-key (kbd "M-c") 'ace-window)
+;;;
 (global-set-key (kbd "C-x 5 5") 'window-as-frame)
 (global-set-key (kbd "C-x M-w") 'kill-buffer-file-name)
 (global-set-key (kbd "M-n") 'next-error)
@@ -294,6 +297,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key magit-mode-map (kbd "k") 'magit-section-backward)
 (define-key magit-status-mode-map (kbd "j") 'magit-section-forward)
 (define-key magit-status-mode-map (kbd "k") 'magit-section-backward)
+(define-key magit-status-mode-map (kbd "C-k") 'magit-discard)
 
 (define-prefix-command 'magit-file-prefix-map)
 (define-key magit-file-mode-map (kbd "C-x g") 'magit-file-prefix-map)

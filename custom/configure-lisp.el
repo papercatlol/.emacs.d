@@ -317,6 +317,15 @@ otherwise insert a saved presentation."
   (bury-buffer)
   (other-window 1))
 
+(defun slime-repl-complete-ivy ()
+  (interactive)
+  (let ((initial-input (slime-repl-current-input)))
+    (ivy-read "REPL search: " slime-repl-input-history
+              :initial-input initial-input
+              :action (lambda (text)
+                        (slime-repl-delete-current-input)
+                        (insert text)))))
+
 ;;* Code refactoring utils
 ;;** `lisp-toggle-*-form'
 (defvar lisp-keywords-with-*-variant nil
@@ -483,6 +492,7 @@ With prefix arg, copy toplevel form."
 (define-key slime-mode-map (kbd "C-c t") 'slime-trace-dialog)
 (define-key slime-mode-map (kbd "C-c M-t") 'slime-toggle-trace-fdefinition)
 (define-key slime-repl-mode-map [remap swiper-at-point] 'swiper-isearch)
+(define-key slime-repl-mode-map [remap slime-repl-previous-matching-input] 'slime-repl-complete-ivy)
 
 ;; package-related utils
 (define-key slime-mode-map (kbd "C-c w") 'slime-kill-package-name)
