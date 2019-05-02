@@ -15,7 +15,8 @@
 (defun gc-with-time ()
   (let ((time (current-time)))
     (garbage-collect)
-    (message "GC took %.06f sec" (float-time (time-since time)))))
+    (unless (minibuffer-window-active-p (selected-window))
+      (message "GC took %.06f sec" (float-time (time-since time))))))
 
 (setq gc-cons-threshold #x40000000) ; 1GB
 

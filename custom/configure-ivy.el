@@ -186,9 +186,9 @@ Now also supports ivy-views."
 
 (defun visit-buffer (buffer &optional where)
   (case where
-    (:window (switch-to-buffer-other-window item))
-    (:frame (switch-to-buffer-other-frame item))
-    (t (switch-to-buffer item))))
+    (:window (switch-to-buffer-other-window buffer))
+    (:frame (switch-to-buffer-other-frame buffer))
+    (t (switch-to-buffer buffer))))
 
 (defun visit-buffer-or-file (item &optional where)
   (typecase item
@@ -282,7 +282,7 @@ always insert at point."
 (define-key ivy-minibuffer-map (kbd "M-a") 'ivy-dispatching-done)
 (define-key ivy-minibuffer-map (kbd "M-j") 'ivy-next-line)
 (define-key ivy-minibuffer-map (kbd "M-k") 'ivy-previous-line)
-
+(define-key ivy-minibuffer-map (kbd "C-t") 'ivy-avy)
 
 
 (provide 'configure-ivy)

@@ -367,6 +367,8 @@ otherwise insert a saved presentation."
 
 (dolist (map (list lisp-mode-map emacs-lisp-mode-map slime-mode-map))
   (define-key map (kbd "C-c C-8") 'lisp-toggle-*-form)
+  (define-key map (kbd "C-c C-'") 'lisp-toggle-tick)
+  (define-key map (kbd "C-c C-'") 'lisp-toggle-tick)
   (define-key map (kbd "C-c '") 'lisp-toggle-tick)
   (define-key map (kbd "C-c '") 'lisp-toggle-tick))
 
@@ -480,6 +482,7 @@ With prefix arg, copy toplevel form."
 (define-key slime-mode-map (kbd "C-c C-t") 'slime-trace-dialog-toggle-trace)
 (define-key slime-mode-map (kbd "C-c t") 'slime-trace-dialog)
 (define-key slime-mode-map (kbd "C-c M-t") 'slime-toggle-trace-fdefinition)
+(define-key slime-repl-mode-map [remap swiper-at-point] 'swiper-isearch)
 
 ;; package-related utils
 (define-key slime-mode-map (kbd "C-c w") 'slime-kill-package-name)

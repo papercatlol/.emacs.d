@@ -42,7 +42,7 @@
                 (cons symbol '((:default . evil-mc-execute-default-call-with-count))))
               mc/cmds-to-run-for-all))
 
-(global-evil-mc-mode 1)
+;; (global-evil-mc-mode 1)
 
 ;;* `DEFUNS'
 ;; -----------------------------------------------------------------------------
@@ -128,9 +128,9 @@
          (end (1- (line-end-position)))
          (redundant (list (point) (1+ (point)))))
     (cl-flet ((%filter (candidates)
-                      (loop for candidate in candidates
-                            unless (member (caar candidate) redundant)
-                            collect candidate)))
+                       (loop for candidate in candidates
+                             unless (member (caar candidate) redundant)
+                             collect candidate)))
       (when-let (bounds (bounds-of-thing-at-point 'symbol))
         (push (car bounds) redundant)
         (push (cdr bounds) redundant))
@@ -175,7 +175,7 @@
 ;;** smarter `M-w'
 (defun evil-append-symbol ()
   "Switch to Insert state just after next symbol."
-  (interactive "p")
+  (interactive)
   (forward-symbol 1)
   (call-interactively #'evil-insert))
 
@@ -303,7 +303,9 @@
 (define-key evil-visual-state-map "." ":norm . RET")
 (define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
 (define-key evil-motion-state-map (kbd "M-j") 'evil-scroll-line-down-dwim)
+(define-key evil-normal-state-map (kbd "M-j") 'evil-scroll-line-down-dwim)
 (define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
+(define-key evil-normal-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
 (define-key magit-mode-map (kbd "M-j") 'evil-scroll-line-down-dwim)
 (define-key magit-mode-map (kbd "M-k") 'evil-scroll-line-up-dwim)
 ;; (define-key evil-motion-state-map (kbd "C-f") 'evil-avy-goto-char-2)
