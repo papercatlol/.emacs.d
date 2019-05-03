@@ -224,6 +224,23 @@
   (if arg (evil-show-jumps-ivy)
     (call-interactively #'evil-jump-forward)))
 
+;;** `frames'
+;; (defun frame-list-for-i3-workspace ()
+;;   "KLUDGE. List of frames in current i3 workspace. Doesn't return current frame because it is
+;; sorted before other frames by `frame-list-z-order'."
+;;   (let* ((current-frame (window-frame))
+;;          (current-monitor (frame-monitor-attribute 'name))
+;;          (frames (frame-list-z-order)))
+;;     (loop for frame in frames
+;;           when (and (string= current-monitor (frame-monitor-attribute 'name frame))
+;;                     (eq 'icon (frame-visible-p frame)))
+;;           collect frame)))
+
+;; (defun switch-to-frame (n)
+;;   (when-let* ((frames (frame-list-for-i3-workspace))
+;;               (frame (elt frames (1- n))))
+;;     (select-frame-set-input-focus frame)))
+
 ;;* `KEYS'
 ;; -----------------------------------------------------------------------------
 ;;** `lispyville'
@@ -245,6 +262,7 @@
     (kbd "<return>") 'lispyville-beginning-of-next-defun
     ;; (kbd "<return>") 'end-of-defun-spammable
     [remap paredit-comment-dwim] 'lispyville-comment-or-uncomment
+    "gc" 'lispyville-comment-or-uncomment
     "gy" 'lispyville-comment-and-clone-dwim
     (kbd "M-R") 'lispyville-raise-list
     "H" 'lispyville-drag-backward

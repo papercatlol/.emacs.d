@@ -533,7 +533,8 @@ With prefix arg, copy toplevel form."
 
 (with-eval-after-load 'lispy
   (define-key emacs-lisp-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
-  (define-key slime-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body))
+  (define-key slime-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
+  (define-key slime-mode-map (kbd "M-s") 'lispy-splice))
 
 
 (provide 'configure-lisp)

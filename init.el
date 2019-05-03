@@ -251,7 +251,8 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 ;; experimental
-(global-set-key (kbd "C-x C-o") 'ace-window)
+;; (global-set-key (kbd "C-x C-o") 'ace-window)
+(global-set-key (kbd "C-x C-o") 'ignore)
 (global-set-key (kbd "C-x C-c") 'ace-window)
 (global-set-key (kbd "M-c") 'ace-window)
 ;;;
