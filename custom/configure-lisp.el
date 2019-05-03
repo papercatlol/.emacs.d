@@ -198,12 +198,17 @@
 
 (defalias 'slime-read-symbol-name 'slime-read-symbol-name-global) 
 
+(defun slime--bounds-of-region-or-symbol ()
+  (if (region-active-p)
+      (cons (region-beginning) (region-end))
+    (bounds-of-thing-at-point 'symbol)))
+
 ;; TODO: xref and documentation lookups in completion buffer
 (defun slime-complete-symbol-global (internal)
   "Complete a symbol searching symbols from all visible packages.
 If INTERNAL is T, also search internal symbols."
   (interactive "P")
-  (let* ((bounds (bounds-of-thing-at-point 'symbol))
+  (let* ((bounds (slime--bounds-of-region-or-symbol))
          (start (and bounds (car bounds)))
          (end (and bounds (cdr bounds)))
          (initial-input (and bounds (buffer-substring-no-properties start end)))
@@ -387,6 +392,11 @@ otherwise insert a saved presentation."
   (goto-char slime-repl-input-start-mark)
   (insert string))
 
+(defun slime-expression-at-point ()
+  (or (and (looking-back (rx (or symbol-end ")")))
+           (slime-last-expression))
+      (slime-symbol-at-point)))
+
 (defun slime-call-toplevel ()
   "Like `slime-call-defun', but treat unknown forms as function definitions."
   (interactive)
@@ -416,20 +426,22 @@ With prefix arg, copy toplevel form."
              (destructuring-bind (beg end) (slime-region-for-defun-at-point)
                (slime--repl-insert-string
                 (buffer-substring-no-properties beg end)))))
-        (t (slime--repl-insert-string (slime-last-expression)))))
+        (t (slime--repl-insert-string (slime-expression-at-point)))))
 
 (define-key slime-mode-map [remap slime-call-defun] 'slime-copy-to-repl)
+(define-key slime-repl-mode-map (kbd "C-c C-y") 'slime-copy-to-repl)
 
 ;; evaluation
 (defun slime-eval-last-expression-eros ()
   (interactive)
   (destructuring-bind (output value)
-      (slime-eval `(swank:eval-and-grab-output ,(slime-last-expression)))
+      (slime-eval `(swank:eval-and-grab-output ,(slime-expression-at-point)))
     (eros--make-result-overlay (concat output value)
       :where (point)
       :duration eros-eval-result-duration)))
 
 (define-key slime-mode-map (kbd "C-x C-e") 'slime-eval-last-expression-eros)
+(define-key slime-repl-mode-map (kbd "C-x C-e") 'slime-eval-last-expression-eros)
 
 ;; asdf
 (with-eval-after-load 'slime-asdf
