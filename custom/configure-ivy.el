@@ -254,6 +254,7 @@ always insert at point."
 (global-set-key (kbd "C-x 4 b") 'counsel-ibuffer-or-recentf-other-window)
 (global-set-key (kbd "C-x 5 b") 'counsel-ibuffer-or-recentf-other-frame)
 (global-set-key (kbd "C-s") 'swiper-at-point)
+(global-set-key (kbd "C-M-s") 'swiper-all)
 (global-set-key (kbd "C-r") 'counsel-grep-or-swiper)
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)

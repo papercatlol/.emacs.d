@@ -297,6 +297,8 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key magit-mode-map (kbd "k") 'magit-section-backward)
 (define-key magit-status-mode-map (kbd "j") 'magit-section-forward)
 (define-key magit-status-mode-map (kbd "k") 'magit-section-backward)
+(define-key magit-diff-mode-map (kbd "j") 'magit-section-forward)
+(define-key magit-diff-mode-map (kbd "k") 'magit-section-backward)
 (define-key magit-status-mode-map (kbd "C-k") 'magit-discard)
 
 (define-prefix-command 'magit-file-prefix-map)

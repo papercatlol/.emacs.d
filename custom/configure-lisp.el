@@ -519,5 +519,9 @@ With prefix arg, copy toplevel form."
 
 (define-key slime-presentation-command-map (kbd "C-v") 'slime-avy-copy-presentation-to-point)
 
+(with-eval-after-load 'lispy
+  (define-key emacs-lisp-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
+  (define-key slime-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body))
+
 
 (provide 'configure-lisp)
