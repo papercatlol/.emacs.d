@@ -456,6 +456,17 @@ With prefix arg, copy toplevel form."
 
   (define-key slime-mode-map (kbd "C-c L") 'slime-load-system-dwim))
 
+;; trace
+(defun slime-trace-dialog-fetch-traces-sldb ()
+  (interactive)
+  (with-current-buffer (slime-trace-dialog--ensure-buffer)
+    (slime-trace-dialog-fetch-traces)))
+
+(defun sldb-continue-and-fetch-traces ()
+  (interactive)
+  (call-interactively #'sldb-continue)
+  (call-interactively #'slime-trace-dialog-fetch-traces-sldb))
+
 ;;** `avy-actions'
 (defun avy-action-copy-to-repl (pt)
   (when (number-or-marker-p pt)
@@ -502,6 +513,12 @@ With prefix arg, copy toplevel form."
 (define-key slime-repl-mode-map (kbd "C-c C-v") nil)
 (define-key slime-mode-map (kbd "C-c C-t") 'slime-trace-dialog-toggle-trace)
 (define-key slime-mode-map (kbd "C-c t") 'slime-trace-dialog)
+(define-key slime-repl-mode-map (kbd "C-c C-t") 'slime-trace-dialog-toggle-trace)
+(define-key slime-repl-mode-map (kbd "C-c t") 'slime-trace-dialog)
+(define-key sldb-mode-map (kbd "C-c C-t") 'slime-trace-dialog-toggle-trace)
+(define-key sldb-mode-map (kbd "C-c t") 'slime-trace-dialog)
+(define-key sldb-mode-map "G" 'slime-trace-dialog-fetch-traces-sldb)
+(define-key sldb-mode-map "C" 'sldb-continue-and-fetch-traces)
 (define-key slime-mode-map (kbd "C-c M-t") 'slime-toggle-trace-fdefinition)
 (define-key slime-repl-mode-map [remap swiper-at-point] 'swiper-isearch)
 (define-key slime-repl-mode-map [remap slime-repl-previous-matching-input] 'slime-repl-complete-ivy)
