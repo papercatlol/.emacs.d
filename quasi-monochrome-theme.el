@@ -75,8 +75,10 @@
  '(popup-tip-face ((t (:inherit font-lock-comment-face :weight normal))))
  '(error ((t (:foreground "firebrick" :weight bold))))
  '(hl-line ((t (:background "gray10"))))
- '(ivy-current-match ((t (:background "white" :foreground "black"))))
- '(ivy-minibuffer-match-face-1 ((t (:inherit lazy-highlight :underline t))))
+ '(ivy-current-match ((t (:background "gray50" :foreground "white"))))
+ '(ivy-minibuffer-match-face-1 ((t (:inherit lazy-highlight :underline t
+                                    ;; :underline (:color "red1")
+                                               ))))
  '(ivy-minibuffer-match-face-2 ((t (:inherit ivy-minibuffer-match-face-1))))
  '(ivy-minibuffer-match-face-3 ((t (:inherit ivy-minibuffer-match-face-1))))
  '(ivy-minibuffer-match-face-4 ((t (:inherit ivy-minibuffer-match-face-1))))

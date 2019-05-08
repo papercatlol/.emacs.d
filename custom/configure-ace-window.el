@@ -23,6 +23,7 @@
 
 (defun aw-dispatch-with-minibuffer-switch (char)
   (cond ((or (= char ?m)
+             (= char ? )
              (= char (aref (kbd "RET") 0)))
          (switch-to-minibuffer-window)
          (throw 'done 'exit))

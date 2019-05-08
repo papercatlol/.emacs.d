@@ -193,6 +193,20 @@
   (interactive)
   (magit-stage-file (buffer-file-name)))
 
+;; Stolen from prelude.
+(defun rename-file-and-buffer ()
+  "Rename the current buffer and file it is visiting."
+  (interactive)
+  (let ((filename (buffer-file-name)))
+    (if (not (and filename (file-exists-p filename)))
+        (message "Buffer is not visiting a file!")
+      (let ((new-name (read-file-name "New name: ")))
+        (cond
+         ((vc-backend filename) (vc-rename-file filename new-name))
+         (t
+          (rename-file filename new-name t)
+          (set-visited-file-name new-name t t)))))))
+
 ;;** `edit-indirect'
 (require 'edit-indirect)
 
@@ -298,6 +312,8 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key magit-mode-map (kbd "k") 'magit-section-backward)
 (define-key magit-status-mode-map (kbd "j") 'magit-section-forward)
 (define-key magit-status-mode-map (kbd "k") 'magit-section-backward)
+(define-key magit-todos-section-map (kbd "j") 'magit-section-forward)
+(define-key magit-todos-section-map (kbd "k") 'magit-section-backward)
 (define-key magit-diff-mode-map (kbd "j") 'magit-section-forward)
 (define-key magit-diff-mode-map (kbd "k") 'magit-section-backward)
 (define-key magit-status-mode-map (kbd "C-k") 'magit-discard)
@@ -317,9 +333,17 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "<f5>") 'revert-buffer)
 (global-set-key (kbd "<f6>") 'counsel-org-capture)
 
-;; TODO: keymap for M-z prefix
-(global-unset-key (kbd "M-z"))
-(global-set-key (kbd "M-z s") 'string-edit-at-point)
+;; Keymap for random useful commands. MAYBE make it a hydra
+(define-prefix-command 'cantrips-prefix-map)
+(global-set-key (kbd "M-z") 'cantrips-prefix-map)
+(define-key cantrips-prefix-map (kbd "s") 'string-edit-at-point)
+(define-key cantrips-prefix-map (kbd "p") 'counsel-package)
+(define-key cantrips-prefix-map (kbd "r") 'rename-file-and-buffer)
+(define-key cantrips-prefix-map (kbd "d") 'describe-text-properties)
+(define-key cantrips-prefix-map (kbd "f") 'describe-face)
+(define-key cantrips-prefix-map (kbd "e") 'eval-buffer)
+(define-key cantrips-prefix-map (kbd "i") 'ielm)
+(define-key cantrips-prefix-map (kbd "/") 'rg)
 
 (ace-link-setup-default (kbd "C-f"))
 (dolist (keymap (list help-mode-map package-menu-mode-map compilation-mode-map grep-mode-map))
