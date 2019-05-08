@@ -454,10 +454,11 @@ With prefix arg, copy toplevel form."
           (slime-reload-system system)
         (slime-load-system system))))
 
-  (define-key slime-mode-map (kbd "C-c L") 'slime-load-system-dwim))
+  (define-key slime-mode-map (kbd "C-c L") 'slime-load-system-dwim)
+  (define-key slime-repl-mode-map (kbd "C-c L") 'slime-load-system-dwim))
 
 ;; trace
-(defun slime-trace-dialog-fetch-traces-sldb ()
+(defun sldb-fetch-traces ()
   (interactive)
   (with-current-buffer (slime-trace-dialog--ensure-buffer)
     (slime-trace-dialog-fetch-traces)))
@@ -465,7 +466,7 @@ With prefix arg, copy toplevel form."
 (defun sldb-continue-and-fetch-traces ()
   (interactive)
   (call-interactively #'sldb-continue)
-  (call-interactively #'slime-trace-dialog-fetch-traces-sldb))
+  (call-interactively #'sldb-fetch-traces))
 
 ;;** `avy-actions'
 (defun avy-action-copy-to-repl (pt)
@@ -509,6 +510,7 @@ With prefix arg, copy toplevel form."
 (define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
 (define-key slime-mode-map (kbd "C-c p") 'slime-pprint-eval-last-expression)
 (define-key slime-mode-map (kbd "C-c C-i") 'slime-complete-symbol-global)
+(define-key slime-minibuffer-map (kbd "C-c C-i") 'slime-complete-symbol-global)
 (define-key slime-repl-mode-map (kbd "C-c C-i") 'slime-complete-symbol-global)
 (define-key slime-repl-mode-map (kbd "C-c C-v") nil)
 (define-key slime-mode-map (kbd "C-c C-t") 'slime-trace-dialog-toggle-trace)
@@ -517,7 +519,7 @@ With prefix arg, copy toplevel form."
 (define-key slime-repl-mode-map (kbd "C-c t") 'slime-trace-dialog)
 (define-key sldb-mode-map (kbd "C-c C-t") 'slime-trace-dialog-toggle-trace)
 (define-key sldb-mode-map (kbd "C-c t") 'slime-trace-dialog)
-(define-key sldb-mode-map "G" 'slime-trace-dialog-fetch-traces-sldb)
+(define-key sldb-mode-map "G" 'sldb-fetch-traces)
 (define-key sldb-mode-map "C" 'sldb-continue-and-fetch-traces)
 (define-key slime-mode-map (kbd "C-c M-t") 'slime-toggle-trace-fdefinition)
 (define-key slime-repl-mode-map [remap swiper-at-point] 'swiper-isearch)
