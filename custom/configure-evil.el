@@ -306,6 +306,22 @@
 (define-key evil-visual-state-map (kbd "I") 'evil-mc-make-cursor-in-visual-selection-beg)
 (define-key evil-visual-state-map (kbd "A") 'evil-mc-make-cursor-in-visual-selection-end)
 
+;; `org'
+(defmacro evil-with-insert-state (command)
+  (let ((name (intern (concat "evil-" (symbol-name command)))))
+    (if (fboundp name)
+        `#',name
+      `(defun ,name (&rest args)
+         (interactive)
+         (call-interactively #',command)
+         (evil-insert 1)))))
+
+(evil-define-key 'normal org-mode-map
+  "L" 'org-metaright
+  "H" 'org-metaleft
+  "o" (evil-with-insert-state org-insert-heading-respect-content)
+  "O" (evil-with-insert-state org-meta-return))
+
 ;;** `unbind'
 (define-key evil-normal-state-map (kbd "M-.") nil)
 (define-key evil-normal-state-map (kbd "M-,") nil)
