@@ -95,6 +95,9 @@
                                       :underline t
                                       ))))
  ;; '(magit-section-heading ((t (:inherit magit-header-line))))
+ ;; org
+ '(org-level-3 ((t (:inherit default))))
+ '(org-level-4 ((t (:inherit default))))
  )
 
 (provide-theme 'quasi-monochrome)

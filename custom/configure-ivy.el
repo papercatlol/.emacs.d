@@ -67,8 +67,9 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
                                                      default-directory)
                                                default-directory))))
     (counsel-fd counsel-files-base-cmd
-                 :prompt (format "Find file(%s): " default-directory)
-                 :caller 'counsel-files)))
+                :initial-input initial-input
+                :prompt (format "Find file(%s): " default-directory)
+                :caller 'counsel-files)))
 
 (defun counsel-dirs (&optional initial-input initial-directory)
   "Same as `counsel-files' but for directories."
@@ -82,10 +83,11 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
                                                    (locate-dominating-file default-directory ".git")
                                                    default-directory)))))
     (counsel-fd counsel-dirs-base-cmd
+                :initial-input initial-input
                 :prompt (format "Find directory(%s): " default-directory)
                 :caller 'counsel-dirs)))
 
-(cl-defun counsel-fd (cmd &key prompt caller)
+(cl-defun counsel-fd (cmd &key prompt caller initial-input)
   (counsel-require-program (car (split-string cmd " ")))
   (ivy-read prompt
             (split-string
