@@ -55,6 +55,7 @@
 (require 'configure-ivy)
 (require 'configure-go)
 (require 'configure-lisp)
+(require 'configure-python)
 
 
 (delete-selection-mode 1)
