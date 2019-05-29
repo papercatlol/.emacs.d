@@ -208,6 +208,31 @@
           (rename-file filename new-name t)
           (set-visited-file-name new-name t t)))))))
 
+;; Toggle delete-other-windows
+(defvar *delete-other-windows-prev-configurations* (make-hash-table)
+  "Frame => window configuration prior to `delete-other-windows-toggle' call.")
+
+(defun delete-other-windows--delete-frame-hook (frame)
+  "Remove frame from `*delete-other-windows-prev-configurations*' if it is deleted."
+  (remhash frame *delete-other-windows-prev-configurations*))
+
+(add-to-list 'delete-frame-functions #'delete-other-windows--delete-frame-hook)
+
+(defun delete-other-windows-toggle ()
+  "Like `delete-other-windows', but restores previous window configuration
+if there is a sole window."
+  (interactive)
+  (let ((frame (window-frame)))
+    (if (cdr (window-list))
+        (let ((winconf (current-window-configuration)))
+          (setf (gethash frame *delete-other-windows-prev-configurations*)
+                winconf)
+          (call-interactively #'delete-other-windows))
+      (when-let ((winconf (gethash frame *delete-other-windows-prev-configurations*)))
+        (set-window-configuration winconf)))))
+
+(global-set-key [remap delete-other-windows] 'delete-other-windows-toggle)
+
 ;;** `edit-indirect'
 (require 'edit-indirect)
 
