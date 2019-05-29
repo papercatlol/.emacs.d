@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t -*-
 (require 'slime)
 (require 'slime-autoloads)
 (require 'popup)
@@ -388,9 +389,10 @@ otherwise insert a saved presentation."
 
 ;; copy to repl
 (defun slime--repl-insert-string (string)
-  (slime-switch-to-output-buffer)
-  (goto-char slime-repl-input-start-mark)
-  (insert string))
+  (when string
+    (slime-switch-to-output-buffer)
+    (goto-char slime-repl-input-start-mark)
+    (insert string)))
 
 (defun slime-expression-at-point ()
   (or (and (looking-back (rx (or symbol-end ")")))
@@ -422,7 +424,7 @@ With prefix arg, copy toplevel form."
          (slime--repl-insert-string
           (buffer-substring-no-properties (region-beginning) (region-end))))
         (toplevel
-         (or (slime-call-toplevel)
+         (or (call-interactively #'slime-call-toplevel)
              (destructuring-bind (beg end) (slime-region-for-defun-at-point)
                (slime--repl-insert-string
                 (buffer-substring-no-properties beg end)))))
@@ -456,6 +458,11 @@ With prefix arg, copy toplevel form."
 
   (define-key slime-mode-map (kbd "C-c L") 'slime-load-system-dwim)
   (define-key slime-repl-mode-map (kbd "C-c L") 'slime-load-system-dwim))
+
+;; slime-import-symbol
+(with-eval-after-load 'slime-package-fu
+  (require 'slime-import-symbol)
+  (define-key slime-mode-map (kbd "C-c C-x C-i") 'slime-import-symbol))
 
 ;; trace
 (defun sldb-fetch-traces ()
