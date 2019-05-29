@@ -303,8 +303,9 @@
 (define-key leader-map (kbd "TAB") 'other-window)
 
 ;; `evil-mc'
-(define-key evil-visual-state-map (kbd "I") 'evil-mc-make-cursor-in-visual-selection-beg)
-(define-key evil-visual-state-map (kbd "A") 'evil-mc-make-cursor-in-visual-selection-end)
+;; (with-eval-after-load 'evil-mc
+;;   (define-key evil-visual-state-map (kbd "I") 'evil-mc-make-cursor-in-visual-selection-beg)
+;;   (define-key evil-visual-state-map (kbd "A") 'evil-mc-make-cursor-in-visual-selection-end))
 
 ;; `org'
 (defmacro evil-with-insert-state (command)
@@ -316,7 +317,7 @@
          (call-interactively #',command)
          (evil-insert 1)))))
 
-(evil-define-key 'normal org-mode-map
+(evil-define-key '(normal visual) org-mode-map
   "L" 'org-metaright
   "H" 'org-metaleft
   "o" (evil-with-insert-state org-insert-heading-respect-content)
@@ -336,12 +337,14 @@
 (define-key evil-visual-state-map "Q" ":norm @q RET")
 (define-key evil-visual-state-map "." ":norm . RET")
 (define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
-(define-key evil-motion-state-map (kbd "M-j") 'evil-scroll-line-down-dwim)
-(define-key evil-normal-state-map (kbd "M-j") 'evil-scroll-line-down-dwim)
-(define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
-(define-key evil-normal-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
-(define-key magit-mode-map (kbd "M-j") 'evil-scroll-line-down-dwim)
-(define-key magit-mode-map (kbd "M-k") 'evil-scroll-line-up-dwim)
+(global-set-key (kbd "M-j") 'evil-scroll-line-down-dwim)
+(global-set-key (kbd "M-k") 'evil-scroll-line-up-dwim)
+;; (define-key evil-motion-state-map (kbd "M-j") 'evil-scroll-line-down-dwim)
+;; (define-key evil-normal-state-map (kbd "M-j") 'evil-scroll-line-down-dwim)
+;; (define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
+;; (define-key evil-normal-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
+;; (define-key magit-mode-map (kbd "M-j") 'evil-scroll-line-down-dwim)
+;; (define-key magit-mode-map (kbd "M-k") 'evil-scroll-line-up-dwim)
 ;; (define-key evil-motion-state-map (kbd "C-f") 'evil-avy-goto-char-2)
 (define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
 (define-key evil-normal-state-map (kbd "S") 'lispy-ace-paren)

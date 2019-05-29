@@ -354,3 +354,4 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "C-h f") #'helpful-callable)
 (global-set-key (kbd "C-h v") #'helpful-variable)
 (global-set-key (kbd "C-h k") #'helpful-key)
+(global-set-key (kbd "C-h o") #'helpful-symbol)
