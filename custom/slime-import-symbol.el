@@ -54,7 +54,7 @@ For new imports:
                  (when import-name
                    (goto-char (or first-export definition-end))
                    (newline-and-indent)
-                   (insert (format "(:import-from :%s" (downcase import-name)))
+                   (insert (format "(:import-from %s" (downcase import-name)))
                    (newline-and-indent)
                    (insert (format "#:%s)" (downcase symbol)))))))
         (call-interactively #'slime-compile-defun))))

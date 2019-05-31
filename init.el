@@ -53,7 +53,7 @@
 (require 'configure-highlight)
 (require 'configure-isearch)
 (require 'configure-ivy)
-(require 'configure-go)
+;; (require 'configure-go)
 (require 'configure-lisp)
 (require 'configure-python)
 

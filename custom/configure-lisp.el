@@ -218,6 +218,20 @@ If INTERNAL is T, also search internal symbols."
       (delete-region start end))
     (insert symbol)))
 
+(defun slime-implement-generic (internal)
+  (interactive "P")
+  (when-let ((qualified-name (slime-read-symbol-name "Implement generic function: " internal)))
+    (let* ((parts (split-string (upcase qualified-name) ":" t))
+           (symbol (or (second parts) (first parts)))
+           (package (and (second parts) (first parts)))
+           (arglist (slime-eval `(cl:mapcar (cl:function cl:symbol-name)
+                                            (swank-backend:arglist (cl:intern ,symbol ,package)))))
+           (declaration (downcase (format "(defmethod %s %s" symbol (or arglist "")))))
+      (insert declaration)
+      (newline-and-indent)
+      (insert ")")
+      (backward-char))))
+
 ;;** `slime-saved-presentations'
 (defvar slime-saved-presentations nil
   "Saved slime-presentations. List of pairs (name . presentation).
