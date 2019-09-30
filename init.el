@@ -25,9 +25,11 @@
 ;;;
 (require 'avy)
 (require 'ace-window)
+(require 'async)
 (require 'beginend)
 (require 'delsel)
 (require 'dired-subtree)
+(require 'dired-rsync)
 (require 'expand-region)
 (require 'helpful)
 (require 'hl-todo)
@@ -66,6 +68,7 @@
 (recentf-mode 1)
 (global-hl-todo-mode 1)
 (magit-todos-mode 1)
+(dired-async-mode t)
 (setq-default save-place t)
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
@@ -110,15 +113,18 @@
                               ("MAYBE" . "#d0bf8f")))
 
 (shell-pop--set-universal-key 'shell-pop-universal-key "<f12>")
-(shell-pop--set-shell-type 'shell-pop-shell-type  '("ansi-term" "*ansi-term*"
+(shell-pop--set-shell-type 'shell-pop-shell-type  '("vterm" "*vterm*"
                                                     (lambda nil
-                                                      (ansi-term shell-pop-term-shell))))
+                                                      (vterm shell-pop-term-shell))))
+(define-key vterm-mode-map (kbd "<f12>") nil)
+
 (defalias 'yes-or-no-p 'y-or-n-p)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'magit-clean 'disabled nil)
+
 
 (defun magit-status-set-wide-fringe (&optional arg)
   (display-line-numbers-mode -1)
@@ -328,6 +334,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key dired-mode-map (kbd "<tab>") 'dired-subtree-toggle)
 (define-key dired-mode-map (kbd "i") 'dired-subtree-toggle)
 (define-key dired-mode-map (kbd "I") 'dired-subtree-remove)
+(define-key dired-mode-map (kbd "r") 'dired-rsync)
 
 
 ;;** magit

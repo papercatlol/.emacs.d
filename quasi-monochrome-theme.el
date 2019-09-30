@@ -3,7 +3,7 @@
 
 (custom-theme-set-faces
  'quasi-monochrome
- '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "Terminus"))))
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "xos4 Terminus"))))
  '(button ((t (:inherit (link)))))
  '(cursor ((t (:background "orange red"))))
  '(bold ((t (:inherit (default) :weight bold))))
