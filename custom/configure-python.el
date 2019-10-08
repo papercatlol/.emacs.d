@@ -37,7 +37,7 @@
 
 
 ;;* `keys'
-(with-eval-after-load elpy-mode
+(with-eval-after-load 'elpy-mode
   (define-key elpy-mode-map (kbd "C-c C-k") 'elpy-shell-send-region-or-buffer)
   (define-key elpy-mode-map (kbd "C-c C-c") 'elpy-shell-send-region-or-top-statement)
   )

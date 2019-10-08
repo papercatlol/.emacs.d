@@ -33,6 +33,7 @@
 (require 'expand-region)
 (require 'helpful)
 (require 'hl-todo)
+(require 'ivy-xref)
 (require 'magit)
 (require 'magit-todos)
 (require 'multiple-cursors)
@@ -41,6 +42,7 @@
 (require 'shell-pop)
 (require 'string-edit)
 (require 'uniquify)
+(require 'vterm)
 (require 'wgrep)
 
 ;;* ./custom
@@ -103,6 +105,8 @@
       magit-todos-auto-group-items 1000
       magit-diff-buffer-file-locked t
       magit-log-arguments '("-n64" "--graph" "--decorate" "--patch")
+      xref-show-xrefs-function #'ivy-xref-show-xrefs
+      compilation-scroll-output t
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
@@ -118,6 +122,8 @@
                                                     (lambda nil
                                                       (vterm shell-pop-term-shell))))
 (define-key vterm-mode-map (kbd "<f12>") nil)
+
+(add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 (put 'downcase-region 'disabled nil)
