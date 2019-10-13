@@ -50,6 +50,7 @@
 (add-to-list 'load-path (expand-file-name "custom" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "custom/ace-link/" user-emacs-directory))
 (require 'ace-link)
+(require 'compilation-to-dired)
 (require 'dired+)
 ;;** configuration
 (require 'configure-ace-window)
@@ -314,6 +315,8 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "M-n") 'next-error)
 (global-set-key (kbd "M-p") 'previous-error)
 (define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
+(define-key grep-mode-map (kbd "C-x C-j") 'compilation-to-dired)
+(define-key compilation-mode-map (kbd "C-x C-j") 'compilation-to-dired)
 
 (global-set-key (kbd "C-?") 'er/expand-region)
 (global-set-key (kbd "C-.") 'er/expand-region)
