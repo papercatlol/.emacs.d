@@ -1,10 +1,11 @@
 ;;; -*- lexical-binding: t -*-
+(require 'ace-link)
+(require 'eros)
+(require 'eval-in-repl)
+(require 'popup)
 (require 'slime)
 (require 'slime-autoloads)
-(require 'popup)
-(require 'ace-link)
 
-(require 'eros)
 (add-hook 'emacs-lisp-mode-hook #'eros-mode)
 
 (setq inferior-lisp-program (getenv "LISP_BINARY"))
@@ -559,8 +560,11 @@ With prefix arg, copy toplevel form."
 
 (with-eval-after-load 'lispy
   (define-key emacs-lisp-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
+  (define-key emacs-lisp-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
   (define-key slime-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
-  (define-key slime-mode-map (kbd "M-s") 'lispy-splice))
+  (define-key slime-mode-map (kbd "M-s") 'lispy-splice)
+  (define-key slime-mode-map (kbd "<C-return>") 'eir-eval-in-slime)
+  )
 
 (define-key emacs-lisp-mode-map (kbd "C-c C-k") 'eval-buffer)
 
