@@ -12,9 +12,9 @@
 
 (setq gofmt-command "goimports")
 
-(add-hook 'before-save-hook 'gofmt-before-save)
-(add-hook 'go-mode-hook 'go-guru-hl-identifier-mode)
-(add-hook 'go-mode-hook 'go--enable-completion)
+;; (add-hook 'before-save-hook 'gofmt-before-save)
+;; (add-hook 'go-mode-hook 'go-guru-hl-identifier-mode)
+;; (add-hook 'go-mode-hook 'go--enable-completion)
 (add-hook 'go-mode-hook 'go-eldoc-setup)
 
 (defun go--enable-completion ()
