@@ -29,7 +29,6 @@
                        slime-tramp
                        ;; slime-xref-browser
                        ))
-(setq lisp-indent-function 'common-lisp-indent-function)
 
 (slime-setup slime-contribs)
 
@@ -67,45 +66,22 @@
 ;;                      (concat (match-string 1 pathname) (downcase (match-string 2 pathname)))
 ;;                    pathname))))))
 
-;; indentation  (c) igord
-(defun lisp-add-keywords (face-name keyword-rules)
-   (let* ((keyword-list (mapcar #'(lambda (x)
-                                    (symbol-name (cdr x)))
-                                keyword-rules))
-          (keyword-regexp (concat "(\\("
-                                  (regexp-opt keyword-list)
-                                  "\\)[ \n]")))
-     (font-lock-add-keywords 'lisp-mode
-                             `((,keyword-regexp 1 ',face-name))))
-   (mapc #'(lambda (x)
-             (put (cdr x)
-                  ;;'scheme-indent-function
-                  'common-lisp-indent-function
-                  (car x)))
-         keyword-rules))
- 
-(lisp-add-keywords
- 'font-lock-keyword-face
- '((1 . mv-let*)
-   (1 . letvar)
-   (1 . letvar*)
-   (nil . deftrf)
-   (2 . !~)
-   (2 . !.)
-   (2 . foreach)
-   (2 . foreach)
-   (2 . forsome)
-   (2 . forthis)
-   (2 . forthis!)
-   (2 . /.)
-   (2 . foreach-child)
-   
-   (0 . aif)
-   (1 . awhen)
 
-   (2 . defclass*)
-   ))
+;; elisp indentation
+(setq lisp-indent-function 'common-lisp-indent-function)
+(with-eval-after-load 'cl-indent
+  (labels ((%copy-indent (new old)
+             (put new 'common-lisp-indent-function
+                  (get old 'common-lisp-indent-function))))
+    (%copy-indent 'cl-flet 'flet)
+    (%copy-indent 'cl-labels 'labels)
+    (%copy-indent 'when-let 'when)
+    (%copy-indent 'when-let* 'when)
+    (put 'if 'common-lisp-indent-function 2)
+    (put 'if-let 'common-lisp-indent-function 2)))
 
+
+;; slime hacks
 (defun slime-documentation-popup ()
   "Display `swank:documentation-symbol' using `popup.el'."
   (interactive)
