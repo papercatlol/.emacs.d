@@ -313,6 +313,27 @@ enable `ivy-calling' by default and restore original position on exit."
 (ivy-enable-calling-for-func 'counsel-imenu)
 (ivy-enable-calling-for-func 'ivy-xref-show-xrefs)
 
+;; counsel-imenu-anywhere
+(require 'imenu-anywhere)
+
+(defun counsel-imenu-dwim (anywhere)
+  (interactive "P")
+  (call-interactively
+   (if anywhere
+       (counsel-imenu-anywhere)
+       (counsel-imenu))))
+
+(defun counsel-imenu-anywhere ()
+  (interactive)
+  (let ((candidates (imenu-anywhere-candidates)))
+    (ivy-read "imenu items: " candidates
+              :preselect (thing-at-point 'symbol)
+              :require-match t
+              :action (lambda  (candidate)
+                        (switch-to-buffer (marker-buffer (cdr candidate)))
+                        (goto-char (cdr candidate)))
+              :keymap counsel-imenu-map
+              :caller 'counsel-imenu)))
 
 ;;* `KEYS'
 (defhydra hydra-M-g (global-map "M-g")
@@ -338,8 +359,8 @@ enable `ivy-calling' by default and restore original position on exit."
 (global-set-key (kbd "C-x /") 'counsel-rg)
 (global-set-key (kbd "C-x C-/") 'counsel-rg-dir)
 (global-set-key (kbd "M-y") 'counsel-yank-pop)
-(global-set-key (kbd "C-c C-s") 'counsel-imenu)
-(global-set-key (kbd "C-c s") 'counsel-imenu)
+(global-set-key (kbd "C-c C-s") 'counsel-imenu-dwim)
+(global-set-key (kbd "C-c s") 'counsel-imenu-dwim)
 (global-set-key (kbd "C-c b") 'counsel-bookmark)
 (global-set-key (kbd "C-c C-v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
