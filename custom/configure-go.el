@@ -17,8 +17,27 @@
 ;; (add-hook 'go-mode-hook 'go--enable-completion)
 (add-hook 'go-mode-hook 'go-eldoc-setup)
 
-(defun go--enable-completion ()
-  (add-hook 'completion-at-point-functions 'go-complete-at-point))
+;; MAYBE do something with it
+;; (defun go--enable-completion ()
+;;   (add-hook 'completion-at-point-functions 'go-complete-at-point))
+
+;; (defvar go--doc-timer nil)
+;; (defvar go--doc-delay 0.1)
+
+;; (defun go--idle-doc-show ()
+;;   (when go--doc-timer
+;;     (cancel-timer go--doc-timer))
+;;   (setq go--doc-timer
+;;         (run-with-idle-timer go--doc-delay nil
+;;                              (lambda () (call-interactively #'godef-describe)))))
+
+;; (defun go--enable-idle-doc ()
+;;   (add-hook 'post-command-hook #'go--idle-doc-show nil t))
+
+;; (defun go--disable-idle-doc ()
+;;   (remove-hook 'post-command-hook #'go--idle-doc-show t))
+
+;; (add-hook 'go-mode-hook #'go--enable-idle-doc)
 
 
 ;;* `DEFUNS'
