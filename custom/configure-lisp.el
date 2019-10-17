@@ -29,6 +29,7 @@
                        slime-tramp
                        ;; slime-xref-browser
                        ))
+(setq lisp-indent-function 'common-lisp-indent-function)
 
 (slime-setup slime-contribs)
 
@@ -152,6 +153,7 @@
   (if (minusp arg)
       (call-interactively #'slime-edit-definition)
     (slime--edit-definition-ivy nil)))
+(ivy-enable-calling-for-func #'slime-edit-definition-ivy)
 
 (defun slime-edit-definition-other-window-ivy (arg)
   "Like `slime-edit-definition-ivy' but switch to other window."

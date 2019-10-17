@@ -106,21 +106,18 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
 
 (defun swiper-at-point ()
   (interactive)
-  (let ((isearch-forward t)) ; evil search direction
-    (counsel-grep-or-swiper
-     (cond (current-prefix-arg nil)
-           ((region-active-p)
-            (buffer-substring (point) (mark)))
-           ((symbol-at-point)
-            (symbol-name (symbol-at-point)))))))
+  (setq isearch-forward t) ; evil search direction
+  (counsel-grep-or-swiper
+   (cond (current-prefix-arg nil)
+         ((region-active-p)
+          (buffer-substring (point) (mark)))
+         ((symbol-at-point)
+          (symbol-name (symbol-at-point))))))
 
 (defun ivy-yank-symbol-at-point ()
   (interactive)
-  (let ((symbol))
-    (with-ivy-window
-      (setq symbol (symbol-at-point)))
-    (when symbol
-      (insert (symbol-name symbol)))))
+  (when-let ((symbol (with-ivy-window (symbol-at-point))))
+    (insert (symbol-name symbol))))
 
 (defun counsel-rg-dir (&optional initial-input initial-directory extra-rg-args rg-prompt)
   "Same as `counsel-rg' but search starting from current directory instead of the repo root."
@@ -167,7 +164,7 @@ Now also supports ivy-views."
                                     (cons (format "Recentf: %s" filename)
                                           filename)))
                                 recentf-list)))
-    (lexical-let ((where where))
+    (let ((where where))
       (ivy-read "Switch to buffer: "
                 (append alive-buffers recent-buffers ivy-views)
                 :history 'counsel-ibuffer-or-recentf-history
@@ -262,7 +259,7 @@ always insert at point."
      cands
      "\n")))
 
-(setq ivy-format-function #'ivy-format-function-fast-keys)
+(setq ivy-format-functions-alist '((t . ivy-format-function-fast-keys)))
 
 (cl-defun ivy--make-fast-keys-action (n &optional (action #'ivy--done))
   (lambda ()
@@ -284,6 +281,38 @@ always insert at point."
 (define-key ivy-minibuffer-map (kbd "M-7") (ivy--make-fast-keys-action 7))
 (define-key ivy-minibuffer-map (kbd "M-8") (ivy--make-fast-keys-action 8))
 (define-key ivy-minibuffer-map (kbd "M-9") (ivy--make-fast-keys-action 9))
+
+;; ivy-calling
+(defvar ivy--initial-pos-marker nil "Position before ivy invocation.")
+
+(defun ivy--enable-calling ()
+  (setq ivy-calling t
+        ivy--initial-pos-marker (with-ivy-window (point-marker))))
+
+(defun ivy--restore-initial-pos ()
+  ;; MAYBE: Add a flag similar to swiper-stay-on-quit.
+  ;; Although in that case, simply adding (lambda () (setq ivy-calling t))
+  ;; to ivy-hooks would yield the same behaviour.
+  (unless (eq ivy-exit 'ivy-done)
+    (goto-char ivy--initial-pos-marker))
+  (setq ivy--initial-pos-marker nil))
+
+(defun ivy-enable-calling-for-func (func)
+  "Add appropriate hooks to make FUNC behave more like `swiper':
+enable `ivy-calling' by default and restore original position on exit."
+  (setf (alist-get func ivy-hooks-alist) #'ivy--enable-calling)
+  (setf (alist-get func ivy-unwind-fns-alist) #'ivy--restore-initial-pos)
+  nil)
+
+(defun ivy-disable-calling-for-func (func)
+  "Undo `ivy-enable-calling-for-func'."
+  (setq ivy-hooks-alist (assq-delete-all func ivy-hooks-alist))
+  (setq ivy-unwind-fns-alist (assq-delete-all func ivy-unwind-fns-alist)))
+
+;; TODO: properly integrate imenu-anywhere
+(ivy-enable-calling-for-func 'counsel-imenu)
+(ivy-enable-calling-for-func 'ivy-xref-show-xrefs)
+
 
 ;;* `KEYS'
 (defhydra hydra-M-g (global-map "M-g")
