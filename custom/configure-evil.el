@@ -139,6 +139,12 @@
         (avy-with avy-goto-symbol-in-line
           (avy--process candidates (avy--style-fn 'at)))))))
 
+(defun avy-goto-symbol-end-in-line ()
+  "Same as `avy-goto-symbol-in-line', but jump to symbol end instead of beginning."
+  (interactive)
+  (call-interactively #'avy-goto-symbol-in-line)
+  (call-interactively #'forward-symbol))
+
 (add-to-list 'avy-styles-alist '(avy-goto-symbol-in-line . at))
 (add-to-list 'avy-keys-alist
              (cons 'avy-goto-symbol-in-line (list ?f ?c ?d ?g ?s ?a  ?e ?v ?q ?w ?z ?x ?r
@@ -345,9 +351,10 @@
 ;; (define-key evil-normal-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
 ;; (define-key magit-mode-map (kbd "M-j") 'evil-scroll-line-down-dwim)
 ;; (define-key magit-mode-map (kbd "M-k") 'evil-scroll-line-up-dwim)
-;; (define-key evil-motion-state-map (kbd "C-f") 'evil-avy-goto-char-2)
+(define-key evil-motion-state-map (kbd "C-f") 'paredit-forward)
+(define-key evil-motion-state-map (kbd "C-b") 'paredit-backward)
 (define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
-(define-key evil-normal-state-map (kbd "S") 'lispy-ace-paren)
+(define-key evil-normal-state-map (kbd "S") 'avy-goto-symbol-end-in-line)
 (define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
 (define-key evil-motion-state-map [remap evil-jump-backward] 'evil-jump-backward-dwim)
 (define-key evil-motion-state-map [remap evil-jump-forward] 'evil-jump-forward-dwim)
