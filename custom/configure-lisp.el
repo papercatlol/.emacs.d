@@ -80,6 +80,21 @@
     (put 'if 'common-lisp-indent-function 2)
     (put 'if-let 'common-lisp-indent-function 2)))
 
+;; elisp documentation
+(defun elisp-documentation (prompt)
+  "Show documentation for symbol-at-point in the minibuffer.
+With prefix arg prompt for symbol first."
+  (interactive "P")
+  (when-let* ((symbol (if prompt
+                          (intern (completing-read "Show documentation for: "
+                                                   obarray nil t nil nil
+                                                   (when-let ((s (symbol-at-point)))
+                                                     (symbol-name s))))
+                        (symbol-at-point)))
+              (doc (documentation symbol)))
+    (message "%s" doc)))
+
+(define-key emacs-lisp-mode-map (kbd "C-c C-d") 'elisp-documentation)
 
 ;; slime hacks
 (defun slime-documentation-popup ()
