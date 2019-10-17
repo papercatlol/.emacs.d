@@ -1,5 +1,5 @@
 (require 'go-mode)
-;; (require 'go-guru)
+(require 'go-guru)
 ;; (require 'go-complete)
 ;; (require 'go-eldoc)
 
@@ -12,7 +12,7 @@
 
 (setq gofmt-command "goimports")
 
-;; (add-hook 'before-save-hook 'gofmt-before-save)
+(add-hook 'before-save-hook 'gofmt-before-save)
 ;; (add-hook 'go-mode-hook 'go-guru-hl-identifier-mode)
 ;; (add-hook 'go-mode-hook 'go--enable-completion)
 (add-hook 'go-mode-hook 'go-eldoc-setup)
