@@ -2,7 +2,6 @@
 (require 'ace-link)
 (require 'eros)
 (require 'eval-in-repl)
-(require 'popup)
 (require 'slime)
 (require 'slime-autoloads)
 
@@ -97,13 +96,12 @@ With prefix arg prompt for symbol first."
 (define-key emacs-lisp-mode-map (kbd "C-c C-d") 'elisp-documentation)
 
 ;; slime hacks
-(defun slime-documentation-popup ()
-  "Display `swank:documentation-symbol' using `popup.el'."
+(defun slime-documentation ()
+  "Display `swank:documentation-symbol' in the minibuffer"
   (interactive)
-  (let ((symbol-name (slime-read-symbol-name "Describe symbol: ")))
-    (popup-tip (slime-eval `(swank:documentation-symbol ,symbol-name))
-               :truncate nil
-               :height 60)))
+  (when-let* ((symbol-name (slime-read-symbol-name "Describe symbol: "))
+              (doc (slime-eval `(swank:documentation-symbol ,symbol-name))))
+    (message doc)))
 
 (defun slime--edit-definition-ivy (&optional where)
   "Adapted from `slime-edit-definition-cont'. Use `ivy' to select a candidate if multiple."
@@ -494,7 +492,7 @@ With prefix arg, copy toplevel form."
 
 ;;* `KEYS'
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
-  (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation-popup)
+  (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation)
   (define-key keymap [remap slime-edit-definition] 'slime-edit-definition-ivy)
   (define-key keymap [remap slime-edit-definition-other-window] 'slime-edit-definition-other-window-ivy)
   (define-key keymap [remap slime-edit-definition-other-frame] 'slime-edit-definition-other-frame-ivy))
