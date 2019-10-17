@@ -38,6 +38,7 @@
 (require 'magit-todos)
 (require 'multiple-cursors)
 (require 'paredit)
+(require 'pcmpl-args)
 (require 'saveplace)
 (require 'shell-pop)
 (require 'string-edit)
@@ -299,6 +300,19 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 
 (advice-add #'he-substitute-string :after #'he-paredit-fix)
 
+;; magit
+(defun magit-forward-dwim ()
+  (interactive)
+  (if (region-active-p)
+      (magit-next-line)
+    (magit-section-forward)))
+
+(defun magit-backward-dwim ()
+  (interactive)
+  (if (region-active-p)
+      (magit-previous-line)
+    (magit-section-backward)))
+
 ;; keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -351,14 +365,14 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key magit-file-mode-map (kbd "C-x =") 'magit-diff-buffer-file)
 (define-key magit-file-mode-map (kbd "C-x G") 'magit-file-dispatch)
 (define-key magit-mode-map (kbd "C-c C-l") 'magit-toggle-buffer-lock)
-(define-key magit-mode-map (kbd "j") 'magit-section-forward)
-(define-key magit-mode-map (kbd "k") 'magit-section-backward)
-(define-key magit-status-mode-map (kbd "j") 'magit-section-forward)
-(define-key magit-status-mode-map (kbd "k") 'magit-section-backward)
-(define-key magit-todos-section-map (kbd "j") 'magit-section-forward)
-(define-key magit-todos-section-map (kbd "k") 'magit-section-backward)
-(define-key magit-diff-mode-map (kbd "j") 'magit-section-forward)
-(define-key magit-diff-mode-map (kbd "k") 'magit-section-backward)
+(define-key magit-mode-map (kbd "j") 'magit-forward-dwim)
+(define-key magit-mode-map (kbd "k") 'magit-backward-dwim)
+(define-key magit-status-mode-map (kbd "j") 'magit-forward-dwim)
+(define-key magit-status-mode-map (kbd "k") 'magit-backward-dwim)
+(define-key magit-todos-section-map (kbd "j") 'magit-forward-dwim)
+(define-key magit-todos-section-map (kbd "k") 'magit-backward-dwim)
+(define-key magit-diff-mode-map (kbd "j") 'magit-forward-dwim)
+(define-key magit-diff-mode-map (kbd "k") 'magit-backward-dwim)
 (define-key magit-status-mode-map (kbd "C-k") 'magit-discard)
 (define-key magit-diff-mode-map (kbd "C-k") 'magit-discard)
 
@@ -384,9 +398,10 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key cantrips-prefix-map (kbd "r") 'rename-file-and-buffer)
 (define-key cantrips-prefix-map (kbd "d") 'describe-text-properties)
 (define-key cantrips-prefix-map (kbd "f") 'describe-face)
-(define-key cantrips-prefix-map (kbd "e") 'eval-buffer)
 (define-key cantrips-prefix-map (kbd "i") 'ielm)
 (define-key cantrips-prefix-map (kbd "/") 'rg)
+(define-key cantrips-prefix-map (kbd "b") 'counsel-descbinds)
+(define-key cantrips-prefix-map (kbd "e") 'toggle-debug-on-error)
 
 (ace-link-setup-default (kbd "C-f"))
 (dolist (keymap (list help-mode-map package-menu-mode-map compilation-mode-map grep-mode-map))
