@@ -322,6 +322,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 ;; (global-set-key (kbd "C-x C-o") 'ace-window)
 (global-set-key (kbd "C-x C-o") 'ignore)
 (global-set-key (kbd "C-x C-c") 'ace-window)
+(global-set-key (kbd "C-x C-SPC") 'other-window)
 (global-set-key (kbd "M-c") 'ace-window)
 ;;;
 (global-set-key (kbd "C-x 5 5") 'window-as-frame)

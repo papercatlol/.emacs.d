@@ -335,6 +335,29 @@ enable `ivy-calling' by default and restore original position on exit."
               :keymap counsel-imenu-map
               :caller 'counsel-imenu)))
 
+;; other-window/frame
+(defun ivy-done-other-window ()
+  (interactive)
+  (when-let* ((ivy-win (ivy--get-window ivy-last))
+              (state (window-state-get ivy-win)))
+    (let ((action (ivy--get-action ivy-last)))
+      (ivy-exit-with-action (lambda (x)
+                              (funcall action x)
+                              (when-let ((new-win (or (split-window-sensibly ivy-win)
+                                                      (split-window ivy-win nil nil))))
+                                (select-window new-win)
+                                (window-state-put state ivy-win)))))))
+
+(defun ivy-done-other-frame ()
+  (interactive)
+  (let* ((ivy-win (ivy--get-window ivy-last))
+         (state (window-state-get ivy-win)))
+    (call-interactively #'ivy-call)
+    (make-frame-command)
+    (window-state-put state ivy-win)
+    (exit-minibuffer)))
+
+
 ;;* `KEYS'
 (defhydra hydra-M-g (global-map "M-g")
   "M-g"
