@@ -17,6 +17,9 @@
 ;; (add-hook 'go-mode-hook 'go--enable-completion)
 (add-hook 'go-mode-hook 'go-eldoc-setup)
 
+;; treat CamelCase as separate words
+(add-hook 'go-mode-hook 'subword-mode)
+
 ;; MAYBE do something with it
 ;; (defun go--enable-completion ()
 ;;   (add-hook 'completion-at-point-functions 'go-complete-at-point))
@@ -38,6 +41,46 @@
 ;;   (remove-hook 'post-command-hook #'go--idle-doc-show t))
 
 ;; (add-hook 'go-mode-hook #'go--enable-idle-doc)
+
+;;* smartparens setup. Mostly stolen from https://github.com/raxod502/radian/blob/develop/emacs/radian.el
+(require 'smartparens)
+(require 'smartparens-config)
+
+(defun smartparens-go-setup ()
+  (sp-use-paredit-bindings)
+  (setq-local sp-highlight-pair-overlay nil)
+  (setq-local sp-highlight-wrap-overlay nil)
+  (setq-local sp-highlight-wrap-tag-overlay nil)
+  (setq-local sp-cancel-autoskip-on-backward-movement nil)
+  (smartparens-mode 1)
+  (with-minor-mode-map-overriding (map smartparens-mode)
+    (define-key map (kbd "M-r") 'sp-splice-sexp-killing-backward)
+    (define-key map (kbd "M-[") 'sp-wrap-square)
+    (define-key map (kbd "M-{") 'sp-wrap-curly)))
+
+(add-hook 'go-mode-hook 'smartparens-go-setup)
+
+;; TODO: move to init.el or some utils package
+(cl-defmacro with-minor-mode-map-overriding ((new-map minor-mode) &body body)
+  "Create a keymap locally overriding MINOR-MODE keymap and bind it to NEW-MAP inside BODY"
+  (let ((old-map (gensym)))
+    `(when-let ((,new-map (make-sparse-keymap))
+                (,old-map (alist-get ',minor-mode minor-mode-map-alist)))
+       (set-keymap-parent ,new-map ,old-map)
+       (make-local-variable 'minor-mode-overriding-map-alist)
+       (push (cons ',minor-mode ,new-map)
+             minor-mode-overriding-map-alist)
+       ,@body)))
+
+;; Pressing <return> after inserting a pair creates an extra newline. Stolen from radian.el ^
+(defun newline-and-indent-twice ()
+  (newline-and-indent)
+  (newline-and-indent)
+  (forward-line -1))
+
+(sp-local-pair #'go-mode "{" nil :post-handlers '((newline-and-indent-twice "<return>")))
+(sp-local-pair #'go-mode "(" nil :post-handlers '((newline-and-indent-twice "<return>")))
+(sp-local-pair #'go-mode "[" nil :post-handlers '((newline-and-indent-twice "<return>")))
 
 
 ;;* `DEFUNS'
