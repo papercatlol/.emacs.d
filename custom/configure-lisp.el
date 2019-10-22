@@ -557,7 +557,20 @@ With prefix arg, copy toplevel form."
   (define-key slime-mode-map (kbd "<C-return>") 'eir-eval-in-slime)
   )
 
+(with-eval-after-load 'macrostep
+  (when (fboundp 'evil-mode)
+    (evil-make-overriding-map macrostep-keymap 'motion)
+    (evil-make-overriding-map macrostep-keymap 'normal)
+    (evil-define-key* '(motion normal) macrostep-keymap
+                      "q" 'macrostep-collapse-all
+                      "c" 'macrostep-collapse
+                      "e" 'macrostep-expand
+                      "RET" 'macrostep-expand)))
+
 (define-key emacs-lisp-mode-map (kbd "C-c C-k") 'eval-buffer)
+(define-key emacs-lisp-mode-map (kbd "C-c C-c") 'compile-defun)
+(define-key emacs-lisp-mode-map (kbd "C-c <return>") 'macrostep-expand)
+(define-key emacs-lisp-mode-map (kbd "C-c RET") 'macrostep-expand)
 
 
 (provide 'configure-lisp)
