@@ -28,6 +28,7 @@
 (require 'async)
 (require 'beginend)
 (require 'delsel)
+(require 'dired-git-info-mode)
 (require 'dired-subtree)
 (require 'dired-rsync)
 (require 'expand-region)
@@ -77,6 +78,7 @@
 (setq-default save-place t)
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
+      kill-do-not-save-duplicates t
       apropos-do-all t
       dired-dwim-target t
       mouse-yank-at-point t
@@ -102,7 +104,7 @@
       show-paren-priority -1
       shell-pop-window-size 50
       shell-pop-window-position "bottom"
-      recentf-max-saved-items 50
+      recentf-max-saved-items 500
       magit-section-visibility-indicator (quote (magit-fringe-bitmap+ . magit-fringe-bitmap-))
       magit-todos-auto-group-items 1000
       magit-diff-buffer-file-locked t
@@ -360,6 +362,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key dired-mode-map (kbd "i") 'dired-subtree-toggle)
 (define-key dired-mode-map (kbd "I") 'dired-subtree-remove)
 (define-key dired-mode-map (kbd "r") 'dired-rsync)
+(define-key dired-mode-map (kbd ")") 'dired-git-info-mode)
 
 
 ;;** magit
