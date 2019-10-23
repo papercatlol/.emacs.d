@@ -56,7 +56,8 @@
   (with-minor-mode-map-overriding (map smartparens-mode)
     (define-key map (kbd "M-r") 'sp-splice-sexp-killing-backward)
     (define-key map (kbd "M-[") 'sp-wrap-square)
-    (define-key map (kbd "M-{") 'sp-wrap-curly)))
+    (define-key map (kbd "M-{") 'sp-wrap-curly)
+    (define-key map (kbd "M-j") nil)))
 
 (add-hook 'go-mode-hook 'smartparens-go-setup)
 
@@ -64,12 +65,12 @@
 (cl-defmacro with-minor-mode-map-overriding ((new-map minor-mode) &body body)
   "Create a keymap locally overriding MINOR-MODE keymap and bind it to NEW-MAP inside BODY"
   (let ((old-map (gensym)))
-    `(when-let ((,new-map (make-sparse-keymap))
-                (,old-map (alist-get ',minor-mode minor-mode-map-alist)))
+    `(when-let* ((,old-map (alist-get ',minor-mode minor-mode-map-alist))
+                 (,new-map ;; (copy-keymap ,old-map)
+                           (make-sparse-keymap)))
        (set-keymap-parent ,new-map ,old-map)
        (make-local-variable 'minor-mode-overriding-map-alist)
-       (push (cons ',minor-mode ,new-map)
-             minor-mode-overriding-map-alist)
+       (setf (alist-get ',minor-mode minor-mode-overriding-map-alist) ,new-map)
        ,@body)))
 
 ;; Pressing <return> after inserting a pair creates an extra newline. Stolen from radian.el ^
@@ -81,6 +82,29 @@
 (sp-local-pair #'go-mode "{" nil :post-handlers '((newline-and-indent-twice "<return>")))
 (sp-local-pair #'go-mode "(" nil :post-handlers '((newline-and-indent-twice "<return>")))
 (sp-local-pair #'go-mode "[" nil :post-handlers '((newline-and-indent-twice "<return>")))
+
+;;* go-import
+(defvar *go-packages-cache* nil)
+(defvar *go-packages-function-no-cache* go-packages-function)
+(setq go-packages-function #'go-packages-cached)
+
+(defun go-packages-cached ()
+  "Same as `go-packages', but cache the results.
+With prefix arg force refresh."
+  (interactive)
+  ;; We have to check `current-prefix-arg' directly since
+  ;; `go-packages' uses funcall instead of `call-interactively'.
+  (or (and (not current-prefix-arg) *go-packages-cache*)
+      (go-refresh-packages-cache)))
+
+(defun go-refresh-packages-cache (&optional print-message)
+  "Refresh the packages cache by calling
+*go-packages-function-no-cache*. Return the results."
+  (interactive "p")
+  (prog1 (setq *go-packages-cache* (funcall *go-packages-function-no-cache*))
+    (when print-message (message "Packages cache refreshed."))))
+
+(define-key go-mode-map (kbd "C-c G") 'go-refresh-packages-cache)
 
 
 ;;* `DEFUNS'
