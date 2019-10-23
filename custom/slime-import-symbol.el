@@ -86,10 +86,29 @@ For new imports uses
 (defun slime-import-symbol (&optional internal)
   "Reads qualified symbol name and tries to add an import for it.
 If INTERNAL is non-nil or a prefix arg is supplied, include internal symbols."
-  ;; TODO: Unqualify symbol at point if it has been imported.
   (interactive "P")
-  (when-let ((symbol (slime-read-symbol-name-global "Import symbol: " t internal)))
-    (slime-package--add-import (slime-cl-symbol-name symbol)
-                               (slime-cl-symbol-package symbol))))
+  (when-let* ((qualified-name (slime-read-symbol-name-global "Import symbol: " t internal))
+              (symbol-name (slime-cl-symbol-name qualified-name))
+              (package (slime-cl-symbol-package qualified-name)))
+    (slime-package--add-import symbol-name package)
+    (let ((symbol-at-point (slime-symbol-at-point)))
+      (when (and (not (string-suffix-p ":" symbol-at-point)) ; foo: is a valid slime-symbol(!?)
+                 ;; Call eq from swank to resolve aliases
+                 (slime-eval `(cl:eq (cl:intern ,qualified-name) (cl:intern ,symbol-at-point))))
+        (slime-unqualify-symbol-at-point)))))
+
+(defun slime-unqualify-symbol-at-point ()
+  "Remove package name from symbol at point."
+  (interactive)
+  (when-let* ((bounds (bounds-of-thing-at-point 'slime-symbol))
+              (beg (car bounds))
+              (end (cdr bounds))
+              (qualified-name (buffer-substring-no-properties beg end))
+              (symbol-name (slime-cl-symbol-name qualified-name)))
+    (unless (string= qualified-name symbol-name)
+      (delete-region beg end)
+      (insert symbol-name))))
+
+;; TODO: slime-toggle-qualified-name
 
 (provide 'slime-import-symbol)
