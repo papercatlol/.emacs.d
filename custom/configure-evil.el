@@ -5,6 +5,8 @@
       evil-regexp-search t
       evil-disable-insert-state-bindings t
       evil-move-beyond-eol t
+      evil-want-integration t
+      evil-want-keybinding t
       lispy-avy-style-paren 'pre)
 
 (require 'evil)
@@ -13,6 +15,7 @@
 ;; (dolist (mode '(slime-popup-buffer-mode slime-trace-dialog-mode))
 ;;   (evil-set-initial-state mode 'emacs))
 (evil-set-initial-state 'slime-trace-dialog-mode 'emacs)
+(evil-set-initial-state 'ibuffer-mode 'normal)
 
 
 ;;* `LISPYVILLE'
@@ -338,7 +341,7 @@
 (define-key evil-motion-state-map (kbd "C-e") nil)
 
 ;;** `other'
-(define-key evil-normal-state-map "q" 'q-dwim)
+;; (define-key evil-normal-state-map "q" 'q-dwim)
 (define-key evil-normal-state-map "Q" "@q")
 (define-key evil-visual-state-map "Q" ":norm @q RET")
 (define-key evil-visual-state-map "." ":norm . RET")
@@ -360,11 +363,29 @@
 (define-key evil-motion-state-map [remap evil-jump-forward] 'evil-jump-forward-dwim)
 (define-key evil-visual-state-map (kbd "C-c i") 'edit-indirect-region)
 
-;; Do not override `ace-link' binding by motion-state `C-f' binding
+;; evil keymaps bullshit
 (require 'slime)
-(dolist (map (list helpful-mode-map help-mode-map compilation-mode-map grep-mode-map
-                   sldb-mode-map slime-inspector-mode-map slime-xref-mode-map))
-  (evil-make-overriding-map map 'motion))
+(dolist (map (list helpful-mode-map help-mode-map
+                   compilation-mode-map grep-mode-map
+                   sldb-mode-map slime-inspector-mode-map slime-xref-mode-map
+                   special-mode-map messages-buffer-mode-map
+                   ))
+  (evil-set-initial-state map 'normal)
+  (evil-make-overriding-map map 'normal)
+  (evil-add-hjkl-bindings map))
+
+(with-eval-after-load 'macrostep
+  ;; From evil-collection-macrostep.el:
+  ;; Keymaps don't seem to be populated on first try.
+  ;; Force `evil' to normalize keymaps.
+  ;; Why? Something to do with buffer-read-only?
+  (add-hook 'macrostep-mode-hook #'evil-normalize-keymaps)
+  (defvar macrostep-keymap)
+  (evil-make-overriding-map macrostep-keymap 'normal)
+  (evil-add-hjkl-bindings macrostep-keymap 'normal
+                          "u" 'macrostep-collapse
+                          "<return>" 'macrostep-expand
+                          "<backtab>" 'macrostep-prev-macro))
 
 ;;** `move-text'
 (defhydra move-text-hydra ()
