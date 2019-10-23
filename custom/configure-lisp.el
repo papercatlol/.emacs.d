@@ -1,6 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 (require 'ace-link)
-(require 'eros)
 (require 'eval-in-repl)
 (require 'slime)
 (require 'slime-autoloads)
@@ -8,6 +7,8 @@
 (add-hook 'emacs-lisp-mode-hook #'eros-mode)
 
 (setq inferior-lisp-program (getenv "LISP_BINARY"))
+
+;;* slime-contribs
 (setq slime-contribs '(slime-repl
                        slime-autodoc
                        slime-asdf
@@ -28,17 +29,25 @@
                        slime-tramp
                        ;; slime-xref-browser
                        ))
-
 (slime-setup slime-contribs)
 
-;; slime-package-fu
+;;* uiop support for slime-package-fu
 (setq slime-defpackage-regexp
-             (rx line-start "("
-                 (or (and (? (or "cl:" "common-lisp:")) "defpackage")
-                     (and (? (or "uiop:" "uiop/package:" "package:")) "define-package"))
-                 symbol-end
-                 (* space)))
+      (rx line-start "("
+          (or (and (? (or "cl:" "common-lisp:")) "defpackage")
+              (and (? (or "uiop:" "uiop/package:" "package:")) "define-package"))
+          symbol-end
+          (* space)))
 
+;;* slime-search-buffer-package fix
+(defun slime-search-buffer-package+ ()
+  "Same as `slime-search-buffer-package', but handle the case
+when cursor is directly inside the in-package form."
+  (save-excursion (beginning-of-line)
+                  (slime-search-buffer-package)))
+(setq slime-find-buffer-package-function #'slime-search-buffer-package+)
+
+;;* Paredit
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
 (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
@@ -48,6 +57,8 @@
 (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
 (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
 
+;; Virtual pathnames resolution. Lisp printer upcases file paths
+;; which kinda fucks up unix filenames. This was an attempt to mitigate it.
 ;; TODO: fix regex
 ;; upper -> lower pathname tail
 ;; (setq slime-filename-translations
@@ -65,8 +76,9 @@
 ;;                      (concat (match-string 1 pathname) (downcase (match-string 2 pathname)))
 ;;                    pathname))))))
 
-
-;; elisp indentation
+;;* Elisp indentation
+;; It seems easier to use `common-lisp-indent-function' for stuff such as
+;; labels & loop, and manually fix indent of elisp-specific forms(if, when-let, etc)
 (setq lisp-indent-function 'common-lisp-indent-function)
 (with-eval-after-load 'cl-indent
   (labels ((%copy-indent (new old)
@@ -74,12 +86,15 @@
                   (get old 'common-lisp-indent-function))))
     (%copy-indent 'cl-flet 'flet)
     (%copy-indent 'cl-labels 'labels)
+    (%copy-indent 'cl-defun 'defun)
     (%copy-indent 'when-let 'when)
     (%copy-indent 'when-let* 'when)
+    (%copy-indent 'eval-after-load 'when)
     (put 'if 'common-lisp-indent-function 2)
-    (put 'if-let 'common-lisp-indent-function 2)))
+    (put 'if-let 'common-lisp-indent-function 2)
+    (put 'if-let* 'common-lisp-indent-function 2)))
 
-;; elisp documentation
+;;* Elisp documentation
 (defun elisp-documentation (prompt)
   "Show documentation for symbol-at-point in the minibuffer.
 With prefix arg prompt for symbol first."
@@ -95,7 +110,7 @@ With prefix arg prompt for symbol first."
 
 (define-key emacs-lisp-mode-map (kbd "C-c C-d") 'elisp-documentation)
 
-;; slime hacks
+;;* slime hacks
 (defun slime-documentation ()
   "Display `swank:documentation-symbol' in the minibuffer"
   (interactive)
@@ -137,22 +152,22 @@ With prefix arg prompt for symbol first."
                                    (slime-pop-to-location (fourth item) where)))))))))
 
 (defun slime-edit-definition-ivy (arg)
-  "Like `slime-edit-definition' but use `ivy' to select a candidate."
+  "`slime-edit-definition' but use `ivy' to select a candidate.
+With negative prefix arg call original `slime-edit-definition'."
   (interactive "p")
   (if (minusp arg)
       (call-interactively #'slime-edit-definition)
     (slime--edit-definition-ivy nil)))
-(ivy-enable-calling-for-func #'slime-edit-definition-ivy)
 
 (defun slime-edit-definition-other-window-ivy (arg)
-  "Like `slime-edit-definition-ivy' but switch to other window."
+  "`slime-edit-definition-ivy' but open result in other window."
   (interactive "p")
   (if (minusp arg)
       (call-interactively #'slime-edit-definition-other-window)
     (slime--edit-definition-ivy 'window)))
 
 (defun slime-edit-definition-other-frame-ivy (arg)
-  "Like `slime-edit-definition-ivy' but switch to other frame."
+  "`slime-edit-definition-ivy' but open result in other frame."
   (interactive "p")
   (if (minusp arg)
       (call-interactively #'slime-edit-definition-other-frame)
@@ -164,42 +179,56 @@ With prefix arg prompt for symbol first."
     (message package)
     (kill-new package)))
 
-;;** `slime-find-all-symbols'
+(ivy-enable-calling-for-func #'slime-edit-definition-ivy)
+
+;;** `slime-find-all-symbols', `slime-read-symbol-name-global'
 (defun slime-find-all-symbols (&optional internal)
   "Return symbol-names of symbols from all registered packages."
+  ;; TODO: Extract cl code as a slime contrib or something.
+  ;; TODO: (CL) Add caching. Update cache via a compilation hook.
   (let* ((scope (if internal '(:external :internal) '(:external)))
-         (symbols (slime-eval
-                   `(cl:let ((packages (cl:remove (cl:find-package :keyword) (cl:list-all-packages)))
-                             (symbols))
-                            (cl:with-package-iterator (next packages ,@scope)
-                                                      (cl:loop (cl:multiple-value-bind (morep symbol) (next)
-                                                                                       (cl:push symbol symbols)
-                                                                                       (cl:unless morep (cl:return)))))
-                            (cl:mapcar (cl:lambda (symbol) (cl:string-downcase (cl:format nil "~s" symbol)))
-                                       (cl:remove-duplicates symbols)))
-                   "CL-USER")))
+         (symbols
+           (slime-eval
+            `(cl:let ((packages (cl:remove (cl:find-package :keyword) (cl:list-all-packages)))
+                      (symbols))
+               (cl:with-package-iterator (next packages ,@scope)
+                 (cl:loop (cl:multiple-value-bind (morep symbol) (next)
+                            (cl:push symbol symbols)
+                            (cl:unless morep (cl:return)))))
+               (cl:mapcar (cl:lambda (symbol)
+                            (cl:string-downcase
+                             (cl:format nil "~a:~a"
+                                        (cl:package-name (cl:symbol-package symbol))
+                                        (cl:symbol-name symbol))))
+                          (cl:remove-duplicates symbols)))
+            "CL-USER")))
     symbols))
 
-(defun slime-read-symbol-name-global (prompt &optional query)
+(defun slime-read-symbol-name-global (prompt &optional query internal)
+  "Either read a symbol or choose one at point. Choose from
+all external symbols if QUERY is non-nil, there is no symbol
+at point or a single prefix arg is supplied. With double
+prefix arg or if INTERNAL is non-nil include internal symbols."
   (cond ((or current-prefix-arg query (not (slime-symbol-at-point)))
-         (let ((internal (= 16 (prefix-numeric-value current-prefix-arg))))
+         (let ((internal (or internal
+                             (= 16 (prefix-numeric-value current-prefix-arg)))))
            (completing-read prompt
                             (slime-find-all-symbols internal)
                             nil nil
                             (slime-symbol-at-point))))
         (t (slime-symbol-at-point))))
 
-(defalias 'slime-read-symbol-name 'slime-read-symbol-name-global) 
+(defalias 'slime-read-symbol-name 'slime-read-symbol-name-global)
 
 (defun slime--bounds-of-region-or-symbol ()
   (if (region-active-p)
       (cons (region-beginning) (region-end))
     (bounds-of-thing-at-point 'symbol)))
 
-;; TODO: xref and documentation lookups in completion buffer
 (defun slime-complete-symbol-global (internal)
   "Complete a symbol searching symbols from all visible packages.
 If INTERNAL is T, also search internal symbols."
+  ;; TODO: xref and documentation lookups in completion buffer
   (interactive "P")
   (let* ((bounds (slime--bounds-of-region-or-symbol))
          (start (and bounds (car bounds)))
@@ -316,6 +345,7 @@ otherwise insert a saved presentation."
   (other-window 1))
 
 (defun slime-repl-complete-ivy ()
+  "Complete input from repl history."
   (interactive)
   (let ((initial-input (slime-repl-current-input)))
     (ivy-read "REPL search: " slime-repl-input-history
@@ -364,6 +394,7 @@ otherwise insert a saved presentation."
         (if after (delete-char 1) (backward-delete-char 1))
       (insert char))))
 
+;;** `lisp-toggle-tick'
 (defun lisp-toggle-tick ()
   "Toggle ' at the start of current region(if active) or symbol."
   (interactive)
@@ -379,7 +410,7 @@ otherwise insert a saved presentation."
   (define-key map (kbd "C-c '") 'lisp-toggle-tick)
   (define-key map (kbd "C-c '") 'lisp-toggle-tick))
 
-;; copy to repl
+;;* copying to repl
 (defun slime--repl-insert-string (string)
   (when string
     (slime-switch-to-output-buffer)
@@ -425,19 +456,21 @@ With prefix arg, copy toplevel form."
 (define-key slime-mode-map [remap slime-call-defun] 'slime-copy-to-repl)
 (define-key slime-repl-mode-map (kbd "C-c C-y") 'slime-copy-to-repl)
 
-;; evaluation
-(defun slime-eval-last-expression-eros ()
-  (interactive)
-  (destructuring-bind (output value)
-      (slime-eval `(swank:eval-and-grab-output ,(slime-expression-at-point)))
-    (eros--make-result-overlay (concat output value)
-      :where (point)
-      :duration eros-eval-result-duration)))
+;;* evaluation(eros)
+;; Display overlays with evaluation results
+(with-eval-after-load 'eros
+  (defun slime-eval-last-expression-eros ()
+    (interactive)
+    (destructuring-bind (output value)
+        (slime-eval `(swank:eval-and-grab-output ,(slime-expression-at-point)))
+      (eros--make-result-overlay (concat output value)
+                                 :where (point)
+                                 :duration eros-eval-result-duration)))
 
-(define-key slime-mode-map (kbd "C-x C-e") 'slime-eval-last-expression-eros)
-(define-key slime-repl-mode-map (kbd "C-x C-e") 'slime-eval-last-expression-eros)
+  (define-key slime-mode-map (kbd "C-x C-e") 'slime-eval-last-expression-eros)
+  (define-key slime-repl-mode-map (kbd "C-x C-e") 'slime-eval-last-expression-eros))
 
-;; asdf
+;;* asdf
 (with-eval-after-load 'slime-asdf
   (defun slime-load-system-dwim (reload)
     "Compile and load an ASDF system. With prefix arg reload it instead."
@@ -451,12 +484,12 @@ With prefix arg, copy toplevel form."
   (define-key slime-mode-map (kbd "C-c L") 'slime-load-system-dwim)
   (define-key slime-repl-mode-map (kbd "C-c L") 'slime-load-system-dwim))
 
-;; slime-import-symbol
+;;* `slime-import-symbol'
 (with-eval-after-load 'slime-package-fu
   (require 'slime-import-symbol)
   (define-key slime-mode-map (kbd "C-c C-x C-i") 'slime-import-symbol))
 
-;; trace
+;;* trace
 (defun sldb-fetch-traces ()
   (interactive)
   (with-current-buffer (slime-trace-dialog--ensure-buffer)
@@ -467,7 +500,7 @@ With prefix arg, copy toplevel form."
   (call-interactively #'sldb-continue)
   (call-interactively #'sldb-fetch-traces))
 
-;;** `avy-actions'
+;;* avy-actions
 (defun avy-action-copy-to-repl (pt)
   (when (number-or-marker-p pt)
     (case major-mode
@@ -487,10 +520,10 @@ With prefix arg, copy toplevel form."
        (slime-inspect-presentation-at-point pt)))))
 
 (add-to-list 'avy-dispatch-alist (cons ?C #'avy-action-copy-to-repl))
-
 (add-to-list 'avy-dispatch-alist (cons ?I #'avy-action-inspect))
 
-;;* `KEYS'
+
+;;* KEYS
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation)
   (define-key keymap [remap slime-edit-definition] 'slime-edit-definition-ivy)
@@ -524,15 +557,14 @@ With prefix arg, copy toplevel form."
 (define-key slime-repl-mode-map [remap swiper-at-point] 'swiper-isearch)
 (define-key slime-repl-mode-map [remap slime-repl-previous-matching-input] 'slime-repl-complete-ivy)
 
-;; package-related utils
+;;** package-related utils
 (define-key slime-mode-map (kbd "C-c w") 'slime-kill-package-name)
 (define-key slime-mode-map (kbd "C-c C-p") 'slime-sync-package-and-default-directory)
 (define-key sldb-mode-map (kbd "C-c C-p") 'sldb-sync-frame-package)
 (define-key slime-repl-mode-map (kbd "C-c C-p") 'slime-repl-set-default-package)
 (define-key slime-mode-map (kbd "C-c C-x C-s") 'slime-export-symbol-at-point)
 
-
-;;** `presentations'
+;;** presentations
 (define-key slime-presentation-map "r" 'slime-copy-presentation-at-point-to-repl)
 (define-key slime-presentation-map "c" 'slime-copy-presentation-at-point-to-repl)
 (define-key slime-presentation-map "w" 'slime-copy-presentation-at-point-to-kill-ring)
@@ -549,6 +581,7 @@ With prefix arg, copy toplevel form."
 
 (define-key slime-presentation-command-map (kbd "C-v") 'slime-avy-copy-presentation-to-point)
 
+;;** lispy
 (with-eval-after-load 'lispy
   (define-key emacs-lisp-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
   (define-key emacs-lisp-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
@@ -557,16 +590,7 @@ With prefix arg, copy toplevel form."
   (define-key slime-mode-map (kbd "<C-return>") 'eir-eval-in-slime)
   )
 
-(with-eval-after-load 'macrostep
-  (when (fboundp 'evil-mode)
-    (evil-make-overriding-map macrostep-keymap 'motion)
-    (evil-make-overriding-map macrostep-keymap 'normal)
-    (evil-define-key* '(motion normal) macrostep-keymap
-                      "q" 'macrostep-collapse-all
-                      "c" 'macrostep-collapse
-                      "e" 'macrostep-expand
-                      "RET" 'macrostep-expand)))
-
+;;** Elisp
 (define-key emacs-lisp-mode-map (kbd "C-c C-k") 'eval-buffer)
 (define-key emacs-lisp-mode-map (kbd "C-c C-c") 'compile-defun)
 (define-key emacs-lisp-mode-map (kbd "C-c <return>") 'macrostep-expand)
