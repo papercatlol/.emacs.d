@@ -310,6 +310,7 @@
 (define-key leader-map "b" 'counsel-ibuffer-or-recentf-other-frame)
 (define-key leader-map "c" 'ace-window)
 (define-key leader-map (kbd "TAB") 'other-window)
+(define-key leader-map (kbd "o") 'counsel-outline)
 
 ;; `evil-mc'
 ;; (with-eval-after-load 'evil-mc

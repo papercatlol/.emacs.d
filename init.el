@@ -28,7 +28,7 @@
 (require 'async)
 (require 'beginend)
 (require 'delsel)
-(require 'dired-git-info-mode)
+(require 'dired-git-info)
 (require 'dired-subtree)
 (require 'dired-rsync)
 (require 'expand-region)

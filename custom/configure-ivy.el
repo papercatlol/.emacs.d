@@ -11,7 +11,8 @@
       ivy-re-builders-alist '((t . ivy--regex-ignore-order))
       ivy-magic-tilde nil
       ivy-initial-inputs-alist (delete (assoc 'counsel-M-x ivy-initial-inputs-alist)
-                                       ivy-initial-inputs-alist))
+                                       ivy-initial-inputs-alist)
+      counsel-rg-base-command (concat counsel-rg-base-command " --sort path -M 160"))
 
 (defun ivy-add-prompt-count* (next-fn prompt)
   "fix alignment of current match number"
@@ -34,7 +35,7 @@
 
 (defun counsel-fd-occur (cmd)
   "Occur function for `counsel-fd' using `counsel-cmd-to-dired'."
-  (lambda ()
+  (lambda (&optional cands)
     (cd (ivy-state-directory ivy-last))
     (counsel-cmd-to-dired
      (counsel--expand-ls
@@ -259,7 +260,7 @@ always insert at point."
      cands
      "\n")))
 
-(setq ivy-format-functions-alist '((t . ivy-format-function-fast-keys)))
+(add-to-list 'ivy-format-functions-alist '((t . ivy-format-function-fast-keys)))
 
 (cl-defun ivy--make-fast-keys-action (n &optional (action #'ivy--done))
   (lambda ()
@@ -320,8 +321,8 @@ enable `ivy-calling' by default and restore original position on exit."
   (interactive "P")
   (call-interactively
    (if anywhere
-       (counsel-imenu-anywhere)
-       (counsel-imenu))))
+       #'counsel-imenu-anywhere
+       #'counsel-imenu)))
 
 (defun counsel-imenu-anywhere ()
   (interactive)
@@ -357,6 +358,17 @@ enable `ivy-calling' by default and restore original position on exit."
     (window-state-put state ivy-win)
     (exit-minibuffer)))
 
+;; ivy-xref-action
+(defun ivy-xref-action ()
+  (interactive)
+  (ivy-exit-with-action
+   (lambda (x)
+     (let ((symbol (intern x)))
+       (when (boundp symbol)
+         (with-ivy-window
+             (if (functionp symbol)
+                 (find-function symbol)
+               (find-variable symbol))))))))
 
 ;;* `KEYS'
 (defhydra hydra-M-g (global-map "M-g")
@@ -403,6 +415,9 @@ enable `ivy-calling' by default and restore original position on exit."
 (define-key ivy-minibuffer-map (kbd "M-j") 'ivy-next-line)
 (define-key ivy-minibuffer-map (kbd "M-k") 'ivy-previous-line)
 (define-key ivy-minibuffer-map (kbd "C-t") 'ivy-avy)
-
+(define-key ivy-minibuffer-map (kbd "C-x 4 RET") 'ivy-done-other-window)
+(define-key ivy-minibuffer-map (kbd "C-x 5 RET") 'ivy-done-other-frame)
+(define-key ivy-minibuffer-map (kbd "<C-return>") 'ivy-done-other-window)
+(define-key ivy-minibuffer-map (kbd "M-.") 'ivy-xref-action)
 
 (provide 'configure-ivy)
