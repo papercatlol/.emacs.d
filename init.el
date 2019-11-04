@@ -374,6 +374,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key dired-mode-map (kbd "I") 'dired-subtree-remove)
 (define-key dired-mode-map (kbd "r") 'dired-rsync)
 (define-key dired-mode-map (kbd ")") 'dired-git-info-mode)
+(define-key dired-mode-map (kbd "C-x g") 'magit-file-prefix-map)
 
 
 ;;** magit

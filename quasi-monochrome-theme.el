@@ -98,6 +98,7 @@
  ;; org
  '(org-level-3 ((t (:inherit default))))
  '(org-level-4 ((t (:inherit default))))
+ '(dgi-commit-message-face ((t (:inherit font-lock-string-face))))
  )
 
 (provide-theme 'quasi-monochrome)
