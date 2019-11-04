@@ -315,6 +315,15 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
       (magit-previous-line)
     (magit-section-backward)))
 
+;; dired-jump-other-frame
+(defun dired-jump-other-frame (&optional file-name)
+  "Like \\[dired-jump] (`dired-jump') but in other frame."
+  (interactive
+   (list (and current-prefix-arg
+	      (read-file-name "Jump to Dired file: "))))
+  (let ((pop-up-frames t))
+    (dired-jump t file-name)))
+
 ;; keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -334,6 +343,8 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
 (define-key grep-mode-map (kbd "C-x C-j") 'compilation-to-dired)
 (define-key compilation-mode-map (kbd "C-x C-j") 'compilation-to-dired)
+(global-set-key (kbd "C-x 4 j") 'dired-jump-other-window)
+(global-set-key (kbd "C-x 5 j") 'dired-jump-other-frame)
 
 (global-set-key (kbd "C-?") 'er/expand-region)
 (global-set-key (kbd "C-.") 'er/expand-region)
