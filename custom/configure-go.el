@@ -46,7 +46,7 @@
 (require 'smartparens)
 (require 'smartparens-config)
 
-(defun smartparens-go-setup ()
+(defun go-smartparens-setup ()
   (sp-use-paredit-bindings)
   (setq-local sp-highlight-pair-overlay nil)
   (setq-local sp-highlight-wrap-overlay nil)
@@ -57,9 +57,17 @@
     (define-key map (kbd "M-r") 'sp-splice-sexp-killing-backward)
     (define-key map (kbd "M-[") 'sp-wrap-square)
     (define-key map (kbd "M-{") 'sp-wrap-curly)
-    (define-key map (kbd "M-j") nil)))
+    (define-key map (kbd "M-\"") 'sp-wrap-quote)
+    (define-key map (kbd "M-j") nil)
+    (sp-local-pair #'go-mode "{" nil :post-handlers '((newline-and-indent-twice "<return>")))
+    (sp-local-pair #'go-mode "(" nil :post-handlers '((newline-and-indent-twice "<return>")))
+    (sp-local-pair #'go-mode "[" nil :post-handlers '((newline-and-indent-twice "<return>")))))
 
-(add-hook 'go-mode-hook 'smartparens-go-setup)
+(add-hook 'go-mode-hook 'go-smartparens-setup)
+
+(defun sp-wrap-quote ()
+  (interactive)
+  (sp-wrap-with-pair "\""))
 
 ;; TODO: move to init.el or some utils package
 (cl-defmacro with-minor-mode-map-overriding ((new-map minor-mode) &body body)
@@ -78,10 +86,6 @@
   (newline-and-indent)
   (newline-and-indent)
   (forward-line -1))
-
-(sp-local-pair #'go-mode "{" nil :post-handlers '((newline-and-indent-twice "<return>")))
-(sp-local-pair #'go-mode "(" nil :post-handlers '((newline-and-indent-twice "<return>")))
-(sp-local-pair #'go-mode "[" nil :post-handlers '((newline-and-indent-twice "<return>")))
 
 ;;* go-import
 (defvar *go-packages-cache* nil)
@@ -106,6 +110,11 @@ With prefix arg force refresh."
 
 (define-key go-mode-map (kbd "C-c G") 'go-refresh-packages-cache)
 
+;;* ivy setup
+(defun go-ivy-setup ()
+  (setq-local ivy-case-fold-search-default t) ; go uses camelcase
+  )
+(add-hook 'go-mode-hook #'go-ivy-setup)
 
 ;;* `DEFUNS'
 ;; (defun godef-jump-other-frame ()
