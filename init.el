@@ -14,8 +14,9 @@
 ;;** GC hacks
 (defun gc-with-time ()
   (let ((time (current-time)))
-    (garbage-collect)
-    (unless (minibuffer-window-active-p (selected-window))
+    (unless (or (minibuffer-window-active-p (selected-window))
+                (> (window-height (minibuffer-window)) 1))
+      (garbage-collect)
       (message "GC took %.06f sec" (float-time (time-since time))))))
 
 (setq gc-cons-threshold #x40000000) ; 1GB
@@ -40,7 +41,6 @@
 (require 'multiple-cursors)
 (require 'paredit)
 (require 'pcmpl-args)
-(require 'saveplace)
 (require 'reverse-im)
 (require 'shell-pop)
 (require 'string-edit)
@@ -70,17 +70,15 @@
 (delete-selection-mode 1)
 ;; (global-linum-mode t)
 (global-display-line-numbers-mode t)
-(show-paren-mode 1)
-(minibuffer-depth-indicate-mode 1)
-(recentf-mode 1)
 (global-hl-todo-mode 1)
 (magit-todos-mode 1)
 (dired-async-mode t)
-(setq-default save-place t)
 (reverse-im-activate "russian-computer")
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
       kill-do-not-save-duplicates t
+      history-delete-duplicates t
+      sentence-end-double-space nil
       apropos-do-all t
       dired-dwim-target t
       mouse-yank-at-point t
@@ -88,7 +86,6 @@
       load-prefer-newer t
       ediff-window-setup-function 'ediff-setup-windows-plain
       frame-title-format "%b"
-      save-place-file (concat user-emacs-directory "places")
       backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       expand-region-fast-keys-enabled nil
       er--show-expansion-message t
@@ -101,12 +98,9 @@
       avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v)
       lispy-avy-keys avy-keys
       view-read-only t
-      enable-recursive-minibuffers t
       slime-description-autofocus t
-      show-paren-priority -1
       shell-pop-window-size 50
       shell-pop-window-position "bottom"
-      recentf-max-saved-items 500
       magit-section-visibility-indicator (quote (magit-fringe-bitmap+ . magit-fringe-bitmap-))
       magit-todos-auto-group-items 1000
       magit-diff-buffer-file-locked t
@@ -123,12 +117,34 @@
                               ("DONE" . "#98fb98")
                               ("MAYBE" . "#d0bf8f")))
 
+;;* persistence
+(setq save-place-file (concat user-emacs-directory "places"))
+(save-place-mode t)
+
+(setq recentf-max-saved-items 500)
+(recentf-mode t)
+
+(setq savehist-save-minibuffer-history t)
+(setq savehist-additional-variables
+      (append savehist-additional-variables
+              '(kill-ring
+                search-ring
+                regexp-search-ring
+                last-kbd-macro
+                kmacro-ring
+                shell-command-history)))
+(savehist-mode)
+
+
+
+;;* shell-pop
 (shell-pop--set-universal-key 'shell-pop-universal-key "<f12>")
 (shell-pop--set-shell-type 'shell-pop-shell-type  '("vterm" "*vterm*"
                                                     (lambda nil
                                                       (vterm shell-pop-term-shell))))
 (define-key vterm-mode-map (kbd "<f12>") nil)
 
+;;
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
 
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -139,6 +155,7 @@
 (put 'magit-clean 'disabled nil)
 
 
+;;* magit fringe hacks
 (defun magit-status-set-wide-fringe (&optional arg)
   (display-line-numbers-mode -1)
   (set-window-fringes nil 11 5))
@@ -147,11 +164,11 @@
 (add-hook 'magit-refs-mode-hook #'magit-status-set-wide-fringe)
 (add-hook 'magit-revision-sections-hook #'magit-status-set-wide-fringe)
 
-;; custom-file
+;;* custom-file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file)
+(load custom-file t)
 
-;; modeline
+;;* modeline
 (defvar minor-mode-lighters
   '((paredit-mode " Par")
     (auto-revert-mode "")
@@ -186,7 +203,20 @@
                     '(:eval (cleaner-minor-modes))
                     " %-"))
 
-;; kludges
+;;* show-paren-mode
+(show-paren-mode 1)
+(setq show-paren-priority -1
+      show-paren-delay 0)
+
+;;* minibuffer
+(setq resize-mini-windows t
+      max-mini-window-height 0.4
+      minibuffer-eldef-shorten-default t
+      enable-recursive-minibuffers t)
+(minibuffer-depth-indicate-mode 1)
+
+
+;;* kludges
 (defun window-as-frame ()
   "Pop current window as a new frame."
   (interactive)
@@ -213,6 +243,7 @@
   (interactive)
   (magit-stage-file (buffer-file-name)))
 
+;;** rename-file-and-buffer
 ;; Stolen from prelude.
 (defun rename-file-and-buffer ()
   "Rename the current buffer and file it is visiting."
@@ -227,7 +258,7 @@
           (rename-file filename new-name t)
           (set-visited-file-name new-name t t)))))))
 
-;; Toggle delete-other-windows
+;;** Toggle delete-other-windows
 (defvar *delete-other-windows-prev-configurations* (make-hash-table)
   "Frame => window configuration prior to `delete-other-windows-toggle' call.")
 
@@ -252,7 +283,7 @@ if there is a sole window."
 
 (global-set-key [remap delete-other-windows] 'delete-other-windows-toggle)
 
-;;** `edit-indirect'
+;;** edit-indirect
 (require 'edit-indirect)
 
 (defun edit-indirect-inherit-major-mode (buffer beg end)
