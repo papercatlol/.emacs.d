@@ -41,6 +41,7 @@
 (require 'paredit)
 (require 'pcmpl-args)
 (require 'saveplace)
+(require 'reverse-im)
 (require 'shell-pop)
 (require 'string-edit)
 (require 'uniquify)
@@ -76,6 +77,7 @@
 (magit-todos-mode 1)
 (dired-async-mode t)
 (setq-default save-place t)
+(reverse-im-activate "russian-computer")
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
       kill-do-not-save-duplicates t
