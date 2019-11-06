@@ -98,6 +98,8 @@
  ;; org
  '(org-level-3 ((t (:inherit default))))
  '(org-level-4 ((t (:inherit default))))
+ '(org-date ((t (:inherit font-lock-string-face :weight bold))))
+ ;;
  '(dgi-commit-message-face ((t (:inherit font-lock-string-face))))
  )
 

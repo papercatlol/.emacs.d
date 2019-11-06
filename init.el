@@ -324,6 +324,14 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
   (let ((pop-up-frames t))
     (dired-jump t file-name)))
 
+;; org
+(setq org-default-notes-file (concat org-directory "/notes.org"))
+
+(advice-add 'org-archive-default-command :after #'org-save-all-org-buffers)
+
+(global-set-key (kbd "<f6>") 'counsel-org-capture)
+
+
 ;; keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -404,7 +412,6 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 
 ;;
 (global-set-key (kbd "<f5>") 'revert-buffer)
-(global-set-key (kbd "<f6>") 'counsel-org-capture)
 
 ;; Keymap for random useful commands. MAYBE make it a hydra
 (define-prefix-command 'cantrips-prefix-map)
