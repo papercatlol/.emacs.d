@@ -98,6 +98,7 @@ when cursor is directly inside the in-package form."
 (defun elisp-documentation (prompt)
   "Show documentation for symbol-at-point in the minibuffer.
 With prefix arg prompt for symbol first."
+  ;; MAYBE: add an option to open doc in a buffer
   (interactive "P")
   (when-let* ((symbol (if prompt
                           (intern (completing-read "Show documentation for: "
@@ -105,7 +106,9 @@ With prefix arg prompt for symbol first."
                                                    (when-let ((s (symbol-at-point)))
                                                      (symbol-name s))))
                         (symbol-at-point)))
-              (doc (documentation symbol)))
+              (doc (if (functionp symbol)
+                       (documentation symbol)
+                     (documentation-property symbol 'variable-documentation))))
     (message "%s" doc)))
 
 (define-key emacs-lisp-mode-map (kbd "C-c C-d") 'elisp-documentation)
