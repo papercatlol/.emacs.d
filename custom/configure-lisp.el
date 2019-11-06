@@ -4,7 +4,6 @@
 (require 'slime)
 (require 'slime-autoloads)
 
-(add-hook 'emacs-lisp-mode-hook #'eros-mode)
 
 (setq inferior-lisp-program (getenv "LISP_BINARY"))
 
@@ -112,6 +111,26 @@ With prefix arg prompt for symbol first."
     (message "%s" doc)))
 
 (define-key emacs-lisp-mode-map (kbd "C-c C-d") 'elisp-documentation)
+
+;;* Elisp evaluation
+(require 'eros)
+
+(defun eros-eval-last-sexp-dwim ()
+  "Eval region if active, eval symbol-at-point if any,
+else call eros-eval-last-sexp."
+  (interactive)
+  (if (region-active-p)
+      (call-interactively #'eval-region)
+    (if-let ((s (symbol-at-point)))
+        (eros--eval-overlay
+         (save-excursion
+          (forward-symbol 1)
+          (call-interactively #'eval-last-sexp))
+         (cdr (bounds-of-thing-at-point 'symbol)))
+      (call-interactively #'eros-eval-last-sexp))))
+
+(global-set-key [remap eval-last-sexp] #'eros-eval-last-sexp-dwim)
+(global-set-key [remap eval-defun] #'eros-eval-defun)
 
 ;;* slime hacks
 (defun slime-documentation ()
