@@ -69,18 +69,6 @@
   (interactive)
   (sp-wrap-with-pair "\""))
 
-;; TODO: move to init.el or some utils package
-(cl-defmacro with-minor-mode-map-overriding ((new-map minor-mode) &body body)
-  "Create a keymap locally overriding MINOR-MODE keymap and bind it to NEW-MAP inside BODY"
-  (let ((old-map (gensym)))
-    `(when-let* ((,old-map (alist-get ',minor-mode minor-mode-map-alist))
-                 (,new-map ;; (copy-keymap ,old-map)
-                           (make-sparse-keymap)))
-       (set-keymap-parent ,new-map ,old-map)
-       (make-local-variable 'minor-mode-overriding-map-alist)
-       (setf (alist-get ',minor-mode minor-mode-overriding-map-alist) ,new-map)
-       ,@body)))
-
 ;; Pressing <return> after inserting a pair creates an extra newline. Stolen from radian.el ^
 (defun newline-and-indent-twice ()
   (newline-and-indent)

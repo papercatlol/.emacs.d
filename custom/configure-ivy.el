@@ -22,7 +22,7 @@
 
 (advice-add 'ivy-add-prompt-count :around #'ivy-add-prompt-count*)
 
-;; counsel-files
+;;* counsel-files
 (defcustom counsel-files-base-cmd "fd"
   "command to list files in the project"
   :type 'string
@@ -242,7 +242,7 @@ always insert at point."
         (backward-delete-char (length regex))
       (insert regex))))
 
-;; ivy-fast-keys
+;;* ivy-fast-keys
 ;; TODO: make it into a package, allow custom keys and stuff
 (defface ivy-fast-keys-face
   '((t :inherit font-lock-comment-face :background "black"))
@@ -285,7 +285,7 @@ always insert at point."
 (define-key ivy-minibuffer-map (kbd "M-8") (ivy--make-fast-keys-action 8))
 (define-key ivy-minibuffer-map (kbd "M-9") (ivy--make-fast-keys-action 9))
 
-;; ivy-calling
+;;* ivy-calling
 (defvar ivy--initial-pos-marker nil "Position before ivy invocation.")
 
 (defun ivy--enable-calling ()
@@ -360,7 +360,7 @@ enable `ivy-calling' by default and restore original position on exit."
     (window-state-put state ivy-win)
     (exit-minibuffer)))
 
-;; ivy-xref-action
+;;* ivy-xref-action
 (defun ivy-xref-action ()
   (interactive)
   (ivy-exit-with-action
@@ -372,7 +372,41 @@ enable `ivy-calling' by default and restore original position on exit."
                  (find-function symbol)
                (find-variable symbol))))))))
 
-;;* `KEYS'
+;;* ivy-enhanced eval-expression
+(defun ivy--read-expression (prompt &optional initial-contents)
+  "Like `read-expression' but use ivy to read from minibuffer."
+  (let ((minibuffer-completing-symbol t)
+        (inhibit-message t))
+    (let ((s (ivy-read prompt read-expression-history
+                            :initial-input initial-contents
+                            :keymap ivy-read-expression-map
+                            :caller #'ivy--read-expression)))
+      (car (read-from-string s)))))
+
+(advice-add 'read--expression :override #'ivy--read-expression)
+
+
+(defun ivy--read-expression-hook ()
+  (add-function :before-until (local 'eldoc-documentation-function)
+                #'elisp-eldoc-documentation-function)
+  (eldoc-mode 1)
+  (add-hook 'completion-at-point-functions
+            #'elisp-completion-at-point nil t)
+  (run-hooks 'eval-expression-minibuffer-setup-hook)
+  (with-minor-mode-map-overriding (map paredit-mode)
+    (define-key map (kbd "C-j") nil)))
+
+(setf (alist-get #'ivy--read-expression ivy-hooks-alist) #'ivy--read-expression-hook)
+
+(defvar ivy-read-expression-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map ivy-minibuffer-map)
+    (define-key map "\t" 'completion-at-point)
+    (define-key map (kbd "C-j") 'ivy-immediate-done)
+    map))
+
+
+;;* KEYS
 (defhydra hydra-M-g (global-map "M-g")
   "M-g"
   ("n" next-error)

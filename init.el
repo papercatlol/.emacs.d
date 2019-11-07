@@ -336,7 +336,19 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 
 (advice-add #'he-substitute-string :after #'he-paredit-fix)
 
-;; magit
+;;* with-minor-mode-overriding - locally override minor mode keymap
+(cl-defmacro with-minor-mode-map-overriding ((new-map minor-mode) &body body)
+  "Create a keymap locally overriding MINOR-MODE keymap and bind it to NEW-MAP inside BODY"
+  (let ((old-map (gensym)))
+    `(when-let* ((,old-map (alist-get ',minor-mode minor-mode-map-alist))
+                 (,new-map ;; (copy-keymap ,old-map)
+                           (make-sparse-keymap)))
+       (set-keymap-parent ,new-map ,old-map)
+       (make-local-variable 'minor-mode-overriding-map-alist)
+       (setf (alist-get ',minor-mode minor-mode-overriding-map-alist) ,new-map)
+       ,@body)))
+
+;;* magit
 (defun magit-forward-dwim ()
   (interactive)
   (if (region-active-p)
@@ -349,7 +361,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
       (magit-previous-line)
     (magit-section-backward)))
 
-;; dired-jump-other-frame
+;;* dired-jump-other-frame
 (defun dired-jump-other-frame (&optional file-name)
   "Like \\[dired-jump] (`dired-jump') but in other frame."
   (interactive
@@ -358,7 +370,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
   (let ((pop-up-frames t))
     (dired-jump t file-name)))
 
-;; org
+;;* org
 (setq org-default-notes-file (concat org-directory "/notes.org"))
 
 (advice-add 'org-archive-default-command :after #'org-save-all-org-buffers)
@@ -366,7 +378,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "<f6>") 'counsel-org-capture)
 
 
-;; keybindings
+;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-<tab>") 'completion-at-point)

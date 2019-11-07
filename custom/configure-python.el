@@ -5,8 +5,8 @@
 (add-hook 'python-mode-hook 'elpy-init)
 (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 
-(setq python-shell-interpreter "ipython3.6"
-      elpy-rpc-python-command "python3.6"
+(setq python-shell-interpreter "ipython3"
+      elpy-rpc-python-command "python3.7"
       python-shell-interpreter-args "-i --simple-prompt"
       python-indent-guess-indent-offset-verbose nil)
 

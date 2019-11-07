@@ -91,6 +91,7 @@ If INTERNAL is non-nil or a prefix arg is supplied, include internal symbols."
               (symbol-name (slime-cl-symbol-name qualified-name))
               (package (slime-cl-symbol-package qualified-name)))
     (slime-package--add-import symbol-name package)
+    ;; unqualify symbol-at-point if it has been imported
     (let ((symbol-at-point (slime-symbol-at-point)))
       (when (and (not (string-suffix-p ":" symbol-at-point)) ; foo: is a valid slime-symbol(!?)
                  ;; Call eq from swank to resolve aliases
