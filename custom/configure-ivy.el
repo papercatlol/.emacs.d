@@ -229,6 +229,8 @@ always insert at point."
       (cond ((looking-at re-start-literal)
              (delete-char (length re-start))
              (goto-char (- point (length re-start))))
+            ((= point (line-end-position))
+             (insert re-start))
             (t (forward-char)
                (insert re-start)
                (goto-char (+ point (length re-start))))))))
@@ -410,6 +412,8 @@ enable `ivy-calling' by default and restore original position on exit."
 ;; (define-key ivy-minibuffer-map (kbd "C-.") 'ivy-yank-word)
 (define-key ivy-minibuffer-map (kbd "C-,") 'ivy-minibuffer-toggle-symbol-start)
 (define-key ivy-minibuffer-map (kbd "C-.") 'ivy-minibuffer-insert-symbol-end)
+(define-key counsel-describe-map (kbd "C-,") 'ivy-minibuffer-toggle-symbol-start)
+(define-key counsel-describe-map (kbd "C-.") 'ivy-minibuffer-insert-symbol-end)
 (define-key ivy-minibuffer-map (kbd "M-o") 'ivy-occur)
 (define-key ivy-minibuffer-map (kbd "M-a") 'ivy-dispatching-done)
 (define-key ivy-minibuffer-map (kbd "M-j") 'ivy-next-line)
@@ -418,6 +422,10 @@ enable `ivy-calling' by default and restore original position on exit."
 (define-key ivy-minibuffer-map (kbd "C-x 4 RET") 'ivy-done-other-window)
 (define-key ivy-minibuffer-map (kbd "C-x 5 RET") 'ivy-done-other-frame)
 (define-key ivy-minibuffer-map (kbd "<C-return>") 'ivy-done-other-window)
-(define-key ivy-minibuffer-map (kbd "M-.") 'ivy-xref-action)
+;; (define-key ivy-minibuffer-map (kbd "M-.") 'ivy-xref-action)
+(define-key ivy-minibuffer-map (kbd "M-.") 'counsel-find-symbol)
+(define-key ivy-minibuffer-map (kbd "M-,") 'counsel--info-lookup-symbol)
+
+
 
 (provide 'configure-ivy)

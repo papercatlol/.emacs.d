@@ -124,6 +124,7 @@
 (setq recentf-max-saved-items 500)
 (recentf-mode t)
 
+(require 'savehist)
 (setq savehist-save-minibuffer-history t)
 (setq savehist-additional-variables
       (append savehist-additional-variables

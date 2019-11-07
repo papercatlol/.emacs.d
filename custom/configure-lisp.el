@@ -84,11 +84,16 @@ when cursor is directly inside the in-package form."
              (put new 'common-lisp-indent-function
                   (get old 'common-lisp-indent-function))))
     (%copy-indent 'cl-flet 'flet)
+    (%copy-indent 'flet 'flet)
     (%copy-indent 'cl-labels 'labels)
     (%copy-indent 'cl-defun 'defun)
     (%copy-indent 'when-let 'when)
     (%copy-indent 'when-let* 'when)
     (%copy-indent 'eval-after-load 'when)
+    (%copy-indent 'letf 'let)
+    (%copy-indent 'letf* 'let)
+    (%copy-indent 'cl-letf 'let)
+    (%copy-indent 'cl-letf* 'let)
     (put 'if 'common-lisp-indent-function 2)
     (put 'if-let 'common-lisp-indent-function 2)
     (put 'if-let* 'common-lisp-indent-function 2)))
@@ -388,7 +393,7 @@ otherwise insert a saved presentation."
     `(setf (alist-get ',mode lisp-keywords-with-*-variant) (rx (or ,@regexps)))))
 
 (define-*-keywords lisp-mode "let" "do" "list" "prog")
-(define-*-keywords emacs-lisp-mode "let" "if-let" "when-let" "do" "list" "prog")
+(define-*-keywords emacs-lisp-mode "let" "if-let" "when-let" "do" "list" "prog" "letf" "cl-letf")
 
 (defun lisp-toggle-*-form (arg)
   "Toggle * of ARGth nearest enclosing form that has a *-variant."
