@@ -356,6 +356,26 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
        (setf (alist-get ',minor-mode minor-mode-overriding-map-alist) ,new-map)
        ,@body)))
 
+;;** narrowing
+(setq narrow-to-defun-include-comments t)
+(put 'narrow-to-page 'disabled nil)
+
+(defun narrow-dwim (nest)
+  (interactive "P")
+  "Widen if buffer is narrowed and no prefix arg is supplied.
+Else if region is active - narrow-to-region.
+Else narrow-to-defun."
+  ;; MAYBE: save nested narrows
+  ;; MAYBE: restore screen position after `widen'
+  ;; MAYBE: support `org-narrow-to-block'
+  (cond ((and (not nest) (buffer-narrowed-p))
+         (widen))
+        ((region-active-p)
+         (call-interactively #'narrow-to-region))
+        (t (call-interactively #'narrow-to-defun))))
+
+(global-set-key (kbd "C-x C-n") 'narrow-dwim)
+
 ;;* magit
 (defun magit-forward-dwim ()
   (interactive)
