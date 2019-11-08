@@ -233,6 +233,17 @@
   (if arg (evil-show-jumps-ivy)
     (call-interactively #'evil-jump-forward)))
 
+;;** tab bindings
+(defun tab-indent ()
+  "Like `indent-for-tab-command', but don't try completing regardless of `tab-always-indent' value."
+  (interactive)
+  (let ((tab-always-indent t))
+    (call-interactively #'indent-for-tab-command)))
+
+(define-key evil-motion-state-map [remap evil-jump-backward] 'evil-jump-backward-dwim)
+(define-key evil-motion-state-map [remap evil-jump-forward] 'evil-jump-forward-dwim)
+(define-key evil-motion-state-map (kbd "<tab>") 'tab-indent)
+
 ;;** `frames'
 ;; (defun frame-list-for-i3-workspace ()
 ;;   "KLUDGE. List of frames in current i3 workspace. Doesn't return current frame because it is
@@ -309,7 +320,7 @@
 (define-key leader-map "f" 'evil-avy-goto-char-2)
 (define-key leader-map "b" 'counsel-ibuffer-or-recentf-other-frame)
 (define-key leader-map "c" 'ace-window)
-(define-key leader-map (kbd "TAB") 'other-window)
+(define-key leader-map (kbd "<tab>") 'other-window)
 (define-key leader-map (kbd "o") 'counsel-outline)
 
 ;; `evil-mc'
@@ -360,8 +371,6 @@
 (define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
 (define-key evil-normal-state-map (kbd "S") 'avy-goto-symbol-end-in-line)
 (define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
-(define-key evil-motion-state-map [remap evil-jump-backward] 'evil-jump-backward-dwim)
-(define-key evil-motion-state-map [remap evil-jump-forward] 'evil-jump-forward-dwim)
 (define-key evil-visual-state-map (kbd "C-c i") 'edit-indirect-region)
 
 ;; evil keymaps bullshit

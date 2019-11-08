@@ -336,7 +336,15 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 
 (advice-add #'he-substitute-string :after #'he-paredit-fix)
 
-;;* with-minor-mode-overriding - locally override minor mode keymap
+;;** tab competion and hippie-expand
+(setq tab-always-indent 'complete)
+;; Distinguish C-i and keyboard tab key
+(global-set-key (kbd "C-i") 'hippie-expand)
+(global-set-key (kbd "<tab>") 'indent-for-tab-command)
+;; Global <tab> overrides minor-mode TAB binding(?) TODO: look into it
+(define-key magit-mode-map (kbd "<tab>") 'magit-section-toggle)
+
+;;** with-minor-mode-overriding - locally override minor mode keymap
 (cl-defmacro with-minor-mode-map-overriding ((new-map minor-mode) &body body)
   "Create a keymap locally overriding MINOR-MODE keymap and bind it to NEW-MAP inside BODY"
   (let ((old-map (gensym)))

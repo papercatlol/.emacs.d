@@ -401,7 +401,7 @@ enable `ivy-calling' by default and restore original position on exit."
 (defvar ivy-read-expression-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map ivy-minibuffer-map)
-    (define-key map "\t" 'completion-at-point)
+    (define-key map (kbd "<tab>") 'completion-at-point)
     (define-key map (kbd "C-j") 'ivy-immediate-done)
     map))
 
