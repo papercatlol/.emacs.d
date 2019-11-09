@@ -554,6 +554,58 @@ With prefix arg, copy toplevel form."
 (add-to-list 'avy-dispatch-alist (cons ?C #'avy-action-copy-to-repl))
 (add-to-list 'avy-dispatch-alist (cons ?I #'avy-action-inspect))
 
+;;* macrostep
+(defun ace-link-macrostep ()
+  "Jump to and expand a macro or collapse an expaded one."
+  (interactive)
+  (let ((pt (avy-with ace-link-macrostep
+              (avy--process
+               (ace-link--macrostep-collect)
+               (avy--style-fn avy-style)))))
+      (ace-link--macrostep-action pt)))
+
+(defun ace-link--macrostep-action (pt)
+  (when (number-or-marker-p pt)
+    (goto-char pt)
+    (if (get-text-property pt 'macrostep-macro-start)
+        (macrostep-expand)
+      (macrostep-collapse))))
+
+(defun ace-link--macrostep-collect ()
+  (let ((candidates (list))
+        (prop-macro-start 'macrostep-macro-start)
+        (ov-original-text 'macrostep-original-text))
+    ;; macro forms that can be expanded
+    (loop with pt = (window-start)
+          while (and pt (< pt (window-end)))
+          when (get-text-property pt prop-macro-start)
+            do (pushnew pt candidates)
+          do (setq pt (next-single-property-change pt prop-macro-start)))
+    ;; macro forms that can be collapsed
+    (loop for ov in macrostep-overlays
+          for start = (overlay-start ov)
+          when (and (>= start (window-start))
+                    (<= start (window-end)))
+            do (pushnew start candidates))
+    (nreverse candidates)))
+
+(setf (alist-get 'ace-link-macrostep avy-styles-alist) 'pre)
+
+(with-eval-after-load 'macrostep
+  (define-key macrostep-keymap (kbd "C-f") 'ace-link-macrostep)
+  (when (fboundp 'evil-mode)
+    ;; From evil-collection-macrostep.el:
+    ;; Keymaps don't seem to be populated on first try.
+    ;; Force `evil' to normalize keymaps.
+    ;; Why? Something to do with buffer-read-only?
+    (add-hook 'macrostep-mode-hook #'evil-normalize-keymaps)
+    (defvar macrostep-keymap)
+    (evil-make-overriding-map macrostep-keymap 'normal)
+    (evil-add-hjkl-bindings macrostep-keymap 'normal
+                            "u" 'macrostep-collapse
+                            "m" 'macrostep-expand
+                            "<return>" 'macrostep-expand
+                            "<backtab>" 'macrostep-prev-macro)))
 
 ;;* KEYS
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))

@@ -373,7 +373,7 @@
 (define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
 (define-key evil-visual-state-map (kbd "C-c i") 'edit-indirect-region)
 
-;; evil keymaps bullshit
+;;** evil keymaps bullshit
 (require 'slime)
 (dolist (map (list helpful-mode-map help-mode-map
                    compilation-mode-map grep-mode-map
@@ -383,19 +383,6 @@
   (evil-set-initial-state map 'normal)
   (evil-make-overriding-map map 'normal)
   (evil-add-hjkl-bindings map))
-
-(with-eval-after-load 'macrostep
-  ;; From evil-collection-macrostep.el:
-  ;; Keymaps don't seem to be populated on first try.
-  ;; Force `evil' to normalize keymaps.
-  ;; Why? Something to do with buffer-read-only?
-  (add-hook 'macrostep-mode-hook #'evil-normalize-keymaps)
-  (defvar macrostep-keymap)
-  (evil-make-overriding-map macrostep-keymap 'normal)
-  (evil-add-hjkl-bindings macrostep-keymap 'normal
-                          "u" 'macrostep-collapse
-                          "<return>" 'macrostep-expand
-                          "<backtab>" 'macrostep-prev-macro))
 
 ;;** `move-text'
 (defhydra move-text-hydra ()

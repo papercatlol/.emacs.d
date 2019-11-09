@@ -107,6 +107,7 @@
       magit-log-arguments '("-n64" "--graph" "--decorate" "--patch")
       xref-show-xrefs-function #'ivy-xref-show-xrefs
       compilation-scroll-output t
+      initial-major-mode 'emacs-lisp-mode
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
