@@ -107,13 +107,15 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
 
 (defun swiper-at-point ()
   (interactive)
-  (setq isearch-forward t) ; evil search direction
-  (counsel-grep-or-swiper
-   (cond (current-prefix-arg nil)
-         ((region-active-p)
-          (buffer-substring (point) (mark)))
-         ((symbol-at-point)
-          (symbol-name (symbol-at-point))))))
+  (if (= 16 (prefix-numeric-value current-prefix-arg))
+      (call-interactively #'ivy-resume)
+    (setq isearch-forward t)            ; evil search direction
+    (counsel-grep-or-swiper
+     (cond (current-prefix-arg nil)
+           ((region-active-p)
+            (buffer-substring (point) (mark)))
+           ((symbol-at-point)
+            (symbol-name (symbol-at-point)))))))
 
 (defun ivy-yank-symbol-at-point ()
   (interactive)
@@ -339,6 +341,8 @@ enable `ivy-calling' by default and restore original position on exit."
               :caller 'counsel-imenu)))
 
 ;; other-window/frame
+(ivy-enable-calling-for-func 'counsel-outline)
+;;* ivy-done-other-window/frame
 (defun ivy-done-other-window ()
   (interactive)
   (when-let* ((ivy-win (ivy--get-window ivy-last))

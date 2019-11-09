@@ -481,7 +481,7 @@ Else narrow-to-defun."
 (define-key magit-file-prefix-map "f" 'magit-find-file)
 (define-key magit-file-prefix-map "b" 'magit-blame)
 (define-key magit-file-prefix-map "s" 'magit-stage-buffer-file)
-(define-key magit-file-prefix-map "d" 'magit-diff-buffer-file)
+(define-key magit-file-prefix-map "d" 'magit-diff)
 (define-key magit-file-prefix-map "D" 'vc-ediff)
 
 ;;
