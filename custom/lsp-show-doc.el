@@ -9,7 +9,8 @@
   "Query documentation from LSP and display it in the minibuffer"
   (when-let* ((resp (lsp-request "textDocument/hover" (lsp--text-document-position-params)))
               (doc (lsp-inline-doc--render-contents (gethash "contents" resp))))
-    (message (substring-no-properties doc))))
+    (let ((max-mini-window-height 1.0))
+      (message (substring-no-properties doc)))))
 
 (defun lsp-inline-doc--render-contents (contents)
   (lsp--render-element contents)

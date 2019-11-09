@@ -94,6 +94,7 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'letf* 'let)
     (%copy-indent 'cl-letf 'let)
     (%copy-indent 'cl-letf* 'let)
+    (%copy-indent 'while 'when)
     (put 'if 'common-lisp-indent-function 2)
     (put 'if-let 'common-lisp-indent-function 2)
     (put 'if-let* 'common-lisp-indent-function 2)))
@@ -110,10 +111,13 @@ With prefix arg prompt for symbol first."
                                                    (when-let ((s (symbol-at-point)))
                                                      (symbol-name s))))
                         (symbol-at-point)))
-              (doc (if (functionp symbol)
+              (doc (if (or (functionp symbol)
+                           (macrop symbol))
                        (documentation symbol)
                      (documentation-property symbol 'variable-documentation))))
-    (message "%s" doc)))
+    ;; TODO: truncate docs that are more that a page long
+    (let ((max-mini-window-height 1.0))
+      (message "%s" doc))))
 
 (define-key emacs-lisp-mode-map (kbd "C-c C-d") 'elisp-documentation)
 
@@ -143,7 +147,8 @@ else call eros-eval-last-sexp."
   (interactive)
   (when-let* ((symbol-name (slime-read-symbol-name "Describe symbol: "))
               (doc (slime-eval `(swank:documentation-symbol ,symbol-name))))
-    (message doc)))
+    (let ((max-mini-window-height 1.0))
+      (message doc))))
 
 (defun slime--edit-definition-ivy (&optional where)
   "Adapted from `slime-edit-definition-cont'. Use `ivy' to select a candidate if multiple."
