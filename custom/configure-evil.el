@@ -342,7 +342,8 @@
   "L" 'org-metaright
   "H" 'org-metaleft
   "o" (evil-with-insert-state org-insert-heading-respect-content)
-  "O" (evil-with-insert-state org-meta-return))
+  "O" (evil-with-insert-state org-meta-return)
+  (kbd "<tab>") 'org-cycle)
 
 ;;** `unbind'
 (define-key evil-normal-state-map (kbd "M-.") nil)

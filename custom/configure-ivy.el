@@ -317,6 +317,7 @@ enable `ivy-calling' by default and restore original position on exit."
 ;; TODO: properly integrate imenu-anywhere
 (ivy-enable-calling-for-func 'counsel-imenu)
 (ivy-enable-calling-for-func 'ivy-xref-show-xrefs)
+(ivy-enable-calling-for-func 'counsel-outline)
 
 ;; counsel-imenu-anywhere
 (require 'imenu-anywhere)
