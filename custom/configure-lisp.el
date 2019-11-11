@@ -95,6 +95,7 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'cl-letf 'let)
     (%copy-indent 'cl-letf* 'let)
     (%copy-indent 'while 'when)
+    (%copy-indent 'evil-define-key 'defun)
     (put 'if 'common-lisp-indent-function 2)
     (put 'if-let 'common-lisp-indent-function 2)
     (put 'if-let* 'common-lisp-indent-function 2)))

@@ -42,10 +42,8 @@
 (require 'paredit)
 (require 'pcmpl-args)
 (require 'reverse-im)
-(require 'shell-pop)
 (require 'string-edit)
 (require 'uniquify)
-(require 'vterm)
 (require 'wgrep)
 
 ;;* ./custom
@@ -99,8 +97,6 @@
       lispy-avy-keys avy-keys
       view-read-only t
       slime-description-autofocus t
-      shell-pop-window-size 50
-      shell-pop-window-position "bottom"
       magit-section-visibility-indicator (quote (magit-fringe-bitmap+ . magit-fringe-bitmap-))
       magit-todos-auto-group-items 1000
       magit-diff-buffer-file-locked t
@@ -138,13 +134,23 @@
 (savehist-mode)
 
 
+;;* shell
+(require 'vterm)
+(require 'shell-pop)
 
-;;* shell-pop
+(setq shell-pop-window-size 50
+      shell-pop-window-position "bottom")
+
 (shell-pop--set-universal-key 'shell-pop-universal-key "<f12>")
 (shell-pop--set-shell-type 'shell-pop-shell-type  '("vterm" "*vterm*"
                                                     (lambda nil
                                                       (vterm shell-pop-term-shell))))
+
+(when (fboundp 'evil-mode)
+  (evil-set-initial-state 'vterm-mode 'insert))
+
 (define-key vterm-mode-map (kbd "<f12>") nil)
+(define-key vterm-mode-map (kbd "C-x C-c") 'ace-window)
 
 ;;
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
@@ -406,6 +412,11 @@ Else narrow-to-defun."
 
 (global-set-key (kbd "<f6>") 'counsel-org-capture)
 
+;;* rg
+(require 'rg)
+
+(define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
+
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
@@ -497,7 +508,8 @@ Else narrow-to-defun."
 (define-key cantrips-prefix-map (kbd "d") 'describe-text-properties)
 (define-key cantrips-prefix-map (kbd "f") 'describe-face)
 (define-key cantrips-prefix-map (kbd "i") 'ielm)
-(define-key cantrips-prefix-map (kbd "/") 'rg)
+(define-key cantrips-prefix-map (kbd "/") 'rg-dwim)
+(define-key cantrips-prefix-map (kbd "M-/") 'rg-menu)
 (define-key cantrips-prefix-map (kbd "b") 'counsel-descbinds)
 (define-key cantrips-prefix-map (kbd "e") 'toggle-debug-on-error)
 
