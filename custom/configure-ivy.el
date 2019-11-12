@@ -166,22 +166,24 @@ Now also supports ivy-views."
                                   (let ((filename (substring-no-properties filename)))
                                     (cons (format "Recentf: %s" filename)
                                           filename)))
-                                recentf-list)))
-    (let ((where where))
-      (ivy-read "Switch to buffer: "
-                (append alive-buffers recent-buffers ivy-views)
-                :history 'counsel-ibuffer-or-recentf-history
-                :action (lambda (item)
-                          (typecase item
-                            (string (if (string-prefix-p "{}" item)
-                                        (ivy-new-view item)
-                                      (visit-buffer-or-file item where)))
-                            (cons (visit-buffer-or-file (cdr item) where))))
-                :caller 'counsel-ibuffer-or-recentf))))
+                                recentf-list))
+        (prompt-where (if where (format " other %s" (subseq (symbol-name where) 1)) "")))
+    (ivy-read (format "Switch to buffer%s: " prompt-where)
+              (append alive-buffers recent-buffers ivy-views)
+              :history 'counsel-ibuffer-or-recentf-history
+              :action (lambda (item)
+                        (typecase item
+                          (string (if (string-prefix-p "{}" item)
+                                      (ivy-new-view item)
+                                    (visit-buffer-or-file item where)))
+                          (cons (visit-buffer-or-file (cdr item) where))))
+              :caller 'counsel-ibuffer-or-recentf)))
 
 (defun counsel-ibuffer-or-recentf-other-window (&optional name where)
   (interactive)
-  (counsel-ibuffer-or-recentf name :window))
+  (if (= 4 (prefix-numeric-value current-prefix-arg))
+      (counsel-ibuffer-or-recentf name :frame)
+    (counsel-ibuffer-or-recentf name :window)))
 
 (defun counsel-ibuffer-or-recentf-other-frame (&optional name where)
   (interactive)

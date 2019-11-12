@@ -373,6 +373,7 @@
 (define-key evil-normal-state-map (kbd "S") 'avy-goto-symbol-end-in-line)
 (define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
 (define-key evil-visual-state-map (kbd "C-c i") 'edit-indirect-region)
+(define-key evil-normal-state-map (kbd "C-n") 'counsel-ibuffer-or-recentf-other-window)
 
 ;;** evil keymaps bullshit
 (require 'slime)
