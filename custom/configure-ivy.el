@@ -11,9 +11,9 @@
       ivy-re-builders-alist '((t . ivy--regex-ignore-order))
       ivy-magic-tilde nil
       ivy-initial-inputs-alist (delete (assoc 'counsel-M-x ivy-initial-inputs-alist)
-                                       ivy-initial-inputs-alist)
-      counsel-rg-base-command (concat counsel-rg-base-command " --sort path -M 160"))
+                                       ivy-initial-inputs-alist))
 
+;;* prompt count
 (defun ivy-add-prompt-count* (next-fn prompt)
   "fix alignment of current match number"
   (if (string-match "%.*d" ivy-count-format)
