@@ -98,6 +98,64 @@ updates command results. FLAG is a string."
   (counsel-shell-command "rg" :args '("-M 120"))
   )
 
+(cl-defmacro def-counsel-shell-command (name &key
+                                               (cmd (error "CMD is required."))
+                                               default-args
+                                               bind
+                                               initial-input
+                                               dynamic-collection
+                                               keymap)
+  (assert (and name cmd) t)
+  (let* ((keymap-provided-p (and keymap (symbolp keymap) (boundp keymap)
+                                 (or (keymapp (symbol-value keymap))
+                                     (error "%s is not a keymap." (symbol-name keymap)))))
+         (keymap-name (or (and keymap-provided-p keymap)
+                          (and (csc/quoted-symbol-p keymap) (second keymap))
+                          (and bind (intern (concat (symbol-name name) "-map")))))
+         (keymap-def (and keymap-name (not keymap-provided-p)
+                          `(defvar ,keymap-name
+                             (let ((m (make-sparse-keymap)))
+                               (set-keymap-parent m counsel-shell-command-map)
+                               m))))
+         (bindings (and bind (loop for (key command) on (csc/unquote bind) by #'cddr
+                                   collect `(define-key ,keymap-name,key ,command))))
+         (default-args (csc/ensure-quoted default-args))
+         (csc-args (reduce #'append
+                           (list
+                            (and initial-input (list :initial-input initial-input))
+                            (and dynamic-collection (list :dynamic-collection dynamic-collection))
+                            (and keymap (list :keymap keymap-name))))))
+    `(progn
+       ,@(when keymap-def (list keymap-def))
+       ,@bindings
+       (cl-defun ,name (&key ,(if initial-input
+                                  (list 'initial-input initial-input)
+                                'initial-input)
+                          (args ,default-args))
+         (interactive)
+         (counsel-shell-command ,cmd
+                                :initial-input initial-input
+                                :args args ,@csc-args)))))
+
+;;* utils
+(defun csc/quoted-p (x)
+  (and (consp x)
+       (eq 'quote (car x))))
+
+(defun csc/quoted-symbol-p (x)
+  (and (csc/quoted-p x)
+       (symbolp (second x))
+       (not (cddr x))))
+
+(defun csc/ensure-quoted (x)
+  (if (csc/quoted-p x)
+      x
+    `',x))
+
+(defun csc/unquote (x)
+  (if (csc/quoted-p x)
+      (second x)
+    x))
 
 
 (provide 'counsel-shell-command)
