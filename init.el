@@ -412,11 +412,6 @@ Else narrow-to-defun."
 
 (global-set-key (kbd "<f6>") 'counsel-org-capture)
 
-;;* rg
-(require 'rg)
-
-(define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
-
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))

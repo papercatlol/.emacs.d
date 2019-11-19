@@ -1,5 +1,5 @@
 (require 'ivy)
-
+(require 'rg)
 
 ;;* vars
 (setq rg-command "rg --no-heading --line-number --color never -M 160")
@@ -7,11 +7,13 @@
 (setq counsel-grep-base-command (concat rg-command " --no-filename %s %s"))
 (setf (alist-get 'counsel-grep ivy-more-chars-alist) 0)
 
-;;* show current dir in prompt
-(defun counsel-rg--add-prompt-dir (&rest args)
-  (setq ivy--prompt (counsel-prompt-function-dir)))
+;;* rg mode keybindings
+(define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
 
-(setf (alist-get 'counsel-rg ivy-hooks-alist) #'counsel-rg--add-prompt-dir)
+;;* show current dir in prompt
+(ivy-set-prompt #'counsel-rg #'counsel-prompt-function-dir)
+(ivy-set-prompt #'counsel-dirs #'counsel-prompt-function-dir)
+(ivy-set-prompt #'counsel-files #'counsel-prompt-function-dir)
 
 ;;* changing current dir on the fly
 (defun counsel-rg-change-dir (&optional new-dir)
@@ -35,7 +37,8 @@
 
 (define-key counsel-ag-map (kbd "C-c C-d") 'counsel-rg-change-dir)
 (define-key counsel-ag-map (kbd "C-c DEL") 'counsel-rg-up-dir)
-
+(define-key counsel-find-file-map (kbd "C-c C-d") 'counsel-rg-change-dir)
+(define-key counsel-find-file-map (kbd "C-c DEL") 'counsel-rg-up-dir)
 
 ;;* use `rg.el' instead of ivy-occur
 ;; TODO
