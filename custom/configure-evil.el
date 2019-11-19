@@ -386,6 +386,12 @@
   (evil-make-overriding-map map 'normal)
   (evil-add-hjkl-bindings map))
 
+
+;;** ibuffer
+;; old M-j: ibuffer-jump-to-filter-group
+(define-key ibuffer-mode-map (kbd "M-j") 'evil-scroll-line-down-dwim)
+(define-key ibuffer-mode-map (kbd "M-k") 'evil-scroll-line-up-dwim)
+
 ;;** `move-text'
 (defhydra move-text-hydra ()
   ("j" evil-move-forward "down")
