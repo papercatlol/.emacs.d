@@ -59,6 +59,7 @@
 (require 'configure-highlight)
 (require 'configure-isearch)
 (require 'configure-ivy)
+(require 'counsel-ripgrep)
 ;; (require 'configure-go)
 (require 'configure-go-lsp)
 (require 'configure-lisp)
@@ -458,7 +459,8 @@ Else narrow-to-defun."
   ("x" #'ibuffer-delete-saved-filters "ibuffer-delete-saved-filters")
   ("|" #'ibuffer-or-filter "ibuffer-or-filter"))
 
-(define-key ibuffer-mode-map (kbd "/") 'hydra-ibuffer-filters/body)
+(with-eval-after-load 'ibuffer
+  (define-key ibuffer-mode-map (kbd "/") 'hydra-ibuffer-filters/body))
 
 ;; experimental
 ;; (global-set-key (kbd "C-x C-o") 'ace-window)

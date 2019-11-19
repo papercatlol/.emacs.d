@@ -389,8 +389,9 @@
 
 ;;** ibuffer
 ;; old M-j: ibuffer-jump-to-filter-group
-(define-key ibuffer-mode-map (kbd "M-j") 'evil-scroll-line-down-dwim)
-(define-key ibuffer-mode-map (kbd "M-k") 'evil-scroll-line-up-dwim)
+(with-eval-after-load 'ibuffer
+  (define-key ibuffer-mode-map (kbd "M-j") 'evil-scroll-line-down-dwim)
+  (define-key ibuffer-mode-map (kbd "M-k") 'evil-scroll-line-up-dwim))
 
 ;;** `move-text'
 (defhydra move-text-hydra ()
