@@ -499,20 +499,29 @@ Else narrow-to-defun."
 ;;
 (global-set-key (kbd "<f5>") 'revert-buffer)
 
-;; Keymap for random useful commands. MAYBE make it a hydra
-(define-prefix-command 'cantrips-prefix-map)
-(global-set-key (kbd "M-z") 'cantrips-prefix-map)
-(define-key cantrips-prefix-map (kbd "s") 'string-edit-at-point)
-(define-key cantrips-prefix-map (kbd "p") 'counsel-package)
-(define-key cantrips-prefix-map (kbd "r") 'rename-file-and-buffer)
-(define-key cantrips-prefix-map (kbd "d") 'describe-text-properties)
-(define-key cantrips-prefix-map (kbd "f") 'describe-face)
-(define-key cantrips-prefix-map (kbd "i") 'ielm)
-(define-key cantrips-prefix-map (kbd "/") 'rg-dwim)
-(define-key cantrips-prefix-map (kbd "M-/") 'rg-menu)
-(define-key cantrips-prefix-map (kbd "b") 'counsel-descbinds)
-(define-key cantrips-prefix-map (kbd "e") 'toggle-debug-on-error)
+;;** Hydra for random useful commands.
+(defhydra hydra-cantrips-prefix-map (:columns 1 :exit t)
+  "cantrips"
+  ("s" #'string-edit-at-point "string-edit-at-point")
+  ("p" #'counsel-package "counsel-package")
+  ("r" #'rename-file-and-buffer "rename-file-and-buffer")
+  ("d" #'describe-text-properties "describe-text-properties")
+  ("f" #'describe-face "describe-face")
+  ("i" #'ielm "ielm")
+  ("/" #'rg-dwim "rg-dwim")
+  ("b" #'counsel-descbinds "counsel-descbinds")
+  ("e" #'toggle-debug-on-error "toggle-debug-on-error"))
 
+(defun hydra-cantrips-M-x ()
+  (interactive)
+  (ivy-exit-with-action
+   (lambda (x)
+     (hydra-cantrips-prefix-map/body))))
+
+(define-key counsel-describe-map [remap counsel-M-x] 'hydra-cantrips-M-x)
+(global-set-key (kbd "M-z") 'hydra-cantrips-prefix-map/body)
+
+;;** ace-link
 (ace-link-setup-default (kbd "C-f"))
 (dolist (keymap (list help-mode-map package-menu-mode-map compilation-mode-map grep-mode-map))
   (define-key keymap (kbd "C-f") 'ace-link))

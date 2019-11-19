@@ -412,6 +412,20 @@ enable `ivy-calling' by default and restore original position on exit."
     (define-key map (kbd "C-j") 'ivy-immediate-done)
     map))
 
+;;* counsel-M-x+
+;; Squeeze in a few more bindings into `counsel-M-x'.
+;; TODO: remove <remap>s from `counsel-descbinds'
+(defun counsel-M-x+ (&optional initial-input)
+  "Like `counsel-M-x', but call `counsel-descbinds' with prefix arg."
+  (interactive)
+  (call-interactively
+   (if current-prefix-arg
+       #'counsel-descbinds
+     #'counsel-M-x)))
+
+(global-set-key [remap M-x] 'counsel-M-x+)
+(global-set-key [remap counsel-M-x] 'counsel-M-x+)
+
 
 ;;* KEYS
 (defhydra hydra-M-g (global-map "M-g")
@@ -430,7 +444,6 @@ enable `ivy-calling' by default and restore original position on exit."
 (global-set-key (kbd "C-s") 'swiper-at-point)
 (global-set-key (kbd "C-M-s") 'swiper-all)
 (global-set-key (kbd "C-r") 'counsel-grep-or-swiper)
-(global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
 (global-set-key (kbd "C-x f") 'counsel-files)
 (global-set-key (kbd "C-x d") 'counsel-dirs)
