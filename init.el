@@ -413,6 +413,18 @@ Else narrow-to-defun."
 
 (global-set-key (kbd "<f6>") 'counsel-org-capture)
 
+;;* diff-buffer-with-file
+(defun diff-current-buffer-with-file (prompt)
+  (interactive "P")
+  (let ((buffer (if prompt
+                    (get-buffer
+                     (completing-read "Buffer: "
+                                      (loop for b in (buffer-list)
+                                            when (buffer-file-name b)
+                                                 collect it)))
+                  (current-buffer))))
+    (diff-buffer-with-file buffer)))
+
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
@@ -549,7 +561,8 @@ Else narrow-to-defun."
   ("i" #'ielm "ielm")
   ("/" #'rg-dwim "rg-dwim")
   ("b" #'counsel-descbinds "counsel-descbinds")
-  ("e" #'toggle-debug-on-error "toggle-debug-on-error"))
+  ("e" #'toggle-debug-on-error "toggle-debug-on-error")
+  ("=" #'diff-current-buffer-with-file "diff-current-buffer-with-file"))
 
 (defun hydra-cantrips-M-x ()
   (interactive)
@@ -557,7 +570,6 @@ Else narrow-to-defun."
    (lambda (x)
      (hydra-cantrips-prefix-map/body))))
 
-(define-key counsel-describe-map [remap counsel-M-x] 'hydra-cantrips-M-x)
 (global-set-key (kbd "M-z") 'hydra-cantrips-prefix-map/body)
 
 ;;** ace-link

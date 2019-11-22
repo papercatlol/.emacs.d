@@ -423,8 +423,8 @@ enable `ivy-calling' by default and restore original position on exit."
        #'counsel-descbinds
      #'counsel-M-x)))
 
-(global-set-key [remap M-x] 'counsel-M-x+)
-(global-set-key [remap counsel-M-x] 'counsel-M-x+)
+(global-set-key (kbd "M-x") 'counsel-M-x+)
+(define-key counsel-describe-map (kbd "M-x") 'hydra-cantrips-M-x)
 
 
 ;;* KEYS
