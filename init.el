@@ -173,6 +173,43 @@
 (add-hook 'magit-refs-mode-hook #'magit-status-set-wide-fringe)
 (add-hook 'magit-revision-sections-hook #'magit-status-set-wide-fringe)
 
+;;* git-gutter
+(require 'git-gutter-fringe)
+(global-git-gutter-mode t)
+
+(setq git-gutter:lighter "")
+
+;; bitmaps that look prettier with half-fringe
+(fringe-helper-define 'git-gutter-fr:added nil
+  "........"
+  "........"
+  "........"
+  "..XX...."
+  "..XX...."
+  "........"
+  "........"
+  "........")
+
+(fringe-helper-define 'git-gutter-fr:deleted nil
+  "........"
+  "........"
+  "........"
+  "..XX...."
+  "..XX...."
+  "........"
+  "........"
+  "........")
+
+(fringe-helper-define 'git-gutter-fr:modified nil
+  "........"
+  "XXXX...."
+  "XXXX...."
+  "........"
+  "........"
+  "XXXX...."
+  "XXXX...."
+  "........")
+
 ;;* custom-file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file t)
@@ -562,7 +599,10 @@ Else narrow-to-defun."
   ("/" #'rg-dwim "rg-dwim")
   ("b" #'counsel-descbinds "counsel-descbinds")
   ("e" #'toggle-debug-on-error "toggle-debug-on-error")
-  ("=" #'diff-current-buffer-with-file "diff-current-buffer-with-file"))
+  ("=" #'diff-current-buffer-with-file "diff-current-buffer-with-file")
+  ("M-g" #'git-gutter-mode "git-gutter-mode"))
+
+;; TODO: git-gutter next/prev-hunk/etc hydra
 
 (defun hydra-cantrips-M-x ()
   (interactive)
