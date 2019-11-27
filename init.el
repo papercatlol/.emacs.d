@@ -500,7 +500,7 @@ Else narrow-to-defun."
   ("b" #'counsel-descbinds "counsel-descbinds")
   ("e" #'toggle-debug-on-error "toggle-debug-on-error")
   ("=" #'diff-current-buffer-with-file "diff-current-buffer-with-file")
-  ("M-g" #'git-gutter-mode "git-gutter-mode"))
+  ("c" #'counsel-colors-emacs "counsel-colors-emacs"))
 
 (defun hydra-cantrips-M-x ()
   (interactive)

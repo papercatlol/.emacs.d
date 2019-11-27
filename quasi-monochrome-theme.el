@@ -64,7 +64,7 @@
  '(success ((t (:foreground "gray40" :weight bold :underline t))))
  '(compilation-line-number ((t (:foreground "gray30" :weight bold))))
  '(show-paren-mismatch ((t (:background "firebrick3" :foreground "white" :weight extra-bold))))
- '(region ((t (:background "orange red" :foreground "black" :weight bold))))
+ '(region ((t (:background "DarkGreen" :foreground "black" :weight bold))))
  '(aw-leading-char-face ((t (:background "orange red" :foreground "white" :weight extra-bold))))
  '(aw-mode-line-face ((t (:foreground "white" :weight extra-bold))))
  '(popup-tip-face ((t (:inherit font-lock-comment-face))))
