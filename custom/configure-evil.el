@@ -353,6 +353,8 @@
 (define-key leader-map "c" 'ace-window)
 (define-key leader-map (kbd "<tab>") 'other-window)
 (define-key leader-map (kbd "o") 'counsel-outline)
+(define-key leader-map (kbd "g") 'hydra-git-gutter/body)
+
 
 ;; `evil-mc'
 ;; (with-eval-after-load 'evil-mc

@@ -179,6 +179,11 @@
 
 (setq git-gutter:lighter "")
 
+;; Update git-gutter on magit stage\unstage. This may not update all buffers,
+;; in which case TODO: update buffers for staged files
+(add-hook 'magit-post-stage-hook #'git-gutter:update-all-windows)
+(add-hook 'magit-post-unstage-hook #'git-gutter:update-all-windows)
+
 ;; bitmaps that look prettier with half-fringe
 (fringe-helper-define 'git-gutter-fr:added nil
   "........"
@@ -288,6 +293,8 @@
 (defun magit-stage-buffer-file ()
   (interactive)
   (magit-stage-file (buffer-file-name)))
+
+(pushnew 'magit-stage-buffer-file magit-post-stage-hook-commands)
 
 ;;** rename-file-and-buffer
 ;; Stolen from prelude.
@@ -434,6 +441,21 @@ Else narrow-to-defun."
       (magit-previous-line)
     (magit-section-backward)))
 
+(defun magit-diff-buffer-file-unstaged ()
+  "Like `magit-diff-buffer-file', but show unstaged diff only."
+  (interactive)
+  (if-let ((file (magit-file-relative-name)))
+      (if magit-buffer-refname
+          (magit-show-commit magit-buffer-refname
+                             (car (magit-show-commit--arguments))
+                             (list file))
+        (save-buffer)
+        (let ((line (line-number-at-pos))
+              (col (current-column))
+              (args (car (magit-diff-arguments))))
+          (magit-diff-setup-buffer nil nil args (list file) magit-diff-buffer-file-locked)))
+    (user-error "Buffer isn't visiting a file")))
+
 ;;* dired-jump-other-frame
 (defun dired-jump-other-frame (&optional file-name)
   "Like \\[dired-jump] (`dired-jump') but in other frame."
@@ -574,6 +596,7 @@ Else narrow-to-defun."
 (define-key magit-status-mode-map (kbd "C-k") 'magit-discard)
 (define-key magit-diff-mode-map (kbd "C-k") 'magit-discard)
 
+;; TODO: merge with hydra-git-gutter
 (define-prefix-command 'magit-file-prefix-map)
 (define-key magit-file-mode-map (kbd "C-x g") 'magit-file-prefix-map)
 (define-key magit-file-prefix-map "g" 'magit-status)
@@ -603,6 +626,15 @@ Else narrow-to-defun."
   ("M-g" #'git-gutter-mode "git-gutter-mode"))
 
 ;; TODO: git-gutter next/prev-hunk/etc hydra
+(defhydra hydra-git-gutter ()
+  ""
+  ("j" #'git-gutter:next-hunk "next-hunk")
+  ("n" #'git-gutter:next-hunk "next-hunk")
+  ("k" #'git-gutter:previous-hunk "previous-hunk")
+  ("p" #'git-gutter:previous-hunk "previous-hunk")
+  ("s" #'git-gutter:stage-hunk "stage-hunk")
+  ("g" #'git-gutter:update-all-windows "update git-gutter")
+  ("=" #'magit-diff-buffer-file "diff file"))
 
 (defun hydra-cantrips-M-x ()
   (interactive)
