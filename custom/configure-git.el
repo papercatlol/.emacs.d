@@ -60,22 +60,12 @@
 (define-key magit-mode-map (kbd "C-c C-l") 'magit-toggle-buffer-lock)
 (define-key magit-mode-map (kbd "j") 'magit-forward-dwim)
 (define-key magit-mode-map (kbd "k") 'magit-backward-dwim)
+(define-key magit-mode-map (kbd "C-x g") 'magit-status)
 
 (dolist (m (list magit-status-mode-map magit-diff-mode-map))
   (define-key m (kbd "j") 'magit-forward-dwim)
   (define-key m (kbd "k") 'magit-backward-dwim)
   (define-key m (kbd "C-k") 'magit-discard))
-
-;; TODO: merge with hydra-git-gutter
-(define-prefix-command 'magit-file-prefix-map)
-(define-key magit-file-mode-map (kbd "C-x g") 'magit-file-prefix-map)
-(define-key magit-file-prefix-map "g" 'magit-status)
-(define-key magit-file-prefix-map "l" 'magit-log-buffer-file)
-(define-key magit-file-prefix-map "f" 'magit-find-file)
-(define-key magit-file-prefix-map "b" 'magit-blame)
-(define-key magit-file-prefix-map "s" 'magit-stage-buffer-file)
-(define-key magit-file-prefix-map "d" 'magit-diff)
-(define-key magit-file-prefix-map "D" 'vc-ediff)
 
 ;;** magit-todos
 (require 'magit-todos)
@@ -130,16 +120,36 @@
 (add-hook 'magit-post-stage-hook #'git-gutter:update-all-windows)
 (add-hook 'magit-post-unstage-hook #'git-gutter:update-all-windows)
 
-;;** hydra
-(defhydra hydra-git-gutter ()
-  ""
-  ("j" #'git-gutter:next-hunk "next-hunk")
-  ("n" #'git-gutter:next-hunk "next-hunk")
-  ("k" #'git-gutter:previous-hunk "previous-hunk")
-  ("p" #'git-gutter:previous-hunk "previous-hunk")
-  ("s" #'git-gutter:stage-hunk "stage-hunk")
-  ("g" #'git-gutter:update-all-windows "update git-gutter")
-  ("=" #'magit-diff-buffer-file "diff file"))
+;;* git hydra
+(defhydra hydra-git (:hint nil)
+  "
+ ^Stage^                  ^Diff^                   ^Other^
+ ^^^^^^---------------------------------------------------------------------------------
+ _j_: next hunk           _=_: diff (file)         _g_: magit-status
+ _k_: prev hunk           _u_: diff unstaged(file) _l_: git log for current file
+ _s_: stage hunk          _U_: diff unstaged(all)  _b_: blame current file
+ _S_: stage current file  _d_: magit-diff popup    _B_: magit-blame popup^
+ _G_: update git-gutter   _D_: vc-ediff            _f_: magit-find-file "
+  ("q" nil)
+  ("<escape>" nil)
+  ("j" #'git-gutter:next-hunk)
+  ("k" #'git-gutter:previous-hunk)
+  ("s" #'git-gutter:stage-hunk)
+  ("G" #'git-gutter:update-all-windows)
+
+  ("=" #'magit-diff-buffer-file :exit t)
+  ("u" #'magit-diff-buffer-file-unstaged :exit t)
+  ("U" #'magit-diff-unstaged :exit t)
+  ("g" #'magit-status :exit t)
+  ("l" #'magit-log-buffer-file :exit t)
+  ("f" #'magit-find-file-other-window :exit t)
+  ("b" #'magit-blame-addition :exit t)
+  ("B" #'magit-blame :exit t)
+  ("S" #'magit-stage-buffer-file :exit t)
+  ("d" #'magit-diff :exit t)
+  ("D" #'vc-ediff :exit t))
+
+(define-key magit-file-mode-map (kbd "C-x g") 'hydra-git/body)
 
 ;;* dired
 (require 'dired-git-info)
