@@ -337,15 +337,13 @@
 
 (define-key evil-normal-state-map (kbd "SPC") leader-map)
 (define-key evil-motion-state-map (kbd "SPC") leader-map)
-(define-key custom-mode-map (kbd "SPC") leader-map)
-(define-key epa-key-list-mode-map (kbd "SPC") leader-map)
-(define-key gfm-view-mode-map (kbd "SPC") leader-map)
-(define-key markdown-view-mode-map (kbd "SPC") leader-map)
-(define-key rmail-mode-map (kbd "SPC") leader-map)
-(define-key special-mode-map (kbd "SPC") leader-map)
+
+(with-eval-after-load 'cus-edit (define-key custom-mode-map (kbd "SPC") leader-map))
+(with-eval-after-load 'markdown-mode (define-key markdown-view-mode-map (kbd "SPC") leader-map))
+(with-eval-after-load 'simple (define-key special-mode-map (kbd "SPC") leader-map))
+(with-eval-after-load 'tabulated-list (define-key tabulated-list-mode-map (kbd "SPC") leader-map))
+(with-eval-after-load 'magit (define-key magit-mode-map (kbd "SPC") leader-map))
 (define-key splash-screen-keymap (kbd "SPC") leader-map)
-(define-key tabulated-list-mode-map (kbd "SPC") leader-map)
-(define-key magit-mode-map (kbd "SPC") leader-map)
 
 (define-key leader-map (kbd "SPC") 'evil-avy-goto-char-timer)
 (define-key leader-map "f" 'evil-avy-goto-symbol-2)
