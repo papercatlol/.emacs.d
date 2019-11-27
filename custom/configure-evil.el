@@ -131,9 +131,9 @@
          (end (1- (line-end-position)))
          (redundant (list (point) (1+ (point)))))
     (cl-flet ((%filter (candidates)
-                       (loop for candidate in candidates
-                             unless (member (caar candidate) redundant)
-                             collect candidate)))
+                (loop for candidate in candidates
+                      unless (member (caar candidate) redundant)
+                        collect candidate)))
       (when-let (bounds (bounds-of-thing-at-point 'symbol))
         (push (car bounds) redundant)
         (push (cdr bounds) redundant))
@@ -244,7 +244,7 @@
 (define-key evil-motion-state-map [remap evil-jump-forward] 'evil-jump-forward-dwim)
 (define-key evil-motion-state-map (kbd "<tab>") 'tab-indent)
 
-;;** `frames'
+;;** `i3wm-frames'
 ;; (defun frame-list-for-i3-workspace ()
 ;;   "KLUDGE. List of frames in current i3 workspace. Doesn't return current frame because it is
 ;; sorted before other frames by `frame-list-z-order'."
@@ -260,6 +260,27 @@
 ;;   (when-let* ((frames (frame-list-for-i3-workspace))
 ;;               (frame (elt frames (1- n))))
 ;;     (select-frame-set-input-focus frame)))
+
+;;** avy-goto-symbol-2
+(defun avy-goto-symbol-2 (char1 char2 &optional arg beg end word)
+  "Like `avy-goto-word-1', but query for 2 chars and go to symbol start by default"
+  (interactive (list (read-char "char 1: " t)
+                     (read-char "char 2: " t)
+                     current-prefix-arg))
+  (avy-with avy-goto-symbol-2
+    (let* ((str (string char1 char2))
+           (symbol-start (rx symbol-start
+                             ;; #:symbol :symbol *symbol
+                             (or (and (? "#") (? ":"))
+                                 (? "*"))))
+           (regex (concat (if word "\\b" symbol-start)
+                          (regexp-quote str))))
+      (avy-jump regex
+                :window-flip arg
+                :beg beg
+                :end end))))
+
+(evil-define-avy-motion avy-goto-symbol-2 exclusive)
 
 ;;* `KEYS'
 ;; -----------------------------------------------------------------------------
@@ -316,8 +337,18 @@
 
 (define-key evil-normal-state-map (kbd "SPC") leader-map)
 (define-key evil-motion-state-map (kbd "SPC") leader-map)
+(define-key custom-mode-map (kbd "SPC") leader-map)
+(define-key epa-key-list-mode-map (kbd "SPC") leader-map)
+(define-key gfm-view-mode-map (kbd "SPC") leader-map)
+(define-key markdown-view-mode-map (kbd "SPC") leader-map)
+(define-key rmail-mode-map (kbd "SPC") leader-map)
+(define-key special-mode-map (kbd "SPC") leader-map)
+(define-key splash-screen-keymap (kbd "SPC") leader-map)
+(define-key tabulated-list-mode-map (kbd "SPC") leader-map)
+(define-key magit-mode-map (kbd "SPC") leader-map)
+
 (define-key leader-map (kbd "SPC") 'evil-avy-goto-char-timer)
-(define-key leader-map "f" 'evil-avy-goto-char-2)
+(define-key leader-map "f" 'evil-avy-goto-symbol-2)
 (define-key leader-map "b" 'counsel-ibuffer-or-recentf-other-frame)
 (define-key leader-map "c" 'ace-window)
 (define-key leader-map (kbd "<tab>") 'other-window)
