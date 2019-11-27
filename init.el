@@ -29,15 +29,12 @@
 (require 'async)
 (require 'beginend)
 (require 'delsel)
-(require 'dired-git-info)
 (require 'dired-subtree)
 (require 'dired-rsync)
 (require 'expand-region)
 (require 'helpful)
 (require 'hl-todo)
 (require 'ivy-xref)
-(require 'magit)
-(require 'magit-todos)
 (require 'multiple-cursors)
 (require 'paredit)
 (require 'pcmpl-args)
@@ -56,12 +53,13 @@
 ;;** configuration
 (require 'configure-ace-window)
 (require 'configure-evil)
+(require 'configure-git)
+(require 'configure-go-lsp)
 (require 'configure-highlight)
 (require 'configure-isearch)
 (require 'configure-ivy)
 (require 'counsel-ripgrep)
 ;; (require 'configure-go)
-(require 'configure-go-lsp)
 (require 'configure-lisp)
 (require 'configure-python)
 
@@ -70,7 +68,6 @@
 ;; (global-linum-mode t)
 (global-display-line-numbers-mode t)
 (global-hl-todo-mode 1)
-(magit-todos-mode 1)
 (dired-async-mode t)
 (reverse-im-activate "russian-computer")
 (setq-default indent-tabs-mode nil)
@@ -98,10 +95,6 @@
       lispy-avy-keys avy-keys
       view-read-only t
       slime-description-autofocus t
-      magit-section-visibility-indicator (quote (magit-fringe-bitmap+ . magit-fringe-bitmap-))
-      magit-todos-auto-group-items 1000
-      magit-diff-buffer-file-locked t
-      magit-log-arguments '("-n64" "--graph" "--decorate" "--patch")
       xref-show-xrefs-function #'ivy-xref-show-xrefs
       compilation-scroll-output t
       initial-major-mode 'emacs-lisp-mode
@@ -161,59 +154,6 @@
 (put 'upcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 (put 'dired-find-alternate-file 'disabled nil)
-(put 'magit-clean 'disabled nil)
-
-
-;;* magit fringe hacks
-(defun magit-status-set-wide-fringe (&optional arg)
-  (display-line-numbers-mode -1)
-  (set-window-fringes nil 11 5))
-
-(add-hook 'magit-status-sections-hook #'magit-status-set-wide-fringe)
-(add-hook 'magit-refs-mode-hook #'magit-status-set-wide-fringe)
-(add-hook 'magit-revision-sections-hook #'magit-status-set-wide-fringe)
-
-;;* git-gutter
-(require 'git-gutter-fringe)
-(global-git-gutter-mode t)
-
-(setq git-gutter:lighter "")
-
-;; Update git-gutter on magit stage\unstage. This may not update all buffers,
-;; in which case TODO: update buffers for staged files
-(add-hook 'magit-post-stage-hook #'git-gutter:update-all-windows)
-(add-hook 'magit-post-unstage-hook #'git-gutter:update-all-windows)
-
-;; bitmaps that look prettier with half-fringe
-(fringe-helper-define 'git-gutter-fr:added nil
-  "........"
-  "........"
-  "........"
-  "..XX...."
-  "..XX...."
-  "........"
-  "........"
-  "........")
-
-(fringe-helper-define 'git-gutter-fr:deleted nil
-  "........"
-  "........"
-  "........"
-  "..XX...."
-  "..XX...."
-  "........"
-  "........"
-  "........")
-
-(fringe-helper-define 'git-gutter-fr:modified nil
-  "........"
-  "XXXX...."
-  "XXXX...."
-  "........"
-  "........"
-  "XXXX...."
-  "XXXX...."
-  "........")
 
 ;;* custom-file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -289,12 +229,6 @@
                          (buffer-file-name))))
     (kill-new filename)
     (message "%s" filename)))
-
-(defun magit-stage-buffer-file ()
-  (interactive)
-  (magit-stage-file (buffer-file-name)))
-
-(pushnew 'magit-stage-buffer-file magit-post-stage-hook-commands)
 
 ;;** rename-file-and-buffer
 ;; Stolen from prelude.
@@ -428,34 +362,6 @@ Else narrow-to-defun."
 
 (global-set-key (kbd "C-x C-n") 'narrow-dwim)
 
-;;* magit
-(defun magit-forward-dwim ()
-  (interactive)
-  (if (region-active-p)
-      (magit-next-line)
-    (magit-section-forward)))
-
-(defun magit-backward-dwim ()
-  (interactive)
-  (if (region-active-p)
-      (magit-previous-line)
-    (magit-section-backward)))
-
-(defun magit-diff-buffer-file-unstaged ()
-  "Like `magit-diff-buffer-file', but show unstaged diff only."
-  (interactive)
-  (if-let ((file (magit-file-relative-name)))
-      (if magit-buffer-refname
-          (magit-show-commit magit-buffer-refname
-                             (car (magit-show-commit--arguments))
-                             (list file))
-        (save-buffer)
-        (let ((line (line-number-at-pos))
-              (col (current-column))
-              (args (car (magit-diff-arguments))))
-          (magit-diff-setup-buffer nil nil args (list file) magit-diff-buffer-file-locked)))
-    (user-error "Buffer isn't visiting a file")))
-
 ;;* dired-jump-other-frame
 (defun dired-jump-other-frame (&optional file-name)
   "Like \\[dired-jump] (`dired-jump') but in other frame."
@@ -577,35 +483,6 @@ Else narrow-to-defun."
 (define-key dired-mode-map (kbd "i") 'dired-subtree-toggle)
 (define-key dired-mode-map (kbd "I") 'dired-subtree-remove)
 (define-key dired-mode-map (kbd "r") 'dired-rsync)
-(define-key dired-mode-map (kbd ")") 'dired-git-info-mode)
-(define-key dired-mode-map (kbd "C-x g") 'magit-file-prefix-map)
-
-
-;;** magit
-(define-key magit-file-mode-map (kbd "C-x =") 'magit-diff-buffer-file)
-(define-key magit-file-mode-map (kbd "C-x G") 'magit-file-dispatch)
-(define-key magit-mode-map (kbd "C-c C-l") 'magit-toggle-buffer-lock)
-(define-key magit-mode-map (kbd "j") 'magit-forward-dwim)
-(define-key magit-mode-map (kbd "k") 'magit-backward-dwim)
-(define-key magit-status-mode-map (kbd "j") 'magit-forward-dwim)
-(define-key magit-status-mode-map (kbd "k") 'magit-backward-dwim)
-(define-key magit-todos-section-map (kbd "j") 'magit-forward-dwim)
-(define-key magit-todos-section-map (kbd "k") 'magit-backward-dwim)
-(define-key magit-diff-mode-map (kbd "j") 'magit-forward-dwim)
-(define-key magit-diff-mode-map (kbd "k") 'magit-backward-dwim)
-(define-key magit-status-mode-map (kbd "C-k") 'magit-discard)
-(define-key magit-diff-mode-map (kbd "C-k") 'magit-discard)
-
-;; TODO: merge with hydra-git-gutter
-(define-prefix-command 'magit-file-prefix-map)
-(define-key magit-file-mode-map (kbd "C-x g") 'magit-file-prefix-map)
-(define-key magit-file-prefix-map "g" 'magit-status)
-(define-key magit-file-prefix-map "l" 'magit-log-buffer-file)
-(define-key magit-file-prefix-map "f" 'magit-find-file)
-(define-key magit-file-prefix-map "b" 'magit-blame)
-(define-key magit-file-prefix-map "s" 'magit-stage-buffer-file)
-(define-key magit-file-prefix-map "d" 'magit-diff)
-(define-key magit-file-prefix-map "D" 'vc-ediff)
 
 ;;
 (global-set-key (kbd "<f5>") 'revert-buffer)
@@ -624,17 +501,6 @@ Else narrow-to-defun."
   ("e" #'toggle-debug-on-error "toggle-debug-on-error")
   ("=" #'diff-current-buffer-with-file "diff-current-buffer-with-file")
   ("M-g" #'git-gutter-mode "git-gutter-mode"))
-
-;; TODO: git-gutter next/prev-hunk/etc hydra
-(defhydra hydra-git-gutter ()
-  ""
-  ("j" #'git-gutter:next-hunk "next-hunk")
-  ("n" #'git-gutter:next-hunk "next-hunk")
-  ("k" #'git-gutter:previous-hunk "previous-hunk")
-  ("p" #'git-gutter:previous-hunk "previous-hunk")
-  ("s" #'git-gutter:stage-hunk "stage-hunk")
-  ("g" #'git-gutter:update-all-windows "update git-gutter")
-  ("=" #'magit-diff-buffer-file "diff file"))
 
 (defun hydra-cantrips-M-x ()
   (interactive)
