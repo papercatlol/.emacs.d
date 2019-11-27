@@ -3,6 +3,8 @@
 ;;* magit
 (require 'magit)
 
+;; TODO: configure magit-blame with evil-mode
+
 (put 'magit-clean 'disabled nil)
 
 (setq magit-log-arguments '("-n64" "--graph" "--decorate" "--patch")
@@ -38,14 +40,14 @@
   (interactive)
   (if-let ((file (magit-file-relative-name)))
       (if magit-buffer-refname
-          (magit-show-commit magit-buffer-refname
-                             (car (magit-show-commit--arguments))
-                             (list file))
+          (call-interactively #'magit-diff-buffer-file)
         (save-buffer)
         (let ((line (line-number-at-pos))
               (col (current-column))
               (args (car (magit-diff-arguments))))
-          (magit-diff-setup-buffer nil nil args (list file) magit-diff-buffer-file-locked)))
+          (with-current-buffer
+              (magit-diff-setup-buffer nil nil args (list file) magit-diff-buffer-file-locked)
+            (magit-diff--goto-position file line col))))
     (user-error "Buffer isn't visiting a file")))
 
 ;;** stage current buffer
@@ -65,7 +67,9 @@
 (dolist (m (list magit-status-mode-map magit-diff-mode-map))
   (define-key m (kbd "j") 'magit-forward-dwim)
   (define-key m (kbd "k") 'magit-backward-dwim)
-  (define-key m (kbd "C-k") 'magit-discard))
+  (define-key m (kbd "C-k") 'magit-discard)
+  (define-key m (kbd "=") 'magit-diff-more-context)
+  (define-key m (kbd "M-m") 'magit-diff-visit-file-other-window))
 
 ;;** magit-todos
 (require 'magit-todos)
@@ -82,7 +86,8 @@
 (require 'git-gutter-fringe)
 
 (global-git-gutter-mode t)
-(setq git-gutter:lighter "")
+(setq git-gutter:lighter ""
+      git-gutter:ask-p nil)
 
 ;;** bitmaps that look prettier with half-fringe
 (fringe-helper-define 'git-gutter-fr:added nil
@@ -121,35 +126,40 @@
 (add-hook 'magit-post-unstage-hook #'git-gutter:update-all-windows)
 
 ;;* git hydra
+;; TODO: a function to stage current hunk or region
 (defhydra hydra-git (:hint nil)
   "
  ^Stage^                  ^Diff^                   ^Other^
  ^^^^^^---------------------------------------------------------------------------------
- _j_: next hunk           _=_: diff (file)         _g_: magit-status
+ _j_: next hunk           _=_: diff(file)          _g_: magit-status
  _k_: prev hunk           _u_: diff unstaged(file) _l_: git log for current file
  _s_: stage hunk          _U_: diff unstaged(all)  _b_: blame current file
- _S_: stage current file  _d_: magit-diff popup    _B_: magit-blame popup^
- _G_: update git-gutter   _D_: vc-ediff            _f_: magit-find-file "
+ _S_: stage current file  _d_: magit-diff popup    _B_: magit-blame popup
+ _G_: update git-gutter   _D_: vc-ediff            _f_: magit find file
+^^^^                                               _c_: magit-commit popup"
   ("q" nil)
   ("<escape>" nil)
   ("j" #'git-gutter:next-hunk)
   ("k" #'git-gutter:previous-hunk)
   ("s" #'git-gutter:stage-hunk)
+  ("S" #'magit-stage-buffer-file)
   ("G" #'git-gutter:update-all-windows)
 
   ("=" #'magit-diff-buffer-file :exit t)
   ("u" #'magit-diff-buffer-file-unstaged :exit t)
   ("U" #'magit-diff-unstaged :exit t)
+  ("d" #'magit-diff :exit t)
+  ("D" #'vc-ediff :exit t)
+
   ("g" #'magit-status :exit t)
   ("l" #'magit-log-buffer-file :exit t)
-  ("f" #'magit-find-file-other-window :exit t)
   ("b" #'magit-blame-addition :exit t)
   ("B" #'magit-blame :exit t)
-  ("S" #'magit-stage-buffer-file :exit t)
-  ("d" #'magit-diff :exit t)
-  ("D" #'vc-ediff :exit t))
+  ("f" #'magit-find-file-other-window :exit t)
+  ("c" #'magit-commit :exit t))
 
 (define-key magit-file-mode-map (kbd "C-x g") 'hydra-git/body)
+(define-key magit-file-mode-map (kbd "C-x C-g") 'hydra-git/body)
 
 ;;* dired
 (require 'dired-git-info)
@@ -157,5 +167,6 @@
 (define-key dired-mode-map (kbd ")") 'dired-git-info-mode)
 (define-key dired-mode-map (kbd "C-x g") 'magit-file-prefix-map)
 
+;;* TODO: ibuffer
 
 (provide 'configure-git)
