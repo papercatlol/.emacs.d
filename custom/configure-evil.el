@@ -298,7 +298,7 @@
     "(" #'lispyville-backward-up-list
     ")" #'lispyville-up-list)
 
-  (evil-define-key 'normal lispyville-mode-map
+  (evil-define-key '(normal visual) lispyville-mode-map
     (kbd "<backspace>") 'lispyville-beginning-of-defun
     (kbd "<return>") 'lispyville-beginning-of-next-defun
     ;; (kbd "<return>") 'end-of-defun-spammable
@@ -342,7 +342,10 @@
 (with-eval-after-load 'markdown-mode (define-key markdown-view-mode-map (kbd "SPC") leader-map))
 (with-eval-after-load 'simple (define-key special-mode-map (kbd "SPC") leader-map))
 (with-eval-after-load 'tabulated-list (define-key tabulated-list-mode-map (kbd "SPC") leader-map))
-(with-eval-after-load 'magit (define-key magit-mode-map (kbd "SPC") leader-map))
+(with-eval-after-load 'magit
+  (define-key magit-diff-mode-map (kbd "SPC") leader-map)
+  (define-key magit-status-mode-map (kbd "SPC") leader-map)
+  (define-key magit-mode-map (kbd "SPC") leader-map))
 (define-key splash-screen-keymap (kbd "SPC") leader-map)
 
 (define-key leader-map (kbd "SPC") 'evil-avy-goto-char-timer)
@@ -351,8 +354,6 @@
 (define-key leader-map "c" 'ace-window)
 (define-key leader-map (kbd "<tab>") 'other-window)
 (define-key leader-map (kbd "o") 'counsel-outline)
-(define-key leader-map (kbd "g") 'hydra-git-gutter/body)
-
 
 ;; `evil-mc'
 ;; (with-eval-after-load 'evil-mc
