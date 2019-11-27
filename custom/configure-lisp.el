@@ -87,6 +87,7 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'flet 'flet)
     (%copy-indent 'cl-labels 'labels)
     (%copy-indent 'cl-defun 'defun)
+    (%copy-indent 'cl-defmacro 'defmacro)
     (%copy-indent 'when-let 'when)
     (%copy-indent 'when-let* 'when)
     (%copy-indent 'eval-after-load 'when)
@@ -96,29 +97,40 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'cl-letf* 'let)
     (%copy-indent 'while 'when)
     (%copy-indent 'evil-define-key 'defun)
+    (%copy-indent 'avy-with 'when)
     (put 'if 'common-lisp-indent-function 2)
     (put 'if-let 'common-lisp-indent-function 2)
     (put 'if-let* 'common-lisp-indent-function 2)))
 
 ;;* Elisp documentation
-(defun elisp-documentation (prompt)
-  "Show documentation for symbol-at-point in the minibuffer.
-With prefix arg prompt for symbol first."
-  ;; MAYBE: add an option to open doc in a buffer
+(defvar *elisp-documentation-last-symbol* nil
+  "Last symbol for which documentation was queried.")
+
+(defun elisp-documentation (prompt &optional symbol)
+  "Show documentation for SYMBOL in the minibuffer.
+If SYMBOL is not provided, use symbol-at-point.
+With prefix arg prompt for symbol first.
+When called second time consecutively, call `helpful-symbol' for SYMBOL."
   (interactive "P")
-  (when-let* ((symbol (if prompt
-                          (intern (completing-read "Show documentation for: "
-                                                   obarray nil t nil nil
-                                                   (when-let ((s (symbol-at-point)))
-                                                     (symbol-name s))))
-                        (symbol-at-point)))
-              (doc (if (or (functionp symbol)
-                           (macrop symbol))
-                       (documentation symbol)
-                     (documentation-property symbol 'variable-documentation))))
-    ;; TODO: truncate docs that are more that a page long
-    (let ((max-mini-window-height 1.0))
-      (message "%s" doc))))
+  (if (and (eq this-command last-command)
+           *elisp-documentation-last-symbol*
+           (fboundp 'helpful-symbol))
+      (helpful-symbol *elisp-documentation-last-symbol*)
+    (when-let* ((symbol (or symbol
+                            (if prompt
+                                (intern (completing-read "Show documentation for: "
+                                                         obarray nil t nil nil
+                                                         (when-let ((s (symbol-at-point)))
+                                                           (symbol-name s))))
+                              (symbol-at-point))))
+                (doc (if (or (functionp symbol)
+                             (macrop symbol))
+                         (documentation symbol)
+                       (documentation-property symbol 'variable-documentation))))
+      (setq *elisp-documentation-last-symbol* symbol)
+      ;; TODO: truncate docs that are more that a page long
+      (let ((max-mini-window-height 1.0))
+        (message "%s" doc)))))
 
 (define-key emacs-lisp-mode-map (kbd "C-c C-d") 'elisp-documentation)
 
@@ -130,13 +142,15 @@ With prefix arg prompt for symbol first."
 else call eros-eval-last-sexp."
   (interactive)
   (if (region-active-p)
-      (call-interactively #'eval-region)
-    (if-let ((s (symbol-at-point)))
+      (let ((lines (count-lines (region-beginning) (region-end))))
+        (call-interactively #'eval-region)
+        (message "Evaluated %d line(s)." lines))
+    (if-let ((symbol-end (cdr (bounds-of-thing-at-point 'symbol))))
         (eros--eval-overlay
          (save-excursion
-          (forward-symbol 1)
+          (goto-char symbol-end)
           (call-interactively #'eval-last-sexp))
-         (cdr (bounds-of-thing-at-point 'symbol)))
+         symbol-end)
       (call-interactively #'eros-eval-last-sexp))))
 
 (global-set-key [remap eval-last-sexp] #'eros-eval-last-sexp-dwim)
