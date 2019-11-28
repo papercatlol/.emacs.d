@@ -125,6 +125,32 @@
 (add-hook 'magit-post-stage-hook #'git-gutter:update-all-windows)
 (add-hook 'magit-post-unstage-hook #'git-gutter:update-all-windows)
 
+;;** first/last-hunk
+(defun git-gutter:first-hunk ()
+  (interactive)
+  (goto-char (point-min))
+  (git-gutter:next-hunk 1))
+
+(defun git-gutter:last-hunk ()
+  (interactive)
+  (goto-char (point-max))
+  (git-gutter:previous-hunk 1))
+
+;;** git-gutter:set-start-revision-magit
+;; Get list of refnames from magit, use completing-read
+(defun git-gutter:set-start-revision-magit (start-rev)
+  "Set start revision. If `start-rev' is nil or empty string then reset
+start revision."
+  (interactive
+   (list (completing-read "Start Revision: " (magit-list-refnames)
+                          nil nil nil 'magit-revision-history (magit-get-current-branch))))
+  (when (and start-rev (not (string= start-rev "")))
+    (unless (git-gutter:revision-valid-p start-rev)
+      (error "Revision '%s' is not valid." start-rev)))
+  (setq git-gutter:start-revision start-rev)
+  (message "Revision set to %s" start-rev)
+  (git-gutter))
+
 ;;* git hydra
 ;; TODO: a function to stage current hunk or region
 (defhydra hydra-git (:hint nil)
@@ -136,8 +162,9 @@
  _s_: stage hunk          _U_: diff unstaged(all)  _c_: magit-commit popup
  _S_: stage current file  _d_: magit-diff popup    _r_: vc-revert
  _G_: update git-gutter   _D_: vc-ediff            _f_: magit find file
-^^^^                                               _b_: blame current file
-^^^^                                               _B_: magit-blame popup
+ _<_: first hunk                                 ^^_b_: blame current file
+ _>_: last hunk                                  ^^_B_: magit-blame popup
+ _R_: set start revision
 "
   ("q" nil)
   ("<escape>" nil)
@@ -146,6 +173,9 @@
   ("s" #'git-gutter:stage-hunk)
   ("S" #'magit-stage-buffer-file)
   ("G" #'git-gutter:update-all-windows)
+  ("<" #'git-gutter:first-hunk)
+  (">" #'git-gutter:last-hunk)
+  ("R" #'git-gutter:set-start-revision-magit)
 
   ("=" #'magit-diff-buffer-file :exit t)
   ("u" #'magit-diff-buffer-file-unstaged :exit t)
