@@ -56,8 +56,17 @@
   (magit-stage-file (buffer-file-name)))
 (pushnew 'magit-stage-buffer-file magit-post-stage-hook-commands)
 
+;;** diff-buffer-dwim
+(defun diff-buffer-dwim (force-magit)
+  (interactive "P")
+  "If buffer is modified and no prefix arg is supplied, call `diff-buffer-with-file'.
+Else call `magit-diff-buffer-file'."
+  (if (and (not force-magit) (buffer-modified-p))
+      (diff-buffer-with-file (current-buffer))
+    (call-interactively #'magit-diff-buffer-file)))
+
 ;;** keybindings
-(define-key magit-file-mode-map (kbd "C-x =") 'magit-diff-buffer-file)
+(define-key magit-file-mode-map (kbd "C-x =") 'diff-buffer-dwim)
 (define-key magit-file-mode-map (kbd "C-x G") 'magit-file-dispatch)
 (define-key magit-mode-map (kbd "C-c C-l") 'magit-toggle-buffer-lock)
 (define-key magit-mode-map (kbd "j") 'magit-forward-dwim)
