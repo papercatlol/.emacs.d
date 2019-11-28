@@ -379,7 +379,7 @@ enable `ivy-calling' by default and restore original position on exit."
                  (find-function symbol)
                (find-variable symbol))))))))
 
-;;* ivy-enhanced eval-expression
+;;* [DISABLED] ivy-enhanced eval-expression
 (defun ivy--read-expression (prompt &optional initial-contents)
   "Like `read-expression' but use ivy to read from minibuffer."
   (let ((minibuffer-completing-symbol t)
@@ -390,8 +390,8 @@ enable `ivy-calling' by default and restore original position on exit."
                             :caller #'ivy--read-expression)))
       (car (read-from-string s)))))
 
-(advice-add 'read--expression :override #'ivy--read-expression)
-
+;; TODO: rewrite to always show possible completion
+;; (advice-add 'read--expression :override #'ivy--read-expression)
 
 (defun ivy--read-expression-hook ()
   (add-function :before-until (local 'eldoc-documentation-function)
@@ -456,10 +456,12 @@ enable `ivy-calling' by default and restore original position on exit."
 (global-set-key (kbd "C-c C-v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
 (global-set-key (kbd "C-h C-i") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "C-h b") 'counsel-descbinds)
 
 ;; (global-set-key (kbd "C-h f") 'counsel-describe-function)
 ;; (global-set-key (kbd "C-h v") 'counsel-describe-variable)
 
+(define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
 (define-key swiper-map (kbd "C-:") 'swiper-mc)
 (define-key swiper-map (kbd "C-t") 'swiper-avy)
 ;; (define-key ivy-minibuffer-map (kbd "C-,") 'ivy-yank-symbol-at-point)

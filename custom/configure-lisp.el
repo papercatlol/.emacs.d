@@ -156,6 +156,8 @@ else call eros-eval-last-sexp."
 (global-set-key [remap eval-last-sexp] #'eros-eval-last-sexp-dwim)
 (global-set-key [remap eval-defun] #'eros-eval-defun)
 
+;;* TODO: edebug-mode: make compatible with evil-mode, add hydra
+
 ;;* slime hacks
 (defun slime-documentation ()
   "Display `swank:documentation-symbol' in the minibuffer"
