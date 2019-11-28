@@ -5,7 +5,7 @@
  'quasi-monochrome
  '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "xos4 Terminus"))))
  '(button ((t (:inherit (link)))))
- '(cursor ((t (:background "orange red"))))
+ '(cursor ((t (:background "LimeGreen"))))
  '(bold ((t (:inherit (default) :weight bold))))
  '(escape-glyph ((t (:foreground "light gray"))))
  '(font-lock-builtin-face ((t (:foreground "light gray"))))
@@ -43,7 +43,7 @@
  '(mode-line-inactive ((t (:background "#16211C" :foreground "#41544B" :bold nil
                                        ;; :box (:line-width 2 :color "#1B2822")
                                        ))))
- '(mode-line-buffer-id ((t (:background nil :foreground "sprint-green2" :bold nil))))
+ '(mode-line-buffer-id ((t (:background nil :foreground "white" :bold nil))))
  '(mode-line-highlight ((t (:foreground "aquamarine3" :box nil :bold nil))))
  '(mode-line-emphasis ((t (:foreground "aquamarine3"))))
  ;; '(mode-line ((t (:box nil :foreground "black" :background "gray60"))))
