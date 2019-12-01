@@ -329,6 +329,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (global-set-key (kbd "<tab>") 'indent-for-tab-command)
 ;; Global <tab> overrides minor-mode TAB binding(?) TODO: look into it
 (define-key magit-mode-map (kbd "<tab>") 'magit-section-toggle)
+(define-key read-expression-map (kbd "<tab>") 'completion-at-point)
 
 ;;** with-minor-mode-overriding - locally override minor mode keymap
 (cl-defmacro with-minor-mode-map-overriding ((new-map minor-mode) &body body)
@@ -390,6 +391,18 @@ Else narrow-to-defun."
                   (current-buffer))))
     (diff-buffer-with-file buffer)))
 
+;;* enable read-only for emacs sources
+(dir-locals-set-class-variables
+ 'emacs-src
+ '((nil . ((buffer-read-only . t)
+           (show-trailing-whitespace . nil)
+           (tab-width . 8)
+           (eval . (whitespace-mode -1))))))
+
+(dir-locals-set-directory-class "/usr/local/src/emacs" 'emacs-src)
+(dir-locals-set-directory-class "/usr/local/share/emacs" 'emacs-src)
+(dir-locals-set-directory-class "/usr/share/emacs" 'emacs-src)
+(dir-locals-set-directory-class "~/.emacs.d/elpa/" 'emacs-src)
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))

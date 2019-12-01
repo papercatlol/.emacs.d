@@ -424,7 +424,6 @@ enable `ivy-calling' by default and restore original position on exit."
      #'counsel-M-x)))
 
 (global-set-key (kbd "M-x") 'counsel-M-x+)
-(define-key counsel-describe-map (kbd "M-x") 'hydra-cantrips-M-x)
 
 
 ;;* KEYS
@@ -455,8 +454,18 @@ enable `ivy-calling' by default and restore original position on exit."
 (global-set-key (kbd "C-c b") 'counsel-bookmark)
 (global-set-key (kbd "C-c C-v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
+
+;;** C-h bindings
+(setq counsel-describe-function-function #'helpful-function)
+(setq counsel-describe-variable-function #'helpful-variable)
+
+(define-key counsel-describe-map (kbd "M-.") #'counsel-find-symbol)
+(define-key counsel-describe-map (kbd "M-,") #'counsel--info-lookup-symbol)
+
 (global-set-key (kbd "C-h C-i") 'counsel-info-lookup-symbol)
 (global-set-key (kbd "C-h b") 'counsel-descbinds)
+(global-set-key (kbd "C-h v") 'counsel-describe-variable)
+(global-set-key (kbd "C-h f") 'counsel-describe-function)
 
 ;; (global-set-key (kbd "C-h f") 'counsel-describe-function)
 ;; (global-set-key (kbd "C-h v") 'counsel-describe-variable)
@@ -474,6 +483,8 @@ enable `ivy-calling' by default and restore original position on exit."
 (define-key ivy-minibuffer-map (kbd "M-a") 'ivy-dispatching-done)
 (define-key ivy-minibuffer-map (kbd "M-j") 'ivy-next-line)
 (define-key ivy-minibuffer-map (kbd "M-k") 'ivy-previous-line)
+(define-key ivy-minibuffer-map (kbd "C-n") 'ivy-next-line-and-call)
+(define-key ivy-minibuffer-map (kbd "C-p") 'ivy-previous-line-and-call)
 (define-key ivy-minibuffer-map (kbd "C-t") 'ivy-avy)
 (define-key ivy-minibuffer-map (kbd "C-x 4 RET") 'ivy-done-other-window)
 (define-key ivy-minibuffer-map (kbd "C-x 5 RET") 'ivy-done-other-frame)
