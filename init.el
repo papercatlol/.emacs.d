@@ -128,23 +128,77 @@
 (savehist-mode)
 
 
-;;* shell
-(require 'vterm)
-(require 'shell-pop)
+;;* equake shell
+(require 'equake)
 
-(setq shell-pop-window-size 50
-      shell-pop-window-position "bottom")
+;; show current directory in tab name
+(cl-defun equake-add-current-dir-to-tab-name (&optional (dir default-directory))
+  "Rename equake tab buffer to display current directory."
+  (when equake-mode
+    (let* ((regex (rx line-start (* anything)
+                      (group "%" (? (or "~" "/" ".") (* anything) "/" "::"))
+                      (* anything)))
+           (template
+             (replace-regexp-in-string regex "%%%s::" (buffer-name) nil nil 1)))
+      (rename-buffer (format template dir)))))
 
-(shell-pop--set-universal-key 'shell-pop-universal-key "<f12>")
-(shell-pop--set-shell-type 'shell-pop-shell-type  '("vterm" "*vterm*"
-                                                    (lambda nil
-                                                      (vterm shell-pop-term-shell))))
+(defun equake-default-directory-watcher (symbol new-value operation buffer)
+  (when buffer
+    (with-current-buffer buffer
+      (equake-add-current-dir-to-tab-name new-value))))
 
-(when (fboundp 'evil-mode)
-  (evil-set-initial-state 'vterm-mode 'insert))
+(add-variable-watcher 'default-directory #'equake-default-directory-watcher)
+(advice-add #'equake-new-tab :after #'equake-add-current-dir-to-tab-name)
+(advice-add #'equake-rename-etab :after #'equake-add-current-dir-to-tab-name)
 
-(define-key vterm-mode-map (kbd "<f12>") nil)
-(define-key vterm-mode-map (kbd "C-x C-c") 'ace-window)
+;; remove spaces from tab-name: [ tab-name ] -> [tab-name]
+(defun equake-fix-tab-names-advice (tab-name)
+  (replace-regexp-in-string "\\[ " "[" (replace-regexp-in-string " \\]" "]" tab-name)))
+
+(advice-add #'equake-extract-format-tab-name :filter-return #'equake-fix-tab-names-advice)
+
+;; add ace-window-path to modeline
+(defun equake-modeline-add-ace-window-lighter-advice (modeline)
+  (cons `(:eval (ace-window-path-lighter)) modeline))
+
+(advice-add #'equake-mode-line :filter-return #'equake-modeline-add-ace-window-lighter-advice)
+
+;; equake-kill-tab
+(defun equake-kill-tab ()
+  (interactive)
+  (let ((buff (current-buffer)))
+    (if (< (equake-count-tabs (equake-get-monitor-name) (buffer-list) 0) 2)
+        (delete-window)
+      (equake-prev-tab))
+    (kill-buffer buff)))
+
+(define-key equake-mode-map (kbd "C-Q") 'equake-kill-tab)
+
+;; modeline colors
+(face-spec-set 'equake-tab-inactive '((t (:foreground "gray70" :background "black"))))
+(face-spec-set 'equake-tab-active '((t (:foreground "black" :background "gray70" :weight bold))))
+(face-spec-set 'equake-shell-type-eshell '((t (:foreground "white" :background "black"))))
+(face-spec-set 'equake-shell-type-term '((t (:foreground "white" :background "black"))))
+(face-spec-set 'equake-shell-type-rash '((t (:foreground "white" :background "black"))))
+(face-spec-set 'equake-shell-type-shell '((t (:foreground "white" :background "black"))))
+
+;; equake-pop
+(defun equake-pop ()
+  "Open equake tab for current directory in other window."
+  (interactive)
+  (if-let* ((dir default-directory)
+            (tab (find-if (lambda (buffer)
+                            (with-current-buffer buffer
+                              (and equake-mode
+                                   (string= default-directory dir))))
+                          (buffer-list)))
+            (pop-up-windows t))
+      (pop-to-buffer tab t)
+    (select-window (or (split-window-sensibly) (split-window)))
+    (equake-new-tab)))
+
+(define-key equake-mode-map (kbd "<f12>") 'quit-window)
+(global-set-key (kbd "<f12>") 'equake-pop)
 
 ;;
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
