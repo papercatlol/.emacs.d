@@ -427,7 +427,9 @@ Else narrow-to-defun."
     (dired-jump t file-name)))
 
 ;;* org
-(setq org-default-notes-file (concat org-directory "/notes.org"))
+(setq org-default-notes-file (concat org-directory "/notes.org")
+      org-startup-indented t
+      org-hide-leading-stars t)
 
 (advice-add 'org-archive-default-command :after #'org-save-all-org-buffers)
 
@@ -456,7 +458,6 @@ Else narrow-to-defun."
 (dir-locals-set-directory-class "/usr/local/src/emacs" 'emacs-src)
 (dir-locals-set-directory-class "/usr/local/share/emacs" 'emacs-src)
 (dir-locals-set-directory-class "/usr/share/emacs" 'emacs-src)
-(dir-locals-set-directory-class "~/.emacs.d/elpa/" 'emacs-src)
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))

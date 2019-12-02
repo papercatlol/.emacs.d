@@ -36,7 +36,7 @@
  '(match ((t (:background "white" :foreground "black" :weight bold))))
  '(minibuffer-prompt ((t (:weight bold :foreground "light gray"))))
  ;; mode-line(from kaolin-mono-dark theme)
- '(mode-line ((t (:background "#1621C" :foreground "#c5c9c0" :bold nil
+ '(mode-line ((t (:background "black" :foreground "#c5c9c0" :bold nil
                               :box (:line-width 1 :color "gray30")
                               ;; :overline "gray30"
                               ))))

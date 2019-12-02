@@ -350,10 +350,11 @@
 
 (define-key leader-map (kbd "SPC") 'evil-avy-goto-char-timer)
 (define-key leader-map "f" 'evil-avy-goto-symbol-2)
-(define-key leader-map "b" 'counsel-ibuffer-or-recentf-other-frame)
+(define-key leader-map "b" 'counsel-ibuffer-or-recentf)
 (define-key leader-map "c" 'ace-window)
 (define-key leader-map (kbd "<tab>") 'other-window)
 (define-key leader-map (kbd "o") 'counsel-outline)
+(define-key leader-map (kbd "d") 'delete-other-windows-toggle)
 
 ;; `evil-mc'
 ;; (with-eval-after-load 'evil-mc

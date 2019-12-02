@@ -12,6 +12,7 @@
       ivy-magic-tilde nil
       ivy-initial-inputs-alist (delete (assoc 'counsel-M-x ivy-initial-inputs-alist)
                                        ivy-initial-inputs-alist))
+(setq counsel-find-file-at-point t)
 
 ;;* prompt count
 (defun ivy-add-prompt-count* (next-fn prompt)
@@ -466,6 +467,7 @@ enable `ivy-calling' by default and restore original position on exit."
 (global-set-key (kbd "C-h b") 'counsel-descbinds)
 (global-set-key (kbd "C-h v") 'counsel-describe-variable)
 (global-set-key (kbd "C-h f") 'counsel-describe-function)
+(global-set-key (kbd "C-h C-l") 'counsel-find-library)
 
 ;; (global-set-key (kbd "C-h f") 'counsel-describe-function)
 ;; (global-set-key (kbd "C-h v") 'counsel-describe-variable)

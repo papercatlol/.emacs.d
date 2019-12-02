@@ -168,12 +168,12 @@ start revision."
  ^^^^^^---------------------------------------------------------------------------------
  _j_: next hunk           _=_: diff(file)          _g_: magit-status
  _k_: prev hunk           _u_: diff unstaged(file) _l_: git log for current file
- _s_: stage hunk          _U_: diff unstaged(all)  _c_: magit-commit popup
- _S_: stage current file  _d_: magit-diff popup    _r_: vc-revert
- _G_: update git-gutter   _D_: vc-ediff            _f_: magit find file
- _<_: first hunk                                 ^^_b_: blame current file
- _>_: last hunk                                  ^^_B_: magit-blame popup
- _R_: set start revision
+ _s_: stage hunk          _U_: diff unstaged(all)  _L_: magit-log popup
+ _S_: stage current file  _d_: magit-diff popup    _c_: magit-commit popup
+ _G_: update git-gutter   _D_: vc-ediff            _r_: vc-revert
+ _<_: first hunk                                 ^^_f_: magit find file
+ _>_: last hunk                                  ^^_b_: blame current file
+ _R_: set start revision                         ^^_B_: magit-blame popup
 "
   ("q" nil)
   ("<escape>" nil)
@@ -194,6 +194,7 @@ start revision."
 
   ("g" #'magit-status :exit t)
   ("l" #'magit-log-buffer-file :exit t)
+  ("L" #'magit-log :exit t)
   ("b" #'magit-blame-addition :exit t)
   ("B" #'magit-blame :exit t)
   ("f" #'magit-find-file-other-window :exit t)
@@ -201,7 +202,7 @@ start revision."
   ("r" #'vc-revert :exit t))
 
 (define-key magit-file-mode-map (kbd "C-x g") 'hydra-git/body)
-(define-key magit-file-mode-map (kbd "C-x C-g") 'hydra-git/body)
+(define-key magit-file-mode-map (kbd "C-x C-g") 'ignore)
 
 ;;* dired
 (require 'dired-git-info)
