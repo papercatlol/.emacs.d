@@ -426,6 +426,30 @@ enable `ivy-calling' by default and restore original position on exit."
 
 (global-set-key (kbd "M-x") 'counsel-M-x+)
 
+;;* avy-goto-char-timer-or-swiper
+(setq avy-handler-function #'avy-handler-swiper)
+
+(defun avy-handler-swiper (char)
+  (case char
+    ;; hardcoded char since avy uses `read-char' instead of keymaps
+    (?\C-s
+     (avy-resume-swiper)
+     (throw 'done 'exit))
+    (t (avy-handler-default))))
+
+(defun avy-resume-swiper ()
+  "Call `swiper' with last `avy-goto-char-timer' input."
+  (interactive)
+  (swiper (avy--goto-char-timer-text)))
+
+(defun avy--goto-char-timer-text ()
+  "An extremely hacky way to get current avy-goto-char-timer text
+since it isn't stored anywhere apparently?"
+  (when-let* ((buffer-cands (find-if (lambda (c)
+                                    (eq (current-buffer) (window-buffer (cdr c))))
+                                  avy--old-cands))
+              (bounds (car buffer-cands)))
+    (buffer-substring-no-properties (car bounds) (cdr bounds))))
 
 ;;* KEYS
 (defhydra hydra-M-g (global-map "M-g")
