@@ -487,7 +487,7 @@ since it isn't stored anywhere apparently?"
 (define-key counsel-describe-map (kbd "M-.") #'counsel-find-symbol)
 (define-key counsel-describe-map (kbd "M-,") #'counsel--info-lookup-symbol)
 
-(global-set-key (kbd "C-h C-i") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "C-h <C-i>") 'counsel-info-lookup-symbol)
 (global-set-key (kbd "C-h b") 'counsel-descbinds)
 (global-set-key (kbd "C-h v") 'counsel-describe-variable)
 (global-set-key (kbd "C-h f") 'counsel-describe-function)

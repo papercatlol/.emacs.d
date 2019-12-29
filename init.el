@@ -379,7 +379,8 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 ;;** tab competion and hippie-expand
 (setq tab-always-indent 'complete)
 ;; Distinguish C-i and keyboard tab key
-(global-set-key (kbd "C-i") 'hippie-expand)
+(define-key input-decode-map (kbd "C-i") [C-i])
+(global-set-key (kbd "<C-i>") 'hippie-expand)
 (global-set-key (kbd "<tab>") 'indent-for-tab-command)
 ;; Global <tab> overrides minor-mode TAB binding(?) TODO: look into it
 (define-key magit-mode-map (kbd "<tab>") 'magit-section-toggle)

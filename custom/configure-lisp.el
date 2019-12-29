@@ -536,7 +536,7 @@ With prefix arg, copy toplevel form."
 ;;* `slime-import-symbol'
 (with-eval-after-load 'slime-package-fu
   (require 'slime-import-symbol)
-  (define-key slime-mode-map (kbd "C-c C-x C-i") 'slime-import-symbol))
+  (define-key slime-mode-map (kbd "C-c C-x <C-i>") 'slime-import-symbol))
 
 ;;* trace
 (defun sldb-fetch-traces ()
@@ -642,9 +642,9 @@ With prefix arg, copy toplevel form."
 (define-key sldb-mode-map (kbd "<tab>") 'sldb-toggle-details)
 (define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
 (define-key slime-mode-map (kbd "C-c p") 'slime-pprint-eval-last-expression)
-(define-key slime-mode-map (kbd "C-c C-i") 'slime-complete-symbol-global)
-(define-key slime-minibuffer-map (kbd "C-c C-i") 'slime-complete-symbol-global)
-(define-key slime-repl-mode-map (kbd "C-c C-i") 'slime-complete-symbol-global)
+(define-key slime-mode-map (kbd "C-c <C-i>") 'slime-complete-symbol-global)
+(define-key slime-minibuffer-map (kbd "C-c <C-i>") 'slime-complete-symbol-global)
+(define-key slime-repl-mode-map (kbd "C-c <C-i>") 'slime-complete-symbol-global)
 (define-key slime-repl-mode-map (kbd "C-c C-v") nil)
 (define-key slime-mode-map (kbd "C-c C-t") 'slime-trace-dialog-toggle-trace)
 (define-key slime-mode-map (kbd "C-c t") 'slime-trace-dialog)
