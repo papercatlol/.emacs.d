@@ -12,6 +12,16 @@
 (require 'evil)
 
 (evil-mode t)
+
+(defmacro evil-with-insert-state (command)
+  (let ((name (intern (concat "evil-" (symbol-name command)))))
+    (if (fboundp name)
+        `#',name
+      `(defun ,name (&rest args)
+         (interactive)
+         (call-interactively #',command)
+         (evil-insert 1)))))
+
 ;; (dolist (mode '(slime-popup-buffer-mode slime-trace-dialog-mode))
 ;;   (evil-set-initial-state mode 'emacs))
 (evil-set-initial-state 'slime-trace-dialog-mode 'emacs)
@@ -313,6 +323,13 @@
     "s" 'evil-a-paren
     "x" 'lispyville-a-sexp))
 
+;;** paredit
+(with-eval-after-load 'paredit-mode
+  (define-key evil-normal-state-map (kbd "M-(") (evil-with-insert-state paredit-wrap-round))
+  (define-key evil-insert-state-map (kbd "M-e") 'paredit-forward)
+  (define-key evil-motion-state-map (kbd "C-f") 'paredit-forward)
+  (define-key evil-motion-state-map (kbd "C-b") 'paredit-backward))
+
 ;;** `visual-or-expand-region'
 (define-key evil-normal-state-map "v" 'evil-visual-char-or-expand-region)
 (define-key evil-visual-state-map "v" 'evil-visual-char-or-expand-region)
@@ -337,6 +354,9 @@
 
 (define-key evil-normal-state-map (kbd "SPC") leader-map)
 (define-key evil-motion-state-map (kbd "SPC") leader-map)
+(define-key evil-normal-state-map (kbd "S-SPC") 'evil-avy-goto-char-timer)
+(define-key evil-motion-state-map (kbd "S-SPC") 'evil-avy-goto-char-timer)
+(define-key evil-motion-state-map (kbd "C-S-SPC") 'avy-resume)
 
 (with-eval-after-load 'cus-edit (define-key custom-mode-map (kbd "SPC") leader-map))
 (with-eval-after-load 'markdown-mode (define-key markdown-view-mode-map (kbd "SPC") leader-map))
@@ -362,15 +382,6 @@
 ;;   (define-key evil-visual-state-map (kbd "A") 'evil-mc-make-cursor-in-visual-selection-end))
 
 ;; `org'
-(defmacro evil-with-insert-state (command)
-  (let ((name (intern (concat "evil-" (symbol-name command)))))
-    (if (fboundp name)
-        `#',name
-      `(defun ,name (&rest args)
-         (interactive)
-         (call-interactively #',command)
-         (evil-insert 1)))))
-
 (evil-define-key '(normal visual) org-mode-map
   "L" 'org-metaright
   "H" 'org-metaleft
@@ -386,6 +397,12 @@
 (define-key evil-motion-state-map (kbd "C-b") nil)
 (define-key evil-motion-state-map (kbd "C-e") nil)
 
+;;** insert state
+(define-key evil-insert-state-map (kbd "M-o") 'evil-open-below)
+;; TODO: think about it; maybe bind insert-state M-s to normal-state s etc.
+;; (define-key evil-insert-state-map (kbd "M-a") 'evil-append-line)
+;; (define-key evil-insert-state-map (kbd "M-i") 'evil-insert-line)
+
 ;;** `other'
 ;; (define-key evil-normal-state-map "q" 'q-dwim)
 (define-key evil-normal-state-map "Q" "@q")
@@ -400,8 +417,6 @@
 ;; (define-key evil-normal-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
 ;; (define-key magit-mode-map (kbd "M-j") 'evil-scroll-line-down-dwim)
 ;; (define-key magit-mode-map (kbd "M-k") 'evil-scroll-line-up-dwim)
-(define-key evil-motion-state-map (kbd "C-f") 'paredit-forward)
-(define-key evil-motion-state-map (kbd "C-b") 'paredit-backward)
 (define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
 (define-key evil-normal-state-map (kbd "S") 'avy-goto-symbol-end-in-line)
 (define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
