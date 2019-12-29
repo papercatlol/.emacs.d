@@ -12,7 +12,9 @@
     (setq lsp-ui-sideline-enable nil
           lsp-ui-doc-enable nil
           lsp-prefer-flymake :none
-          lsp-gopls-server-path lsp-bin)
+          lsp-gopls-server-path lsp-bin
+          lsp-eldoc-render-all t
+          lsp-gopls-experimental-complete-unimported t)
     (yas-minor-mode)
     (lsp)))
 

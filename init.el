@@ -460,6 +460,10 @@ Else narrow-to-defun."
 (dir-locals-set-directory-class "/usr/local/share/emacs" 'emacs-src)
 (dir-locals-set-directory-class "/usr/share/emacs" 'emacs-src)
 
+;;*
+(define-key package-menu-mode-map (kbd "j") 'next-line)
+(define-key package-menu-mode-map (kbd "k") 'previous-line)
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)

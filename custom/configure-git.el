@@ -9,6 +9,7 @@
 
 (setq magit-log-arguments '("-n64" "--graph" "--decorate" "--patch")
       magit-diff-buffer-file-locked t
+      magit-diff-refine-hunk t
       magit-todos-auto-group-items 1000
       magit-section-visibility-indicator (quote (magit-fringe-bitmap+ . magit-fringe-bitmap-)))
 
@@ -67,7 +68,11 @@ Else call `magit-diff-buffer-file'."
 
 ;;** keybindings
 (define-key magit-file-mode-map (kbd "C-x =") 'diff-buffer-dwim)
+
+;; MAYBE: add hydra
 (define-key magit-file-mode-map (kbd "C-x G") 'magit-file-dispatch)
+(define-key magit-file-mode-map (kbd "C-c M-g") nil)
+
 (define-key magit-mode-map (kbd "C-c C-l") 'magit-toggle-buffer-lock)
 (define-key magit-mode-map (kbd "j") 'magit-forward-dwim)
 (define-key magit-mode-map (kbd "k") 'magit-backward-dwim)

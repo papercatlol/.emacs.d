@@ -435,7 +435,7 @@ enable `ivy-calling' by default and restore original position on exit."
     (?\C-s
      (avy-resume-swiper)
      (throw 'done 'exit))
-    (t (avy-handler-default))))
+    (t (avy-handler-default char))))
 
 (defun avy-resume-swiper ()
   "Call `swiper' with last `avy-goto-char-timer' input."
