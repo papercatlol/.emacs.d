@@ -136,7 +136,7 @@
   "Rename equake tab buffer to display current directory."
   (when equake-mode
     (let* ((regex (rx line-start (* anything)
-                      (group "%" (? (or "~" "/" ".") (* anything) "/" "::"))
+                      (group "%" (? (or "~" "/" ".") (* anything) (? "/") "::"))
                       (* anything)))
            (template
              (replace-regexp-in-string regex "%%%s::" (buffer-name) nil nil 1)))
