@@ -23,6 +23,9 @@
 
 (advice-add 'ivy-add-prompt-count :around #'ivy-add-prompt-count*)
 
+;;* ivy completion height
+(setf (alist-get 'ivy-completion-in-region ivy-height-alist) 20)
+
 ;;* counsel-files
 (defcustom counsel-files-base-cmd "fd"
   "command to list files in the project"
@@ -70,7 +73,7 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
                                                default-directory))))
     (counsel-fd counsel-files-base-cmd
                 :initial-input initial-input
-                :prompt (format "Find file(%s): " default-directory)
+                :prompt "Find file: "
                 :caller 'counsel-files)))
 
 (defun counsel-dirs (&optional initial-input initial-directory)
@@ -86,7 +89,7 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
                                                    default-directory)))))
     (counsel-fd counsel-dirs-base-cmd
                 :initial-input initial-input
-                :prompt (format "Find directory(%s): " default-directory)
+                :prompt "Find directory: "
                 :caller 'counsel-dirs)))
 
 (cl-defun counsel-fd (cmd &key prompt caller initial-input)
@@ -322,7 +325,7 @@ enable `ivy-calling' by default and restore original position on exit."
 (ivy-enable-calling-for-func 'ivy-xref-show-xrefs)
 (ivy-enable-calling-for-func 'counsel-outline)
 
-;; counsel-imenu-anywhere
+;;* counsel-imenu-anywhere
 (require 'imenu-anywhere)
 
 (defun counsel-imenu-dwim (anywhere)
@@ -413,18 +416,8 @@ enable `ivy-calling' by default and restore original position on exit."
     (define-key map (kbd "C-j") 'ivy-immediate-done)
     map))
 
-;;* counsel-M-x+
-;; Squeeze in a few more bindings into `counsel-M-x'.
+;;* counsel-descbinds
 ;; TODO: remove <remap>s from `counsel-descbinds'
-(defun counsel-M-x+ (&optional initial-input)
-  "Like `counsel-M-x', but call `counsel-descbinds' with prefix arg."
-  (interactive)
-  (call-interactively
-   (if current-prefix-arg
-       #'counsel-descbinds
-     #'counsel-M-x)))
-
-(global-set-key (kbd "M-x") 'counsel-M-x+)
 
 ;;* avy-goto-char-timer-or-swiper
 (setq avy-handler-function #'avy-handler-swiper)
