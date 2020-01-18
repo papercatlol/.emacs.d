@@ -13,7 +13,7 @@
           lsp-ui-doc-enable nil
           lsp-prefer-flymake :none
           lsp-gopls-server-path lsp-bin
-          lsp-eldoc-render-all t
+          lsp-eldoc-render-all nil ; TODO: enable this but disable markup in minibuffer
           lsp-gopls-experimental-complete-unimported t)
     (yas-minor-mode)
     (lsp)))

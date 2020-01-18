@@ -213,7 +213,7 @@ start revision."
 (require 'dired-git-info)
 
 (define-key dired-mode-map (kbd ")") 'dired-git-info-mode)
-(define-key dired-mode-map (kbd "C-x g") 'magit-file-prefix-map)
+(define-key dired-mode-map (kbd "C-x g") 'magit-status)
 
 ;;* TODO: ibuffer
 

@@ -250,8 +250,8 @@
   (let ((tab-always-indent t))
     (call-interactively #'indent-for-tab-command)))
 
-(define-key evil-motion-state-map [remap evil-jump-backward] 'evil-jump-backward-dwim)
-(define-key evil-motion-state-map [remap evil-jump-forward] 'evil-jump-forward-dwim)
+(define-key evil-motion-state-map (kbd "C-o") 'evil-jump-backward-dwim)
+(define-key evil-motion-state-map (kbd "<C-i>") 'evil-jump-forward-dwim)
 (define-key evil-motion-state-map (kbd "<tab>") 'tab-indent)
 
 ;;** `i3wm-frames'
