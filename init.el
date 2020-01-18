@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 ;; packages
 (require 'package)
 (add-to-list 'package-archives
@@ -376,15 +377,14 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 
 (advice-add #'he-substitute-string :after #'he-paredit-fix)
 
-;;** tab competion and hippie-expand
+;;** tab key hacks
 (setq tab-always-indent 'complete)
+
 ;; Distinguish C-i and keyboard tab key
 (define-key input-decode-map (kbd "C-i") [C-i])
+
 (global-set-key (kbd "<C-i>") 'hippie-expand)
-(global-set-key (kbd "<tab>") 'indent-for-tab-command)
-;; Global <tab> overrides minor-mode TAB binding(?) TODO: look into it
-(define-key magit-mode-map (kbd "<tab>") 'magit-section-toggle)
-(define-key read-expression-map (kbd "<tab>") 'completion-at-point)
+(global-set-key (kbd "TAB") 'indent-for-tab-command)
 
 ;;** with-minor-mode-overriding - locally override minor mode keymap
 (cl-defmacro with-minor-mode-map-overriding ((new-map minor-mode) &body body)
@@ -459,6 +459,23 @@ Else narrow-to-defun."
 (dir-locals-set-directory-class "/usr/local/src/emacs" 'emacs-src)
 (dir-locals-set-directory-class "/usr/local/share/emacs" 'emacs-src)
 (dir-locals-set-directory-class "/usr/share/emacs" 'emacs-src)
+
+;;* yasnippet
+(require 'yasnippet)
+
+(yas-global-mode)
+
+;; TODO: figure out how to add snippets to completion candidates
+;; and how `completion-extra-properties' work
+;; (defun yas-completion-at-point ()
+;;   (let ((bounds (bounds-of-thing-at-point 'symbol)))
+;;     (list (or (car bounds) (point))
+;;           (point)
+;;           (yas--table-hash (car (yas--get-snippet-tables)))
+;;           (list :exclusive 'no :exit-function #'yas--completion-exit-function))))
+
+(defun yas--completion-exit-function (string status)
+  (yas-expand))
 
 ;;*
 (define-key package-menu-mode-map (kbd "j") 'next-line)
