@@ -1,6 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 (require 'ace-link)
-(require 'eval-in-repl)
 (require 'slime)
 (require 'slime-autoloads)
 
@@ -168,6 +167,22 @@ else call eros-eval-last-sexp."
 
 (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook eval-expression-minibuffer-setup-hook))
   (add-hook hook 'elisp-slime-nav-mode))
+
+;;** ielm toggle
+(defun elisp-switch-to-ielm ()
+  "Switch to ielm buffer if exists or call `ielm'.
+If there was an active region, insert it into repl."
+  (interactive)
+  (let ((selection (and (region-active-p)
+                        (buffer-substring-no-properties (region-beginning) (region-end)))))
+    (if-let ((buf (get-buffer "*ielm*")))
+        (switch-to-buffer buf)
+      (ielm))
+    (when selection (insert selection))))
+
+(define-key emacs-lisp-mode-map (kbd "C-c C-z") 'elisp-switch-to-ielm)
+(with-eval-after-load 'ielm
+  (define-key inferior-emacs-lisp-mode-map (kbd "C-c C-z") 'bury-buffer))
 
 ;;* TODO: edebug-mode: make compatible with evil-mode, add hydra
 
@@ -698,11 +713,15 @@ With prefix arg, copy toplevel form."
 ;;** lispy
 (with-eval-after-load 'lispy
   (define-key emacs-lisp-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
-  (define-key emacs-lisp-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
   (define-key slime-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
   (define-key slime-mode-map (kbd "M-s") 'lispy-splice)
-  (define-key slime-mode-map (kbd "<C-return>") 'eir-eval-in-slime)
   )
+
+;;** eval-in-repl
+(require 'eval-in-repl)
+
+(define-key emacs-lisp-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
+(define-key slime-mode-map (kbd "<C-return>") 'eir-eval-in-slime)
 
 ;;** Elisp
 (define-key emacs-lisp-mode-map (kbd "C-c C-k") 'eval-buffer)
