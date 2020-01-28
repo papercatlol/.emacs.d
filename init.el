@@ -477,6 +477,18 @@ Else narrow-to-defun."
 (defun yas--completion-exit-function (string status)
   (yas-expand))
 
+;;* copy for reddit
+(defun copy-for-reddit ()
+  "Copy and indent active region or current defun with 4 spaces."
+  (interactive)
+  (when-let* ((bounds (if (region-active-p)
+                          (cons (region-beginning) (region-end))
+                        (bounds-of-thing-at-point 'defun)))
+              (text (buffer-substring-no-properties (car bounds) (cdr bounds))))
+    (setq deactivate-mark t)
+    (kill-new (replace-regexp-in-string "^" "    " text))
+    (message "Copied %d lines." (count-lines (car bounds) (cdr bounds)))))
+
 ;;*
 (define-key package-menu-mode-map (kbd "j") 'next-line)
 (define-key package-menu-mode-map (kbd "k") 'previous-line)
