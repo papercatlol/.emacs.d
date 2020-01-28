@@ -109,7 +109,10 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
             :keymap counsel-find-file-map
             :caller caller))
 
-(defun swiper-at-point ()
+;;* swiper-dwim
+(defun swiper-dwim ()
+  "If region is active and no prefix arg is supplied, search for selected text,
+otherwise call `counsel-grep-or-swiper'. With double prefix arg call `ivy-resume'."
   (interactive)
   (if (= 16 (prefix-numeric-value current-prefix-arg))
       (call-interactively #'ivy-resume)
@@ -117,14 +120,24 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
     (counsel-grep-or-swiper
      (cond (current-prefix-arg nil)
            ((region-active-p)
-            (buffer-substring (point) (mark)))
-           ((symbol-at-point)
-            (symbol-name (symbol-at-point)))))))
+            (buffer-substring-no-properties (point) (mark)))))))
 
-(defun ivy-yank-symbol-at-point ()
-  (interactive)
-  (when-let ((symbol (with-ivy-window (symbol-at-point))))
-    (insert (symbol-name symbol))))
+(defun swiper-next-line-or-thing-at-point (&optional arg)
+  "Move cursor vertically down ARG candidates.
+If the input is empty, insert active region or symbol-at-point."
+  (interactive "p")
+  (if (string= ivy-text "")
+      (insert
+       (or (with-ivy-window
+               (when-let ((bounds (if (region-active-p)
+                                      (cons (region-beginning) (region-end))
+                                    (bounds-of-thing-at-point 'symbol))))
+                 (buffer-substring-no-properties (car bounds) (cdr bounds))))
+           ""))
+    (ivy-next-line arg)))
+
+(define-key swiper-map (kbd "C-s") 'swiper-next-line-or-thing-at-point)
+(global-set-key (kbd "C-s") 'swiper-dwim)
 
 (defun counsel-rg-dir (&optional initial-input initial-directory extra-rg-args rg-prompt)
   "Same as `counsel-rg' but search starting from current directory instead of the repo root."
@@ -492,8 +505,6 @@ since it isn't stored anywhere apparently?"
 (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
 (define-key swiper-map (kbd "C-:") 'swiper-mc)
 (define-key swiper-map (kbd "C-t") 'swiper-avy)
-;; (define-key ivy-minibuffer-map (kbd "C-,") 'ivy-yank-symbol-at-point)
-;; (define-key ivy-minibuffer-map (kbd "C-.") 'ivy-yank-word)
 (define-key ivy-minibuffer-map (kbd "C-,") 'ivy-minibuffer-toggle-symbol-start)
 (define-key ivy-minibuffer-map (kbd "C-.") 'ivy-minibuffer-insert-symbol-end)
 (define-key counsel-describe-map (kbd "C-,") 'ivy-minibuffer-toggle-symbol-start)
