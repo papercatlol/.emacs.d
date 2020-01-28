@@ -35,7 +35,7 @@
       (magit-previous-line)
     (magit-section-backward)))
 
-;;** show unstaged diff for current buffer
+;;** show unstaged diff for current buffer, diff helper functions
 (defun magit-diff-buffer-file-unstaged ()
   "Like `magit-diff-buffer-file', but show unstaged diff only."
   (interactive)
@@ -50,6 +50,20 @@
               (magit-diff-setup-buffer nil nil args (list file) magit-diff-buffer-file-locked)
             (magit-diff--goto-position file line col))))
     (user-error "Buffer isn't visiting a file")))
+
+(defun magit-diff-buffer-file-other-window ()
+  "Like `magit-diff-buffer-file', but don't focus new window."
+  (interactive)
+  (let ((win (selected-window)))
+    (call-interactively #'magit-diff-buffer-file)
+    (select-window win)))
+
+(defun magit-diff-buffer-file-unstaged-other-window ()
+  "Like `magit-diff-buffer-file-unstaged', but don't focus new window."
+  (interactive)
+  (let ((win (selected-window)))
+    (call-interactively #'magit-diff-buffer-file-unstaged)
+    (select-window win)))
 
 ;;** stage current buffer
 (defun magit-stage-buffer-file ()
@@ -167,6 +181,7 @@ start revision."
 
 ;;* git hydra
 ;; TODO: a function to stage current hunk or region
+;; TODO: sync current hunk with diff window if opened
 (defhydra hydra-git (:hint nil)
   "
  ^Stage^                  ^Diff^                   ^Other^
@@ -176,9 +191,10 @@ start revision."
  _s_: stage hunk          _U_: diff unstaged(all)  _L_: magit-log popup
  _S_: stage current file  _d_: magit-diff popup    _c_: magit-commit popup
  _G_: update git-gutter   _D_: vc-ediff            _r_: vc-revert
- _<_: first hunk                                 ^^_f_: magit find file
+ _<_: first hunk                                 ^^_p_: magit-push popup
  _>_: last hunk                                  ^^_b_: blame current file
  _R_: set start revision                         ^^_B_: magit-blame popup
+                                               ^^^^_f_: magit find file
 "
   ("q" nil)
   ("<escape>" nil)
@@ -191,8 +207,8 @@ start revision."
   (">" #'git-gutter:last-hunk)
   ("R" #'git-gutter:set-start-revision-magit)
 
-  ("=" #'magit-diff-buffer-file :exit t)
-  ("u" #'magit-diff-buffer-file-unstaged :exit t)
+  ("=" #'magit-diff-buffer-file-other-window)
+  ("u" #'magit-diff-buffer-file-unstaged-other-window)
   ("U" #'magit-diff-unstaged :exit t)
   ("d" #'magit-diff :exit t)
   ("D" #'vc-ediff :exit t)
@@ -200,11 +216,12 @@ start revision."
   ("g" #'magit-status :exit t)
   ("l" #'magit-log-buffer-file :exit t)
   ("L" #'magit-log :exit t)
-  ("b" #'magit-blame-addition :exit t)
-  ("B" #'magit-blame :exit t)
-  ("f" #'magit-find-file-other-window :exit t)
   ("c" #'magit-commit :exit t)
-  ("r" #'vc-revert :exit t))
+  ("p" #'magit-push :exit t)
+  ("r" #'vc-revert :exit t)
+  ("f" #'magit-find-file-other-window :exit t)
+  ("b" #'magit-blame-addition :exit t)
+  ("B" #'magit-blame :exit t))
 
 (define-key magit-file-mode-map (kbd "C-x g") 'hydra-git/body)
 (define-key magit-file-mode-map (kbd "C-x C-g") 'ignore)
