@@ -65,6 +65,13 @@
     (call-interactively #'magit-diff-buffer-file-unstaged)
     (select-window win)))
 
+(defun magit-diff-unstaged-other-window ()
+  "Like `magit-diff-unstaged', but don't focus new window."
+  (interactive)
+  (let ((win (selected-window)))
+    (call-interactively #'magit-diff-unstaged)
+    (select-window win)))
+
 ;;** stage current buffer
 (defun magit-stage-buffer-file ()
   (interactive)
@@ -164,6 +171,19 @@ Else call `magit-diff-buffer-file'."
   (goto-char (point-max))
   (git-gutter:previous-hunk 1))
 
+;;** update magit diff buffer when jumping between hunks
+(defun magit-refresh-diff-window-position (&rest _)
+  (when-let ((file (magit-file-relative-name))
+             (line (line-number-at-pos))
+             (col (current-column)))
+    (dolist (win (window-list))
+      (with-current-buffer (window-buffer win)
+        (when (eq major-mode 'magit-diff-mode)
+          (magit-diff--goto-position file line col))))))
+
+(advice-add 'git-gutter:next-hunk :after #'magit-refresh-diff-window-position)
+(advice-add 'git-gutter:previous-hunk :after #'magit-refresh-diff-window-position)
+
 ;;** git-gutter:set-start-revision-magit
 ;; Get list of refnames from magit, use completing-read
 (defun git-gutter:set-start-revision-magit (start-rev)
@@ -181,7 +201,6 @@ start revision."
 
 ;;* git hydra
 ;; TODO: a function to stage current hunk or region
-;; TODO: sync current hunk with diff window if opened
 (defhydra hydra-git (:hint nil)
   "
  ^Stage^                  ^Diff^                   ^Other^
@@ -190,7 +209,7 @@ start revision."
  _k_: prev hunk           _u_: diff unstaged(file) _l_: git log for current file
  _s_: stage hunk          _U_: diff unstaged(all)  _L_: magit-log popup
  _S_: stage current file  _d_: magit-diff popup    _c_: magit-commit popup
- _G_: update git-gutter   _D_: vc-ediff            _r_: vc-revert
+ _G_: refresh git-gutter  _D_: vc-ediff            _r_: vc-revert
  _<_: first hunk                                 ^^_p_: magit-push popup
  _>_: last hunk                                  ^^_b_: blame current file
  _R_: set start revision                         ^^_B_: magit-blame popup
@@ -209,7 +228,7 @@ start revision."
 
   ("=" #'magit-diff-buffer-file-other-window)
   ("u" #'magit-diff-buffer-file-unstaged-other-window)
-  ("U" #'magit-diff-unstaged :exit t)
+  ("U" #'magit-diff-unstaged-other-window)
   ("d" #'magit-diff :exit t)
   ("D" #'vc-ediff :exit t)
 
