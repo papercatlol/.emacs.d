@@ -75,7 +75,8 @@ when cursor is directly inside the in-package form."
 ;;                      (concat (match-string 1 pathname) (downcase (match-string 2 pathname)))
 ;;                    pathname))))))
 
-;;* Elisp indentation
+;;* Elisp
+;;** indentation
 ;; It seems easier to use `common-lisp-indent-function' for stuff such as
 ;; labels & loop, and manually fix indent of elisp-specific forms(if, when-let, etc)
 (setq lisp-indent-function 'common-lisp-indent-function)
@@ -98,11 +99,12 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'while 'when)
     (%copy-indent 'evil-define-key 'defun)
     (%copy-indent 'avy-with 'when)
+    (%copy-indent 'with-ivy-window 'when)
     (put 'if 'common-lisp-indent-function 2)
     (put 'if-let 'common-lisp-indent-function 2)
     (put 'if-let* 'common-lisp-indent-function 2)))
 
-;;* Elisp documentation
+;;** documentation
 (defvar *elisp-documentation-last-symbol* nil
   "Last symbol for which documentation was queried.")
 
@@ -133,8 +135,11 @@ When called second time consecutively, call `helpful-symbol' for SYMBOL."
         (message "%s" doc)))))
 
 (define-key emacs-lisp-mode-map (kbd "C-c C-d") 'elisp-documentation)
+(define-key read-expression-map (kbd "C-c C-d") 'elisp-documentation)
+(with-eval-after-load 'ielm
+  (define-key inferior-emacs-lisp-mode-map (kbd "C-c C-d") 'elisp-documentation))
 
-;;* Elisp evaluation
+;;** evaluation
 (require 'eros)
 
 (defun eros-eval-last-sexp-dwim ()
@@ -155,6 +160,14 @@ else call eros-eval-last-sexp."
 
 (global-set-key [remap eval-last-sexp] #'eros-eval-last-sexp-dwim)
 (global-set-key [remap eval-defun] #'eros-eval-defun)
+
+;;** elisp-slime-nav
+(require 'elisp-slime-nav)
+
+(define-key elisp-slime-nav-mode-map (kbd "C-c C-d") nil)
+
+(dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook eval-expression-minibuffer-setup-hook))
+  (add-hook hook 'elisp-slime-nav-mode))
 
 ;;* TODO: edebug-mode: make compatible with evil-mode, add hydra
 
