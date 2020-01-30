@@ -457,6 +457,19 @@ since it isn't stored anywhere apparently?"
               (bounds (car buffer-cands)))
     (buffer-substring-no-properties (car bounds) (cdr bounds))))
 
+;;* ivy-magical-space
+(defun ivy-magical-space ()
+  "If there is a single ivy candidate and point is at the end of the minibuffer,
+exit with that candidate, otherwise insert SPACE character as usual."
+  (interactive)
+  (call-interactively
+   (if (and (= 1 (length ivy--old-cands))
+            (= (point) (line-end-position)))
+       #'ivy-done
+     #'self-insert-command)))
+
+(define-key ivy-minibuffer-map (kbd "SPC") 'ivy-magical-space)
+
 ;;* KEYS
 (defhydra hydra-M-g (global-map "M-g")
   "M-g"
