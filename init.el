@@ -39,7 +39,6 @@
 (require 'multiple-cursors)
 (require 'paredit)
 (require 'pcmpl-args)
-(require 'reverse-im)
 (require 'string-edit)
 (require 'uniquify)
 (require 'wgrep)
@@ -70,7 +69,15 @@
 (global-display-line-numbers-mode t)
 (global-hl-todo-mode 1)
 (dired-async-mode t)
-(reverse-im-activate "russian-computer")
+
+;;* reverse-im
+(require 'reverse-im)
+(set-keymap-parent function-key-map
+                   (make-composed-keymap
+                    (list (reverse-im--im-to-keymap "russian-computer")
+                          (reverse-im--im-to-keymap "ukrainian-computer"))))
+
+;;* setq variables
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
       kill-do-not-save-duplicates t
