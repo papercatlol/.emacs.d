@@ -23,7 +23,7 @@
                        ;; slime-fontifying-fu
                        slime-trace-dialog
                        slime-cl-indent
-                       slime-uncompiled-fringe
+                       ;; slime-uncompiled-fringe
                        slime-tramp
                        ;; slime-xref-browser
                        ))
@@ -351,6 +351,8 @@ If there was an active region, insert it into repl."
 
 (sotlisp-define-all-abbrevs)
 
+;; TODO: enable abbrevs in read-expression buffer
+(add-hook 'emacs-lisp-mode-hook #'abbrev-mode)
 
 ;;* TODO: edebug-mode: make compatible with evil-mode, add hydra
 
