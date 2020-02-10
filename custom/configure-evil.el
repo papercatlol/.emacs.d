@@ -296,8 +296,52 @@
 ;; -----------------------------------------------------------------------------
 ;;** `lispyville'
 (with-eval-after-load 'lispyville
+  (evil-define-command lispyville-open-round-below-list (count)
+    "Same as `lispyville-open-below-list', but insert () afterwards.
+     Defined as a separate function because of undo problems."
+    (interactive "<c>")
+    (when (lispyville--out-forward (or count 1))
+      (newline-and-indent)
+      (when (lispyville--top-level-p)
+        (insert "\n"))
+      (insert "()")
+      (forward-char -1)
+      (evil-change-state lispyville-preferred-state)))
+
+  ;; MAYBE: do the same thing for `lispyville-insert-at-beginning-of-list'
+  (evil-define-command lispyville-insert-at-end-of-list* (count)
+    "Like `lispyville-insert-at-end-of-list', but if point is at:
+     ( - jump right after matching )
+     ) - forward-char(which makes this command spammable)"
+    (interactive "<c>")
+    (cond ((= ?\( (char-after))
+           (forward-sexp 1)
+           (backward-char))
+          ((= ?\) (char-after))
+           (forward-char))
+          ((lispyville--out-forward (or count 1))
+           (backward-char))
+          ;; MAYBE: jump to next defun
+          (t (user-error "Nothing to do.")))
+    (evil-change-state lispyville-preferred-state))
+
+  (defun lispyville-newline-and-parentheses ()
+    (interactive)
+    (ignore-errors (expand-abbrev))
+    (when (and (symbol-at-point) (not (looking-at-p (rx symbol-end))))
+      (forward-symbol 1))
+    (newline-and-indent)
+    (insert "()")
+    (forward-char -1)
+    (evil-change-state lispyville-preferred-state))
+
   (evil-define-key '(normal insert) lispyville-mode-map
-    (kbd "C-t") 'lispy-ace-paren)
+    (kbd "C-t") 'lispy-ace-paren
+    (kbd "M-o") 'lispyville-open-round-below-list
+    (kbd "M-i") 'lispyville-insert-at-beginning-of-list
+    (kbd "M-a") 'lispyville-insert-at-end-of-list*
+    (kbd "M-f") 'lispyville-next-opening
+    (kbd "M-m") 'lispyville-newline-and-parentheses)
 
   (evil-define-key '(insert) slime-repl-mode-map
     (kbd "C-t") 'evil-avy-goto-char-2)
@@ -324,8 +368,23 @@
     "x" 'lispyville-a-sexp))
 
 ;;** paredit
-(with-eval-after-load 'paredit-mode
-  (define-key evil-normal-state-map (kbd "M-(") (evil-with-insert-state paredit-wrap-round))
+(with-eval-after-load 'paredit
+  (defun evil-paredit-wrap-round ()
+    (interactive)
+    (let ((in-symbol?))
+      (when (symbol-at-point)
+        (unless (looking-at-p (rx symbol-start))
+          (forward-symbol -1))
+        (when (= ?\' (char-before))
+          (forward-char -1))
+        (setq in-symbol? t))
+      (paredit-wrap-round)
+      (when in-symbol?
+        (insert " ")
+        (forward-char -1))
+      (evil-change-state 'insert)))
+
+  (define-key evil-normal-state-map (kbd "M-(") 'evil-paredit-wrap-round)
   (define-key evil-insert-state-map (kbd "M-e") 'paredit-forward)
   (define-key evil-motion-state-map (kbd "C-f") 'paredit-forward)
   (define-key evil-motion-state-map (kbd "C-b") 'paredit-backward))
@@ -398,7 +457,7 @@
 (define-key evil-motion-state-map (kbd "C-e") nil)
 
 ;;** insert state
-(define-key evil-insert-state-map (kbd "M-o") 'evil-open-below)
+;; (define-key evil-insert-state-map (kbd "M-o") 'evil-open-below)
 ;; TODO: think about it; maybe bind insert-state M-s to normal-state s etc.
 ;; (define-key evil-insert-state-map (kbd "M-a") 'evil-append-line)
 ;; (define-key evil-insert-state-map (kbd "M-i") 'evil-insert-line)
