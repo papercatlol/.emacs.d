@@ -306,6 +306,7 @@
         (insert "\n"))
       (insert "()")
       (forward-char -1)
+      (pulse-cursor)
       (evil-change-state lispyville-preferred-state)))
 
   ;; MAYBE: do the same thing for `lispyville-insert-at-beginning-of-list'
@@ -323,6 +324,7 @@
            (backward-char))
           ;; MAYBE: jump to next defun
           (t (user-error "Nothing to do.")))
+    (pulse-cursor)
     (evil-change-state lispyville-preferred-state))
 
   (defun lispyville-newline-and-parentheses ()
@@ -400,6 +402,7 @@
 (define-key evil-window-map (kbd "w") 'ace-window)
 (define-key evil-window-map (kbd "C-q") 'evil-window-delete)
 (define-key evil-window-map (kbd "q") 'evil-window-delete)
+(define-key evil-normal-state-map (kbd "C-q") 'bury-buffer)
 
 ;;** `ex'
 (define-key evil-ex-completion-map (kbd "C-a") nil)

@@ -6,6 +6,8 @@
 
 (when (< emacs-major-version 24)
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+
+(setq package-enable-at-startup nil)
 (package-initialize)
 
 (unless (file-exists-p "~/.emacs.d/elpa/archives/melpa")
@@ -66,7 +68,7 @@
 
 (delete-selection-mode 1)
 ;; (global-linum-mode t)
-(global-display-line-numbers-mode t)
+;; (global-display-line-numbers-mode t)
 (global-hl-todo-mode 1)
 (dired-async-mode t)
 
@@ -98,7 +100,7 @@
       uniquify-buffer-name-style 'forward
       aw-scope 'frame
       aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
-      avy-style 'de-bruijn
+      avy-style 'pre ;; 'de-bruijn
       avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v)
       lispy-avy-keys avy-keys
       view-read-only t
@@ -106,6 +108,7 @@
       xref-show-xrefs-function #'ivy-xref-show-xrefs
       compilation-scroll-output t
       initial-major-mode 'emacs-lisp-mode
+      ;; fringe-mode '((4 . 4))
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
@@ -496,6 +499,27 @@ Else narrow-to-defun."
     (kill-new (replace-regexp-in-string "^" "    " text))
     (message "Copied %d lines." (count-lines (car bounds) (cdr bounds)))))
 
+;;* pulse-cursor
+(cl-defun pulse-cursor (&key (width 1) (face 'cursor) (delay .05))
+  (let* ((pulse-delay delay)
+         (pos (point))
+         (beg (max (line-beginning-position) (- pos width)))
+         (end (min (line-end-position) (+ pos width))))
+    (pulse-momentary-highlight-region beg end face)))
+
+(cl-defun pulse-current-line (&key (face 'cursor) (delay .02))
+  (let ((pulse-delay delay))
+    (pulse-momentary-highlight-one-line (point) face)))
+
+(defun pulse-cursor-after (&rest args)
+  (pulse-cursor))
+
+(defun pulse-current-line-after (&rest args)
+  (pulse-current-line))
+
+(advice-add 'other-window :after #'pulse-current-line-after)
+(advice-add 'ace-window :after #'pulse-current-line-after)
+
 ;;*
 (define-key package-menu-mode-map (kbd "j") 'next-line)
 (define-key package-menu-mode-map (kbd "k") 'previous-line)
@@ -569,6 +593,9 @@ Else narrow-to-defun."
 (global-set-key (kbd "C-.") 'er/expand-region)
 (global-set-key (kbd "C-,") 'er/contract-region)
 
+(global-set-key (kbd "C-S-SPC") 'avy-goto-char-timer)
+(global-set-key (kbd "M-SPC") 'avy-goto-char-timer)
+(global-set-key (kbd "M-<tab>") 'other-window)
 (global-set-key (kbd "C-t") 'avy-goto-char-2)
 (global-set-key (kbd "M-g g") 'avy-goto-line)
 (global-set-key (kbd "M-g M-g") 'avy-goto-line)
@@ -611,6 +638,7 @@ Else narrow-to-defun."
   ("e" #'toggle-debug-on-error "toggle-debug-on-error")
   ("=" #'diff-current-buffer-with-file "diff-current-buffer-with-file")
   ("c" #'counsel-colors-emacs "counsel-colors-emacs")
+  ("C" #'rainbow-mode "rainbow-mode")
   )
 
 (defun hydra-cantrips-M-x ()
