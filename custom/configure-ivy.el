@@ -2,10 +2,12 @@
 (require 'ivy)
 (require 'ivy-hydra)
 (require 'counsel)
-(require 'ivy-prescient)
+
+;; ivy-prescient is bugged? TODO: look into it
+;; (require 'ivy-prescient)
+;; (ivy-prescient-mode t)
 
 (ivy-mode t)
-(ivy-prescient-mode t)
 (setq ivy-use-virtual-buffers t
       ivy-count-format "[%d/%d] "
       ivy-re-builders-alist '((t . ivy--regex-ignore-order))
@@ -137,6 +139,7 @@ If the input is empty, insert active region or symbol-at-point."
     (ivy-next-line arg)))
 
 (define-key swiper-map (kbd "C-s") 'swiper-next-line-or-thing-at-point)
+(define-key ivy-minibuffer-map (kbd "C-s") 'swiper-next-line-or-thing-at-point)
 (global-set-key (kbd "C-s") 'swiper-dwim)
 
 (defun counsel-rg-dir (&optional initial-input initial-directory extra-rg-args rg-prompt)
@@ -396,6 +399,13 @@ enable `ivy-calling' by default and restore original position on exit."
                  (find-function symbol)
                (find-variable symbol))))))))
 
+;;* avian
+(require 'avian)
+
+(avian-swiper-mode)
+
+(define-key swiper-map (kbd "SPC") avian:swiper-maybe-done)
+
 ;;* [DISABLED] ivy-enhanced eval-expression
 (defun ivy--read-expression (prompt &optional initial-contents)
   "Like `read-expression' but use ivy to read from minibuffer."
@@ -481,10 +491,10 @@ exit with that candidate, otherwise insert SPACE character as usual."
   ("M-g" avy-goto-line)
   ("c" goto-char))
 
+(global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x b") 'counsel-ibuffer-or-recentf)
 (global-set-key (kbd "C-x 4 b") 'counsel-ibuffer-or-recentf-other-window)
 (global-set-key (kbd "C-x 5 b") 'counsel-ibuffer-or-recentf-other-frame)
-(global-set-key (kbd "C-s") 'swiper-at-point)
 (global-set-key (kbd "C-M-s") 'swiper-all)
 (global-set-key (kbd "C-r") 'counsel-grep-or-swiper)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
@@ -498,6 +508,7 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (global-set-key (kbd "C-c b") 'counsel-bookmark)
 (global-set-key (kbd "C-c C-v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
+(global-set-key [remap insert-char] 'counsel-unicode-char)
 
 ;;** C-h bindings
 (setq counsel-describe-function-function #'helpful-function)
@@ -528,13 +539,19 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (define-key ivy-minibuffer-map (kbd "M-k") 'ivy-previous-line)
 (define-key ivy-minibuffer-map (kbd "C-n") 'ivy-next-line-and-call)
 (define-key ivy-minibuffer-map (kbd "C-p") 'ivy-previous-line-and-call)
+(define-key ivy-minibuffer-map (kbd "C-M-j") 'ivy-next-line-and-call)
+(define-key ivy-minibuffer-map (kbd "C-M-k") 'ivy-previous-line-and-call)
 (define-key ivy-minibuffer-map (kbd "C-t") 'ivy-avy)
+(define-key ivy-minibuffer-map (kbd "S-SPC") 'ivy-avy)
+(define-key swiper-map (kbd "S-SPC") 'swiper-avy)
 (define-key ivy-minibuffer-map (kbd "C-x 4 RET") 'ivy-done-other-window)
 (define-key ivy-minibuffer-map (kbd "C-x 5 RET") 'ivy-done-other-frame)
 (define-key ivy-minibuffer-map (kbd "<C-return>") 'ivy-done-other-window)
 ;; (define-key ivy-minibuffer-map (kbd "M-.") 'ivy-xref-action)
 (define-key ivy-minibuffer-map (kbd "M-.") 'counsel-find-symbol)
 (define-key ivy-minibuffer-map (kbd "M-,") 'counsel--info-lookup-symbol)
+(define-key ivy-minibuffer-map (kbd "C-M-m") 'ivy-immediate-done)
+(define-key ivy-minibuffer-map (kbd "M-m") 'ivy-call)
 
 
 
