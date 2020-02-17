@@ -83,11 +83,20 @@
 ;;** `evil-visual-char-or-expand-region'
 (require 'expand-region)
 
-(defun evil-visual-char-or-expand-region ()
-  (interactive)
-  (if (region-active-p)
-        (call-interactively 'er/expand-region)
-    (evil-visual-char)))
+(defun call-command-interactively (command)
+  "Like `call-interactively', but also bind
+`this-command' to COMMAND."
+  (let ((this-command command))
+    (call-interactively command)))
+
+(defun evil-visual-char-or-expand-region (visual-block)
+  (interactive "P")
+  (call-command-interactively
+   (if (region-active-p)
+       #'er/expand-region
+     (if visual-block
+         #'evil-visual-block
+       #'evil-visual-char))))
 
 ;;** `swiper-evil-ex'
 (require 'swiper)
