@@ -78,19 +78,33 @@
  '(error ((t (:foreground "firebrick" :weight bold))))
  '(hl-line ((t (:background "gray10"))))
  '(ivy-current-match ((t (:background "gray50" :foreground "white"))))
- '(ivy-minibuffer-match-face-1 ((t (:inherit lazy-highlight :underline t
+ '(ivy-minibuffer-match-face-1 ((t (:inherit lazy-highlight :underline nil
                                     ;; :underline (:color "red1")
                                                ))))
  '(ivy-minibuffer-match-face-2 ((t (:inherit ivy-minibuffer-match-face-1))))
  '(ivy-minibuffer-match-face-3 ((t (:inherit ivy-minibuffer-match-face-1))))
  '(ivy-minibuffer-match-face-4 ((t (:inherit ivy-minibuffer-match-face-1))))
- '(swiper-match-face-1 ((t (:inherit lazy-highlight))))
- '(swiper-match-face-2 ((t (:inherit lazy-highlight))))
- '(swiper-match-face-3 ((t (:inherit lazy-highlight :background "dark violet"))))
- '(swiper-match-face-4 ((t (:inherit swiper-match-face-3))))
- '(avy-lead-face ((t (:background "white" :foreground "black" :weight extra-bold))))
- '(avy-lead-face-0 ((t (:inherit avy-lead-face :foreground "black"))))
- '(avy-lead-face-2 ((t (:inherit avy-lead-face :foreground "dark red"))))
+ '(swiper-match-face-1 ((t (:inherit  lazy-highlight
+                            ;; :foreground "#2cd495"
+                            :weight regular
+                            :underline t;; (:color "white")
+                            ))))
+ '(swiper-match-face-2 ((t (:inherit swiper-match-face-1))))
+ '(swiper-match-face-3 ((t (:inherit swiper-match-face-1))))
+ '(swiper-match-face-4 ((t (:inherit swiper-match-face-1))))
+ ;; '(swiper-match-face-3 ((t (:inherit lazy-highlight :background "dark violet"))))
+ ;; '(swiper-match-face-4 ((t (:inherit swiper-match-face-3))))
+ ;; '(avy-lead-face ((t (:background "white" :foreground "black" :weight extra-bold))))
+ ;; '(avy-lead-face-0 ((t (:inherit avy-lead-face :foreground "black"))))
+ ;; '(avy-lead-face-2 ((t (:inherit avy-lead-face :foreground "dark red"))))
+ '(avy-lead-face ((t (:background "darkgreen" :foreground "white" :weight extra-bold))))
+ ;; '(avy-lead-face ((t (:background "white" :foreground "dark red" :weight extra-bold))))
+ '(avy-lead-face-0 ((t (:inherit avy-lead-face))))
+ '(avy-lead-face-1 ((t (:inherit avy-lead-face))))
+ '(avy-lead-face-2 ((t (:inherit avy-lead-face))))
+ '(avy-goto-char-timer-face ((t ;; (:box (:line-width 1 :color "LimeGreen"))
+                              (:underline (:color "LimeGreen"))
+                              )))
  ;; magit
  '(magit-header-line ((t (:foreground "white" :background "black" :weight regular ;; :underline t
                                       ;; :box t
