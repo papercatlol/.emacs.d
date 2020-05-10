@@ -109,6 +109,7 @@
       compilation-scroll-output t
       initial-major-mode 'emacs-lisp-mode
       ;; fringe-mode '((4 . 4))
+      fringe-mode '((8 . 0))
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
