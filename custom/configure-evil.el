@@ -225,19 +225,33 @@
                                       :test #'equal))
          (ivy-items (mapcar (lambda (jump)
                               (destructuring-bind (pos file) jump
-                                (list (format "%s:%s" file pos) pos file)))
+                                (when-let ((buf (find-buffer-visiting file)))
+                                  (with-current-buffer buf
+                                    (save-excursion
+                                     (save-restriction
+                                      (widen)
+                                      (goto-char pos)
+                                      (let ((text (concat " "
+                                                          (buffer-substring-no-properties
+                                                           (line-beginning-position)
+                                                           (min (+ 80 (line-beginning-position))
+                                                                (line-end-position)))))
+                                            (line (format swiper--format-spec (line-number-at-pos))))
+                                        ;; (put-text-property 0 1 'display (format "%s:%s" (buffer-name buf) line)
+                                        ;;                    text)
+                                        (list (format "%s:%s %s" (buffer-name buf) line text) pos file))))))))
                             jumps))
          (initial-pos (point)))
     (cl-labels ((%jump (item)
-                       (find-file (third item))
-                       (goto-char (second item))))
+                  (find-file (third item))
+                  (goto-char (second item))))
       (ivy-read "Jump: " ivy-items
                 :action #'%jump
                 :update-fn (lambda ()
                              (with-ivy-window
-                               ;; TODO: less ugly way to get current ivy item
-                               (%jump (elt (ivy-state-collection ivy-last)
-                                           (get-text-property 0 'idx (ivy-state-current ivy-last))))))
+                                 ;; TODO: less ugly way to get current ivy item
+                                 (%jump (elt (ivy-state-collection ivy-last)
+                                             (get-text-property 0 'idx (ivy-state-current ivy-last))))))
                 :unwind (lambda ()
                           (unless (eq ivy-exit 'done)
                             (goto-char initial-pos)))))))
@@ -351,7 +365,6 @@
     (kbd "M-o") 'lispyville-open-round-below-list
     (kbd "M-i") 'lispyville-insert-at-beginning-of-list
     (kbd "M-a") 'lispyville-insert-at-end-of-list*
-    (kbd "M-f") 'lispyville-next-opening
     (kbd "M-m") 'lispyville-newline-and-parentheses)
 
   (evil-define-key '(insert) slime-repl-mode-map
@@ -361,7 +374,9 @@
     "[" #'lispyville-previous-opening
     "]" #'lispyville-next-closing
     "(" #'lispyville-backward-up-list
-    ")" #'lispyville-up-list)
+    ")" #'lispyville-up-list
+    (kbd "M-f") 'lispyville-next-opening
+    )
 
   (evil-define-key '(normal visual) lispyville-mode-map
     (kbd "<backspace>") 'lispyville-beginning-of-defun
