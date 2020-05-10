@@ -173,41 +173,52 @@ If the input is empty, insert active region or symbol-at-point."
                 (ft (car (window-tree))))))
     (push (list name view) ivy-views)))
 
-(defun counsel-ibuffer-or-recentf (&optional name where)
+;;* counsel-buffers
+(defvar counsel-buffers-map
+  (let ((m (make-sparse-keymap)))
+    (set-keymap-parent m ivy-minibuffer-map)
+    m)
+  "Keymap for `counsel-buffers'.")
+
+(defun counsel-buffers (&optional name)
   "Switch to buffer using `ibuffer' or find a file on `recetf' list.
 NAME specifies the name of the `ibuffer' buffer (defaults to \"*Ibuffer*\").
-Now also supports ivy-views."
+If ivy is called and current input has {} prefix, create a new ivy-view.
+Use `counsel-buffer-cycle-action' while in ivy minibuffer to change where
+buffer will be opened(current window, other window, other frame)."
   (interactive)
-  (require 'recentf)
-  (recentf-mode)
-  (setq counsel-ibuffer--buffer-name (or name "*Ibuffer*"))
-  (let ((alive-buffers (cdr (counsel-ibuffer--get-buffers))) ; remove current buffer
-        (recent-buffers (mapcar (lambda (filename)
-                                  (let ((filename (substring-no-properties filename)))
-                                    (cons (format "Recentf: %s" filename)
-                                          filename)))
-                                recentf-list))
-        (prompt-where (if where (format " other %s" (subseq (symbol-name where) 1)) "")))
-    (ivy-read (format "Switch to buffer%s: " prompt-where)
+  (let* ((counsel-ibuffer--buffer-name (or name "*Ibuffer*"))
+         (alive-buffers (cdr (counsel-ibuffer--get-buffers))) ; remove current buffer
+         (recent-buffers (mapcar (lambda (filename)
+                                   (let ((filename (substring-no-properties filename)))
+                                     (cons (format "Recentf: %s" filename)
+                                           filename)))
+                                 recentf-list))
+         (prompt-suffix (counsel-buffer-prompt)))
+    (ivy-read (format "Switch to buffer%s" prompt-suffix)
               (append alive-buffers recent-buffers ivy-views)
-              :history 'counsel-ibuffer-or-recentf-history
+              :history 'counsel-buffers-history
               :action (lambda (item)
                         (typecase item
                           (string (if (string-prefix-p "{}" item)
                                       (ivy-new-view item)
-                                    (visit-buffer-or-file item where)))
-                          (cons (visit-buffer-or-file (cdr item) where))))
-              :caller 'counsel-ibuffer-or-recentf)))
+                                    (funcall counsel-buffers-current-action item)))
+                          (cons (funcall counsel-buffers-current-action (cdr item)))))
+              :caller 'counsel-buffers
+              :keymap counsel-buffers-map)))
 
-(defun counsel-ibuffer-or-recentf-other-window (&optional name where)
+(defun counsel-buffers-other-window (&optional name)
   (interactive)
-  (if (= 4 (prefix-numeric-value current-prefix-arg))
-      (counsel-ibuffer-or-recentf name :frame)
-    (counsel-ibuffer-or-recentf name :window)))
+  (let ((counsel-buffers-current-action
+          (if (= 4 (prefix-numeric-value current-prefix-arg))
+              #'visit-buffer-or-file-other-frame
+            #'visit-buffer-or-file-other-window)))
+    (call-interactively #'counsel-buffers)))
 
-(defun counsel-ibuffer-or-recentf-other-frame (&optional name where)
+(defun counsel-buffers-other-frame (&optional name where)
   (interactive)
-  (counsel-ibuffer-or-recentf name :frame))
+  (let ((counsel-buffers-current-action #'visit-buffer-or-file-other-frame))
+    (counsel-buffers name)))
 
 (defun visit-buffer (buffer &optional where)
   (case where
@@ -230,7 +241,49 @@ Now also supports ivy-views."
             (t (delete-other-windows)))
           (ivy-set-view-recur (car item)))))
 
+(defun visit-buffer-or-file-other-window (item)
+  (visit-buffer-or-file item :window))
 
+(defun visit-buffer-or-file-other-frame (item)
+  (visit-buffer-or-file item :frame))
+
+(defvar counsel-buffers-current-action #'visit-buffer-or-file;; nil
+  )
+
+(defvar counsel-buffers-actions
+  '(visit-buffer-or-file
+    visit-buffer-or-file-other-window
+    visit-buffer-or-file-other-frame))
+
+(defvar counsel-buffer-prompts
+  '((visit-buffer-or-file . ": ")
+    (visit-buffer-or-file-other-window . "(other window): ")
+    (visit-buffer-or-file-other-frame . "(other frame): ")))
+
+(defvar counsel-buffers-actions-ring
+  (let ((ring (make-ring (length counsel-buffers-actions))))
+    (dolist (action counsel-buffers-actions)
+      (ring-insert-at-beginning ring action))
+    ring))
+
+(defun counsel-buffer-cycle-action ()
+  (interactive)
+  (when-let* ((next-action (ring-next counsel-buffers-actions-ring
+                                      counsel-buffers-current-action))
+              (current-prompt (alist-get counsel-buffers-current-action counsel-buffer-prompts ":? *$"))
+              (next-prompt (counsel-buffer-prompt next-action)))
+    (setq counsel-buffers-current-action next-action)
+    (setq ivy--prompt
+          (replace-regexp-in-string current-prompt next-prompt ivy--prompt))
+    (ivy--insert-prompt)))
+
+(cl-defun counsel-buffer-prompt (&optional (action counsel-buffers-current-action))
+  (alist-get action counsel-buffer-prompts ": "))
+
+(global-set-key (kbd "C-v") #'counsel-buffers)
+(define-key counsel-buffers-map (kbd "C-v") #'counsel-buffer-cycle-action)
+
+;;* toggle-symbol-start/end
 (defvar symbol-start-regex (rx symbol-start))
 
 ;; MAYBE: make more generic and handle symbol-end the same way
