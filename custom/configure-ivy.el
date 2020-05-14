@@ -16,6 +16,121 @@
                                        ivy-initial-inputs-alist))
 (setq counsel-find-file-at-point t)
 
+;;* ivy-rich
+;; TODO: support `counsel-buffers'
+(require 'ivy-rich)
+
+;;** counsel-package
+(defun ivy-rich-counsel-package-version (candidate)
+  (ivy-rich-package-version (substring candidate 1)))
+
+(defun ivy-rich-counsel-package-archive-summary (candidate)
+  (ivy-rich-package-archive-summary (substring candidate 1)))
+
+(defun ivy-rich-counsel-package-install-summary (candidate)
+  (ivy-rich-package-install-summary (substring candidate 1)))
+
+(plist-put ivy-rich-display-transformers-list
+           'counsel-package
+           '(:columns
+             ((ivy-rich-candidate (:width 30))
+              (ivy-rich-counsel-package-version (:width 16 :face font-lock-comment-face))
+              (ivy-rich-counsel-package-archive-summary (:width 7 :face font-lock-builtin-face))
+              (ivy-rich-counsel-package-install-summary (:face font-lock-doc-face)))))
+
+;;** counsel-buffers
+(cl-defun ivy-rich-counsel-buffers-dispatch (candidate &key buffer bookmark recentf ivy-view)
+  (cl-labels ((%call (fn arg)
+                (if fn (funcall fn arg) "")))
+    (ecase (counsel-buffers--buffer-type candidate)
+      (:buffer (%call buffer candidate))
+      (:recentf (%call recentf candidate))
+      (:bookmark (%call bookmark candidate))
+      (:ivy-view (%call ivy-view candidate)))))
+
+(defun ivy-rich-ivy-view-buffers (candidate)
+  (let ((buffers))
+    (cl-labels ((%flatten (tree)
+                  (when (consp tree)
+                    (case (car tree)
+                      (buffer (push (second tree) buffers))
+                      (file (push (file-name-nondirectory (second tree)) buffers))
+                      (t (mapc #'%flatten (cdr tree)))))))
+      (%flatten (cadr (assoc candidate ivy-views)))
+      buffers)))
+
+(defun ivy-rich-ivy-view-buffers-count (candidate)
+  (int-to-string (length (ivy-rich-ivy-view-buffers candidate))))
+
+(defun ivy-rich-ivy-view-buffers-list (candidate)
+  (string-join (ivy-rich-ivy-view-buffers candidate) ", "))
+
+(defun ivy-rich-counsel-buffers-recentf-filename (candidate)
+  (file-name-nondirectory candidate))
+
+(defun constantly (x)
+  (lambda (&rest args)
+    x))
+
+;; -------------------------------------------------------- ;;
+;; BUFFER(30) INDICATORS(4) MAJOR-MODE(10) PROJECT(15) PATH ;;
+;; BOOKMARK   BOOK          TYPE                       PATH ;;
+;; RECENTF    RECE          LAST-MODIFIED                   ;;
+;; IVY-VIEW   VIEW          BUFFERS                         ;;
+;; -------------------------------------------------------- ;;
+
+(defun ivy-rich-counsel-buffers-0 (candidate)
+  (ivy-rich-counsel-buffers-dispatch
+   candidate
+   :buffer #'ivy-switch-buffer-transformer
+   :recentf #'ivy-rich-counsel-buffers-recentf-filename
+   :bookmark #'identity
+   :ivy-view #'identity))
+
+(defun ivy-rich-counsel-buffers-1 (candidate)
+  (ivy-rich-counsel-buffers-dispatch
+   candidate
+   :buffer #'ivy-rich-switch-buffer-indicators
+   :bookmark (constantly "BOOK")
+   :recentf (constantly "REC")
+   :ivy-view (constantly "VIEW")))
+
+(defun ivy-rich-counsel-buffers-2 (candidate)
+  (ivy-rich-counsel-buffers-dispatch
+   candidate
+   :buffer #'ivy-rich-switch-buffer-major-mode
+   :bookmark #'ivy-rich-bookmark-type
+   :recentf #'ivy-rich-file-last-modified-time
+   :ivy-view #'ivy-rich-ivy-view-buffers-count))
+
+(defun ivy-rich-counsel-buffers-3 (candidate)
+  (ivy-rich-counsel-buffers-dispatch
+   candidate
+   :buffer #'ivy-rich-switch-buffer-project))
+
+(defun ivy-rich-counsel-buffers-4 (candidate)
+  (ivy-rich-counsel-buffers-dispatch
+   candidate
+   :buffer #'ivy-rich-switch-buffer-path
+   :bookmark #'ivy-rich-bookmark-filename
+   :recentf #'identity
+   :ivy-view #'ivy-rich-ivy-view-buffers-list))
+
+(plist-put
+ ivy-rich-display-transformers-list
+ 'counsel-buffers
+ '(:columns
+   ((ivy-rich-counsel-buffers-0 (:width 40))
+    (ivy-rich-counsel-buffers-1 (:width 4 :face error :align right))
+    (ivy-rich-counsel-buffers-2 (:width 20 :face warning))
+    (ivy-rich-counsel-buffers-3 (:width 15 :face success))
+    (ivy-rich-counsel-buffers-4 (:width (lambda (x)
+                                          (ivy-rich-switch-buffer-shorten-path
+                                           x (ivy-rich-minibuffer-width 0.3))))))))
+
+(ivy-rich-mode +1)
+
+
 ;;* prompt count
 (defun ivy-add-prompt-count* (next-fn prompt)
   "fix alignment of current match number"
@@ -180,30 +295,42 @@ If the input is empty, insert active region or symbol-at-point."
     m)
   "Keymap for `counsel-buffers'.")
 
-(defun counsel-buffers (&optional name)
-  "Switch to buffer using `ibuffer' or find a file on `recetf' list.
-NAME specifies the name of the `ibuffer' buffer (defaults to \"*Ibuffer*\").
-If ivy is called and current input has {} prefix, create a new ivy-view.
+(require 'bookmark)
+
+(defvar counsel-buffers--prop :counsel-buffer-type)
+
+(defun counsel-buffers--buffer-type (str)
+  (get-text-property 0 counsel-buffers--prop str))
+
+(defun counsel-buffers-all-candidates ()
+  (labels ((%cand (str prop)
+             (propertize str :counsel-buffer-type prop)))
+    (let ((buffers ;; (cdr (counsel-ibuffer--get-buffers))
+            (loop for b in (cl-remove (buffer-name (current-buffer))
+                                      (internal-complete-buffer "" nil t)
+                                      :test #'string=)
+                  collect (%cand b :buffer)))
+          (recent-files (loop for f in recentf-list
+                              collect (%cand f :recentf)))
+          (bookmarks (loop for b in (bookmark-all-names)
+                           collect (%cand b :bookmark)))
+          (views (loop for v in ivy-views
+                       collect (%cand (car v) :ivy-view))))
+      (remove-duplicates (append buffers bookmarks views recent-files) :test #'string=))))
+
+(defun counsel-buffers (&optional initial-input)
+  "Switch to buffer, recently opened file, bookmark or ivy-view.
+If ivy is exited and result has {} prefix, create a new ivy-view.
 Use `counsel-buffer-cycle-action' while in ivy minibuffer to change where
 buffer will be opened(current window, other window, other frame)."
   (interactive)
-  (let* ((counsel-ibuffer--buffer-name (or name "*Ibuffer*"))
-         (alive-buffers (cdr (counsel-ibuffer--get-buffers))) ; remove current buffer
-         (recent-buffers (mapcar (lambda (filename)
-                                   (let ((filename (substring-no-properties filename)))
-                                     (cons (format "Recentf: %s" filename)
-                                           filename)))
-                                 recentf-list))
+  (let* ((counsel-buffers-current-action (or counsel-buffers-current-action #'counsel-buffers-action))
          (prompt-suffix (counsel-buffer-prompt)))
     (ivy-read (format "Switch to buffer%s" prompt-suffix)
-              (append alive-buffers recent-buffers ivy-views)
+              (counsel-buffers-all-candidates)
+              :initial-input initial-input
               :history 'counsel-buffers-history
-              :action (lambda (item)
-                        (typecase item
-                          (string (if (string-prefix-p "{}" item)
-                                      (ivy-new-view item)
-                                    (funcall counsel-buffers-current-action item)))
-                          (cons (funcall counsel-buffers-current-action (cdr item)))))
+              :action (lambda (cand) (funcall counsel-buffers-current-action cand))
               :caller 'counsel-buffers
               :keymap counsel-buffers-map)))
 
@@ -211,54 +338,68 @@ buffer will be opened(current window, other window, other frame)."
   (interactive)
   (let ((counsel-buffers-current-action
           (if (= 4 (prefix-numeric-value current-prefix-arg))
-              #'visit-buffer-or-file-other-frame
-            #'visit-buffer-or-file-other-window)))
+              #'counsel-buffers-action-other-frame
+            #'counsel-buffers-action-other-window)))
     (call-interactively #'counsel-buffers)))
 
 (defun counsel-buffers-other-frame (&optional name where)
   (interactive)
-  (let ((counsel-buffers-current-action #'visit-buffer-or-file-other-frame))
+  (let ((counsel-buffers-current-action #'counsel-buffers-action-other-frame))
     (counsel-buffers name)))
 
 (defun visit-buffer (buffer &optional where)
-  (case where
-    (:window (switch-to-buffer-other-window buffer))
-    (:frame (switch-to-buffer-other-frame buffer))
-    (t (switch-to-buffer buffer))))
+  (when-let ((buf (get-buffer buffer)))
+    (case where
+      (:window (switch-to-buffer-other-window buffer))
+      (:frame (switch-to-buffer-other-frame buffer))
+      (t (switch-to-buffer buffer)))))
 
-(defun visit-buffer-or-file (item &optional where)
-  (typecase item
-    (buffer (visit-buffer item where))
-    (string (if (file-exists-p item)
-                (case where
-                  (:window (find-file-other-window item))
-                  (:frame (find-file-other-frame item))
-                  (t (find-file item)))
-              (visit-buffer item where)))
-    (cons (case where
-            (:window (other-window 1))
-            (:frame (select-frame-set-input-focus (make-frame)))
-            (t (delete-other-windows)))
-          (ivy-set-view-recur (car item)))))
+(defun visit-file (path &optional where)
+  (when (file-exists-p path)
+    (case where
+      (:window (find-file-other-window path))
+      (:frame (find-file-other-frame path))
+      (t (find-file path)))))
 
-(defun visit-buffer-or-file-other-window (item)
-  (visit-buffer-or-file item :window))
+(defun visit-bookmark (name &optional where)
+  (when name
+    (bookmark-jump
+     name
+     (case where
+       (:window (switch-to-buffer-other-window buffer))
+       (:frame (switch-to-buffer-other-frame buffer))))))
 
-(defun visit-buffer-or-file-other-frame (item)
-  (visit-buffer-or-file item :frame))
+(defun counsel-buffers-action (item &optional where)
+  (message "%s %s" item where)
+  (case (counsel-buffers--buffer-type item)
+    (:buffer (visit-buffer item where))
+    (:recentf (visit-file item where))
+    (:bookmark (visit-bookmark item where))
+    (:ivy-view
+     (when (eq :frame where)
+       (select-frame-set-input-focus (make-frame)))
+     (ivy-set-view-recur (cdr (assoc item ivy-views))))
+    (nil (if (string-prefix-p "{}" item)
+             (ivy-new-view item)
+           (visit-buffer item where)))))
 
-(defvar counsel-buffers-current-action #'visit-buffer-or-file;; nil
-  )
+(defun counsel-buffers-action-other-window (item)
+  (counsel-buffers-action item :window))
+
+(defun counsel-buffers-action-other-frame (item)
+  (counsel-buffers-action item :frame))
+
+(defvar counsel-buffers-current-action nil)
 
 (defvar counsel-buffers-actions
-  '(visit-buffer-or-file
-    visit-buffer-or-file-other-window
-    visit-buffer-or-file-other-frame))
+  '(counsel-buffers-action
+    counsel-buffers-action-other-window
+    counsel-buffers-action-other-frame))
 
 (defvar counsel-buffer-prompts
-  '((visit-buffer-or-file . ": ")
-    (visit-buffer-or-file-other-window . "(other window): ")
-    (visit-buffer-or-file-other-frame . "(other frame): ")))
+  '((counsel-buffers-action . ": ")
+    (counsel-buffers-action-other-window . "(other window): ")
+    (counsel-buffers-action-other-frame . "(other frame): ")))
 
 (defvar counsel-buffers-actions-ring
   (let ((ring (make-ring (length counsel-buffers-actions))))
@@ -280,8 +421,9 @@ buffer will be opened(current window, other window, other frame)."
 (cl-defun counsel-buffer-prompt (&optional (action counsel-buffers-current-action))
   (alist-get action counsel-buffer-prompts ": "))
 
-(global-set-key (kbd "C-v") #'counsel-buffers)
-(define-key counsel-buffers-map (kbd "C-v") #'counsel-buffer-cycle-action)
+(global-set-key (kbd "C-v") 'counsel-buffers)
+(global-set-key (kbd "C-x b") (lambda () (interactive) (message "Use C-v")))
+(define-key counsel-buffers-map (kbd "C-v") 'counsel-buffer-cycle-action)
 
 ;;* toggle-symbol-start/end
 (defvar symbol-start-regex (rx symbol-start))
@@ -545,9 +687,9 @@ exit with that candidate, otherwise insert SPACE character as usual."
   ("c" goto-char))
 
 (global-set-key (kbd "M-x") 'counsel-M-x)
-(global-set-key (kbd "C-x b") 'counsel-ibuffer-or-recentf)
-(global-set-key (kbd "C-x 4 b") 'counsel-ibuffer-or-recentf-other-window)
-(global-set-key (kbd "C-x 5 b") 'counsel-ibuffer-or-recentf-other-frame)
+;; (global-set-key (kbd "C-x b") 'counsel-buffers)
+(global-set-key (kbd "C-x 4 b") 'counsel-buffers-other-window)
+(global-set-key (kbd "C-x 5 b") 'counsel-buffers-other-frame)
 (global-set-key (kbd "C-M-s") 'swiper-all)
 (global-set-key (kbd "C-r") 'counsel-grep-or-swiper)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
