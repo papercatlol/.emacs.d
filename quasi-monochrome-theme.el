@@ -1,11 +1,20 @@
+;; -*- eval: (rainbow-mode 1) -*-
 (deftheme quasi-monochrome
   "Created 2018-06-04.")
+
+(defface underlined
+  '((t (:underline (:color "tomato"))))
+  "Base face for underlined text(e.g. for isearch, grep etc).")
 
 (custom-theme-set-faces
  'quasi-monochrome
  '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "xos4 Terminus"))))
  '(button ((t (:inherit (link)))))
  '(cursor ((t (:background "LimeGreen"))))
+ ;; '(cursor ((t (:background "dark orange"))))
+ ;; '(region ((t (:background "DarkGreen" :foreground "black" :weight bold))))
+ '(region ((t (:foreground "LightSalmon3" :background "grey30"))))
+ ;; '(region ((t (:inherit magit-diff-file-heading-selection))))
  '(bold ((t (:inherit (default) :weight bold))))
  '(escape-glyph ((t (:foreground "light gray"))))
  '(font-lock-builtin-face ((t (:foreground "light gray"))))
@@ -28,12 +37,12 @@
  '(header-line ((t (:background "gray15" :foreground "white"))))
  '(highlight ((t (:background "gray20"))))
  '(isearch ((t (:background "dark red" :foreground "black" :weight bold))))
+ '(match ((t (:inherit underlined :bold t))))
  '(lazy-highlight ((t (:inherit match))))
  ;; '(lazy-highlight ((t (:background "firebrick" :foreground "white" :weight bold))))
  '(isearch-fail ((t (:background "red4"))))
  '(link ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
  '(link-visited ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
- '(match ((t (:background "white" :foreground "black" :weight bold))))
  '(minibuffer-prompt ((t (:weight bold :foreground "light gray"))))
  ;; mode-line(from kaolin-mono-dark theme)
  '(mode-line ((t (:background "black" :foreground "#c5c9c0" :bold nil
@@ -64,7 +73,6 @@
  '(success ((t (:foreground "gray40" :weight bold :underline t))))
  '(compilation-line-number ((t (:foreground "gray30" :weight bold))))
  '(show-paren-mismatch ((t (:background "firebrick3" :foreground "white" :weight extra-bold))))
- '(region ((t (:background "DarkGreen" :foreground "black" :weight bold))))
  '(aw-leading-char-face ((t (:background "orange red" :foreground "white" :weight extra-bold))))
  '(aw-mode-line-face ((t (:foreground "white" :weight extra-bold))))
  '(popup-tip-face ((t (:inherit font-lock-comment-face))))
@@ -77,23 +85,17 @@
  '(popup-tip-face ((t (:inherit font-lock-comment-face :weight normal))))
  '(error ((t (:foreground "firebrick" :weight bold))))
  '(hl-line ((t (:background "gray10"))))
- '(ivy-current-match ((t (:background "gray50" :foreground "white"))))
- '(ivy-minibuffer-match-face-1 ((t (:inherit lazy-highlight :underline nil
-                                    ;; :underline (:color "red1")
-                                               ))))
+ ;; '(ivy-current-match ((t (:background "gray50" :foreground "white"))))
+ '(ivy-current-match ((t (:inherit region;; :foreground "white"
+                          ))))
+ '(ivy-minibuffer-match-face-1 ((t (:inherit underlined))))
  '(ivy-minibuffer-match-face-2 ((t (:inherit ivy-minibuffer-match-face-1))))
  '(ivy-minibuffer-match-face-3 ((t (:inherit ivy-minibuffer-match-face-1))))
  '(ivy-minibuffer-match-face-4 ((t (:inherit ivy-minibuffer-match-face-1))))
- '(swiper-match-face-1 ((t (:inherit  lazy-highlight
-                            ;; :foreground "#2cd495"
-                            :weight regular
-                            :underline t;; (:color "white")
-                            ))))
+ '(swiper-match-face-1 ((t (:inherit  lazy-highlight))))
  '(swiper-match-face-2 ((t (:inherit swiper-match-face-1))))
  '(swiper-match-face-3 ((t (:inherit swiper-match-face-1))))
  '(swiper-match-face-4 ((t (:inherit swiper-match-face-1))))
- ;; '(swiper-match-face-3 ((t (:inherit lazy-highlight :background "dark violet"))))
- ;; '(swiper-match-face-4 ((t (:inherit swiper-match-face-3))))
  ;; '(avy-lead-face ((t (:background "white" :foreground "black" :weight extra-bold))))
  ;; '(avy-lead-face-0 ((t (:inherit avy-lead-face :foreground "black"))))
  ;; '(avy-lead-face-2 ((t (:inherit avy-lead-face :foreground "dark red"))))
