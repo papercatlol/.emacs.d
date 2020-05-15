@@ -116,6 +116,10 @@
    :recentf #'identity
    :ivy-view #'ivy-rich-ivy-view-buffers-list))
 
+(defface ivy-rich-counsel-buffers-project-face
+    '((t :foreground "#8fbc8f" :bold t))
+  "Face for project name in `counsel-buffers' list.")
+
 (plist-put
  ivy-rich-display-transformers-list
  'counsel-buffers
@@ -123,10 +127,10 @@
    ((ivy-rich-counsel-buffers-0 (:width 40))
     (ivy-rich-counsel-buffers-1 (:width 4 :face error :align right))
     (ivy-rich-counsel-buffers-2 (:width 20 :face warning))
-    (ivy-rich-counsel-buffers-3 (:width 15 :face success))
+    (ivy-rich-counsel-buffers-3 (:width 15 :face ivy-rich-counsel-buffers-project-face))
     (ivy-rich-counsel-buffers-4 (:width (lambda (x)
                                           (ivy-rich-switch-buffer-shorten-path
-                                           x (ivy-rich-minibuffer-width 0.3))))))))
+                                           x (ivy-rich-minibuffer-width 0.5))))))))
 
 (ivy-rich-mode +1)
 
@@ -355,11 +359,13 @@ buffer will be opened(current window, other window, other frame)."
       (t (switch-to-buffer buffer)))))
 
 (defun visit-file (path &optional where)
-  (when (file-exists-p path)
-    (case where
-      (:window (find-file-other-window path))
-      (:frame (find-file-other-frame path))
-      (t (find-file path)))))
+  (if-let ((buf (get-file-buffer path)))
+      (visit-buffer buf where)
+    (when (file-exists-p path)
+      (case where
+        (:window (find-file-other-window path))
+        (:frame (find-file-other-frame path))
+        (t (find-file path))))))
 
 (defun visit-bookmark (name &optional where)
   (when name

@@ -175,7 +175,7 @@ else call eros-eval-last-sexp."
 If there was an active region, insert it into repl."
   (interactive)
   (let ((selection (and (region-active-p)
-                             (buffer-substring-no-properties (region-beginning) (region-end)))))
+                        (buffer-substring-no-properties (region-beginning) (region-end)))))
     (if-let ((buf (get-buffer "*ielm*")))
         (pop-to-buffer buf)
       (ielm))
