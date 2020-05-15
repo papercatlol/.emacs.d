@@ -525,6 +525,20 @@ Else narrow-to-defun."
 (define-key package-menu-mode-map (kbd "j") 'next-line)
 (define-key package-menu-mode-map (kbd "k") 'previous-line)
 
+;;* iedit
+(defun iedit-mode* ()
+  "If iedit-mode is active, restrict to current region or defun,
+otherwise activate iedit-mode."
+  (interactive)
+  (if iedit-mode
+      (if (region-active-p)
+          (iedit-restrict-region (region-beginning) (region-end))
+        (iedit-restrict-function nil))
+    (iedit-mode)))
+
+(define-key prog-mode-map (kbd "C-;") 'iedit-mode*)
+
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)

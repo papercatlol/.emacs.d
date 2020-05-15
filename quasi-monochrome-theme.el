@@ -117,6 +117,6 @@
  '(org-date ((t (:inherit font-lock-string-face :weight bold))))
  ;;
  '(dgi-commit-message-face ((t (:inherit font-lock-string-face))))
- )
+ '(iedit-occurrence ((t (:box (:color "DarkViolet"))))))
 
 (provide-theme 'quasi-monochrome)
