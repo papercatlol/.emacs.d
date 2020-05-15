@@ -645,7 +645,7 @@ otherwise activate iedit-mode."
   ("p" #'counsel-package "counsel-package")
   ("r" #'rename-file-and-buffer "rename-file-and-buffer")
   ("d" #'describe-text-properties "describe-text-properties")
-  ("f" #'describe-face "describe-face")
+  ;; ("f" #'describe-face "describe-face")
   ("F" #'counsel-faces "counsel-faces")
   ("i" #'ielm "ielm")
   ("/" #'rg-dwim "rg-dwim")
@@ -654,6 +654,10 @@ otherwise activate iedit-mode."
   ("=" #'diff-current-buffer-with-file "diff-current-buffer-with-file")
   ("c" #'counsel-colors-emacs "counsel-colors-emacs")
   ("C" #'rainbow-mode "rainbow-mode")
+  ("k" #'helpful-key "Describe key")
+  ("o" #'helpful-symbol "Describe symbol")
+  ("v" #'counsel-describe-variable "Describe variable")
+  ("f" #'counsel-describe-function "Describe function")
   )
 
 (defun hydra-cantrips-M-x ()
@@ -674,3 +678,7 @@ otherwise activate iedit-mode."
 ;; (global-set-key (kbd "C-h v") #'helpful-variable)
 (global-set-key (kbd "C-h k") #'helpful-key)
 (global-set-key (kbd "C-h o") #'helpful-symbol)
+
+;;** C-h as Backspace
+(global-set-key (kbd "C-x h") 'help-command)
+(define-key minibuffer-local-map (kbd "C-h") 'backward-delete-char)

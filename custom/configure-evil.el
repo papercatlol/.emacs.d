@@ -249,7 +249,8 @@
     (switch-to-buffer buf)
     (goto-char (second item))))
 
-(ivy-enable-calling-for-func #'evil-show-jumps-ivy)
+(with-eval-after-load 'configure-ivy
+  (ivy-enable-calling-for-func #'evil-show-jumps-ivy))
 
 (defun evil-jump-backward-dwim (arg)
   (interactive "P")
@@ -407,10 +408,15 @@
         (forward-char -1))
       (evil-change-state 'insert)))
 
-  (define-key evil-normal-state-map (kbd "M-(") 'evil-paredit-wrap-round)
-  (define-key evil-insert-state-map (kbd "M-e") 'paredit-forward)
-  (define-key evil-motion-state-map (kbd "C-f") 'paredit-forward)
-  (define-key evil-motion-state-map (kbd "C-b") 'paredit-backward))
+  (evil-define-key 'normal paredit-mode-map (kbd "M-(") 'evil-paredit-wrap-round)
+
+  (evil-define-key 'insert paredit-mode-map
+    (kbd "M-e") 'paredit-forward
+    (kbd "C-h") 'paredit-backward-delete)
+
+  (evil-define-key 'motion paredit-mode-map
+    (kbd "C-f") 'paredit-forward
+    (kbd "C-b") 'paredit-backward))
 
 ;;** `visual-or-expand-region'
 (define-key evil-normal-state-map "v" 'evil-visual-char-or-expand-region)
@@ -458,6 +464,11 @@
 (define-key leader-map (kbd "<tab>") 'other-window)
 (define-key leader-map (kbd "o") 'counsel-outline)
 (define-key leader-map (kbd "d") 'delete-other-windows-toggle)
+(define-key leader-map (kbd "k") 'helpful-key)
+(define-key leader-map (kbd "/") 'rg-menu)
+
+;;** C-h as Backspace
+(define-key evil-insert-state-map (kbd "C-h") 'backward-delete-char)
 
 ;; `evil-mc'
 ;; (with-eval-after-load 'evil-mc
