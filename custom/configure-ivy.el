@@ -673,7 +673,8 @@ exit with that candidate, otherwise insert SPACE character as usual."
        #'ivy-done
      #'self-insert-command)))
 
-(define-key ivy-minibuffer-map (kbd "SPC") 'ivy-magical-space)
+;; (define-key ivy-minibuffer-map (kbd "SPC") 'ivy-magical-space)
+(define-key swiper-map (kbd "SPC") 'ivy-magical-space)
 
 ;;* KEYS
 (defhydra hydra-M-g (global-map "M-g")

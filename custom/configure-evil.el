@@ -223,38 +223,33 @@
   (interactive)
   (let* ((jumps (cl-remove-duplicates (evil--jumps-savehist-sync)
                                       :test #'equal))
-         (ivy-items (mapcar (lambda (jump)
-                              (destructuring-bind (pos file) jump
-                                (when-let ((buf (find-buffer-visiting file)))
-                                  (with-current-buffer buf
-                                    (save-excursion
-                                     (save-restriction
-                                      (widen)
-                                      (goto-char pos)
-                                      (let ((text (concat " "
-                                                          (buffer-substring-no-properties
-                                                           (line-beginning-position)
-                                                           (min (+ 80 (line-beginning-position))
-                                                                (line-end-position)))))
-                                            (line (format swiper--format-spec (line-number-at-pos))))
-                                        ;; (put-text-property 0 1 'display (format "%s:%s" (buffer-name buf) line)
-                                        ;;                    text)
-                                        (list (format "%s:%s %s" (buffer-name buf) line text) pos file))))))))
-                            jumps))
-         (initial-pos (point)))
-    (cl-labels ((%jump (item)
-                  (find-file (third item))
-                  (goto-char (second item))))
-      (ivy-read "Jump: " ivy-items
-                :action #'%jump
-                :update-fn (lambda ()
-                             (with-ivy-window
-                                 ;; TODO: less ugly way to get current ivy item
-                                 (%jump (elt (ivy-state-collection ivy-last)
-                                             (get-text-property 0 'idx (ivy-state-current ivy-last))))))
-                :unwind (lambda ()
-                          (unless (eq ivy-exit 'done)
-                            (goto-char initial-pos)))))))
+         (ivy-items
+           (loop for (pos file) in jumps
+                 when (find-buffer-visiting file)
+                   collect (with-current-buffer it
+                             (save-excursion
+                              (save-restriction
+                               (widen)
+                               (goto-char pos)
+                               (let ((text (concat " "
+                                                   (buffer-substring-no-properties
+                                                    (line-beginning-position)
+                                                    (min (+ 80 (line-beginning-position))
+                                                         (line-end-position)))))
+                                     (line (format swiper--format-spec (line-number-at-pos))))
+                                 ;; (put-text-property 0 1 'display (format "%s:%s" (buffer-name buf) line)
+                                 ;;                    text)
+                                 (list (format "%s:%s %s" (buffer-name it) line text) pos file))))))))
+    (ivy-read "Jump: " ivy-items
+              :action #'evil-show-jumps-ivy-action
+              :caller 'evil-show-jumps-ivy)))
+
+(defun evil-show-jumps-ivy-action (item)
+  (when-let ((buf (get-file-buffer (third item))))
+    (switch-to-buffer buf)
+    (goto-char (second item))))
+
+(ivy-enable-calling-for-func #'evil-show-jumps-ivy)
 
 (defun evil-jump-backward-dwim (arg)
   (interactive "P")
@@ -265,6 +260,8 @@
   (interactive "P")
   (if arg (evil-show-jumps-ivy)
     (call-interactively #'evil-jump-forward)))
+
+(setq evil-jumps-cross-buffers nil)
 
 ;;** tab bindings
 (defun tab-indent ()
