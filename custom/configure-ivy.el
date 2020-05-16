@@ -334,7 +334,10 @@ If ivy is exited and result has {} prefix, create a new ivy-view.
 Use `counsel-buffer-cycle-action' while in ivy minibuffer to change where
 buffer will be opened(current window, other window, other frame)."
   (interactive)
-  (let* ((counsel-buffers-current-action (or counsel-buffers-current-action #'counsel-buffers-action))
+  (let* ((counsel-buffers-current-action (or counsel-buffers-current-action
+                                             (if (= 4 (prefix-numeric-value current-prefix-arg))
+                                                 #'counsel-buffers-action-other-frame
+                                               #'counsel-buffers-action)))
          (prompt-suffix (counsel-buffer-prompt)))
     (ivy-read (format "Switch to buffer%s" prompt-suffix)
               (counsel-buffers-all-candidates)
@@ -382,7 +385,7 @@ buffer will be opened(current window, other window, other frame)."
        (:frame (switch-to-buffer-other-frame buffer))))))
 
 (defun counsel-buffers-action (item &optional where)
-  (message "%s %s" item where)
+  ;; (message "%s %s" item where)
   (case (counsel-buffers--buffer-type item)
     (:buffer (visit-buffer item where))
     (:recentf (visit-file item where))
