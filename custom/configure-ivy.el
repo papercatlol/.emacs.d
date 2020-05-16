@@ -310,9 +310,7 @@ If the input is empty, insert active region or symbol-at-point."
   (labels ((%cand (str prop)
              (propertize str :counsel-buffer-type prop)))
     (let ((buffers ;; (cdr (counsel-ibuffer--get-buffers))
-            (loop for b in (cl-remove (buffer-name (current-buffer))
-                                      (internal-complete-buffer "" nil t)
-                                      :test #'string=)
+            (loop for b in (internal-complete-buffer "" nil t)
                   collect (%cand b :buffer)))
           (recent-files (loop for f in recentf-list
                               collect (%cand f :recentf)))
@@ -320,7 +318,15 @@ If the input is empty, insert active region or symbol-at-point."
                            collect (%cand b :bookmark)))
           (views (loop for v in ivy-views
                        collect (%cand (car v) :ivy-view))))
-      (remove-duplicates (append buffers bookmarks views recent-files) :test #'string=))))
+      (cl-remove (buffer-name (current-buffer))
+                 (remove-duplicates (append buffers bookmarks views recent-files)
+                                    :key #'file-name-nondirectory
+                                    :test #'string=
+                                    :from-end t ; Ensure priority: buffers > bookmarks >
+                                                ; > views > recent files
+                                    )
+                 :test #'string=
+                 :key #'file-name-nondirectory))))
 
 (defun counsel-buffers (&optional initial-input)
   "Switch to buffer, recently opened file, bookmark or ivy-view.
