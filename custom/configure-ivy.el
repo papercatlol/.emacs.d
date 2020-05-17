@@ -7,8 +7,9 @@
 ;; (require 'ivy-prescient)
 ;; (ivy-prescient-mode t)
 
-(ivy-mode t)
+;;* general
 (setq ivy-use-virtual-buffers t
+      ivy-use-selectable-prompt t
       ivy-count-format "[%d/%d] "
       ivy-re-builders-alist '((t . ivy--regex-ignore-order))
       ivy-magic-tilde nil
@@ -16,8 +17,9 @@
                                        ivy-initial-inputs-alist))
 (setq counsel-find-file-at-point t)
 
+(ivy-mode 1)
+
 ;;* ivy-rich
-;; TODO: support `counsel-buffers'
 (require 'ivy-rich)
 
 ;;** counsel-package
@@ -311,22 +313,22 @@ If the input is empty, insert active region or symbol-at-point."
              (propertize str :counsel-buffer-type prop)))
     (let ((buffers ;; (cdr (counsel-ibuffer--get-buffers))
             (loop for b in (internal-complete-buffer "" nil t)
-                  collect (%cand b :buffer)))
+                  unless (get-buffer-window b)
+                    collect (%cand b :buffer)))
           (recent-files (loop for f in recentf-list
                               collect (%cand f :recentf)))
           (bookmarks (loop for b in (bookmark-all-names)
                            collect (%cand b :bookmark)))
           (views (loop for v in ivy-views
                        collect (%cand (car v) :ivy-view))))
-      (cl-remove (buffer-name (current-buffer))
-                 (remove-duplicates (append buffers bookmarks views recent-files)
-                                    :key #'file-name-nondirectory
-                                    :test #'string=
-                                    :from-end t ; Ensure priority: buffers > bookmarks >
-                                                ; > views > recent files
-                                    )
-                 :test #'string=
-                 :key #'file-name-nondirectory))))
+      (cl-remove-if #'get-buffer-window ; remove visible buffers
+                    (remove-duplicates (append buffers bookmarks views recent-files)
+                                       :key #'file-name-nondirectory
+                                       :test #'string=
+                                       :from-end t ; Ensure priority: buffers > bookmarks >
+                                        ; > views > recent files
+                                       )
+                    :key #'file-name-nondirectory))))
 
 (defun counsel-buffers (&optional initial-input)
   "Switch to buffer, recently opened file, bookmark or ivy-view.
@@ -437,6 +439,8 @@ buffer will be opened(current window, other window, other frame)."
   (alist-get action counsel-buffer-prompts ": "))
 
 (global-set-key (kbd "C-v") 'counsel-buffers)
+(define-key ctl-x-4-map (kbd "v") 'counsel-buffers-other-window)
+(define-key ctl-x-5-map (kbd "v") 'counsel-buffers-other-frame)
 (global-set-key (kbd "C-x b") (lambda () (interactive) (message "Use C-v")))
 (define-key counsel-buffers-map (kbd "C-v") 'counsel-buffer-cycle-action)
 
