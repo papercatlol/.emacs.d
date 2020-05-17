@@ -12,7 +12,7 @@
 (add-hook 'post-command-hook 'ml-record-selected-window)
 
 ;; Disable ace-window overlay since we use modeline instead.
-(advice-add #'aw--lead-overlay :override #'ignore)
+;; (advice-add #'aw--lead-overlay :override #'ignore)
 
 (defun switch-to-minibuffer-window ()
   "Switch to minibuffer window if active."
@@ -30,9 +30,9 @@
         (t (funcall #'aw-dispatch-default char))))
 
 (setq aw-dispatch-function #'aw-dispatch-with-minibuffer-switch
-      aw-background nil
+      aw-background t
       aw-ignore-current nil
-      aw-char-position 'left)
+      aw-char-position 'top-left)
 
 (defun ace-window-path-lighter ()
   "Ace path in modeline for windows other than selected

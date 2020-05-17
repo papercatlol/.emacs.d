@@ -272,8 +272,75 @@
       enable-recursive-minibuffers t)
 (minibuffer-depth-indicate-mode 1)
 
+;;* windows
+;;** display-buffer-alist
+;; Inspired by: https://protesilaos.com/codelog/2020-01-07-emacs-display-buffer/
+(progn
+  ;; bottom side window
+  (map-put
+   display-buffer-alist
+   (rx "*" (or "Backtrace" "Warnings" "Compile-Log" "Messages") "*")
+   '((display-buffer-in-side-window)
+     (window-height . 0.16)
+     (side . bottom)
+     (slot . 1)
+     (window-parameters . ((no-other-window . t))))
+   #'string=)
+  (map-put
+   display-buffer-alist
+   (rx (or (and (? "e") "shell") "vterm" "EQUAKE") (* any))
+   '((display-buffer-in-side-window)
+     (window-height . 0.2)
+     (side . bottom)
+     (slot . 0)
+     (window-parameters . ((no-other-window . t))))
+   #'string=)
+  ;; right side window
+  (map-put
+   display-buffer-alist
+   "\\*Faces\\*"
+   '((display-buffer-in-side-window)
+     (window-width . 0.3)
+     (side . right)
+     (slot . 0))
+   #'string=)
+  ;; left side window
+  (map-put
+   display-buffer-alist
+   (rx (or "*help" "*info" "*apropos") (* any))
+   '((display-buffer-in-side-window)
+     (window-width . 0.2)
+     (side . left)
+     (slot . 0))
+   #'string=)
+  (map-put
+   display-buffer-alist
+   "\\*Custom.*"
+   '((display-buffer-in-side-window)
+     (window-width . 0.3)
+     (side . left)
+     (slot . 1))
+   #'string=))
 
-;;* kludges
+(setq even-window-sizes 'height-only)
+
+(add-hook 'help-mode-hook #'visual-line-mode)
+(add-hook 'helpful-mode-hook #'visual-line-mode)
+(add-hook 'Info-mode-hook #'visual-line-mode)
+(add-hook 'apropos-mode #'visual-line-mode)
+(add-hook 'custom-mode-hook #'visual-line-mode)
+
+(global-set-key (kbd "<f9>") 'window-toggle-side-windows)
+
+;;** winner-mode
+(setq winner-dont-bind-my-keys t)
+(winner-mode 1)
+
+(global-set-key (kbd "C-S-q") 'delete-window)
+(global-set-key (kbd "C-M-1") 'winner-undo)
+(global-set-key (kbd "C-M-2") 'winner-redo)
+
+;;** window-as-frame
 (defun window-as-frame ()
   "Pop current window as a new frame."
   (interactive)
@@ -281,6 +348,18 @@
     (delete-window (get-buffer-window (current-buffer)))
     (select-frame frame)))
 
+(define-key ctl-x-5-map "5" 'window-as-frame)
+
+;;** toggle *messages* buffer
+(defun toggle-echo-area-messages ()
+  (interactive)
+  (if-let ((win (get-buffer-window (messages-buffer))))
+      (quit-window nil win)
+    (view-echo-area-messages)))
+
+(define-key help-map "e" 'toggle-echo-area-messages)
+
+;;* kludges
 ;; Fix for i3wm(not gaps) and emacs 26 where display doesn't refresh when switching
 ;; to an existing frame in tabbed or stacked layout.
 (defun make-frame-visible-advice (&rest args)
@@ -594,7 +673,6 @@ otherwise activate iedit-mode."
 (global-set-key (kbd "C-x C-SPC") 'other-window)
 (global-set-key (kbd "M-c") 'ace-window)
 ;;;
-(global-set-key (kbd "C-x 5 5") 'window-as-frame)
 (global-set-key (kbd "C-x M-w") 'kill-buffer-file-name)
 (global-set-key (kbd "M-n") 'next-error)
 (global-set-key (kbd "M-p") 'previous-error)
