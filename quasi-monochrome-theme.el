@@ -45,13 +45,10 @@
  '(link-visited ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
  '(minibuffer-prompt ((t (:weight bold :foreground "light gray"))))
  ;; mode-line(from kaolin-mono-dark theme)
+ '(vertical-border ((t (:foreground "gray15"))))
  '(mode-line ((t (:background "black" :foreground "#c5c9c0" :bold nil
-                              :box (:line-width 1 :color "gray30")
-                              ;; :overline "gray30"
-                              ))))
- '(mode-line-inactive ((t (:background "#16211C" :foreground "#41544B" :bold nil
-                                       ;; :box (:line-width 2 :color "#1B2822")
-                                       ))))
+                              :box (:line-width 1 :color "gray50")))))
+ '(mode-line-inactive ((t (:background "gray15" :foreground "#41544B" :bold nil))))
  '(mode-line-buffer-id ((t (:background nil :foreground "white" :bold nil))))
  '(mode-line-highlight ((t (:foreground "aquamarine3" :box nil :bold nil))))
  '(mode-line-emphasis ((t (:foreground "aquamarine3"))))
@@ -73,7 +70,10 @@
  '(success ((t (:foreground "gray40" :weight bold :underline t))))
  '(compilation-line-number ((t (:foreground "gray30" :weight bold))))
  '(show-paren-mismatch ((t (:background "firebrick3" :foreground "white" :weight extra-bold))))
- '(aw-leading-char-face ((t (:background "orange red" :foreground "white" :weight extra-bold))))
+ '(aw-leading-char-face ((t (:foreground "white"
+                             :weight extra-bold
+                             :height 160
+                             :box (:color "LimeGreen" :line-width 2)))))
  '(aw-mode-line-face ((t (:foreground "white" :weight extra-bold))))
  '(popup-tip-face ((t (:inherit font-lock-comment-face))))
  '(popup-face ((t (:background "gray12" :foreground "white"))))
