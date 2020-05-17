@@ -25,6 +25,8 @@
 ;; (dolist (mode '(slime-popup-buffer-mode slime-trace-dialog-mode))
 ;;   (evil-set-initial-state mode 'emacs))
 (evil-set-initial-state 'slime-trace-dialog-mode 'emacs)
+(evil-set-initial-state 'slime-popup-buffer-mode  'emacs)
+(evil-set-initial-state 'edebug-mode 'emacs)
 (evil-set-initial-state 'ibuffer-mode 'normal)
 
 

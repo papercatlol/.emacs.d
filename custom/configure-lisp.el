@@ -188,6 +188,7 @@ If there was an active region, insert it into repl."
 ;;* TODO: edebug-mode: make compatible with evil-mode, add hydra
 
 ;;* slime hacks
+;;** documentation
 (defun slime-documentation ()
   "Display `swank:documentation-symbol' in the minibuffer"
   (interactive)
@@ -196,6 +197,29 @@ If there was an active region, insert it into repl."
     (let ((max-mini-window-height 1.0))
       (message doc))))
 
+;; Slime documentation is opened in fundamental-mode by default. Force it to open
+;; in help-mode instead. MAYBE: define slime-description-mode.
+(defun slime-show-description-help-mode (string package)
+  "Like `slime-show-description', but set description buffer to Help-mode."
+  (let ((bufname (slime-buffer-name :description)))
+    (slime-with-popup-buffer (bufname :package package
+                                      :connection t
+                                      :select slime-description-autofocus
+                                      :mode 'help-mode)
+      (princ string)
+      (goto-char (point-min)))))
+(advice-add 'slime-show-description :override #'slime-show-description-help-mode)
+
+(map-put
+ display-buffer-alist
+ "*slime-description*"
+ '((display-buffer-in-side-window)
+   (window-width . 0.25)
+   (side . left)
+   (slot . 0))
+ #'string=)
+
+;;** edit definition(M-.)
 (defun slime--edit-definition-ivy (&optional where)
   "Adapted from `slime-edit-definition-cont'. Use `ivy' to select a candidate if multiple."
   (let* ((symbol-name (slime-read-symbol-name "Edit definition of: "))
