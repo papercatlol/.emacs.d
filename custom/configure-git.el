@@ -87,8 +87,16 @@ Else call `magit-diff-buffer-file'."
       (diff-buffer-with-file (current-buffer))
     (call-interactively #'magit-diff-buffer-file)))
 
+(defun diff-buffer-modified ()
+  (interactive)
+  (if (buffer-modified-p)
+      (diff-buffer-with-file (current-buffer))
+    (message "Buffer is not modified.")))
+
 ;;** keybindings
 (define-key magit-file-mode-map (kbd "C-x =") 'diff-buffer-dwim)
+(define-key text-mode-map (kbd "C-x =") 'diff-buffer-modified)
+(define-key prog-mode-map (kbd "C-x =") 'diff-buffer-modified)
 (define-key magit-file-mode-map [left-fringe mouse-1] 'diff-buffer-dwim)
 
 ;; MAYBE: add hydra
