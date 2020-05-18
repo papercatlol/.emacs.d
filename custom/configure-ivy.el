@@ -16,6 +16,7 @@
       ivy-initial-inputs-alist (delete (assoc 'counsel-M-x ivy-initial-inputs-alist)
                                        ivy-initial-inputs-alist))
 (setq counsel-find-file-at-point t)
+(map-put ivy-height-alist 'counsel-find-file 20)
 
 (ivy-mode 1)
 
@@ -378,11 +379,10 @@ buffer will be opened(current window, other window, other frame)."
     (counsel-buffers name)))
 
 (defun visit-buffer (buffer &optional where)
-  (when-let ((buf (get-buffer buffer)))
-    (case where
-      (:window (switch-to-buffer-other-window buffer))
-      (:frame (switch-to-buffer-other-frame buffer))
-      (t (switch-to-buffer buffer)))))
+  (case where
+    (:window (switch-to-buffer-other-window buffer))
+    (:frame (switch-to-buffer-other-frame buffer))
+    (t (switch-to-buffer buffer))))
 
 (defun visit-file (path &optional where)
   (if-let ((buf (get-file-buffer path)))
@@ -402,7 +402,7 @@ buffer will be opened(current window, other window, other frame)."
        (:frame (switch-to-buffer-other-frame buffer))))))
 
 (defun counsel-buffers-action (item &optional where)
-  ;; (message "%s %s" item where)
+  ;; (message "%s %s %s" item where (counsel-buffers--buffer-type item))
   (case (counsel-buffers--buffer-type item)
     (:buffer (visit-buffer item where))
     (:recentf (visit-file item where))
@@ -411,9 +411,9 @@ buffer will be opened(current window, other window, other frame)."
      (when (eq :frame where)
        (select-frame-set-input-focus (make-frame)))
      (ivy-set-view-recur (cdr (assoc item ivy-views))))
-    (nil (if (string-prefix-p "{}" item)
-             (ivy-new-view item)
-           (visit-buffer item where)))))
+    (t (if (string-prefix-p "{}" item)
+           (ivy-new-view item)
+         (visit-buffer item where)))))
 
 (defun counsel-buffers-action-other-window (item)
   (counsel-buffers-action item :window))
