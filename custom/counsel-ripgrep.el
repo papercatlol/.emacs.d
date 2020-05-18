@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (require 'ivy)
 (require 'rg)
 

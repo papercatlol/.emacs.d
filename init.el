@@ -302,7 +302,8 @@
    '((display-buffer-in-side-window)
      (window-width . 0.3)
      (side . right)
-     (slot . 0))
+     (slot . 0)
+     (window-parameters . ((no-other-window . t))))
    #'string=)
   ;; left side window
   (map-put
@@ -311,7 +312,8 @@
    '((display-buffer-in-side-window)
      (window-width . 0.2)
      (side . left)
-     (slot . 0))
+     (slot . 0)
+     (window-parameters . ((no-other-window . t))))
    #'string=)
   (map-put
    display-buffer-alist
@@ -319,7 +321,8 @@
    '((display-buffer-in-side-window)
      (window-width . 0.3)
      (side . left)
-     (slot . 1))
+     (slot . 1)
+     (window-parameters . ((no-other-window . t))))
    #'string=))
 
 (setq even-window-sizes 'height-only)

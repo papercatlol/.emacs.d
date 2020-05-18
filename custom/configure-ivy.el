@@ -147,9 +147,18 @@
 (advice-add 'ivy-add-prompt-count :around #'ivy-add-prompt-count*)
 
 ;;* ivy completion height
-(setf (alist-get 'ivy-completion-in-region ivy-height-alist) 20)
+(map-put ivy-height-alist 'ivy-completion-in-region 20)
 
 ;;* counsel-files
+;; (defvar counsel-rg-delay (* 0.1 1000)
+;;   "Delay in ms before rg is called.")
+
+;; (defun counsel-rg-with-delay-advice (counsel-rg &rest args)
+;;   (let ((ivy-dynamic-exhibit-delay-ms counsel-rg-delay))
+;;     (apply counsel-rg args)))
+
+;; (advice-add #'counsel-rg :around #'counsel-rg-with-delay-advice)
+
 (defcustom counsel-files-base-cmd "fd"
   "command to list files in the project"
   :type 'string
@@ -233,6 +242,8 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
             :caller caller))
 
 ;;* swiper-dwim
+(map-put ivy-height-alist 'swiper 15)
+
 (defun swiper-dwim ()
   "If region is active and no prefix arg is supplied, search for selected text,
 otherwise call `counsel-grep-or-swiper'. With double prefix arg call `ivy-resume'."
@@ -262,6 +273,7 @@ If the input is empty, insert active region or symbol-at-point."
 (define-key swiper-map (kbd "C-s") 'swiper-next-line-or-thing-at-point)
 (define-key ivy-minibuffer-map (kbd "C-s") 'swiper-next-line-or-thing-at-point)
 (global-set-key (kbd "C-s") 'swiper-dwim)
+(global-set-key (kbd "C-M-r") 'ivy-resume)
 
 (defun counsel-rg-dir (&optional initial-input initial-directory extra-rg-args rg-prompt)
   "Same as `counsel-rg' but search starting from current directory instead of the repo root."
@@ -310,10 +322,13 @@ If the input is empty, insert active region or symbol-at-point."
 
 (defun counsel-buffers-all-candidates ()
   (labels ((%cand (str prop)
-             (propertize str :counsel-buffer-type prop)))
-    (let ((buffers ;; (cdr (counsel-ibuffer--get-buffers))
+             ;; We use text properties to store metadata mostly for
+             ;; the sake of `ivy-rich' which only gets a list of
+             ;; strings as an input from ivy.
+             (propertize str counsel-buffers--prop prop)))
+    (let ((buffers
             (loop for b in (internal-complete-buffer "" nil t)
-                  unless (get-buffer-window b)
+                  unless (get-buffer-window b) ; exclude visible windows
                     collect (%cand b :buffer)))
           (recent-files (loop for f in recentf-list
                               collect (%cand f :recentf)))
@@ -321,15 +336,15 @@ If the input is empty, insert active region or symbol-at-point."
                            collect (%cand b :bookmark)))
           (views (loop for v in ivy-views
                        collect (%cand (car v) :ivy-view))))
-      (cl-remove-if #'get-buffer-window ; remove visible buffers
-                    (remove-duplicates (append buffers bookmarks views recent-files)
-                                       :key #'file-name-nondirectory
-                                       :test #'string=
-                                       :from-end t ; Ensure priority: buffers > bookmarks >
-                                        ; > views > recent files
-                                       )
-                    :key #'file-name-nondirectory))))
+      (append buffers
+              bookmarks
+              views
+              ;; Remove open files from the list. Note that while
+              ;; `get-file-buffer'doesn't detect renamed buffers, it
+              ;; is A LOT faster than `find-buffer-visiting'.
+              (cl-remove-if #'get-file-buffer recent-files)))))
 
+;; TODO: ivy-occur for this
 (defun counsel-buffers (&optional initial-input)
   "Switch to buffer, recently opened file, bookmark or ivy-view.
 If ivy is exited and result has {} prefix, create a new ivy-view.
@@ -558,6 +573,8 @@ enable `ivy-calling' by default and restore original position on exit."
 ;;* counsel-imenu-anywhere
 (require 'imenu-anywhere)
 
+(map-put ivy-height-alist 'counsel-imenu 15)
+
 (defun counsel-imenu-dwim (anywhere)
   (interactive "P")
   (call-interactively
@@ -695,6 +712,20 @@ exit with that candidate, otherwise insert SPACE character as usual."
 ;; (define-key ivy-minibuffer-map (kbd "SPC") 'ivy-magical-space)
 (define-key swiper-map (kbd "SPC") 'ivy-magical-space)
 
+;;* ivy-done and ivy-call with prefix args
+(defun ivy-call-or-dispatching-call (dispatch)
+  "Call `ivy-dispatching-call' with prefix arg, `ivy-call' otherwise."
+  (interactive "P")
+  (call-interactively (if dispatch #'ivy-dispatching-call #'ivy-call)))
+
+(defun ivy-done-or-dispatching-done (dispatch)
+  "Call `ivy-dispatching-done' with prefix arg, `ivy-done' otherwise."
+  (interactive "P")
+  (call-interactively (if dispatch #'ivy-dispatching-done #'ivy-done)))
+
+(define-key ivy-minibuffer-map (kbd "M-m") 'ivy-call-or-dispatching-call)
+(define-key ivy-minibuffer-map (kbd "RET") 'ivy-done-or-dispatching-done)
+
 ;;* KEYS
 (defhydra hydra-M-g (global-map "M-g")
   "M-g"
@@ -749,7 +780,12 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (define-key counsel-describe-map (kbd "C-,") 'ivy-minibuffer-toggle-symbol-start)
 (define-key counsel-describe-map (kbd "C-.") 'ivy-minibuffer-insert-symbol-end)
 (define-key ivy-minibuffer-map (kbd "M-o") 'ivy-occur)
+
+;;** ivy actions and ivy-call
 (define-key ivy-minibuffer-map (kbd "M-a") 'ivy-dispatching-done)
+(define-key ivy-minibuffer-map (kbd "C-M-a") 'ivy-dispatching-call)
+(define-key ivy-minibuffer-map (kbd "C-M-S-a") 'ivy-read-action)
+
 (define-key ivy-minibuffer-map (kbd "M-j") 'ivy-next-line)
 (define-key ivy-minibuffer-map (kbd "M-k") 'ivy-previous-line)
 (define-key ivy-minibuffer-map (kbd "C-n") 'ivy-next-line-and-call)
@@ -766,7 +802,6 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (define-key ivy-minibuffer-map (kbd "M-.") 'counsel-find-symbol)
 (define-key ivy-minibuffer-map (kbd "M-,") 'counsel--info-lookup-symbol)
 (define-key ivy-minibuffer-map (kbd "C-M-m") 'ivy-immediate-done)
-(define-key ivy-minibuffer-map (kbd "M-m") 'ivy-call)
 
 
 
