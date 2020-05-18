@@ -671,7 +671,7 @@ otherwise activate iedit-mode."
 
 ;; experimental
 ;; (global-set-key (kbd "C-x C-o") 'ace-window)
-(global-set-key (kbd "C-x C-o") 'ignore)
+;; (global-set-key (kbd "C-x C-o") 'ignore)
 (global-set-key (kbd "C-x C-c") 'ace-window)
 (global-set-key (kbd "C-x C-SPC") 'other-window)
 (global-set-key (kbd "M-c") 'ace-window)
