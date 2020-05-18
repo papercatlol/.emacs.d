@@ -66,6 +66,33 @@
   (let ((hi-lock-auto-select-face arg))
     (call-interactively 'highlight-lines-matching-regexp)))
 
+;; TODO: refactor
+(with-eval-after-load 'swiper
+  (defun swiper-highlight-regexp ()
+    (interactive)
+    (with-ivy-window
+        (let* ((hi-lock-auto-select-face t)
+               (face (hi-lock-read-face-name))
+               (re (string-join (ivy--split ivy-text) ".*?"))) ; from `swiper-occur'
+          (highlight-regexp re face))))
+
+  (defun swiper-highlight-line ()
+    (interactive)
+    (with-ivy-window
+        (let* ((hi-lock-auto-select-face t)
+               (face (hi-lock-read-face-name))
+               (re (string-join (ivy--split ivy-text) ".*?"))) ; from `swiper-occur'
+          (highlight-lines-matching-regexp re face))))
+
+  (defun swiper-unhighlight-regexp ()
+    (interactive)
+    (with-ivy-window
+        (unhighlight-regexp (string-join (ivy--split ivy-text) ".*?"))))
+
+  (define-key swiper-map (kbd "M-h") 'swiper-highlight-regexp)
+  (define-key swiper-map (kbd "M-l") 'swiper-highlight-line)
+  (define-key swiper-map (kbd "M-u") 'swiper-unhighlight-regexp))
+
 (global-hi-lock-mode 1)
 (global-set-key (kbd "M-h") 'highlight-region-or-symbol)
 (global-set-key (kbd "M-u") 'unhighlight-region-or-symbol)
