@@ -138,7 +138,7 @@
 
 ;;* prompt count
 (defun ivy-add-prompt-count* (next-fn prompt)
-  "fix alignment of current match number"
+  "Fix alignment of current match number."
   (if (string-match "%.*d" ivy-count-format)
       (concat ivy-count-format prompt)
     (funcall next-fn prompt)))
@@ -159,12 +159,12 @@
 ;; (advice-add #'counsel-rg :around #'counsel-rg-with-delay-advice)
 
 (defcustom counsel-files-base-cmd "fd"
-  "command to list files in the project"
+  "Command to list files in the project."
   :type 'string
   :group 'ivy)
 
 (defcustom counsel-dirs-base-cmd "fd -t d"
-  "command to list files in the project"
+  "Command to list dirs in the project."
   :type 'string
   :group 'ivy)
 
@@ -364,18 +364,20 @@ buffer will be opened(current window, other window, other frame)."
               :caller 'counsel-buffers
               :keymap counsel-buffers-map)))
 
-(defun counsel-buffers-other-window (&optional name)
+(defun counsel-buffers-other-window (&optional initial-input)
+  "Same as `counsel-buffers', but open buffer in other window by default."
   (interactive)
   (let ((counsel-buffers-current-action
           (if (= 4 (prefix-numeric-value current-prefix-arg))
               #'counsel-buffers-action-other-frame
             #'counsel-buffers-action-other-window)))
-    (call-interactively #'counsel-buffers)))
+    (counsel-buffers initial-input)))
 
-(defun counsel-buffers-other-frame (&optional name where)
+(defun counsel-buffers-other-frame (&optional initial-input)
+  "Same as `counsel-buffers', but open buffer in other frame by default."
   (interactive)
   (let ((counsel-buffers-current-action #'counsel-buffers-action-other-frame))
-    (counsel-buffers name)))
+    (counsel-buffers initial-input)))
 
 (defun visit-buffer (buffer &optional where)
   (case where
