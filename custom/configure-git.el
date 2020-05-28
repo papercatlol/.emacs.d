@@ -210,6 +210,7 @@ start revision."
 
 ;;* git hydra
 ;; TODO: a function to stage current hunk or region
+;; TODO: revert-hunk
 (defhydra hydra-git (:hint nil)
   "
  ^Stage^                  ^Diff^                   ^Other^

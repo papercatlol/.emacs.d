@@ -22,6 +22,7 @@
 
 ;;* ivy-rich
 (require 'ivy-rich)
+(setq ivy-rich-path-style 'absolute)
 
 ;;** counsel-package
 (defun ivy-rich-counsel-package-version (candidate)
@@ -71,6 +72,9 @@
 (defun ivy-rich-counsel-buffers-recentf-filename (candidate)
   (file-name-nondirectory candidate))
 
+(defun ivy-rich-counsel-buffers-buffer-path (candidate)
+  (buffer-file-name (get-buffer candidate)))
+
 (defun constantly (x)
   (lambda (&rest args)
     x))
@@ -109,12 +113,7 @@
 (defun ivy-rich-counsel-buffers-3 (candidate)
   (ivy-rich-counsel-buffers-dispatch
    candidate
-   :buffer #'ivy-rich-switch-buffer-project))
-
-(defun ivy-rich-counsel-buffers-4 (candidate)
-  (ivy-rich-counsel-buffers-dispatch
-   candidate
-   :buffer #'ivy-rich-switch-buffer-path
+   :buffer #'ivy-rich-counsel-buffers-buffer-path
    :bookmark #'ivy-rich-bookmark-filename
    :recentf #'identity
    :ivy-view #'ivy-rich-ivy-view-buffers-list))
@@ -127,11 +126,10 @@
  ivy-rich-display-transformers-list
  'counsel-buffers
  '(:columns
-   ((ivy-rich-counsel-buffers-0 (:width 40))
+   ((ivy-rich-counsel-buffers-0 (:width 60))
     (ivy-rich-counsel-buffers-1 (:width 4 :face error :align right))
     (ivy-rich-counsel-buffers-2 (:width 20 :face warning))
-    (ivy-rich-counsel-buffers-3 (:width 15 :face ivy-rich-counsel-buffers-project-face))
-    (ivy-rich-counsel-buffers-4 (:width (lambda (x)
+    (ivy-rich-counsel-buffers-3 (:width (lambda (x)
                                           (ivy-rich-switch-buffer-shorten-path
                                            x (ivy-rich-minibuffer-width 0.5))))))))
 
@@ -321,6 +319,7 @@ If the input is empty, insert active region or symbol-at-point."
 (defun counsel-buffers--buffer-type (str)
   (get-text-property 0 counsel-buffers--prop str))
 
+;; TODO: dired-recent
 (defun counsel-buffers-all-candidates ()
   (labels ((%cand (str prop)
              ;; We use text properties to store metadata mostly for

@@ -203,13 +203,11 @@
                             (with-current-buffer buffer
                               (and equake-mode
                                    (string= default-directory dir))))
-                          (buffer-list)))
-            (pop-up-windows t))
-      (pop-to-buffer tab t)
-    (select-window (or (split-window-sensibly) (split-window)))
+                          (buffer-list))))
+      (pop-to-buffer tab)
     (equake-new-tab)))
 
-(define-key equake-mode-map (kbd "<f12>") 'quit-window)
+(define-key equake-mode-map (kbd "<f12>") 'delete-window)
 (global-set-key (kbd "<f12>") 'equake-pop)
 
 ;;
@@ -288,7 +286,7 @@
    #'string=)
   (map-put
    display-buffer-alist
-   (rx (or (and (? "e") "shell") "vterm" "EQUAKE") (* any))
+   (rx (or (and (? "e") "shell") "vterm" "EQUAKE[") (* any))
    '((display-buffer-in-side-window)
      (window-height . 0.2)
      (side . bottom)
