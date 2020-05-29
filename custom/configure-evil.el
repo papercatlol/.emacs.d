@@ -468,6 +468,9 @@
 (define-key leader-map (kbd "d") 'delete-other-windows-toggle)
 (define-key leader-map (kbd "k") 'helpful-key)
 (define-key leader-map (kbd "/") 'rg-menu)
+(define-key leader-map "x" 'ace-delete-window)
+(define-key leader-map "s" 'ace-swap-window)
+(define-key leader-map "m" 'ace-move-window)
 
 ;;** C-h as Backspace
 (define-key evil-insert-state-map (kbd "C-h") 'backward-delete-char)
