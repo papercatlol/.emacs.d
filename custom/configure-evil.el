@@ -83,22 +83,26 @@
      #'evil-record-macro)))
 
 ;;** `evil-visual-char-or-expand-region'
-(require 'expand-region)
-
-(defun call-command-interactively (command)
-  "Like `call-interactively', but also bind
+(with-eval-after-load 'expand-region
+  (defun call-command-interactively (command)
+    "Like `call-interactively', but also bind
 `this-command' to COMMAND."
-  (let ((this-command command))
-    (call-interactively command)))
+    (let ((this-command command))
+      (call-interactively command)))
 
-(defun evil-visual-char-or-expand-region (visual-block)
-  (interactive "P")
-  (call-command-interactively
-   (if (region-active-p)
-       #'er/expand-region
-     (if visual-block
-         #'evil-visual-block
-       #'evil-visual-char))))
+  (defun evil-visual-char-or-expand-region (visual-block)
+    (interactive "P")
+    (call-command-interactively
+     (if (region-active-p)
+         #'er/expand-region
+       (if visual-block
+           #'evil-visual-block
+         #'evil-visual-char)))))
+
+(define-key evil-normal-state-map "v" 'evil-visual-char-or-expand-region)
+(define-key evil-visual-state-map "v" 'evil-visual-char-or-expand-region)
+(define-key evil-visual-state-map (kbd "M-v") 'er/contract-region)
+(define-key evil-visual-state-map [escape] 'evil-visual-char)
 
 ;;** `swiper-evil-ex'
 (require 'swiper)
@@ -173,6 +177,9 @@
 (add-to-list 'avy-keys-alist
              (cons 'avy-goto-symbol-in-line (list ?f ?c ?d ?g ?s ?a  ?e ?v ?q ?w ?z ?x ?r
                                                   ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\;)))
+
+(define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
+(define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
 
 ;;** `evil-move'
 (evil-define-command evil-move-forward (beg end n)
@@ -277,26 +284,9 @@
 (define-key evil-motion-state-map (kbd "<C-i>") 'evil-jump-forward-dwim)
 (define-key evil-motion-state-map (kbd "<tab>") 'tab-indent)
 
-;;** `i3wm-frames'
-;; (defun frame-list-for-i3-workspace ()
-;;   "KLUDGE. List of frames in current i3 workspace. Doesn't return current frame because it is
-;; sorted before other frames by `frame-list-z-order'."
-;;   (let* ((current-frame (window-frame))
-;;          (current-monitor (frame-monitor-attribute 'name))
-;;          (frames (frame-list-z-order)))
-;;     (loop for frame in frames
-;;           when (and (string= current-monitor (frame-monitor-attribute 'name frame))
-;;                     (eq 'icon (frame-visible-p frame)))
-;;           collect frame)))
-
-;; (defun switch-to-frame (n)
-;;   (when-let* ((frames (frame-list-for-i3-workspace))
-;;               (frame (elt frames (1- n))))
-;;     (select-frame-set-input-focus frame)))
-
 ;;** avy-goto-symbol-2
 (defun avy-goto-symbol-2 (char1 char2 &optional arg beg end word)
-  "Like `avy-goto-word-1', but query for 2 chars and go to symbol start by default"
+  "Like `avy-goto-symbol-1', but query for 2 chars."
   (interactive (list (read-char "char 1: " t)
                      (read-char "char 2: " t)
                      current-prefix-arg))
@@ -313,7 +303,19 @@
                 :beg beg
                 :end end))))
 
+(defun avy-goto-word-2 (char1 char2 &optional arg beg end symbol)
+  "Like `avy-goto-word-1', but query for 2 chars."
+  (interactive (list (read-char "char 1: " t)
+                     (read-char "char 2: " t)
+                     current-prefix-arg))
+  (avy-with avy-goto-word-2
+    (avy-goto-symbol-2 char1 char2 arg nil nil (not symbol))))
+
 (evil-define-avy-motion avy-goto-symbol-2 exclusive)
+(evil-define-avy-motion avy-goto-word-2 exclusive)
+
+(global-set-key (kbd "M-t") 'evil-avy-goto-symbol-2)
+(define-key evil-motion-state-map (kbd "S") 'evil-avy-goto-symbol-2)
 
 ;;* `KEYS'
 ;; -----------------------------------------------------------------------------
@@ -420,12 +422,6 @@
     (kbd "C-f") 'paredit-forward
     (kbd "C-b") 'paredit-backward))
 
-;;** `visual-or-expand-region'
-(define-key evil-normal-state-map "v" 'evil-visual-char-or-expand-region)
-(define-key evil-visual-state-map "v" 'evil-visual-char-or-expand-region)
-(define-key evil-visual-state-map (kbd "M-v") 'er/contract-region)
-(define-key evil-visual-state-map [escape] 'evil-visual-char)
-
 ;;** `evil-window-map'
 (define-key evil-window-map (kbd "C-w") 'ace-window)
 (define-key evil-window-map (kbd "w") 'ace-window)
@@ -460,17 +456,18 @@
 (define-key splash-screen-keymap (kbd "SPC") leader-map)
 
 (define-key leader-map (kbd "SPC") 'evil-avy-goto-char-timer)
+(define-key leader-map "w" 'evil-avy-goto-word-2)
 (define-key leader-map "f" 'evil-avy-goto-symbol-2)
 (define-key leader-map "b" 'counsel-ibuffer-or-recentf)
 (define-key leader-map "c" 'ace-window)
 (define-key leader-map (kbd "<tab>") 'other-window)
-(define-key leader-map (kbd "o") 'counsel-outline)
-(define-key leader-map (kbd "d") 'delete-other-windows-toggle)
-(define-key leader-map (kbd "k") 'helpful-key)
-(define-key leader-map (kbd "/") 'rg-menu)
+(define-key leader-map "o" 'counsel-outline)
+(define-key leader-map "d" 'delete-other-windows-toggle)
 (define-key leader-map "x" 'ace-delete-window)
 (define-key leader-map "s" 'ace-swap-window)
 (define-key leader-map "m" 'ace-move-window)
+(define-key leader-map "k" 'helpful-key)
+(define-key leader-map "/" 'rg-menu)
 
 ;;** C-h as Backspace
 (define-key evil-insert-state-map (kbd "C-h") 'backward-delete-char)
@@ -480,7 +477,7 @@
 ;;   (define-key evil-visual-state-map (kbd "I") 'evil-mc-make-cursor-in-visual-selection-beg)
 ;;   (define-key evil-visual-state-map (kbd "A") 'evil-mc-make-cursor-in-visual-selection-end))
 
-;; `org'
+;; org
 (evil-define-key '(normal visual) org-mode-map
   "L" 'org-metaright
   "H" 'org-metaleft
@@ -488,7 +485,7 @@
   "O" (evil-with-insert-state org-meta-return)
   (kbd "<tab>") 'org-cycle)
 
-;;** `unbind'
+;;** unbind
 (define-key evil-normal-state-map (kbd "M-.") nil)
 (define-key evil-normal-state-map (kbd "M-,") nil)
 (define-key evil-normal-state-map (kbd "C-.") nil)
@@ -502,7 +499,7 @@
 ;; (define-key evil-insert-state-map (kbd "M-a") 'evil-append-line)
 ;; (define-key evil-insert-state-map (kbd "M-i") 'evil-insert-line)
 
-;;** `other'
+;;** other
 ;; (define-key evil-normal-state-map "q" 'q-dwim)
 (define-key evil-normal-state-map "Q" "@q")
 (define-key evil-visual-state-map "Q" ":norm @q RET")
@@ -516,9 +513,6 @@
 ;; (define-key evil-normal-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
 ;; (define-key magit-mode-map (kbd "M-j") 'evil-scroll-line-down-dwim)
 ;; (define-key magit-mode-map (kbd "M-k") 'evil-scroll-line-up-dwim)
-(define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
-(define-key evil-normal-state-map (kbd "S") 'avy-goto-symbol-end-in-line)
-(define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
 (define-key evil-visual-state-map (kbd "C-c i") 'edit-indirect-region)
 (define-key evil-normal-state-map (kbd "C-n") 'counsel-buffers-other-frame)
 (define-key evil-motion-state-map (kbd "C-v") nil)
@@ -531,16 +525,19 @@
 (define-key evil-normal-state-map (kbd "0") 'delete-window)
 
 ;;** evil keymaps bullshit
-(require 'slime)
 (dolist (map (list helpful-mode-map help-mode-map
                    compilation-mode-map grep-mode-map
-                   sldb-mode-map slime-inspector-mode-map slime-xref-mode-map
                    special-mode-map messages-buffer-mode-map
                    ))
   (evil-set-initial-state map 'normal)
   (evil-make-overriding-map map 'normal)
   (evil-add-hjkl-bindings map))
 
+(with-eval-after-load 'slime
+  (dolist (map (list sldb-mode-map slime-inspector-mode-map slime-xref-mode-map))
+    (evil-set-initial-state map 'normal)
+    (evil-make-overriding-map map 'normal)
+    (evil-add-hjkl-bindings map)))
 
 ;;** ibuffer
 ;; old M-j: ibuffer-jump-to-filter-group
@@ -548,7 +545,7 @@
   (define-key ibuffer-mode-map (kbd "M-j") 'evil-scroll-line-down-dwim)
   (define-key ibuffer-mode-map (kbd "M-k") 'evil-scroll-line-up-dwim))
 
-;;** `move-text'
+;;** move-text
 (defhydra move-text-hydra ()
   ("j" evil-move-forward "down")
   ("k" evil-move-backward "up")
