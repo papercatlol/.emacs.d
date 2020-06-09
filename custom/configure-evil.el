@@ -271,6 +271,13 @@
   (if arg (evil-show-jumps-ivy)
     (call-interactively #'evil-jump-forward)))
 
+(defun evil-set-jump* ()
+  "Interactive version of `evil-set-jump'."
+  (interactive)
+  (evil-set-jump))
+
+(define-key evil-motion-state-map (kbd "C-SPC") 'evil-set-jump*)
+
 (setq evil-jumps-cross-buffers nil)
 
 ;;** tab bindings
