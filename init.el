@@ -66,9 +66,8 @@
 (require 'configure-python)
 
 
+;;* global minor modes
 (delete-selection-mode 1)
-;; (global-linum-mode t)
-;; (global-display-line-numbers-mode t)
 (global-hl-todo-mode 1)
 (dired-async-mode t)
 
@@ -306,7 +305,7 @@
   ;; left side window
   (map-put
    display-buffer-alist
-   (rx (or "*help" "*info" "*apropos") (* any))
+   (rx (or "*help" "*info" "*apropos" "*man" "*woman") (* any))
    '((display-buffer-in-side-window)
      (window-width . 0.2)
      (side . left)
@@ -330,8 +329,38 @@
 (add-hook 'Info-mode-hook #'visual-line-mode)
 (add-hook 'apropos-mode #'visual-line-mode)
 (add-hook 'custom-mode-hook #'visual-line-mode)
+(add-hook 'woman-mode-hook #'visual-line-mode)
+(add-hook 'man-mode-hook #'visual-line-mode)
 
 (global-set-key (kbd "<f9>") 'window-toggle-side-windows)
+
+;;** balance-windows-horizontally
+(defun balance-windows-horizontally (&optional window-or-frame)
+  "Same as `balance-windows', but only do it horizontally.
+With prefix arg, call `balance-windows-area'."
+  (interactive)
+  (if current-prefix-arg
+      (call-interactively #'balance-windows-area)
+    (let* ((window
+	     (cond
+	       ((or (not window-or-frame)
+		    (frame-live-p window-or-frame))
+	        (frame-root-window window-or-frame))
+	       ((or (window-live-p window-or-frame)
+		    (window-child window-or-frame))
+	        window-or-frame)
+	       (t
+	        (error "Not a window or frame %s" window-or-frame))))
+	   (frame (window-frame window)))
+      ;; Balance horizontally.
+      (window--resize-reset (window-frame window) t)
+      (balance-windows-1 window t)
+      (when (window--resize-apply-p frame t)
+        (window-resize-apply frame t)
+        (window--pixel-to-total frame t)
+        (run-window-configuration-change-hook frame)))))
+
+(global-set-key [remap balance-windows] 'balance-windows-horizontally)
 
 ;;** winner-mode
 (setq winner-dont-bind-my-keys t)
