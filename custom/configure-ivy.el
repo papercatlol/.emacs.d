@@ -42,15 +42,31 @@
               (ivy-rich-counsel-package-archive-summary (:width 7 :face font-lock-builtin-face))
               (ivy-rich-counsel-package-install-summary (:face font-lock-doc-face)))))
 
+;;** counsel-find-file
+(defun ivy-rich-counsel-find-file-truename* (candidate)
+  (if (file-remote-p default-directory)
+      ""
+    (let ((type (car (file-attributes (directory-file-name (expand-file-name candidate ivy--directory))))))
+      (if (stringp type)
+          (concat "-> " (expand-file-name type ivy--directory))
+        ""))))
+
+(plist-put ivy-rich-display-transformers-list
+           'counsel-find-file
+           '(:columns
+             ((ivy-read-file-transformer)
+              (ivy-rich-counsel-find-file-truename* (:face font-lock-doc-face)))))
+
 ;;** counsel-buffers
-(cl-defun ivy-rich-counsel-buffers-dispatch (candidate &key buffer bookmark recentf ivy-view)
+(cl-defun ivy-rich-counsel-buffers-dispatch (candidate &key buffer bookmark recentf ivy-view dired-recent)
   (cl-labels ((%call (fn arg)
                 (if fn (funcall fn arg) "")))
     (ecase (counsel-buffers--buffer-type candidate)
       (:buffer (%call buffer candidate))
       (:recentf (%call recentf candidate))
       (:bookmark (%call bookmark candidate))
-      (:ivy-view (%call ivy-view candidate)))))
+      (:ivy-view (%call ivy-view candidate))
+      (:dired-recent (%call dired-recent candidate)))))
 
 (defun ivy-rich-ivy-view-buffers (candidate)
   (let ((buffers))
@@ -72,6 +88,10 @@
 (defun ivy-rich-counsel-buffers-recentf-filename (candidate)
   (file-name-nondirectory candidate))
 
+(defun ivy-rich-counsel-buffers-dired-recent-dirname (candidate)
+  (propertize (file-name-nondirectory (directory-file-name candidate))
+              'face 'ivy-subdir))
+
 (defun ivy-rich-counsel-buffers-buffer-path (candidate)
   (buffer-file-name (get-buffer candidate)))
 
@@ -92,7 +112,8 @@
    :buffer #'ivy-switch-buffer-transformer
    :recentf #'ivy-rich-counsel-buffers-recentf-filename
    :bookmark #'identity
-   :ivy-view #'identity))
+   :ivy-view #'identity
+   :dired-recent #'ivy-rich-counsel-buffers-dired-recent-dirname))
 
 (defun ivy-rich-counsel-buffers-1 (candidate)
   (ivy-rich-counsel-buffers-dispatch
@@ -100,7 +121,8 @@
    :buffer #'ivy-rich-switch-buffer-indicators
    :bookmark (constantly "BOOK")
    :recentf (constantly "REC")
-   :ivy-view (constantly "VIEW")))
+   :ivy-view (constantly "VIEW")
+   :dired-recent (constantly "DIR")))
 
 (defun ivy-rich-counsel-buffers-2 (candidate)
   (ivy-rich-counsel-buffers-dispatch
@@ -108,6 +130,7 @@
    :buffer #'ivy-rich-switch-buffer-major-mode
    :bookmark #'ivy-rich-bookmark-type
    :recentf #'ivy-rich-file-last-modified-time
+   :dired-recent #'ivy-rich-file-last-modified-time
    :ivy-view #'ivy-rich-ivy-view-buffers-count))
 
 (defun ivy-rich-counsel-buffers-3 (candidate)
@@ -116,6 +139,7 @@
    :buffer #'ivy-rich-counsel-buffers-buffer-path
    :bookmark #'ivy-rich-bookmark-filename
    :recentf #'identity
+   :dired-recent #'identity
    :ivy-view #'ivy-rich-ivy-view-buffers-list))
 
 (defface ivy-rich-counsel-buffers-project-face
@@ -335,13 +359,18 @@ If the input is empty, insert active region or symbol-at-point."
           (bookmarks (loop for b in (bookmark-all-names)
                            collect (%cand b :bookmark)))
           (views (loop for v in ivy-views
-                       collect (%cand (car v) :ivy-view))))
+                       collect (%cand (car v) :ivy-view)))
+          (dired-recent (loop for d in (or dired-recent-directories
+                                           (progn (dired-recent-load-list)
+                                                  dired-recent-directories))
+                              collect (%cand d :dired-recent))))
       (append buffers
               bookmarks
               views
               ;; Remove open files from the list. Note that while
               ;; `get-file-buffer'doesn't detect renamed buffers, it
               ;; is A LOT faster than `find-buffer-visiting'.
+              (cl-remove-if #'dired-find-buffer-nocreate dired-recent)
               (cl-remove-if #'get-file-buffer recent-files)))))
 
 ;; TODO: ivy-occur for this
@@ -399,14 +428,23 @@ buffer will be opened(current window, other window, other frame)."
     (bookmark-jump
      name
      (case where
-       (:window (switch-to-buffer-other-window buffer))
-       (:frame (switch-to-buffer-other-frame buffer))))))
+       (:window #'switch-to-buffer-other-window)
+       (:frame #'switch-to-buffer-other-frame)))))
+
+(defun visit-directory (dir &optional where)
+  (when (stringp dir)
+    (let ((d (list dir)))
+      (case where
+        (:window (dired-other-window d))
+        (:frame (dired-other-frame d))
+        (t (dired d))))))
 
 (defun counsel-buffers-action (item &optional where)
   ;; (message "%s %s %s" item where (counsel-buffers--buffer-type item))
   (case (counsel-buffers--buffer-type item)
     (:buffer (visit-buffer item where))
     (:recentf (visit-file item where))
+    (:dired-recent (visit-directory item where))
     (:bookmark (visit-bookmark item where))
     (:ivy-view
      (when (eq :frame where)
@@ -631,12 +669,12 @@ enable `ivy-calling' by default and restore original position on exit."
                  (find-function symbol)
                (find-variable symbol))))))))
 
-;;* avian
-(require 'avian)
+;;* [DISABLED] avian
+;; (require 'avian)
 
-(avian-swiper-mode)
+;; (avian-swiper-mode)
 
-(define-key swiper-map (kbd "SPC") avian:swiper-maybe-done)
+;; (define-key swiper-map (kbd "SPC") avian:swiper-maybe-done)
 
 ;;* [DISABLED] ivy-enhanced eval-expression
 (defun ivy--read-expression (prompt &optional initial-contents)
@@ -726,6 +764,15 @@ exit with that candidate, otherwise insert SPACE character as usual."
 
 (define-key ivy-minibuffer-map (kbd "M-m") 'ivy-call-or-dispatching-call)
 (define-key ivy-minibuffer-map (kbd "RET") 'ivy-done-or-dispatching-done)
+
+;;* dired-recent
+(require 'dired-recent)
+
+(dired-recent-mode 1)
+
+;; disable C-x C-d overriding, since we will use counsel-buffers instead
+(define-key dired-recent-mode-map (kbd "C-x C-d") nil)
+
 
 ;;* KEYS
 (defhydra hydra-M-g (global-map "M-g")

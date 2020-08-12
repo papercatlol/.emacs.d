@@ -17,7 +17,7 @@
     '((t (:inherit avy-lead-face)))
   "Face for avian-swiper overlays.")
 
-(defvar avian:overlay-position-fn #'avian:overlay-pos-at
+(defvar avian:overlay-position-fn #'avian:overlay-pos-pre
   "(fn (swiper-candidate-beg key)) -> avian overlay beginning position.
 See `avian:overlay-pos-at' and `avian:overlay-pos-pre'")
 
