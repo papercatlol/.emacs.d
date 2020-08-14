@@ -41,6 +41,7 @@
 (require 'multiple-cursors)
 (require 'paredit)
 (require 'pcmpl-args)
+(require 'pdf-tools)
 (require 'string-edit)
 (require 'uniquify)
 (require 'wgrep)
@@ -178,7 +179,7 @@
 (defun equake-kill-tab ()
   (interactive)
   (let ((buff (current-buffer)))
-    (if (< (equake-count-tabs (equake-get-monitor-name) (buffer-list) 0) 2)
+    (if (< (equake--count-tabs (equake-get-monitor-name)) 2)
         (delete-window)
       (equake-prev-tab))
     (kill-buffer buff)))
@@ -269,6 +270,9 @@
       enable-recursive-minibuffers t)
 (minibuffer-depth-indicate-mode 1)
 
+;;* pdf-tools
+(define-key pdf-view-mode-map (kbd "j") 'pdf-view-next-line-or-next-page)
+(define-key pdf-view-mode-map (kbd "k") 'pdf-view-previous-line-or-previous-page)
 ;;* windows
 ;;** display-buffer-alist
 ;; Inspired by: https://protesilaos.com/codelog/2020-01-07-emacs-display-buffer/
@@ -709,8 +713,8 @@ otherwise activate iedit-mode."
 (define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
 (define-key grep-mode-map (kbd "C-x C-j") 'compilation-to-dired)
 (define-key compilation-mode-map (kbd "C-x C-j") 'compilation-to-dired)
-(global-set-key (kbd "C-x 4 j") 'dired-jump-other-window)
-(global-set-key (kbd "C-x 5 j") 'dired-jump-other-frame)
+(define-key ctl-x-4-map (kbd "j") 'dired-jump-other-window)
+(define-key ctl-x-5-map (kbd "j") 'dired-jump-other-frame)
 
 (global-set-key (kbd "C-?") 'er/expand-region)
 (global-set-key (kbd "C-.") 'er/expand-region)
@@ -743,6 +747,7 @@ otherwise activate iedit-mode."
 (define-key dired-mode-map (kbd "i") 'dired-subtree-toggle)
 (define-key dired-mode-map (kbd "I") 'dired-subtree-remove)
 (define-key dired-mode-map (kbd "r") 'dired-rsync)
+(define-key dired-mode-map (kbd "M-z") nil)
 
 ;;
 (global-set-key (kbd "<f5>") 'revert-buffer)
@@ -767,6 +772,8 @@ otherwise activate iedit-mode."
   ("o" #'helpful-symbol "Describe symbol")
   ("v" #'counsel-describe-variable "Describe variable")
   ("f" #'counsel-describe-function "Describe function")
+  ("T" #'explain-pause-mode "Explain pause mode")
+  ("t" #'explain-pause-top "Explain pause top")
   )
 
 (defun hydra-cantrips-M-x ()
