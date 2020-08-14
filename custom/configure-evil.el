@@ -324,6 +324,13 @@
 (global-set-key (kbd "M-t") 'evil-avy-goto-symbol-2)
 (define-key evil-motion-state-map (kbd "S") 'evil-avy-goto-symbol-2)
 
+;;** man
+(defun evil-lookup-man ()
+  (call-interactively #'man))
+
+(setq evil-lookup-func #'evil-lookup-man)
+
+
 ;;* `KEYS'
 ;; -----------------------------------------------------------------------------
 ;;** `lispyville'
@@ -488,7 +495,7 @@
 (evil-define-key '(normal visual) org-mode-map
   "L" 'org-metaright
   "H" 'org-metaleft
-  "o" (evil-with-insert-state org-insert-heading-respect-content)
+  "o" nil ;; (evil-with-insert-state org-insert-heading-respect-content)
   "O" (evil-with-insert-state org-meta-return)
   (kbd "<tab>") 'org-cycle)
 
@@ -570,6 +577,11 @@
 
 (define-key evil-visual-state-map (kbd "C-c j") 'evil-move-forward-and-hydra)
 (define-key evil-visual-state-map (kbd "C-c k") 'evil-move-backward-and-hydra)
+
+;;** dired
+(with-eval-after-load 'dired-rsync
+  (evil-define-key '(normal)
+    dired-mode-map "r" 'dired-rsync))
 
 
 (provide 'configure-evil)
