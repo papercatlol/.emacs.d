@@ -337,13 +337,13 @@ If the input is empty, insert active region or symbol-at-point."
   "Keymap for `counsel-buffers'.")
 
 (require 'bookmark)
+(require 'recentf)
 
 (defvar counsel-buffers--prop :counsel-buffer-type)
 
 (defun counsel-buffers--buffer-type (str)
   (get-text-property 0 counsel-buffers--prop str))
 
-;; TODO: dired-recent
 (defun counsel-buffers-all-candidates ()
   (labels ((%cand (str prop)
              ;; We use text properties to store metadata mostly for
@@ -374,6 +374,7 @@ If the input is empty, insert active region or symbol-at-point."
               (cl-remove-if #'get-file-buffer recent-files)))))
 
 ;; TODO: ivy-occur for this
+;; MAYBE: show active frames as well as buffers
 (defun counsel-buffers (&optional initial-input)
   "Switch to buffer, recently opened file, bookmark or ivy-view.
 If ivy is exited and result has {} prefix, create a new ivy-view.
@@ -797,8 +798,13 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (global-set-key (kbd "C-x /") 'counsel-rg)
 (global-set-key (kbd "C-x C-/") 'counsel-rg-dir)
 (global-set-key (kbd "M-y") 'counsel-yank-pop)
+
 (global-set-key (kbd "C-c C-s") 'counsel-imenu-dwim)
 (global-set-key (kbd "C-c s") 'counsel-imenu-dwim)
+(global-set-key (kbd "C-c C-s") 'counsel-imenu-dwim)
+(with-eval-after-load 'sh-script
+ (define-key sh-mode-map (kbd "C-c C-s") 'counsel-imenu-dwim))
+
 (global-set-key (kbd "C-c b") 'counsel-bookmark)
 (global-set-key (kbd "C-c C-v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)

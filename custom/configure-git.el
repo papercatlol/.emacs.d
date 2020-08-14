@@ -106,6 +106,9 @@ Else call `magit-diff-buffer-file'."
 (define-key magit-mode-map (kbd "C-c C-l") 'magit-toggle-buffer-lock)
 (define-key magit-mode-map (kbd "j") 'magit-forward-dwim)
 (define-key magit-mode-map (kbd "k") 'magit-backward-dwim)
+(define-key magit-log-mode-map (kbd "j") 'magit-next-line)
+(define-key magit-log-mode-map (kbd "k") 'magit-previous-line)
+
 (define-key magit-mode-map (kbd "C-x g") 'magit-status)
 
 (dolist (m (list magit-status-mode-map magit-diff-mode-map))

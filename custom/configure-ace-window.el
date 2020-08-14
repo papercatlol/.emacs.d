@@ -24,7 +24,7 @@
 ;;* aw-dispatch-alist
 (setq aw-dispatch-alist
       '((?x aw-delete-window "Delete Window")
-        (?s aw-swap-window "Swap Windows")
+        (?S aw-swap-window "Swap Windows")
         (?m aw-move-window "Move Window")
         (?c aw-copy-window "Copy Window")
         (?j aw-switch-buffer-in-window "Select Buffer")
