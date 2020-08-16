@@ -109,9 +109,17 @@
                               )))
  ;; magit
  '(magit-header-line ((t (:foreground "white" :background "black" :weight regular ;; :underline t
-                                      ;; :box t
-                                      :underline t
-                                      ))))
+                          ;; :box t
+                          :underline t
+                          ))))
+ '(magit-diff-hunk-heading-highlight ((t (:foreground "grey70" :background "grey35"
+                                          :weight bold
+                                          :box t
+                                          ;; :overline "tomato"
+                                          ))))
+ '(magit-diff-context-highlight ((t (:foreground "grey70" :background "grey20"
+                                     :weight semi-bold
+                                     :underline nil))))
  ;; '(magit-section-heading ((t (:inherit magit-header-line))))
  ;; org
  '(org-level-3 ((t (:inherit default))))
