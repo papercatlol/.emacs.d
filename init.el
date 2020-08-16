@@ -256,7 +256,24 @@
                     "] -"
                     ;; "%f -"
                     '(:eval (cleaner-minor-modes))
+                    ;; TODO
+                    ;; " - "
+                    ;; ;; org-mode-line-string
                     " %-"))
+
+;;* title format: list all visible windows in frame title
+;; We don't use `frame-title-format' because it doesn't work for
+;; frames in i3wm title layout for some reason(because they aren't visible?).
+(defun set-frame-title-fn ()
+  (let* ((window-names
+           (loop for w in (window-list)
+                 for b = (window-buffer w)
+                 unless (minibufferp b)
+                   collect (format "[%s]" (buffer-name b))))
+         (title (string-join window-names " ")))
+    (set-frame-parameter nil 'title title)))
+
+(add-hook 'window-configuration-change-hook #'set-frame-title-fn)
 
 ;;* show-paren-mode
 (show-paren-mode 1)
