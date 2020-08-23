@@ -6,6 +6,8 @@
 
 (setq inferior-lisp-program (getenv "LISP_BINARY"))
 
+(add-to-list 'auto-mode-alist '("\\.cl\\'" . common-lisp-mode))
+
 ;;* slime-contribs
 (setq slime-contribs '(slime-repl
                        slime-autodoc
@@ -15,7 +17,7 @@
                        slime-fancy-trace
                        ;; slime-fuzzy
                        ;; slime-mdot-fu
-                       ;; slime-macrostep
+                       slime-macrostep
                        slime-presentations
                        slime-package-fu
                        ;; slime-scratch
