@@ -3,7 +3,7 @@
   "Created 2018-06-04.")
 
 (defface underlined
-  '((t (:underline (:color "tomato"))))
+    '((t (:underline (:color "tomato"))))
   "Base face for underlined text(e.g. for isearch, grep etc).")
 
 (custom-theme-set-faces
@@ -47,7 +47,7 @@
  ;; mode-line(from kaolin-mono-dark theme)
  '(vertical-border ((t (:foreground "gray15"))))
  '(mode-line ((t (:background "black" :foreground "#c5c9c0" :bold nil
-                              :box (:line-width 1 :color "gray50")))))
+                  :box (:line-width 1 :color "gray50")))))
  '(mode-line-inactive ((t (:background "gray15" :foreground "#41544B" :bold nil))))
  '(mode-line-buffer-id ((t (:background nil :foreground "white" :bold nil))))
  '(mode-line-highlight ((t (:foreground "aquamarine3" :box nil :bold nil))))
@@ -86,7 +86,7 @@
  '(error ((t (:foreground "firebrick" :weight bold))))
  '(hl-line ((t (:background "gray10"))))
  ;; '(ivy-current-match ((t (:background "gray50" :foreground "white"))))
- '(ivy-current-match ((t (:inherit region;; :foreground "white"
+ '(ivy-current-match ((t (:inherit region ;; :foreground "white"
                           ))))
  '(ivy-minibuffer-match-face-1 ((t (:inherit underlined))))
  '(ivy-minibuffer-match-face-2 ((t (:inherit ivy-minibuffer-match-face-1))))
@@ -125,6 +125,13 @@
  '(org-level-3 ((t (:inherit default))))
  '(org-level-4 ((t (:inherit default))))
  '(org-date ((t (:inherit font-lock-string-face :weight bold))))
+ ;; ediff
+ '(ediff-even-diff-A ((t (:foreground "black" :background "light grey"))))
+ '(ediff-even-diff-B ((t (:foreground "black" :background "light grey"))))
+ '(ediff-even-diff-C ((t (:foreground "black" :background "light grey"))))
+ '(ediff-odd-diff-A ((t (:foreground "black" :background "light grey"))))
+ '(ediff-odd-diff-B ((t (:foreground "black" :background "light grey"))))
+ '(ediff-odd-diff-C ((t (:foreground "black" :background "light grey"))))
  ;;
  '(dgi-commit-message-face ((t (:inherit font-lock-string-face))))
  '(iedit-occurrence ((t (:box (:color "DarkViolet"))))))
