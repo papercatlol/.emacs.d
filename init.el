@@ -70,7 +70,10 @@
 ;;* global minor modes
 (delete-selection-mode 1)
 (global-hl-todo-mode 1)
+
+;;* async
 (dired-async-mode t)
+(async-bytecomp-package-mode t)
 
 ;;* reverse-im
 (require 'reverse-im)
@@ -569,6 +572,8 @@ Else narrow-to-defun."
     (dired-jump t file-name)))
 
 ;;* org
+(require 'org)
+
 (setq org-default-notes-file (concat org-directory "/notes.org")
       org-startup-indented t
       org-hide-leading-stars t)
@@ -668,6 +673,47 @@ otherwise activate iedit-mode."
 
 (define-key prog-mode-map (kbd "C-;") 'iedit-mode*)
 
+;;* outline-mode, bicycle-mode
+(require 'bicycle)
+
+(add-hook 'prog-mode-hook #'outline-minor-mode)
+
+;; change ellipsis to something more distinct
+(set-display-table-slot standard-display-table
+                        'selective-display
+                        (string-to-vector " >"))
+
+(defun bicycle-cycle-body ()
+  "Cycle between showing and hiding function bodies."
+  (interactive)
+  (if (eq last-command 'outline-hide-body)
+      (outline-show-all)
+    (outline-hide-body)
+    (setq this-command 'outline-hide-body)))
+
+(defun bicycle-cycle* (&optional global)
+  "With prefix arg cycle function bodies, otherwise cycle
+current entry."
+  (interactive "P")
+  (if global
+      (bicycle-cycle-body)
+    (save-excursion
+     ;; Fixes jumping to the first heading in a file from function body.
+     (outline-back-to-heading)
+     (bicycle-cycle-local))))
+
+(define-key prog-mode-map (kbd "C-x C-<tab>") 'bicycle-cycle*)
+
+;; fix a weird bug where `outline-regexp' matches a "(c)" at the start of the file
+(defun bicycle--level-advice (fn &rest args)
+  (if-let ((level (apply fn args)))
+      level
+    (save-excursion
+     (and (re-search-forward outline-regexp nil t)
+          (bicycle--level)))))
+(advice-add 'bicycle--level :around #'bicycle--level-advice)
+
+;;* TODO: hydra-resize-window, map M-_ & M-+ or smth to shrinking/growing windows
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
@@ -769,7 +815,7 @@ otherwise activate iedit-mode."
 ;;
 (global-set-key (kbd "<f5>") 'revert-buffer)
 
-;;** Hydra for random useful commands.
+;;** hydra-cantrips with random useful commands.
 (defhydra hydra-cantrips-prefix-map (:columns 1 :exit t)
   "cantrips"
   ("s" #'string-edit-at-point "string-edit-at-point")
@@ -791,6 +837,7 @@ otherwise activate iedit-mode."
   ("f" #'counsel-describe-function "Describe function")
   ("T" #'explain-pause-mode "Explain pause mode")
   ("t" #'explain-pause-top "Explain pause top")
+  ("a" #'align-regexp "Align regexp")
   )
 
 (defun hydra-cantrips-M-x ()
