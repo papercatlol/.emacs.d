@@ -118,15 +118,15 @@ Else call `magit-diff-buffer-file'."
   (define-key m (kbd "=") 'magit-diff-more-context)
   (define-key m (kbd "M-m") 'magit-diff-visit-file-other-window))
 
-;;** magit-todos
-(require 'magit-todos)
+;;** [DISABLED] magit-todos
+;; (require 'magit-todos)
 
-(magit-todos-mode t)
+;; (magit-todos-mode t)
 
-(setq magit-todos-auto-group-items 1000)
+;; (setq magit-todos-auto-group-items 1000)
 
-(define-key magit-todos-section-map (kbd "j") 'magit-forward-dwim)
-(define-key magit-todos-section-map (kbd "k") 'magit-backward-dwim)
+;; (define-key magit-todos-section-map (kbd "j") 'magit-forward-dwim)
+;; (define-key magit-todos-section-map (kbd "k") 'magit-backward-dwim)
 
 
 ;;* git-gutter
@@ -265,5 +265,14 @@ start revision."
 (define-key dired-mode-map (kbd "C-x g") 'magit-status)
 
 ;;* TODO: ibuffer
+
+;;* TODO: git-link
+;; https://github.com/sshaw/git-link#building-links-and-adding-services
+;; Add to hydra-git, support gerrit and/or gitweb.
+;; (require 'git-link)
+
+;; (add-to-list git-link-remote-alist ...)
+
+;;* TODO: git-timemachine
 
 (provide 'configure-git)
