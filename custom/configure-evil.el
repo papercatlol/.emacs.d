@@ -291,6 +291,9 @@
 (define-key evil-motion-state-map (kbd "<C-i>") 'evil-jump-forward-dwim)
 (define-key evil-motion-state-map (kbd "<tab>") 'tab-indent)
 
+(with-eval-after-load 'bicycle
+  (define-key evil-motion-state-map (kbd "C-<tab>") 'bicycle-cycle*))
+
 ;;** avy-goto-symbol-2
 (defun avy-goto-symbol-2 (char1 char2 &optional arg beg end word)
   "Like `avy-goto-symbol-1', but query for 2 chars."
@@ -377,7 +380,9 @@
     (evil-change-state lispyville-preferred-state))
 
   (evil-define-key '(normal insert) lispyville-mode-map
-    (kbd "C-t") 'lispy-ace-paren
+    ;; (kbd "C-t") 'lispy-ace-paren
+    (kbd "C-t") 'evil-avy-goto-symbol-2
+    (kbd "M-t") 'lispy-ace-paren
     (kbd "M-o") 'lispyville-open-round-below-list
     (kbd "M-i") 'lispyville-insert-at-beginning-of-list
     (kbd "M-a") 'lispyville-insert-at-end-of-list*
@@ -448,6 +453,7 @@
 (define-key evil-ex-completion-map (kbd "C-b") nil)
 (define-key evil-ex-completion-map (kbd "C-k") nil)
 (define-key evil-ex-completion-map (kbd "C-d") nil)
+(define-key evil-ex-completion-map (kbd "C-f") nil)
 (define-key swiper-map (kbd "M-;") 'swiper-evil-ex)
 
 ;;** `leader'
@@ -582,6 +588,10 @@
 (with-eval-after-load 'dired-rsync
   (evil-define-key '(normal)
     dired-mode-map "r" 'dired-rsync))
+
+;;** counsel-evil-marks
+;; TODO: global markers, persistent markers
+(global-set-key (kbd "C-x C-'") 'counsel-evil-marks)
 
 
 (provide 'configure-evil)
