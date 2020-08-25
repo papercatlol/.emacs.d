@@ -290,22 +290,26 @@ With negative prefix arg call original `slime-edit-definition'."
   "Return symbol-names of symbols from all registered packages."
   ;; TODO: Extract cl code as a slime contrib or something.
   ;; TODO: (CL) Add caching. Update cache via a compilation hook.
-  (let* ((scope (if internal '(:external :internal) '(:external)))
-         (symbols
-           (slime-eval
-            `(cl:let ((packages (cl:remove (cl:find-package :keyword) (cl:list-all-packages)))
-                      (symbols))
-               (cl:with-package-iterator (next packages ,@scope)
-                 (cl:loop (cl:multiple-value-bind (morep symbol) (next)
-                            (cl:push symbol symbols)
-                            (cl:unless morep (cl:return)))))
-               (cl:mapcar (cl:lambda (symbol)
-                            (cl:string-downcase
-                             (cl:format nil "~a:~a"
-                                        (cl:package-name (cl:symbol-package symbol))
-                                        (cl:symbol-name symbol))))
-                          (cl:remove-duplicates symbols)))
-            "CL-USER")))
+  (let ((symbols
+          (if internal
+              (slime-eval
+               `(cl:let ((symbols))
+                  (cl:do-all-symbols (symbol symbols)
+                    (cl:unless (cl:keywordp symbol)
+                      (cl:push (cl:string-downcase (cl:prin1-to-string symbol)) symbols)))
+                  (cl:nreverse symbols))
+               "CL-USER")
+            (slime-eval
+             `(cl:let ((symbols))
+                (cl:dolist (p (cl:list-all-packages))
+                  (cl:do-external-symbols (symbol p)
+                    (cl:unless (cl:keywordp symbol)
+                      (cl:push (cl:string-downcase
+                                (cl:prin1-to-string symbol))
+                               symbols))))
+                (cl:nreverse symbols))
+             "CL-USER"))
+          ))
     symbols))
 
 (defun slime-read-symbol-name-global (prompt &optional query internal)
