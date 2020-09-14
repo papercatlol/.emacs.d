@@ -47,7 +47,9 @@
  ;; mode-line(from kaolin-mono-dark theme)
  '(vertical-border ((t (:foreground "gray15"))))
  '(mode-line ((t (:background "black" :foreground "#c5c9c0" :bold nil
-                  :box (:line-width 1 :color "gray50")))))
+                  ;; :box (:line-width 1 :color "gray50")
+                  :overline "gray60"
+                  ))))
  '(mode-line-inactive ((t (:background "gray15" :foreground "#41544B" :bold nil))))
  '(mode-line-buffer-id ((t (:background nil :foreground "white" :bold nil))))
  '(mode-line-highlight ((t (:foreground "aquamarine3" :box nil :bold nil))))
@@ -125,6 +127,9 @@
  '(org-level-3 ((t (:inherit default))))
  '(org-level-4 ((t (:inherit default))))
  '(org-date ((t (:inherit font-lock-string-face :weight bold))))
+ '(org-tag ((t (:inherit mode-line-emphasis))))
+ '(org-todo ((t (:foreground "red4" :weight bold))))
+ '(org-done ((t (:foreground "lime green" :weight bold))))
  ;; ediff
  '(ediff-even-diff-A ((t (:foreground "black" :background "light grey"))))
  '(ediff-even-diff-B ((t (:foreground "black" :background "light grey"))))
@@ -134,6 +139,15 @@
  '(ediff-odd-diff-C ((t (:foreground "black" :background "light grey"))))
  ;;
  '(dgi-commit-message-face ((t (:inherit font-lock-string-face))))
- '(iedit-occurrence ((t (:box (:color "DarkViolet"))))))
+ '(iedit-occurrence ((t (:box (:color "DarkViolet")))))
+ ;; frog-menu
+ '(frog-menu-posframe-background-face ((t (:background "black"))))
+ '(frog-menu-candidates-face ((t (:foreground "white"))))
+ ;; equake
+ '(equake-shell-type-shell ((t (:foreground "white"))))
+ '(sh-heredoc ((t (:inherit font-lock-string-face))))
+ ;; loccur
+ '(loccur-face ((t (:inherit match :underline (:color "DarkViolet")))))
+ )
 
 (provide-theme 'quasi-monochrome)
