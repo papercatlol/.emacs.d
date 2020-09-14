@@ -132,7 +132,13 @@ Else call `magit-diff-buffer-file'."
 ;;* git-gutter
 (require 'git-gutter-fringe)
 
-(global-git-gutter-mode t)
+;; only enable git-gutter in local git-tracked files
+(defun magit--file-mode-enable-git-gutter ()
+  (unless (file-remote-p (buffer-file-name))
+    (git-gutter-mode 1)))
+
+(add-hook 'magit-file-mode-hook #'magit--file-mode-enable-git-gutter)
+
 (setq git-gutter:lighter ""
       git-gutter:ask-p nil)
 
