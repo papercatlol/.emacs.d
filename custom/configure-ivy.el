@@ -774,14 +774,21 @@ exit with that candidate, otherwise insert SPACE character as usual."
 ;; disable C-x C-d overriding, since we will use counsel-buffers instead
 (define-key dired-recent-mode-map (kbd "C-x C-d") nil)
 
+;;* counsel-shell-history
+(with-eval-after-load 'comint
+  (define-key comint-mode-map
+    [remap comint-history-isearch-backward-regexp]
+    'counsel-shell-history))
 
 ;;* KEYS
 (defhydra hydra-M-g (global-map "M-g")
   "M-g"
   ("n" next-error)
   ("M-n" next-error)
+  ("j" next-error)
   ("p" previous-error)
   ("M-p" previous-error)
+  ("k" previous-error)
   ("g" avy-goto-line)
   ("M-g" avy-goto-line)
   ("c" goto-char))
