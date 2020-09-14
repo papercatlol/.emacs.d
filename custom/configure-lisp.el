@@ -24,10 +24,11 @@
                        slime-references
                        ;; slime-fontifying-fu
                        slime-trace-dialog
-                       slime-cl-indent
+                       slime-indentation
+                       ;; slime-cl-indent
                        ;; slime-uncompiled-fringe
                        slime-tramp
-                       ;; slime-xref-browser
+                       slime-xref-browser
                        ))
 (slime-setup slime-contribs)
 
@@ -220,6 +221,20 @@ If there was an active region, insert it into repl."
    (side . left)
    (slot . 0))
  #'string=)
+
+;;*** hyperspec
+
+;; local hyperspec
+(load "/home/il/quicklisp/clhs-use-local.el" t)
+
+;; browse hyperspec in eww
+(defun hyperspec-lookup-advice (func &rest args)
+  (let ((browse-url-browser-function #'eww-browse-url))
+    (apply func args)))
+
+(advice-add 'hyperspec-lookup :around #'hyperspec-lookup-advice)
+(advice-add 'hyperspec-lookup-reader-macro :around #'hyperspec-lookup-advice)
+(advice-add 'hyperspec-lookup-format :around #'hyperspec-lookup-advice)
 
 ;;** edit definition(M-.)
 (defun slime--edit-definition-ivy (&optional where)
@@ -683,6 +698,13 @@ With prefix arg, copy toplevel form."
                             "<return>" 'macrostep-expand
                             "<backtab>" 'macrostep-prev-macro)))
 
+;;* counsel-outline
+(with-eval-after-load 'counsel
+  (add-to-list 'counsel-outline-settings
+               '(lisp-mode
+                 ;; :outline-regexp "TODO"
+                 :display-style 'title)))
+
 ;;* KEYS
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation)
@@ -697,7 +719,7 @@ With prefix arg, copy toplevel form."
 
 (define-key slime-repl-mode-map (kbd "<f5>") 'slime-restart-inferior-lisp)
 (define-key slime-repl-mode-map (kbd "(") 'self-insert-command)
-(define-key slime-repl-mode-map (kbd "C-c C-z") 'slime-repl-bury-buffer)
+(define-key slime-repl-mode-map (kbd "C-c C-z") 'slime-next-connection)
 (define-key sldb-mode-map (kbd "<tab>") 'sldb-toggle-details)
 (define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
 (define-key slime-mode-map (kbd "C-c p") 'slime-pprint-eval-last-expression)
@@ -713,6 +735,8 @@ With prefix arg, copy toplevel form."
 (define-key sldb-mode-map (kbd "C-c t") 'slime-trace-dialog)
 (define-key sldb-mode-map "G" 'sldb-fetch-traces)
 (define-key sldb-mode-map "C" 'sldb-continue-and-fetch-traces)
+(define-key sldb-mode-map "h" 'backward-char)
+(define-key sldb-mode-map "l" 'forward-char)
 (define-key slime-mode-map (kbd "C-c M-t") 'slime-toggle-trace-fdefinition)
 (define-key slime-repl-mode-map [remap swiper-at-point] 'swiper-isearch)
 (define-key slime-repl-mode-map [remap slime-repl-previous-matching-input] 'slime-repl-complete-ivy)
@@ -740,6 +764,11 @@ With prefix arg, copy toplevel form."
 (define-key slime-presentation-map "m" 'slime-mark-presentation)
 
 (define-key slime-presentation-command-map (kbd "C-v") 'slime-avy-copy-presentation-to-point)
+
+;;** slime-trace-dialog
+(define-key slime-trace-dialog-mode-map "h" 'backward-char)
+(define-key slime-trace-dialog-mode-map "l" 'forward-char)
+(define-key slime-trace-dialog-mode-map "C-n" nil)
 
 ;;** lispy
 (with-eval-after-load 'lispy
