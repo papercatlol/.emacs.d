@@ -62,6 +62,7 @@
 (require 'configure-isearch)
 (require 'configure-ivy)
 (require 'counsel-ripgrep)
+(require 'configure-org)
 ;; (require 'configure-go)
 (require 'configure-lisp)
 (require 'configure-python)
@@ -198,6 +199,8 @@
 (face-spec-set 'equake-shell-type-shell '((t (:foreground "white" :background "black"))))
 
 ;; equake-pop
+(setq equake-default-shell 'shell)
+;; TODO: make it work with `shell'
 (defun equake-pop ()
   "Open equake tab for current directory in other window."
   (interactive)
@@ -209,6 +212,25 @@
                           (buffer-list))))
       (pop-to-buffer tab)
     (equake-new-tab)))
+
+;; PATCH: don't propertize inactive tab names
+(defun equake-extract-format-tab-name* (tab-no)
+  "Extract name of an Equake tab #TAB-NO and format it for the modeline."
+  (-let* (((&alist 'monitor 'tab-no active-tab-no) (equake--get-tab-properties))
+          (tab (equake--find-tab monitor tab-no))
+          ((&alist 'tab-name) (equake--get-tab-properties tab))
+          (tab-active-p (equal tab-no active-tab-no))
+          (face (and tab-active-p 'equake-tab-active)))
+    (when (string-empty-p tab-name)
+      (setq tab-name (number-to-string tab-no))) ; set name to tab number
+    (concat " " (propertize (concat "[ " tab-name " ]") 'font-lock-face face) " ")))
+(advice-add 'equake-extract-format-tab-name :override #'equake-extract-format-tab-name*)
+
+(defun equake-kill-tab-advice ()
+  (when-let ((proc (get-buffer-process (current-buffer))))
+    (set-process-query-on-exit-flag proc nil)))
+
+(advice-add 'equake-kill-tab :before #'equake-kill-tab-advice)
 
 (define-key equake-mode-map (kbd "<f12>") 'delete-window)
 (global-set-key (kbd "<f12>") 'equake-pop)
@@ -228,12 +250,17 @@
 
 ;;* modeline
 (defvar minor-mode-lighters
-  '((paredit-mode " Par")
+  '((paredit-mode " (P)")
+    (outline-minor-mode "")
+    (lispyville-mode "")
     (auto-revert-mode "")
     (undo-tree-mode "")
     (ivy-mode "")
     (slime-mode " slime")
-    (anzu-mode "")))
+    (anzu-mode "")
+    (elisp-slime-nav-mode "")
+    (eldoc-mode "")
+    (explain-pause-mode "")))
 
 (defun cleaner-minor-modes ()
   (mapcar (lambda (mode)
@@ -251,17 +278,15 @@
                     '(:eval (ace-window-path-lighter))
                     (list (propertize "%b" 'face 'mode-line-buffer-id))
                     ":%l %p "
-                    evil-mode-line-tag
-                    ;; '(:eval (when slime-mode (slime-current-package)))
+                    '(:eval (string-trim evil-mode-line-tag))
+                    '(:eval (when slime-mode (concat " " (slime-current-package))))
                     '(vc-mode vc-mode)
                     " ["
                     '(:eval mode-name)
-                    "] -"
+                    "]"
                     ;; "%f -"
                     '(:eval (cleaner-minor-modes))
-                    ;; TODO
-                    ;; " - "
-                    ;; ;; org-mode-line-string
+                    '(:eval org-mode-line-string)
                     " %-"))
 
 ;;* title format: list all visible windows in frame title
@@ -291,8 +316,40 @@
 (minibuffer-depth-indicate-mode 1)
 
 ;;* pdf-tools
+(pdf-loader-install)
+
 (define-key pdf-view-mode-map (kbd "j") 'pdf-view-next-line-or-next-page)
 (define-key pdf-view-mode-map (kbd "k") 'pdf-view-previous-line-or-previous-page)
+
+(add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode)
+
+
+;;* explain-pause-mode
+(add-to-list 'load-path (expand-file-name "custom/explain-pause-mode/" user-emacs-directory))
+(require 'explain-pause-mode)
+(explain-pause-mode 1)
+
+;;* helpful
+(add-hook 'helpful-mode-hook #'visual-line-mode)
+
+(defvar helpful-last-buffer nil)
+
+(cl-defun toggle-help-window ()
+  (interactive)
+  (or (loop for w in (window-list)
+            for b = (window-buffer w)
+            when (eq 'helpful-mode (buffer-local-value 'major-mode b))
+              do (progn (setq helpful-last-buffer b)
+                        (delete-window w)
+                        (return t)))
+      (and helpful-last-buffer (display-buffer helpful-last-buffer))))
+
+(global-set-key (kbd "C-h h") 'toggle-help-window)
+;; (global-set-key (kbd "C-h f") #'helpful-callable)
+;; (global-set-key (kbd "C-h v") #'helpful-variable)
+(global-set-key (kbd "C-h k") #'helpful-key)
+(global-set-key (kbd "C-h o") #'helpful-symbol)
+
 ;;* windows
 ;;** display-buffer-alist
 ;; Inspired by: https://protesilaos.com/codelog/2020-01-07-emacs-display-buffer/
@@ -570,17 +627,6 @@ Else narrow-to-defun."
 	      (read-file-name "Jump to Dired file: "))))
   (let ((pop-up-frames t))
     (dired-jump t file-name)))
-
-;;* org
-(require 'org)
-
-(setq org-default-notes-file (concat org-directory "/notes.org")
-      org-startup-indented t
-      org-hide-leading-stars t)
-
-(advice-add 'org-archive-default-command :after #'org-save-all-org-buffers)
-
-(global-set-key (kbd "<f6>") 'counsel-org-capture)
 
 ;;* diff-buffer-with-file
 (defun diff-current-buffer-with-file (prompt)
