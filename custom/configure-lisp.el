@@ -237,38 +237,40 @@ If there was an active region, insert it into repl."
 (advice-add 'hyperspec-lookup-format :around #'hyperspec-lookup-advice)
 
 ;;** edit definition(M-.)
-(defun slime--edit-definition-ivy (&optional where)
+(defun slime--edit-definition-ivy (&optional symbol-name where)
   "Adapted from `slime-edit-definition-cont'. Use `ivy' to select a candidate if multiple."
-  (let* ((symbol-name (slime-read-symbol-name "Edit definition of: "))
-         (xrefs (slime-find-definitions symbol-name)))
-    (cl-destructuring-bind (same-loc file-alist) (slime-analyze-xrefs xrefs)
-      (cond ((null xrefs)
-             (error "No known definition for: %s (in %s)" symbol-name (slime-current-package)))
-            (same-loc
-             (slime-push-definition-stack)
-             (slime-pop-to-location (slime-xref.location (car xrefs)) where))
-            ;; ((:error "..."))
-            ((slime-length= xrefs 1)
-             (error "%s" (second (slime-xref.location (car xrefs)))))
-            (t
-             (let* ((items (mapcar (lambda (xref)
-                                     (let* ((spec (downcase
-                                                   (replace-regexp-in-string "[\n ]+" " " (slime-xref.dspec xref))))
-                                            (location (slime-xref.location xref))
-                                            (file (second (assoc :file (cdr location))))
-                                            (line (line-number-at-pos (second (assoc :position (cdr location))))))
-                                       (and spec file line location (list spec file line location))))
-                                   xrefs))
-                    (sorted-items (sort (remove nil items)
-                                        (lambda (i1 i2)
-                                          (if (string= (second i1) (second i2))
-                                              (< (third i1) (third i2))
-                                            (string< (second i1) (second i2)))))))
-               (ivy-read "Edit definition of: "
-                         sorted-items
-                         :action (lambda (item)
-                                   (slime-push-definition-stack)
-                                   (slime-pop-to-location (fourth item) where)))))))))
+  (unless symbol-name
+    (setq symbol-name (slime-read-symbol-name "Edit definition of: ")))
+  (or (run-hook-with-args-until-success 'slime-edit-definition-hooks symbol-name where)
+      (let ((xrefs (slime-find-definitions symbol-name)))
+        (cl-destructuring-bind (same-loc file-alist) (slime-analyze-xrefs xrefs)
+                               (cond ((null xrefs)
+                                      (error "No known definition for: %s (in %s)" symbol-name (slime-current-package)))
+                                     (same-loc
+                                      (slime-push-definition-stack)
+                                      (slime-pop-to-location (slime-xref.location (car xrefs)) where))
+                                     ;; ((:error "..."))
+                                     ((slime-length= xrefs 1)
+                                      (error "%s" (second (slime-xref.location (car xrefs)))))
+                                     (t
+                                      (let* ((items (mapcar (lambda (xref)
+                                                              (let* ((spec (downcase
+                                                                            (replace-regexp-in-string "[\n ]+" " " (slime-xref.dspec xref))))
+                                                                     (location (slime-xref.location xref))
+                                                                     (file (second (assoc :file (cdr location))))
+                                                                     (line (line-number-at-pos (second (assoc :position (cdr location))))))
+                                                                (and spec file line location (list spec file line location))))
+                                                            xrefs))
+                                             (sorted-items (sort (remove nil items)
+                                                                 (lambda (i1 i2)
+                                                                   (if (string= (second i1) (second i2))
+                                                                       (< (third i1) (third i2))
+                                                                       (string< (second i1) (second i2)))))))
+                                        (ivy-read "Edit definition of: "
+                                                  sorted-items
+                                                  :action (lambda (item)
+                                                            (slime-push-definition-stack)
+                                                            (slime-pop-to-location (fourth item) where))))))))))
 
 (defun slime-edit-definition-ivy (arg)
   "`slime-edit-definition' but use `ivy' to select a candidate.
@@ -606,6 +608,33 @@ With prefix arg, copy toplevel form."
 
   (define-key slime-mode-map (kbd "C-c L") 'slime-load-system-dwim)
   (define-key slime-repl-mode-map (kbd "C-c L") 'slime-load-system-dwim))
+
+;;** slime-edit-definition support for asdf components
+(defun slime-edit-asdf-component (name &optional where)
+  ;; (or current-prefix-arg (not (equal (slime-symbol-at-point) name)))
+  (if current-prefix-arg
+      nil
+      (when-let* ((pathname
+                   (slime-eval
+                    `(cl:when (cl:find-package :asdf) ; TODO: a better way to check; featurep ?
+                       (cl:let* ((symbol
+                                   (swank::find-definitions-find-symbol-or-package ,name))
+                                 (component
+                                   (asdf/find-component:find-component nil symbol)))
+                         (cl:and component
+                                 (cl:namestring
+                                  (cl:or (cl:slot-value component
+                                                        'asdf/component::source-file)
+                                         (asdf/component:component-pathname component)))))))))
+        ;; MAYBE: use `slime-edit-definition-cont'
+        (slime-push-definition-stack)
+        (case where
+          (window (find-file-other-window pathname))
+          (frame (find-file-other-frame pathname))
+          (t (find-file pathname)))
+        t)))
+
+(add-hook 'slime-edit-definition-hooks 'slime-edit-asdf-component)
 
 ;;* `slime-import-symbol'
 (with-eval-after-load 'slime-package-fu
