@@ -780,6 +780,16 @@ exit with that candidate, otherwise insert SPACE character as usual."
     [remap comint-history-isearch-backward-regexp]
     'counsel-shell-history))
 
+;;* swiper-evil-replace
+(with-eval-after-load 'evil
+  (defun swiper-evil-replace ()
+    (interactive)
+    (ivy-exit-with-action
+     (lambda (_)
+       (let ((re (string-join (ivy--split ivy-text) ".*?")))
+         (evil-ex (format "%%s/%s/" re))))))
+  (define-key swiper-map (kbd "M-q") 'swiper-evil-replace))
+
 ;;* KEYS
 (defhydra hydra-M-g (global-map "M-g")
   "M-g"
