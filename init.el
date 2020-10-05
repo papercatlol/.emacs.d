@@ -12,19 +12,25 @@
 
 (unless (file-exists-p "~/.emacs.d/elpa/archives/melpa")
   (package-refresh-contents))
+
 (server-start)
 
 ;;** GC hacks
 (defun gc-with-time ()
   (let ((time (current-time)))
+    (garbage-collect)
     (unless (or (minibuffer-window-active-p (selected-window))
                 (> (window-height (minibuffer-window)) 1))
-      (garbage-collect)
       (message "GC took %.06f sec" (float-time (time-since time))))))
 
 (setq gc-cons-threshold #x40000000) ; 1GB
 
 (defvar gc-timer (run-with-idle-timer 30 t #'gc-with-time))
+
+(setq default-frame-alist
+      '((menu-bar-lines 0)
+        (tool-bar-lines 0)
+        (vertical-scroll-bars)))
 
 ;;;
 (require 'avy)
@@ -406,7 +412,6 @@
 (setq even-window-sizes 'height-only)
 
 (add-hook 'help-mode-hook #'visual-line-mode)
-(add-hook 'helpful-mode-hook #'visual-line-mode)
 (add-hook 'Info-mode-hook #'visual-line-mode)
 (add-hook 'apropos-mode #'visual-line-mode)
 (add-hook 'custom-mode-hook #'visual-line-mode)
@@ -441,7 +446,12 @@ With prefix arg, call `balance-windows-area'."
         (window--pixel-to-total frame t)
         (run-window-configuration-change-hook frame)))))
 
-(global-set-key [remap balance-windows] 'balance-windows-horizontally)
+(global-set-key (kbd "C-x +") 'balance-windows-horizontally)
+
+;;** fit-window-to-buffer
+(setq fit-window-to-buffer-horizontally t)
+
+(global-set-key (kbd "C-x -") 'fit-window-to-buffer)
 
 ;;** winner-mode
 (setq winner-dont-bind-my-keys t)
@@ -711,13 +721,13 @@ Else narrow-to-defun."
   "If iedit-mode is active, restrict to current region or defun,
 otherwise activate iedit-mode."
   (interactive)
-  (if iedit-mode
+  (if (bound-and-true-p iedit-mode)
       (if (region-active-p)
           (iedit-restrict-region (region-beginning) (region-end))
         (iedit-restrict-function nil))
     (iedit-mode)))
 
-(define-key prog-mode-map (kbd "C-;") 'iedit-mode*)
+(global-set-key (kbd "C-;") 'iedit-mode*)
 
 ;;* outline-mode, bicycle-mode
 (require 'bicycle)
@@ -857,6 +867,7 @@ current entry."
 (define-key dired-mode-map (kbd "I") 'dired-subtree-remove)
 (define-key dired-mode-map (kbd "r") 'dired-rsync)
 (define-key dired-mode-map (kbd "M-z") nil)
+(define-key dired-mode-map (kbd "M-c") nil)
 
 ;;
 (global-set-key (kbd "<f5>") 'revert-buffer)
@@ -884,6 +895,7 @@ current entry."
   ("T" #'explain-pause-mode "Explain pause mode")
   ("t" #'explain-pause-top "Explain pause top")
   ("a" #'align-regexp "Align regexp")
+  ("l" #'display-line-numbers-mode "Display line numbers mode")
   )
 
 (defun hydra-cantrips-M-x ()
@@ -898,12 +910,6 @@ current entry."
 (ace-link-setup-default (kbd "C-f"))
 (dolist (keymap (list help-mode-map package-menu-mode-map compilation-mode-map grep-mode-map))
   (define-key keymap (kbd "C-f") 'ace-link))
-
-;;** Helpful
-;; (global-set-key (kbd "C-h f") #'helpful-callable)
-;; (global-set-key (kbd "C-h v") #'helpful-variable)
-(global-set-key (kbd "C-h k") #'helpful-key)
-(global-set-key (kbd "C-h o") #'helpful-symbol)
 
 ;;** C-h as Backspace
 (global-set-key (kbd "C-x h") 'help-command)

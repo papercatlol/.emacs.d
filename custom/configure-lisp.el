@@ -190,6 +190,11 @@ If there was an active region, insert it into repl."
 
 ;;* TODO: edebug-mode: make compatible with evil-mode, add hydra
 
+;;* debugger-mode
+(with-eval-after-load 'debug
+  (define-key debugger-mode-map "j" 'next-line)
+  (define-key debugger-mode-map "k" 'previous-line))
+
 ;;* slime hacks
 ;;** documentation
 (defun slime-documentation ()

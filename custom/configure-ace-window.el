@@ -60,4 +60,6 @@ if there are more than 2 of them."
   (interactive)
   (aw-select " Ace - Move Window" #'aw-move-window))
 
+(define-key ctl-x-map (kbd "C-m") 'ace-move-window)
+
 (provide 'configure-ace-window)

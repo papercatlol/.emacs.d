@@ -270,6 +270,15 @@ start revision."
 (define-key dired-mode-map (kbd ")") 'dired-git-info-mode)
 (define-key dired-mode-map (kbd "C-x g") 'magit-status)
 
+;;* slime
+(with-eval-after-load 'slime
+  (defun slime-magit-status ()
+    (interactive)
+    (let ((default-directory (slime-eval `(swank:default-directory))))
+      (magit-status)))
+
+  (define-key slime-repl-mode-map (kbd "C-x g") 'slime-magit-status))
+
 ;;* TODO: ibuffer
 
 ;;* TODO: git-link

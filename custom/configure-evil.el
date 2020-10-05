@@ -554,7 +554,8 @@
   (evil-add-hjkl-bindings map))
 
 (with-eval-after-load 'slime
-  (dolist (map (list sldb-mode-map slime-inspector-mode-map slime-xref-mode-map))
+  (dolist (map (list sldb-mode-map slime-inspector-mode-map
+                     slime-xref-mode-map slime-connection-list-mode-map))
     (evil-set-initial-state map 'normal)
     (evil-make-overriding-map map 'normal)
     (evil-add-hjkl-bindings map)))
