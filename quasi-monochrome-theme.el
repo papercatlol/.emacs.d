@@ -72,10 +72,8 @@
  '(success ((t (:foreground "gray40" :weight bold :underline t))))
  '(compilation-line-number ((t (:foreground "gray30" :weight bold))))
  '(show-paren-mismatch ((t (:background "firebrick3" :foreground "white" :weight extra-bold))))
- '(aw-leading-char-face ((t (:foreground "white"
-                             :weight extra-bold
-                             :height 160
-                             :box (:color "LimeGreen" :line-width 2)))))
+ ;; ace-window
+ '(aw-leading-char-face ((t (:background "black" :foreground "LimeGreen" :weight extra-bold :height 160))))
  '(aw-mode-line-face ((t (:foreground "white" :weight extra-bold))))
  '(popup-tip-face ((t (:inherit font-lock-comment-face))))
  '(popup-face ((t (:background "gray12" :foreground "white"))))
