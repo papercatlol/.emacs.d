@@ -795,7 +795,22 @@ current entry."
   (add-hook 'compilation-mode-hook 'page-break-lines-mode)
   (add-hook 'man-mode-hook 'page-break-lines-mode)
   )
+
+;;* rename-buffer
+(defun rename-buffer-dwim (newname &optional unique)
+  "Like `rename-buffer', but suggest current buffer name."
+  (interactive
+   (list (read-string "Rename buffer: " (buffer-name)) current-prefix-arg))
+  (rename-buffer newname unique))
+
+;; TODO: group all C-x bindings and use `ctl-x-map' instead of literal C-x
+(define-key ctl-x-map (kbd "C-r") 'rename-buffer-dwim)
+
 ;;* TODO: hydra-resize-window, map M-_ & M-+ or smth to shrinking/growing windows
+
+;;* TODO: helm-make: add cd(counsel-cd?) binding; same for cd to git root
+(setq helm-make-completion-method 'ivy)
+
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
