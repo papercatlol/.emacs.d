@@ -73,10 +73,15 @@
 (require 'configure-lisp)
 (require 'configure-python)
 
+;;* ./local-elisp - private/work configuration
+(add-to-list 'load-path (expand-file-name "local-elisp" user-emacs-directory))
+(require 'local-elisp-init)
 
 ;;* global minor modes
 (delete-selection-mode 1)
 (global-hl-todo-mode 1)
+(tooltip-mode -1)
+(global-so-long-mode 1)
 
 ;;* async
 (dired-async-mode t)
@@ -118,6 +123,7 @@
       xref-show-xrefs-function #'ivy-xref-show-xrefs
       compilation-scroll-output t
       initial-major-mode 'emacs-lisp-mode
+      use-dialog-box nil
       ;; fringe-mode '((4 . 4))
       fringe-mode '((8 . 0))
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
@@ -131,12 +137,23 @@
                               ("MAYBE" . "#d0bf8f")))
 
 ;;* persistence
+;;** save-place
 (setq save-place-file (concat user-emacs-directory "places"))
 (save-place-mode t)
 
+;;** recentf
 (setq recentf-max-saved-items 500)
 (recentf-mode t)
 
+(defun recentf-save-list-silently ()
+  (let ((inhibit-message t)
+        (save-silently t))
+    (recentf-save-list)))
+
+(defvar recentf-save-list-timer
+  (run-with-idle-timer 120 t #'recentf-save-list-silently))
+
+;;** savehist
 (require 'savehist)
 (setq savehist-save-minibuffer-history t)
 (setq savehist-additional-variables
@@ -266,7 +283,9 @@
     (anzu-mode "")
     (elisp-slime-nav-mode "")
     (eldoc-mode "")
-    (explain-pause-mode "")))
+    (explain-pause-mode "")
+    (page-break-lines-mode "")
+    ))
 
 (defun cleaner-minor-modes ()
   (mapcar (lambda (mode)
@@ -332,8 +351,8 @@
 
 ;;* explain-pause-mode
 (add-to-list 'load-path (expand-file-name "custom/explain-pause-mode/" user-emacs-directory))
-(require 'explain-pause-mode)
-(explain-pause-mode 1)
+;; (require 'explain-pause-mode)
+;; (explain-pause-mode 1)
 
 ;;* helpful
 (add-hook 'helpful-mode-hook #'visual-line-mode)
@@ -769,6 +788,13 @@ current entry."
           (bicycle--level)))))
 (advice-add 'bicycle--level :around #'bicycle--level-advice)
 
+;;* page-break-lines
+(when (fboundp 'page-break-lines-mode)
+  (add-hook 'prog-mode-hook 'page-break-lines-mode)
+  (add-hook 'help-mode-hook 'page-break-lines-mode)
+  (add-hook 'compilation-mode-hook 'page-break-lines-mode)
+  (add-hook 'man-mode-hook 'page-break-lines-mode)
+  )
 ;;* TODO: hydra-resize-window, map M-_ & M-+ or smth to shrinking/growing windows
 
 ;;* keybindings
