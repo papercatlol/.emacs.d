@@ -274,7 +274,7 @@ otherwise call `counsel-grep-or-swiper'. With double prefix arg call `ivy-resume
   (if (= 16 (prefix-numeric-value current-prefix-arg))
       (call-interactively #'ivy-resume)
     (setq isearch-forward t)            ; evil search direction
-    (counsel-grep-or-swiper
+    (swiper
      (cond (current-prefix-arg nil)
            ((region-active-p)
             (buffer-substring-no-properties (point) (mark)))))))
@@ -451,9 +451,11 @@ buffer will be opened(current window, other window, other frame)."
      (when (eq :frame where)
        (select-frame-set-input-focus (make-frame)))
      (ivy-set-view-recur (cdr (assoc item ivy-views))))
-    (t (if (string-prefix-p "{}" item)
-           (ivy-new-view item)
-         (visit-buffer item where)))))
+    (t (cond ((string-prefix-p "{}" item)
+              (ivy-new-view item))
+             ((file-exists-p item)
+              (visit-file item where))
+             (t (visit-buffer item where))))))
 
 (defun counsel-buffers-action-other-window (item)
   (counsel-buffers-action item :window))
@@ -499,6 +501,34 @@ buffer will be opened(current window, other window, other frame)."
 (global-set-key (kbd "C-x b") (lambda () (interactive) (message "Use C-v")))
 (define-key counsel-buffers-map (kbd "C-v") 'counsel-buffer-cycle-action)
 
+;;* ivy-special
+(cl-defmacro ivy-special (special-form &rest else)
+  "Eval SPECIAL-FORM and exit minibuffer if it is empty,
+otherwise eval ELSE and stay."
+  `(if (string= "" ivy-text)
+       (ivy-exit-with-action
+        (lambda (it)
+          ,special-form))
+     ,@else))
+
+(cl-defmacro def-ivy-special (map key special-func default-func)
+  (let ((func-name (intern (format "%s-%s" (symbol-name map) key))))
+    (cl-labels ((%call-or-eval (thing)
+                  (if (symbolp thing)
+                      `(call-interactively #',thing)
+                    thing)))
+      `(progn
+         (defun ,func-name ()
+           (interactive)
+           (ivy-special ,(%call-or-eval special-func) ,(%call-or-eval default-func)))
+
+         (define-key ,map (kbd ,key) ',func-name)))))
+
+(def-ivy-special counsel-buffers-map "C-w" windmove-up backward-kill-word)
+(def-ivy-special counsel-buffers-map "C-a" windmove-left move-beginning-of-line)
+(def-ivy-special counsel-buffers-map "C-s" windmove-down ace-swap-window)
+(def-ivy-special counsel-buffers-map "C-d" windmove-right delete-char)
+(def-ivy-special counsel-buffers-map "<C-i>" (funcall counsel-buffers-current-action user-init-file) hippie-expand)
 ;;* toggle-symbol-start/end
 (defvar symbol-start-regex (rx symbol-start))
 
@@ -846,6 +876,7 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
 (define-key swiper-map (kbd "C-:") 'swiper-mc)
 (define-key swiper-map (kbd "C-t") 'swiper-avy)
+(define-key swiper-map (kbd "C-M-y") 'ivy-yank-symbol)
 (define-key ivy-minibuffer-map (kbd "C-,") 'ivy-minibuffer-toggle-symbol-start)
 (define-key ivy-minibuffer-map (kbd "C-.") 'ivy-minibuffer-insert-symbol-end)
 (define-key counsel-describe-map (kbd "C-,") 'ivy-minibuffer-toggle-symbol-start)
