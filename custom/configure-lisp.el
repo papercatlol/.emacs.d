@@ -81,6 +81,9 @@ when cursor is directly inside the in-package form."
 ;;** indentation
 ;; It seems easier to use `common-lisp-indent-function' for stuff such as
 ;; labels & loop, and manually fix indent of elisp-specific forms(if, when-let, etc)
+;; TODO: refactor this
+;; This was a bad idea, better to just copy indentation for stuff like
+;; loop from `common-lisp-indent-function'.
 (setq lisp-indent-function 'common-lisp-indent-function)
 (with-eval-after-load 'cl-indent
   (labels ((%copy-indent (new old)
@@ -103,7 +106,7 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'avy-with 'when)
     (%copy-indent 'with-ivy-window 'save-excursion)
     (%copy-indent 'evil-define-command 'defun)
-    (put 'if 'common-lisp-indent-function 2)
+    ;; (put 'if 'common-lisp-indent-function 2)
     (put 'if-let 'common-lisp-indent-function 2)
     (put 'if-let* 'common-lisp-indent-function 2)))
 
@@ -283,21 +286,21 @@ With negative prefix arg call original `slime-edit-definition'."
   (interactive "p")
   (if (minusp arg)
       (call-interactively #'slime-edit-definition)
-    (slime--edit-definition-ivy nil)))
+    (slime--edit-definition-ivy nil nil)))
 
 (defun slime-edit-definition-other-window-ivy (arg)
   "`slime-edit-definition-ivy' but open result in other window."
   (interactive "p")
   (if (minusp arg)
       (call-interactively #'slime-edit-definition-other-window)
-    (slime--edit-definition-ivy 'window)))
+    (slime--edit-definition-ivy nil 'window)))
 
 (defun slime-edit-definition-other-frame-ivy (arg)
   "`slime-edit-definition-ivy' but open result in other frame."
   (interactive "p")
   (if (minusp arg)
       (call-interactively #'slime-edit-definition-other-frame)
-    (slime--edit-definition-ivy 'frame)))
+    (slime--edit-definition-ivy nil 'frame)))
 
 (defun slime-kill-package-name ()
   (interactive)
@@ -305,22 +308,126 @@ With negative prefix arg call original `slime-edit-definition'."
     (message package)
     (kill-new package)))
 
+(defun slime-repl-set-package--push-package (&rest args)
+  ;; TODO: check if this works properly for multiple swank connections
+  (let ((package (slime-lisp-package)))
+    (pushnew package slime-repl-package-stack)
+    (pushnew package slime-read-package-name-history)))
+(advice-add 'slime-repl-set-package :after #'slime-repl-set-package--push-package)
+
 (ivy-enable-calling-for-func #'slime-edit-definition-ivy)
 
 ;;** `slime-find-all-symbols', `slime-read-symbol-name-global'
+;; (defvar *slime-internal-symbols* nil)
+;; (defvar *slime-external-symbols* nil)
+;; TODO: use swank:shortest-package-nickname for nicknames
+(defvar *slime-all-packages* nil)
+
+(defun slime-all-packages (&optional update)
+  (if (or (null *slime-all-packages*) update)
+      (setq *slime-all-packages*
+            (slime-eval
+             `(cl:loop
+                 for p in (cl:list-all-packages)
+                 with k = (cl:find-package :keyword)
+                 unless (cl:eq p k)
+                   collect (cl:cons (cl:package-name p)
+                                    (cl:package-nicknames p)))))
+    *slime-all-packages*))
+
+;; WIP completion for package names
+(defun slime-complete-package-name-exit-func (str status)
+  (insert ":"))
+
+(defun slime-complete-package-name ()
+  (let ((end (point))
+        (beg (slime-symbol-start-pos)))
+    (list beg end (slime-all-packages t)
+          :exclusive 'no
+          :exit-function #'slime-complete-package-name-exit-func)))
+
+(defvar slime-completion-table-stage-1
+  (completion-table-merge (completion-table-dynamic #'slime-simple-completions)
+                          ;; (slime-visible-symbols)
+                          (completion-table-dynamic
+                           (lambda (_) (slime-all-packages t)))
+                          ;; #'slime-filename-completion
+                          (completion-table-dynamic
+                           (lambda (_) *slime-all-symbols*))
+                          ))
+
+(defvar slime-completion-table-stage-2
+  (completion-table-dynamic (lambda (x) (slime-find-all-symbols t)) t))
+
+(defun slime-completion-stage-1 ()
+  (list (slime-symbol-start-pos) (point) slime-completion-table-stage-1 :exclusive 'no))
+
+(defun slime-completion-stage-2 ()
+  (list (slime-symbol-start-pos) (point) slime-completion-table-stage-2 :exclusive 'no))
+
+(add-to-list 'slime-completion-at-point-functions #'slime-complete-package-name)
+(setq slime-completion-at-point-functions-old slime-completion-at-point-functions)
+(setq slime-completion-at-point-functions
+      (list #'slime-completion-stage-1))
+
+;; (setq completion-styles '(basic partial-completion emacs22))
+(setq completion-styles '(substring basic partial-completion emacs22))
+
+;; (setq slime-completion-at-point-functions
+;;       (cl-remove #'slime-complete-package-name slime-completion-at-point-functions))
+
+;;** slime-visible-symbols
+(defun slime-visible-symbols ()
+  (slime-eval
+   `(cl:let ((symbols))
+      (cl:do-symbols (s "cl-user" symbols)
+        (cl:push s symbols)))
+   (slime-current-package)))
+
+;;** slime-find-all-symbols
+(defvar *slime-all-symbols* nil)
+
+(defun slime-refresh-all-symbols ()
+  (interactive)
+  (when (slime-connected-p)
+    (slime-eval-async
+     `(cl:let ((symbols (cl:make-hash-table))
+               (names nil))
+        (cl:do-all-symbols (symbol symbols)
+          (cl:unless (cl:or (cl:keywordp symbol)
+                            (cl:gethash symbol symbols))
+            (cl:setf (cl:gethash symbol symbols) t)))
+        (cl:with-standard-io-syntax
+          (cl:maphash (cl:lambda (symbol _)
+                        (cl:push (cl:string-downcase (cl:prin1-to-string symbol)) names))
+                      symbols))
+        names)
+     (lambda (symbols)
+       (setq *slime-all-symbols* symbols)
+       (unless (minibuffer-window-active-p (selected-window))
+         (message "slime-refresh-all-symbols: %s symbols." (length *slime-all-symbols*))))
+     "CL-USER"))
+  *slime-all-symbols*)
+
+(add-hook 'slime-connected-hook #'slime-refresh-all-symbols)
+
+(defvar slime-refresh-all-symbols-timer
+  (run-with-idle-timer 30 t #'slime-refresh-all-symbols))
+
 (defun slime-find-all-symbols (&optional internal)
   "Return symbol-names of symbols from all registered packages."
   ;; TODO: Extract cl code as a slime contrib or something.
   ;; TODO: (CL) Add caching. Update cache via a compilation hook.
   (let ((symbols
           (if internal
-              (slime-eval
-               `(cl:let ((symbols))
-                  (cl:do-all-symbols (symbol symbols)
-                    (cl:unless (cl:keywordp symbol)
-                      (cl:push (cl:string-downcase (cl:prin1-to-string symbol)) symbols)))
-                  (cl:nreverse symbols))
-               "CL-USER")
+              *slime-all-symbols*
+            ;; (slime-eval
+            ;;  `(cl:let ((symbols))
+            ;;     (cl:do-all-symbols (symbol symbols)
+            ;;       (cl:unless (cl:keywordp symbol)
+            ;;         (cl:push (cl:string-downcase (cl:prin1-to-string symbol)) symbols)))
+            ;;     (cl:nreverse symbols))
+            ;;  "CL-USER")
             (slime-eval
              `(cl:let ((symbols))
                 (cl:dolist (p (cl:list-all-packages))
@@ -355,7 +462,7 @@ prefix arg or if INTERNAL is non-nil include internal symbols."
       (cons (region-beginning) (region-end))
     (bounds-of-thing-at-point 'symbol)))
 
-(defun slime-complete-symbol-global (internal)
+(defun slime-complete-symbol-global (external)
   "Complete a symbol searching symbols from all visible packages.
 If INTERNAL is T, also search internal symbols."
   ;; TODO: xref and documentation lookups in completion buffer
@@ -364,7 +471,7 @@ If INTERNAL is T, also search internal symbols."
          (start (and bounds (car bounds)))
          (end (and bounds (cdr bounds)))
          (initial-input (and bounds (buffer-substring-no-properties start end)))
-         (symbol (completing-read "Find symbol: " (slime-find-all-symbols internal) nil nil initial-input)))
+         (symbol (completing-read "Find symbol: " (slime-find-all-symbols (not external)) nil nil initial-input)))
     (when bounds
       (delete-region start end))
     (insert symbol)))
@@ -484,6 +591,41 @@ otherwise insert a saved presentation."
                         (slime-repl-delete-current-input)
                         (insert text)))))
 
+;;** slime-read-package-name
+(defvar slime-read-package-name-history nil)
+
+(defun slime-read-package-name* (prompt &optional initial-value)
+  "Read a package name from the minibuffer, prompting with PROMPT."
+  (let ((completion-ignore-case t))
+    (completing-read prompt (slime-bogus-completion-alist
+                             (slime-eval
+                              `(swank:list-all-package-names t)))
+		     nil t initial-value 'slime-read-package-name-history)))
+(advice-add 'slime-read-package-name :override #'slime-read-package-name*)
+
+;;** set `slime-buffer-package' in `edit-indirect'
+(with-eval-after-load 'edit-indirect
+  (defun edit-indirect--set-slime-package ()
+    (when slime-mode
+      (when-let* ((ov edit-indirect--overlay)
+                  (buf (overlay-buffer ov))
+                  (package (with-current-buffer buf
+                             (slime-current-package))))
+        (setq-local slime-buffer-package package))))
+  (add-hook 'edit-indirect-after-creation-hook #'edit-indirect--set-slime-package))
+
+;;** slime-switch-to-sldb-buffer
+(defun slime-switch-to-sldb-buffer ()
+  (interactive)
+  (when-let* ((bufs (sldb-buffers))
+              (buf (if (eq major-mode 'sldb-mode)
+                       (cadr (member (current-buffer) bufs))
+                     (car bufs))))
+    (pop-to-buffer buf)))
+
+(define-key slime-parent-map (kbd "C-c C-a") 'slime-switch-to-sldb-buffer)
+(define-key slime-prefix-map (kbd "C-a") 'slime-switch-to-sldb-buffer)
+
 ;;* Code refactoring utils
 ;;** `lisp-toggle-*-form'
 (defvar lisp-keywords-with-*-variant nil
@@ -541,10 +683,11 @@ otherwise insert a saved presentation."
   (define-key map (kbd "C-c '") 'lisp-toggle-tick))
 
 ;;* copying to repl
-(defun slime--repl-insert-string (string)
+(defun slime--repl-insert-string (string &optional at-point)
   (when string
     (slime-switch-to-output-buffer)
-    (goto-char slime-repl-input-start-mark)
+    (unless at-point
+      (goto-char slime-repl-input-start-mark))
     (insert string)))
 
 (defun slime-expression-at-point ()
@@ -575,7 +718,7 @@ With prefix arg, copy toplevel form."
   (interactive "P")
   (cond ((region-active-p)
          (slime--repl-insert-string
-          (buffer-substring-no-properties (region-beginning) (region-end))))
+          (buffer-substring-no-properties (region-beginning) (region-end)) t))
         (toplevel
          (or (call-interactively #'slime-call-toplevel)
              (destructuring-bind (beg end) (slime-region-for-defun-at-point)
