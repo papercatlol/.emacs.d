@@ -31,7 +31,7 @@
 (defun org-clock-out-update-mode-line ()
   (setq org-mode-line-string nil)
   (force-mode-line-update))
-(add-hook 'org-clock-out-hook #'org-clock-update-mode-line)
+(add-hook 'org-clock-out-hook #'org-clock-out-update-mode-line)
 
 ;;* org dumb task tracker
 (defvar odtt:task-file "~/work/tasks.org")
