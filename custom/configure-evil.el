@@ -594,5 +594,54 @@
 ;; TODO: global markers, persistent markers
 (global-set-key (kbd "C-x C-'") 'counsel-evil-marks)
 
+;;** evil-multiedit
+;; TODO: remove iedit config in init.el, since evil-multiedit seems superior
+;; https://github.com/hlissner/evil-multiedit#usage
+;; Highlights all matches of the selection in the buffer.
+(define-key evil-visual-state-map "R" 'evil-multiedit-match-all)
+
+;; Match the word under cursor (i.e. make it an edit region). Consecutive presses will
+;; incrementally add the next unmatched match.
+(define-key evil-normal-state-map (kbd "M-d") 'evil-multiedit-match-symbol-and-next)
+;; Match selected region.
+(define-key evil-visual-state-map (kbd "M-d") 'evil-multiedit-match-symbol-and-next)
+;; Same as M-d but in reverse.
+(define-key evil-normal-state-map (kbd "M-D") 'evil-multiedit-match-symbol-and-prev)
+(define-key evil-visual-state-map (kbd "M-D") 'evil-multiedit-match-symbol-and-prev)
+
+;; OPTIONAL: If you prefer to grab symbols rather than words, use
+;; `evil-multiedit-match-symbol-and-next` (or prev).
+
+;; Restore the last group of multiedit regions.
+(define-key evil-normal-state-map (kbd "C-M-D") 'evil-multiedit-restore)
+(define-key evil-visual-state-map (kbd "C-M-D") 'evil-multiedit-restore)
+
+;; RET will toggle the region under the cursor
+(define-key evil-multiedit-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
+(define-key evil-multiedit-state-map (kbd "<return>") 'evil-multiedit-toggle-or-restrict-region)
+
+;; ...and in visual mode, RET will disable all fields outside the selected region
+;; (define-key evil-motion-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
+
+;; For moving between edit regions
+(define-key evil-multiedit-state-map (kbd "C-n") 'evil-multiedit-next)
+(define-key evil-multiedit-state-map (kbd "C-p") 'evil-multiedit-prev)
+;; (define-key evil-multiedit-insert-state-map (kbd "C-n") 'evil-multiedit-next)
+;; (define-key evil-multiedit-insert-state-map (kbd "C-p") 'evil-multiedit-prev)
+
+;; Ex command that allows you to invoke evil-multiedit with a regular expression, e.g.
+(evil-ex-define-cmd "ie[dit]" 'evil-multiedit-ex-match)
+
+(with-eval-after-load 'swiper
+  (defun swiper-evil-multiedit ()
+    "Start evil-multiedit for the whole buffer using current swiper regexp.
+!! NOTE: This won't work if swiper matches have different lengths."
+    (interactive)
+    (ivy-exit-with-action
+     (lambda (_)
+       (let ((re (string-join (ivy--split ivy-text) ".*?"))) ; TODO: support ignore-order
+         (evil-multiedit--start-regexp re (point-min) (point-max))))))
+
+  (define-key swiper-map (kbd "C-;") 'swiper-evil-multiedit))
 
 (provide 'configure-evil)
