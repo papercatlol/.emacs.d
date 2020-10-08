@@ -118,6 +118,21 @@ Else call `magit-diff-buffer-file'."
   (define-key m (kbd "=") 'magit-diff-more-context)
   (define-key m (kbd "M-m") 'magit-diff-visit-file-other-window))
 
+;;** header-line for files in other revisions
+(defun magit--set-header-line (&rest args)
+  (when magit-buffer-revision
+    (setq header-line-format
+          (concat "rev: " (magit-format-rev-summary magit-buffer-revision)))))
+(advice-add 'magit-find-file--internal :after #'magit--set-header-line)
+(advice-add 'magit-diff-visit-file--internal :after #'magit--set-header-line)
+
+;;** magit-blame-dwim
+(defun magit-blame-dwim ()
+  (interactive)
+  (if magit-blame-mode
+      (magit-blame-mode -1)
+    (call-interactively #'magit-blame-addition)))
+
 ;;** [DISABLED] magit-todos
 ;; (require 'magit-todos)
 
@@ -230,7 +245,7 @@ start revision."
  _S_: stage current file  _d_: magit-diff popup    _c_: magit-commit popup
  _G_: refresh git-gutter  _D_: vc-ediff            _r_: vc-revert
  _<_: first hunk                                 ^^_p_: magit-push popup
- _>_: last hunk                                  ^^_b_: blame current file
+ _>_: last hunk                                  ^^_b_: blame dwim
  _R_: set start revision                         ^^_B_: magit-blame popup
                                                ^^^^_f_: magit find file
 "
@@ -258,7 +273,7 @@ start revision."
   ("p" #'magit-push :exit t)
   ("r" #'vc-revert :exit t)
   ("f" #'magit-find-file-other-window :exit t)
-  ("b" #'magit-blame-addition :exit t)
+  ("b" #'magit-blame-dwim :exit t)
   ("B" #'magit-blame :exit t))
 
 (define-key magit-file-mode-map (kbd "C-x g") 'hydra-git/body)
@@ -271,7 +286,7 @@ start revision."
 (define-key dired-mode-map (kbd "C-x g") 'magit-status)
 
 ;;* slime
-(with-eval-after-load 'slime
+(with-eval-after-load 'slime-repl
   (defun slime-magit-status ()
     (interactive)
     (let ((default-directory (slime-eval `(swank:default-directory))))

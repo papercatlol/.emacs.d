@@ -447,6 +447,7 @@
 (define-key evil-window-map (kbd "C-q") 'evil-window-delete)
 (define-key evil-window-map (kbd "q") 'evil-window-delete)
 (define-key evil-normal-state-map (kbd "C-q") 'bury-buffer)
+(define-key evil-motion-state-map (kbd "C-q") 'bury-buffer)
 
 ;;** `ex'
 (define-key evil-ex-completion-map (kbd "C-a") nil)
@@ -474,6 +475,20 @@
   (define-key magit-status-mode-map (kbd "SPC") leader-map)
   (define-key magit-mode-map (kbd "SPC") leader-map))
 (define-key splash-screen-keymap (kbd "SPC") leader-map)
+
+(with-eval-after-load 'magit-blame
+  (evil-define-key '(normal) magit-blame-read-only-mode-map
+    (kbd "<return>") 'magit-blame-next-chunk
+    (kbd "C-M-j") 'magit-blame-next-chunk
+    (kbd "DEL") 'magit-blame-previous-chunk
+    (kbd "C-M-k") 'magit-blame-previous-chunk
+    (kbd "C-<return>") 'magit-show-commit
+    (kbd "M-RET") 'magit-blame-next-chunk-same-commit
+    (kbd "M-DEL") 'magit-blame-previous-chunk-same-commit
+    "a" 'magit-blame-addition
+    "r" 'magit-blame-reverse
+    "c" 'magit-blame-cycle-style
+    "i" 'magit-blame))
 
 (define-key leader-map (kbd "SPC") 'evil-avy-goto-char-timer)
 (define-key leader-map "w" 'evil-avy-goto-word-2)
