@@ -48,6 +48,9 @@
     (ivy-read "Task: " todos
               :action #'odtt:ivy-action-clock-in
               :keymap counsel-goto-task-map
+              :preselect (car (find-if (lambda (item)
+                                         (and (listp item) (third item)))
+                                       todos))
               ;; :dynamic-collection nil
               )))
 
@@ -56,15 +59,23 @@
   (labels ((%collect (file)
              (when-let ((buf (or (find-buffer-visiting file)
                                  (find-file file))))
-               (with-current-buffer buf
-                 (save-excursion
-                  (goto-char (point-min))
-                  (loop for match = (re-search-forward org-todo-line-regexp nil t)
-                        while match
-                        for beg = (match-beginning 0)
-                        for end = (line-end-position)
-                        collect (cons (buffer-substring beg end)
-                                      (move-marker (make-marker) beg))))))))
+               (let ((current-task-pos
+                      (when (org-clocking-p)
+                        (with-current-buffer (marker-buffer org-clock-marker)
+                          (save-excursion
+                            (goto-char org-clock-marker)
+                            (re-search-backward org-todo-line-regexp nil t))))))
+                (with-current-buffer buf
+                  (save-excursion
+                    (goto-char (point-min))
+                    (loop for match = (re-search-forward org-todo-line-regexp nil t)
+                          while match
+                          for beg = (match-beginning 0)
+                          for end = (line-end-position)
+                          for clocking? = (and current-task-pos (= beg current-task-pos) '(t))
+                          collect (list* (buffer-substring beg end)
+                                         (move-marker (make-marker) beg)
+                                         clocking?))))))))
     (mapcan #'%collect files)))
 
 (defun odtt:ivy-refresh ()
@@ -103,14 +114,14 @@ to ACTION and execute BODY forms."
 
 ;;** actions
 (defun odtt:ivy-action-goto (item)
-  (org-goto-marker-or-bmk (cdr item)))
+  (org-goto-marker-or-bmk (second item)))
 
 (defun odtt:ivy-goto-task ()
   (interactive)
   (ivy-exit-with-action #'odtt:ivy-action-goto))
 
 (defun odtt:ivy-action-clock-in (item)
-  (if-let* ((marker (cdr-safe item))
+  (if-let* ((marker (and (listp item) (second item)))
             (buf (marker-buffer marker)))
       (when (buffer-live-p buf)
         (with-current-buffer buf
@@ -139,7 +150,7 @@ to ACTION and execute BODY forms."
        (insert title)))))
 
 (defun odtt:ivy-action-cycle-todo (item)
-  (with-selected-marker (cdr item)
+  (with-selected-marker (second item)
     (let ((inhibit-message t))
       (call-interactively #'org-todo))))
 
