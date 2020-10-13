@@ -317,9 +317,11 @@ With negative prefix arg call original `slime-edit-definition'."
 
 (ivy-enable-calling-for-func #'slime-edit-definition-ivy)
 
-;;** `slime-find-all-symbols', `slime-read-symbol-name-global'
+;;** completion
 ;; (defvar *slime-internal-symbols* nil)
 ;; (defvar *slime-external-symbols* nil)
+
+;;*** WIP completion for package names
 ;; TODO: use swank:shortest-package-nickname for nicknames
 (defvar *slime-all-packages* nil)
 
@@ -335,19 +337,52 @@ With negative prefix arg call original `slime-edit-definition'."
                                     (cl:package-nicknames p)))))
     *slime-all-packages*))
 
-;; WIP completion for package names
 (defun slime-complete-package-name-exit-func (str status)
   (insert ":"))
+
+(defun slime-package-name (&optional prefix)
+  (when-let ((packages (slime-all-packages t)))
+    (if prefix
+        (loop for p in packages
+              when (string-prefix-p prefix (car p))
+                collect p)
+      packages)))
 
 (defun slime-complete-package-name ()
   (let ((end (point))
         (beg (slime-symbol-start-pos)))
-    (list beg end (slime-all-packages t)
+    (list beg end (completion-table-dynamic #'slime-package-name)
           :exclusive 'no
           :exit-function #'slime-complete-package-name-exit-func)))
 
+;;*** keyword args
+(defun slime-operator-keyword-args (&optional prefix)
+  "Return list of keyword args for operator before point."
+  (when-let* ((op (slime-operator-before-point))
+              (args (slime-eval
+                     `(swank:operator-arglist ,op
+                                              ,(slime-current-package)))))
+    (when prefix
+      (setq prefix (string-trim-left prefix ":")))
+    (loop for arg in (cdr (member '&key (read args)))
+          until (= ?& (aref (symbol-name arg) 0))
+          for name = (symbol-name arg)
+          when (or (null prefix)
+                   (string-prefix-p prefix name))
+            collect (concat ":" (symbol-name arg)))))
+
+(defun slime-complete-keyword-arg ()
+  (when-let ((end (point))
+             (beg (slime-symbol-start-pos))
+             (prefix (unless (= beg end)
+                       (string-trim-left (buffer-substring-no-properties beg end) ":")))
+             (args (slime-operator-keyword-args prefix)))
+    (list beg end args)))
+
+;;*** completion-at-point
 (defvar slime-completion-table-stage-1
-  (completion-table-merge (completion-table-dynamic #'slime-simple-completions)
+  (completion-table-merge (completion-table-dynamic #'slime-operator-keyword-args)
+                          (completion-table-dynamic #'slime-simple-completions)
                           ;; (slime-visible-symbols)
                           (completion-table-dynamic
                            (lambda (_) (slime-all-packages t)))
@@ -356,25 +391,10 @@ With negative prefix arg call original `slime-edit-definition'."
                            (lambda (_) *slime-all-symbols*))
                           ))
 
-(defvar slime-completion-table-stage-2
-  (completion-table-dynamic (lambda (x) (slime-find-all-symbols t)) t))
-
 (defun slime-completion-stage-1 ()
   (list (slime-symbol-start-pos) (point) slime-completion-table-stage-1 :exclusive 'no))
-
-(defun slime-completion-stage-2 ()
-  (list (slime-symbol-start-pos) (point) slime-completion-table-stage-2 :exclusive 'no))
-
-(add-to-list 'slime-completion-at-point-functions #'slime-complete-package-name)
 (setq slime-completion-at-point-functions-old slime-completion-at-point-functions)
-(setq slime-completion-at-point-functions
-      (list #'slime-completion-stage-1))
-
-;; (setq completion-styles '(basic partial-completion emacs22))
-(setq completion-styles '(substring basic partial-completion emacs22))
-
-;; (setq slime-completion-at-point-functions
-;;       (cl-remove #'slime-complete-package-name slime-completion-at-point-functions))
+(setq slime-completion-at-point-functions (list #'slime-completion-stage-1))
 
 ;;** slime-visible-symbols
 (defun slime-visible-symbols ()
