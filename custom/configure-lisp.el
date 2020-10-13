@@ -461,6 +461,36 @@ With negative prefix arg call original `slime-edit-definition'."
           ))
     symbols))
 
+;;*** slime-completing-read
+(defvar slime-completing-read-func #'completing-read)
+
+(defun slime-completing-read (prompt collection &optional predicate require-match
+                                     initial-input hist def inherit-input-method)
+  (funcall slime-completing-read-func prompt collection predicate require-match
+           initial-input hist def inherit-input-method))
+
+(defvar slime-ivy-read-map
+  (let ((m (make-sparse-keymap)))
+    (set-keymap-parent m ivy-minibuffer-map)
+    m))
+
+(defun slime-ivy-read (prompt &optional collection predicate require-match
+                                initial-input hist def inherit-input-method)
+  (ivy-read prompt collection
+            :predicate predicate
+            :require-match require-match
+            :initial-input initial-input
+            :history hist
+            :def def
+            :keymap slime-ivy-read-map))
+
+(setq slime-completing-read-func #'slime-ivy-read)
+
+(defun slime-ivy-read--edit-definition ()
+  (interactive)
+  (ivy-exit-with-action #'slime-edit-definition))
+(define-key slime-ivy-read-map (kbd "M-.") 'slime-ivy-read--edit-definition)
+
 (defun slime-read-symbol-name-global (prompt &optional query internal)
   "Either read a symbol or choose one at point. Choose from
 all external symbols if QUERY is non-nil, there is no symbol
@@ -469,10 +499,11 @@ prefix arg or if INTERNAL is non-nil include internal symbols."
   (cond ((or current-prefix-arg query (not (slime-symbol-at-point)))
          (let ((internal (or internal
                              (= 16 (prefix-numeric-value current-prefix-arg)))))
-           (completing-read prompt
-                            (slime-find-all-symbols internal)
-                            nil nil
-                            (slime-symbol-at-point))))
+           (slime-completing-read
+            prompt
+            (slime-find-all-symbols internal)
+            nil nil
+            (slime-symbol-at-point))))
         (t (slime-symbol-at-point))))
 
 (defalias 'slime-read-symbol-name 'slime-read-symbol-name-global)
@@ -491,7 +522,7 @@ If INTERNAL is T, also search internal symbols."
          (start (and bounds (car bounds)))
          (end (and bounds (cdr bounds)))
          (initial-input (and bounds (buffer-substring-no-properties start end)))
-         (symbol (completing-read "Find symbol: " (slime-find-all-symbols (not external)) nil nil initial-input)))
+         (symbol (slime-completing-read "Find symbol: " (slime-find-all-symbols (not external)) nil nil initial-input)))
     (when bounds
       (delete-region start end))
     (insert symbol)))
