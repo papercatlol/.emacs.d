@@ -5,7 +5,10 @@
 
 (setq org-default-notes-file (concat org-directory "/notes.org")
       org-startup-indented t
-      org-hide-leading-stars t)
+      org-hide-leading-stars t
+      org-special-ctrl-a/e t
+      org-special-ctrl-k t
+      org-special-ctrl-o t)
 
 (advice-add 'org-archive-default-command :after #'org-save-all-org-buffers)
 (add-hook 'org-clock-out-hook #'save-buffer-no-message)
@@ -58,7 +61,8 @@
 (cl-defun odtt:collect-todos (&optional (files (list odtt:task-file)))
   (labels ((%collect (file)
              (when-let ((buf (or (find-buffer-visiting file)
-                                 (find-file file))))
+                                 (let ((vc-follow-symlinks t))
+                                   (find-file-noselect file t)))))
                (let ((current-task-pos
                       (when (org-clocking-p)
                         (with-current-buffer (marker-buffer org-clock-marker)
