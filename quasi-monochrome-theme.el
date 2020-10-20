@@ -146,6 +146,9 @@
  '(sh-heredoc ((t (:inherit font-lock-string-face))))
  ;; loccur
  '(loccur-face ((t (:inherit match :underline (:color "DarkViolet")))))
+ ;; which-key
+ '(which-key-separator-face ((t (:inherit font-lock-comment-face
+                                 :background "black"))))
  )
 
 (provide-theme 'quasi-monochrome)

@@ -862,6 +862,10 @@ current entry."
 ;;* TODO: helm-make: add cd(counsel-cd?) binding; same for cd to git root
 (setq helm-make-completion-method 'ivy)
 
+;;* which-key
+(setq which-key-lighter "")
+(which-key-mode)
+
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
