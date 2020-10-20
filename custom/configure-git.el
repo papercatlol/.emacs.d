@@ -133,6 +133,12 @@ Else call `magit-diff-buffer-file'."
       (magit-blame-mode -1)
     (call-interactively #'magit-blame-addition)))
 
+;;** magit-list-repositories
+(setq magit-repository-directories
+      '(("~/.emacs.d/" . 2)
+        ("~/clones/" . 2)
+        ("~/aur/" . 1)))
+
 ;;** [DISABLED] magit-todos
 ;; (require 'magit-todos)
 
