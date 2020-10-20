@@ -34,7 +34,6 @@
  '(font-lock-variable-name-face ((t (:foreground "light gray"))))
  '(font-lock-warning-face ((t (:foreground "gold" :weight bold))))
  '(fringe ((t (:background "black"))))
- '(header-line ((t (:background "gray15" :foreground "white"))))
  '(highlight ((t (:background "gray20"))))
  '(isearch ((t (:background "dark red" :foreground "black" :weight bold))))
  '(match ((t (:inherit underlined :bold t))))
@@ -44,7 +43,7 @@
  '(link ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
  '(link-visited ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
  '(minibuffer-prompt ((t (:weight bold :foreground "light gray"))))
- ;; mode-line(from kaolin-mono-dark theme)
+ ;; mode-line
  '(vertical-border ((t (:foreground "gray15"))))
  '(mode-line ((t (:background "black" :foreground "#c5c9c0" :bold nil
                   ;; :box (:line-width 1 :color "gray50")
@@ -54,6 +53,13 @@
  '(mode-line-buffer-id ((t (:background nil :foreground "white" :bold nil))))
  '(mode-line-highlight ((t (:foreground "aquamarine3" :box nil :bold nil))))
  '(mode-line-emphasis ((t (:foreground "aquamarine3"))))
+ ;; header-line
+ '(header-line ((t (:background "gray15"
+                    :foreground "white"
+                    :overline nil
+                    :bold t
+                    ;; :underline (:color "gray60" :style line)
+                    ))))
  ;; '(mode-line ((t (:box nil :foreground "black" :background "gray60"))))
  ;; '(mode-line-buffer-id ((t (:weight bold))))
  ;; '(mode-line-emphasis ((t (:weight bold))))
