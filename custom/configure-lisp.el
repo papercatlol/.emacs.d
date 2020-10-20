@@ -488,7 +488,10 @@ With negative prefix arg call original `slime-edit-definition'."
 
 (defun slime-ivy-read--edit-definition ()
   (interactive)
-  (ivy-exit-with-action #'slime-edit-definition))
+  ;; HACK: Make it seem like completing-read didn't return anything
+  (let ((symbol (ivy-state-current ivy-last)))
+    (setf (ivy-state-current ivy-last) nil)
+    (ivy-exit-with-action (lambda (_) (slime-edit-definition symbol)))))
 (define-key slime-ivy-read-map (kbd "M-.") 'slime-ivy-read--edit-definition)
 
 (defun slime-read-symbol-name-global (prompt &optional query internal)
@@ -523,9 +526,10 @@ If INTERNAL is T, also search internal symbols."
          (end (and bounds (cdr bounds)))
          (initial-input (and bounds (buffer-substring-no-properties start end)))
          (symbol (slime-completing-read "Find symbol: " (slime-find-all-symbols (not external)) nil nil initial-input)))
-    (when bounds
-      (delete-region start end))
-    (insert symbol)))
+    (when symbol
+      (when bounds
+        (delete-region start end))
+      (insert symbol))))
 
 ;;** `slime-saved-presentations'
 (defvar slime-saved-presentations nil
