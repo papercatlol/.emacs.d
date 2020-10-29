@@ -139,6 +139,15 @@ Else call `magit-diff-buffer-file'."
         ("~/clones/" . 2)
         ("~/aur/" . 1)))
 
+;;** magit-delta
+(require 'magit-delta)
+
+(setq magit-delta-delta-args
+      `("--max-line-distance" "0.6"
+        "--24-bit-color" ,(if xterm-color--support-truecolor "always" "never")
+        "--color-only"
+        "--theme" "none"))
+
 ;;** [DISABLED] magit-todos
 ;; (require 'magit-todos)
 
