@@ -930,8 +930,15 @@ current entry."
 (setq helm-make-completion-method 'ivy)
 
 ;;* which-key
-(setq which-key-lighter "")
+(setq which-key-lighter ""
+      which-key-show-transient-maps t)
 (which-key-mode)
+
+;;* keyfreq
+(require 'keyfreq)
+(keyfreq-mode 1)
+(keyfreq-autosave-mode 1)
+(setq keyfreq-excluded-commands '(self-insert-command))
 
 
 ;;* keybindings
@@ -1059,6 +1066,8 @@ current entry."
   ("t" #'explain-pause-top "Explain pause top")
   ("a" #'align-regexp "Align regexp")
   ("l" #'display-line-numbers-mode "Display line numbers mode")
+  ("K" #'free-keys "Free keys in current buffer")
+  ("g" #'magit-list-repositories "Magit list repositories")
   )
 
 (defun hydra-cantrips-M-x ()
