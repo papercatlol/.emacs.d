@@ -846,6 +846,25 @@ current entry."
           (bicycle--level)))))
 (advice-add 'bicycle--level :around #'bicycle--level-advice)
 
+;;* tramp
+(setq-default tramp-verbose 5)
+
+(setq tramp-default-method "ssh" ; "ssh"/"scp"
+      )
+
+;; Try to speed things up
+(setq remote-file-name-inhibit-cache nil)
+(setq tramp-completion-reread-directory-timeout nil)
+
+;; we use magit anyway, so this shouldn't change anything in theory(?)
+(setq vc-ignore-dir-regexp
+      (format "\\(%s\\)\\|\\(%s\\)"
+              vc-ignore-dir-regexp
+              tramp-file-name-regexp))
+
+;; eshell-tramp module
+(require 'em-tramp)
+
 ;;* link-hint
 (global-set-key (kbd "C-c C-SPC") 'link-hint-open-link)
 (global-set-key (kbd "C-c o") 'link-hint-open-link)
