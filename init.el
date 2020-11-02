@@ -98,7 +98,6 @@
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
       kill-do-not-save-duplicates t
-      history-delete-duplicates t
       sentence-end-double-space nil
       apropos-do-all t
       dired-dwim-target t
@@ -107,7 +106,6 @@
       load-prefer-newer t
       ediff-window-setup-function 'ediff-setup-windows-plain
       frame-title-format "%b"
-      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       expand-region-fast-keys-enabled nil
       er--show-expansion-message t
       inhibit-startup-message t
@@ -155,6 +153,8 @@
 
 ;;** savehist
 (require 'savehist)
+(setq history-length t)
+(setq history-delete-duplicates t)
 (setq savehist-save-minibuffer-history t)
 (setq savehist-additional-variables
       (append savehist-additional-variables
@@ -166,6 +166,11 @@
                 shell-command-history)))
 (savehist-mode)
 
+;;** backups
+(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups"))))
+(setq version-control t)
+(setq delete-old-versions 'please-dont)
+(setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
 
 ;;* equake shell
 (require 'equake)
@@ -260,6 +265,7 @@
 
 ;;
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
+(add-hook 'prog-mode-hook 'paredit-everywhere-mode)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 (put 'downcase-region 'disabled nil)
@@ -697,6 +703,7 @@ Else narrow-to-defun."
       '(yas-hippie-try-expand
         try-complete-file-name-partially
         try-complete-file-name
+        try-expand-dabbrev-visible
         try-expand-all-abbrevs
         try-expand-dabbrev
         try-expand-dabbrev-all-buffers
@@ -838,6 +845,47 @@ current entry."
      (and (re-search-forward outline-regexp nil t)
           (bicycle--level)))))
 (advice-add 'bicycle--level :around #'bicycle--level-advice)
+
+;;* link-hint
+(global-set-key (kbd "C-c C-SPC") 'link-hint-open-link)
+(global-set-key (kbd "C-c o") 'link-hint-open-link)
+
+;;** bug-reference-mode
+(with-eval-after-load 'link-hint
+  (defun bug-reference--find-overlay (overlays)
+    (car (member-if (lambda (overlay)
+                      (eq 'bug-reference (overlay-get overlay 'category)))
+                    overlays)))
+
+  (cl-defun link-hint--next-bug-reference-button (&optional bound)
+    (when-let* ((bounds (link-hint--at-bug-reference-button))
+                (end (1+ (cdr bounds))))
+      (when (and bound (> end bound))
+        (return-from link-hint--next-bug-reference-button nil))
+      (goto-char end))
+
+    (when-let* ((overlays (reverse (overlays-in (point) (or bound (window-end)))))
+                (overlay (bug-reference--find-overlay overlays)))
+      (goto-char (overlay-start overlay))))
+
+  (defun link-hint--at-bug-reference-button ()
+    (when-let ((overlay (bug-reference--find-overlay (overlays-at (point)))))
+      (cons (overlay-start overlay) (overlay-end overlay))))
+
+  (defun link-hint--bug-reference-push-button ()
+    (bug-reference-push-button (point)))
+
+  (link-hint-define-type
+   'bug-reference-button
+   :next #'link-hint--next-bug-reference-button
+   :at-point-p #'link-hint--at-bug-reference-button
+   :vars '(bug-reference-mode bug-reference-prog-mode)
+   :open #'link-hint--bug-reference-push-button
+   :open-multiple t
+   :open-message "Opened"
+   :copy #'kill-new)
+
+  (add-to-list 'link-hint-types 'link-hint-bug-reference-button))
 
 ;;* page-break-lines
 (when (fboundp 'page-break-lines-mode)
