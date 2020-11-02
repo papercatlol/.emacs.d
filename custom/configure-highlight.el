@@ -44,7 +44,7 @@
   (interactive)
   (if (region-active-p)
       (let* ((hi-lock-auto-select-face t)
-             (face (hi-lock-read-face-name)))
+             (face (highlight--read-face-name)))
         (or (facep face) (setq face 'hl-white-red))
         (highlight-regexp (buffer-substring (mark) (point)) face))
     (highlight-symbol-at-point)))
@@ -66,13 +66,19 @@
   (let ((hi-lock-auto-select-face arg))
     (call-interactively 'highlight-lines-matching-regexp)))
 
+(defun highlight--read-face-name ()
+  (if hi-lock-auto-select-face
+      (hi-lock-read-face-name)
+    (let ((ivy-inhibit-action t))
+      (counsel-faces))))
+
 ;; TODO: refactor
 (with-eval-after-load 'swiper
   (defun swiper-highlight-regexp ()
     (interactive)
     (with-ivy-window
         (let* ((hi-lock-auto-select-face t)
-               (face (hi-lock-read-face-name))
+               (face (highlight--read-face-name))
                (re (string-join (ivy--split ivy-text) ".*?"))) ; from `swiper-occur'
           (highlight-regexp re face))))
 
@@ -80,7 +86,7 @@
     (interactive)
     (with-ivy-window
         (let* ((hi-lock-auto-select-face t)
-               (face (hi-lock-read-face-name))
+               (face (highlight--read-face-name))
                (re (string-join (ivy--split ivy-text) ".*?"))) ; from `swiper-occur'
           (highlight-lines-matching-regexp re face))))
 
