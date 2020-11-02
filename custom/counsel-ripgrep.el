@@ -13,6 +13,31 @@
 ;;* rg mode keybindings
 (define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
 
+
+;;* counsel-rg-dir
+(defun counsel-rg-dir (&optional initial-input initial-directory extra-rg-args rg-prompt)
+  "Same as `counsel-rg' but search starting from current directory instead of the repo root."
+  (interactive)
+  (counsel-rg (or initial-input (and (symbol-at-point)
+                                     (symbol-name (symbol-at-point))))
+              (if current-prefix-arg
+                  default-directory
+                (read-directory-name "rg in directory: "))
+              (or extra-rg-args "")
+              rg-prompt))
+
+(defun counsel-rg-dwim ()
+  "Grep symbol-at-point in current dir. With prefix arg search
+from git root."
+  (interactive)
+  (counsel-rg (thing-at-point 'symbol)
+              (if current-prefix-arg
+                  (counsel--git-root)
+                default-directory)))
+
+(global-set-key (kbd "C-x /") 'counsel-rg-dir)
+(global-set-key (kbd "C-x C-/") 'counsel-rg-dwim)
+
 ;;* show current dir in prompt
 (ivy-set-prompt #'counsel-rg #'counsel-prompt-function-dir)
 (ivy-set-prompt #'counsel-dirs #'counsel-prompt-function-dir)
@@ -38,10 +63,20 @@
                        finally (return dir))))
     (counsel-rg-change-dir new-dir)))
 
-(define-key counsel-ag-map (kbd "C-c C-d") 'counsel-rg-change-dir)
-(define-key counsel-ag-map (kbd "C-c DEL") 'counsel-rg-up-dir)
-(define-key counsel-find-file-map (kbd "C-c C-d") 'counsel-rg-change-dir)
-(define-key counsel-find-file-map (kbd "C-c DEL") 'counsel-rg-up-dir)
+(defun counsel-rg-toggle-root-dir ()
+  "Set search dir to `default-directory'. If in
+`default-directory' already, search from git root."
+  (interactive)
+  (let ((search-dir (ivy-state-directory ivy-last)))
+    (counsel-rg-change-dir
+     (if (string= default-directory search-dir)
+         (counsel--git-root)
+       default-directory))))
+
+(dolist (map (list counsel-ag-map counsel-find-file-map))
+  (define-key map (kbd "C-c DEL") 'counsel-rg-up-dir)
+  (define-key map (kbd "C-c C-d") 'counsel-rg-change-dir)
+  (define-key map (kbd "C-c C-p") 'counsel-rg-toggle-root-dir))
 
 ;;* use `rg.el' instead of ivy-occur
 ;; TODO

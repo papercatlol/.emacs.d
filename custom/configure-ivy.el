@@ -298,17 +298,6 @@ If the input is empty, insert active region or symbol-at-point."
 (global-set-key (kbd "C-s") 'swiper-dwim)
 (global-set-key (kbd "C-M-r") 'ivy-resume)
 
-(defun counsel-rg-dir (&optional initial-input initial-directory extra-rg-args rg-prompt)
-  "Same as `counsel-rg' but search starting from current directory instead of the repo root."
-  (interactive)
-  (counsel-rg (or initial-input (and (symbol-at-point)
-                                     (symbol-name (symbol-at-point))))
-              (if current-prefix-arg
-                  default-directory
-                (read-directory-name "rg in directory: "))
-              (or extra-rg-args "")
-              rg-prompt))
-
 (defun ivy-new-view (name)
   "Same as `ivy-push-view' but don't prompt for name."
   (let ((view (cl-labels
@@ -842,8 +831,6 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
 (global-set-key (kbd "C-x f") 'counsel-files)
 (global-set-key (kbd "C-x d") 'counsel-dirs)
-(global-set-key (kbd "C-x /") 'counsel-rg)
-(global-set-key (kbd "C-x C-/") 'counsel-rg-dir)
 (global-set-key (kbd "M-y") 'counsel-yank-pop)
 
 (global-set-key (kbd "C-c C-s") 'counsel-imenu-dwim)
