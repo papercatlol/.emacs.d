@@ -62,6 +62,7 @@
 ;;** configuration
 (require 'configure-ace-window)
 (require 'configure-evil)
+(require 'configure-email)
 (require 'configure-git)
 (require 'configure-go-lsp)
 (require 'configure-highlight)
@@ -1068,6 +1069,8 @@ current entry."
   ("l" #'display-line-numbers-mode "Display line numbers mode")
   ("K" #'free-keys "Free keys in current buffer")
   ("g" #'magit-list-repositories "Magit list repositories")
+  ("j" #'json-pretty-print-buffer "Json pretty print buffer")
+  ("m" #'mu4e "mu4e")
   )
 
 (defun hydra-cantrips-M-x ()
