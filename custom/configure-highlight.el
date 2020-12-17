@@ -104,6 +104,10 @@
 (global-set-key (kbd "M-u") 'unhighlight-region-or-symbol)
 (global-set-key (kbd "M-l") 'highlight-lines-matching-regexp-autocolor)
 
+(define-key org-mode-map (kbd "M-h") 'highlight-region-or-symbol)
+(define-key org-mode-map (kbd "M-u") 'unhighlight-region-or-symbol)
+(define-key org-mode-map (kbd "M-l") 'highlight-lines-matching-regexp-autocolor)
+
 
 
 (provide 'configure-highlight)

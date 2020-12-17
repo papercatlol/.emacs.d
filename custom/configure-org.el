@@ -64,22 +64,24 @@
                                  (let ((vc-follow-symlinks t))
                                    (find-file-noselect file t)))))
                (let ((current-task-pos
-                      (when (org-clocking-p)
-                        (with-current-buffer (marker-buffer org-clock-marker)
-                          (save-excursion
+                       (when (org-clocking-p)
+                         (with-current-buffer (marker-buffer org-clock-marker)
+                           (save-excursion
                             (goto-char org-clock-marker)
                             (re-search-backward org-todo-line-regexp nil t))))))
-                (with-current-buffer buf
-                  (save-excursion
-                    (goto-char (point-min))
-                    (loop for match = (re-search-forward org-todo-line-regexp nil t)
-                          while match
-                          for beg = (match-beginning 0)
-                          for end = (line-end-position)
-                          for clocking? = (and current-task-pos (= beg current-task-pos) '(t))
-                          collect (list* (buffer-substring beg end)
-                                         (move-marker (make-marker) beg)
-                                         clocking?))))))))
+                 (with-current-buffer buf
+                   (save-excursion
+                    (save-restriction
+                     (widen)
+                     (goto-char (point-min))
+                     (loop for match = (re-search-forward org-todo-line-regexp nil t)
+                           while match
+                           for beg = (match-beginning 0)
+                           for end = (line-end-position)
+                           for clocking? = (and current-task-pos (= beg current-task-pos) '(t))
+                           collect (list* (buffer-substring beg end)
+                                          (move-marker (make-marker) beg)
+                                          clocking?)))))))))
     (mapcan #'%collect files)))
 
 (defun odtt:ivy-refresh ()
@@ -188,9 +190,18 @@ to ACTION and execute BODY forms."
 (global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
 (global-set-key (kbd "<f7>") 'org-dumb-time-tracker)
 
+;;** org-dumb-time-tracker interactive command alias
 (defun org-dumb-time-tracker ()
   (interactive)
   (call-interactively  #'counsel-goto-task))
+
+;;* capture templates
+(setq org-capture-templates
+      `(("w" "Work" entry (file ,odtt:task-file)
+             "* TODO %?\n  %u\n  %a" :prepend t)
+        ("t" "Task" entry (file+headline "" "Tasks")
+             "* TODO %?\n  %u\n  %a")))
+
 
 ;;* rangereport
 ;; From: https://sachachua.com/blog/2007/12/clocking-time-with-emacs-org/
@@ -222,6 +233,10 @@ to ACTION and execute BODY forms."
           (format-time-string (car org-time-stamp-formats)
                               (seconds-to-time end))))
         (setq start (+ 86400 start))))))
+
+;;*
+(define-key org-mode-map (kbd "C-c p") 'outline-previous-visible-heading)
+(define-key org-mode-map (kbd "C-c n") 'outline-next-visible-heading)
 
 
 (provide 'configure-org)
