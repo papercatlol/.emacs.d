@@ -1,6 +1,10 @@
 ;; -*- lexical-binding: t -*-
 ;; packages
 (require 'package)
+
+;; Precompute activation actions to speed up startup.
+(setq package-quickstart t)
+
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/"))
 
@@ -675,6 +679,10 @@ Else narrow-to-defun."
                                                  collect it)))
                   (current-buffer))))
     (diff-buffer-with-file buffer)))
+
+;;* dired-quick-sort
+(require 'dired-quick-sort)
+(dired-quick-sort-setup)
 
 ;;* enable read-only for emacs sources
 (dir-locals-set-class-variables
