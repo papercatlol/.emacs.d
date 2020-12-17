@@ -9,6 +9,7 @@
 (custom-theme-set-faces
  'quasi-monochrome
  '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "xos4 Terminus"))))
+ '(variable-pitch ((t (:family "Fira Code 11")))) ;; Hack is also nice
  '(button ((t (:inherit (link)))))
  '(cursor ((t (:background "LimeGreen"))))
  ;; '(cursor ((t (:background "dark orange"))))
