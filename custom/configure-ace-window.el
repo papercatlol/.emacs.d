@@ -22,9 +22,20 @@
     (select-window minibuffer)))
 
 ;;* aw-dispatch-alist
+(defun kbd-char (key)
+  (elt (kbd key) 0))
+
+;; TODO and bind to M-c M-a
+;; Likewise for `select-bottom-side-window' M-c M-z or M-v or smth
+;; (defun select-left-side-window ()
+;;   (select-window ))
+
 (setq aw-dispatch-alist
-      '((?x aw-delete-window "Delete Window")
+      `((?x aw-delete-window "Delete Window")
+        (,(kbd-char "M-x") aw-delete-window "Delete Window")
+        (,(kbd-char "M-d") aw-delete-window "Delete Window")
         (?S aw-swap-window "Swap Windows")
+        (,(kbd-char "M-s") aw-swap-window "Swap Windows")
         (?m aw-move-window "Move Window")
         (?c aw-copy-window "Copy Window")
         (?j aw-switch-buffer-in-window "Select Buffer")
@@ -41,7 +52,8 @@
         (?\r select-minibuffer-window)
         (?+ balance-windows-horizontally)
         (?= balance-windows-area)
-        (?? aw-show-dispatch-help)))
+        (?? aw-show-dispatch-help)
+        (,(kbd-char "M-c") other-window)))
 
 ;;* show window path in modeline
 (defun ace-window-path-lighter ()
