@@ -148,6 +148,8 @@ Else call `magit-diff-buffer-file'."
         "--color-only"
         "--theme" "none"))
 
+(add-hook 'magit-mode-hook #'magit-delta-mode)
+
 ;;** [DISABLED] magit-todos
 ;; (require 'magit-todos)
 
