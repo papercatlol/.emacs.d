@@ -677,6 +677,20 @@ enable `ivy-calling' by default and restore original position on exit."
     (window-state-put state ivy-win)
     (exit-minibuffer)))
 
+(defun ivy-done-ace-window ()
+  "Select a window with `ace-window', then call ivy-action."
+  (interactive)
+  (let ((action (ivy--get-action ivy-last)))
+    (ivy-exit-with-action
+     (lambda (x)
+       (ace-window t)
+       (funcall action x)))))
+
+(define-key ivy-minibuffer-map (kbd "C-c C-c") 'ivy-done-ace-window)
+(define-key ivy-minibuffer-map (kbd "C-x 4 RET") 'ivy-done-other-window)
+(define-key ivy-minibuffer-map (kbd "C-x 5 RET") 'ivy-done-other-frame)
+(define-key ivy-minibuffer-map (kbd "<C-return>") 'ivy-done-other-window)
+
 ;;* ivy-xref-action
 (defun ivy-xref-action ()
   (interactive)
@@ -884,13 +898,13 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (define-key ivy-minibuffer-map (kbd "C-t") 'ivy-avy)
 (define-key ivy-minibuffer-map (kbd "S-SPC") 'ivy-avy)
 (define-key swiper-map (kbd "S-SPC") 'swiper-avy)
-(define-key ivy-minibuffer-map (kbd "C-x 4 RET") 'ivy-done-other-window)
-(define-key ivy-minibuffer-map (kbd "C-x 5 RET") 'ivy-done-other-frame)
-(define-key ivy-minibuffer-map (kbd "<C-return>") 'ivy-done-other-window)
 ;; (define-key ivy-minibuffer-map (kbd "M-.") 'ivy-xref-action)
 (define-key ivy-minibuffer-map (kbd "M-.") 'counsel-find-symbol)
 (define-key ivy-minibuffer-map (kbd "M-,") 'counsel--info-lookup-symbol)
 (define-key ivy-minibuffer-map (kbd "C-M-m") 'ivy-immediate-done)
+
+(define-key ivy-minibuffer-map (kbd "C-h") 'ivy-backward-delete-char)
+(define-key ivy-minibuffer-map (kbd "C-w") 'ivy-backward-kill-word)
 
 
 
