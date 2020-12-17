@@ -933,8 +933,8 @@ With prefix arg, copy toplevel form."
 ;;* counsel-outline
 (with-eval-after-load 'counsel
   (add-to-list 'counsel-outline-settings
-               '(lisp-mode
-                 ;; :outline-regexp "TODO"
+               `(lisp-mode
+                 :outline-regexp ,(rx bol (or "(" ";;" "#|"))
                  :display-style 'title)))
 
 ;;* KEYS
@@ -952,6 +952,8 @@ With prefix arg, copy toplevel form."
 (define-key slime-repl-mode-map (kbd "<f5>") 'slime-restart-inferior-lisp)
 (define-key slime-repl-mode-map (kbd "(") 'self-insert-command)
 (define-key slime-repl-mode-map (kbd "C-c C-z") 'slime-next-connection)
+(define-key slime-connection-list-mode-map (kbd "C-c t") 'slime-trace-dialog)
+(define-key slime-connection-list-mode-map (kbd "t") 'slime-trace-dialog)
 (define-key sldb-mode-map (kbd "<tab>") 'sldb-toggle-details)
 (define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
 (define-key slime-mode-map (kbd "C-c p") 'slime-pprint-eval-last-expression)
@@ -969,9 +971,12 @@ With prefix arg, copy toplevel form."
 (define-key sldb-mode-map "C" 'sldb-continue-and-fetch-traces)
 (define-key sldb-mode-map "h" 'backward-char)
 (define-key sldb-mode-map "l" 'forward-char)
+(define-key sldb-mode-map (kbd "C-q") 'bury-buffer)
 (define-key slime-mode-map (kbd "C-c M-t") 'slime-toggle-trace-fdefinition)
 (define-key slime-repl-mode-map [remap swiper-at-point] 'swiper-isearch)
 (define-key slime-repl-mode-map [remap slime-repl-previous-matching-input] 'slime-repl-complete-ivy)
+(define-key slime-repl-mode-map (kbd "C-c p") 'slime-repl-previous-prompt)
+(define-key slime-repl-mode-map (kbd "C-c n") 'slime-repl-next-prompt)
 
 ;;** package-related utils
 (define-key slime-mode-map (kbd "C-c w") 'slime-kill-package-name)
