@@ -36,6 +36,14 @@
         (tool-bar-lines 0)
         (vertical-scroll-bars)))
 
+;;* theme
+(load-theme 'quasi-monochrome t)
+(setq custom--inhibit-theme-enable nil)
+
+;;* fill-column-indicator
+(setq-default fill-column 80)
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
+
 ;;;
 (require 'avy)
 (require 'ace-window)

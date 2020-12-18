@@ -44,8 +44,9 @@
  '(link ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
  '(link-visited ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
  '(minibuffer-prompt ((t (:weight bold :foreground "light gray"))))
+ ;; vertical window separator
+ '(vertical-border ((t (:foreground "gray60"))))
  ;; mode-line
- '(vertical-border ((t (:foreground "gray15"))))
  '(mode-line ((t (:background "black" :foreground "#c5c9c0" :bold nil
                   ;; :box (:line-width 1 :color "gray50")
                   :overline "gray60"
@@ -107,7 +108,9 @@
  ;; '(avy-lead-face ((t (:background "white" :foreground "black" :weight extra-bold))))
  ;; '(avy-lead-face-0 ((t (:inherit avy-lead-face :foreground "black"))))
  ;; '(avy-lead-face-2 ((t (:inherit avy-lead-face :foreground "dark red"))))
- '(avy-lead-face ((t (:background "darkgreen" :foreground "white" :weight extra-bold))))
+ '(avy-lead-face ((t (:background "darkgreen" :foreground "white"
+                      :weight extra-bold
+                      :underline nil))))
  ;; '(avy-lead-face ((t (:background "white" :foreground "dark red" :weight extra-bold))))
  '(avy-lead-face-0 ((t (:inherit avy-lead-face))))
  '(avy-lead-face-1 ((t (:inherit avy-lead-face))))
@@ -157,6 +160,8 @@
  ;; which-key
  '(which-key-separator-face ((t (:inherit font-lock-comment-face
                                  :background "black"))))
+ ;; fill column
+ '(fill-column-indicator ((t (:foreground "grey20"))))
  )
 
 (provide-theme 'quasi-monochrome)
