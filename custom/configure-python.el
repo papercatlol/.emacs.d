@@ -1,12 +1,12 @@
 ;;; -*- lexical-binding: t -*-
 
-(defun elpy-init ()
-  (elpy-enable))
-(add-hook 'python-mode-hook 'elpy-init)
-(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
+;; (defun elpy-init ()
+;;   (elpy-enable))
+;; (add-hook 'python-mode-hook 'elpy-init)
+;; (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 
 (setq python-shell-interpreter "ipython3"
-      elpy-rpc-python-command "python3.7"
+      elpy-rpc-python-command "python3.8"
       python-shell-interpreter-args "-i --simple-prompt"
       python-indent-guess-indent-offset-verbose nil)
 
@@ -42,5 +42,10 @@
   (define-key elpy-mode-map (kbd "C-c C-c") 'elpy-shell-send-region-or-top-statement)
   )
 
+
+;;* lsp
+(require 'configure-lsp)
+
+(add-hook 'python-mode-hook 'configure-lsp:init)
 
 (provide 'configure-python)

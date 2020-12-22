@@ -1,22 +1,18 @@
 ;;; -*- lexical-binding: t -*-
-(require 'lsp)
 
+(require 'configure-lsp)
 (require 'configure-go)
 (require 'lsp-show-doc)
 ;; (require 'dap-mode)
 
 
+
 (defun go-lsp-init ()
   (when-let ((lsp-bin (go-lsp--get-gopls-binary)))
     (message "Found gopls bin: %s" lsp-bin)
-    (setq lsp-ui-sideline-enable nil
-          lsp-ui-doc-enable nil
-          lsp-prefer-flymake :none
-          lsp-gopls-server-path lsp-bin
-          lsp-eldoc-render-all nil ; TODO: enable this but disable markup in minibuffer
+    (setq lsp-gopls-server-path lsp-bin
           lsp-gopls-experimental-complete-unimported t)
-    (yas-minor-mode)
-    (lsp)))
+    (configure-lsp:init)))
 
 (defun go-lsp--get-gopls-binary ()
   (let* ((gopath (shell-command-to-string "go env GOPATH"))
