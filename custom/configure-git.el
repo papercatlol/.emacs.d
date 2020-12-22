@@ -311,6 +311,10 @@ start revision."
 
   (define-key slime-repl-mode-map (kbd "C-x g") 'slime-magit-status))
 
+;;* magit-status in various maps
+(define-key shell-mode-map (kbd "C-x g") 'magit-status)
+(define-key compilation-mode-map (kbd "C-x g") 'magit-status)
+
 ;;* TODO: ibuffer
 
 ;;* TODO: git-link

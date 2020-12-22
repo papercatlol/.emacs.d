@@ -234,6 +234,18 @@ to ACTION and execute BODY forms."
                               (seconds-to-time end))))
         (setq start (+ 86400 start))))))
 
+;;* org-table: copy field at point
+(defun org-table-kill-field (&optional N)
+  (interactive)
+  (when-let ((value (org-table-get-field N)))
+    (kill-new (string-trim value))
+    (message value)))
+
+;; TODO: conditional binding w/ (:menu ...) to only do this inside org tables
+(define-key org-mode-map (kbd "C-c w") 'org-table-kill-field)
+
+
+
 ;;*
 (define-key org-mode-map (kbd "C-c p") 'outline-previous-visible-heading)
 (define-key org-mode-map (kbd "C-c n") 'outline-next-visible-heading)

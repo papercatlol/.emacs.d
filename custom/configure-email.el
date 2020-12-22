@@ -149,7 +149,7 @@
 
 ;;* org-capture-template
 (setf (alist-get "m" org-capture-templates nil nil #'string=)
-      `("work TODO from mu4e"
+      `("Work TODO from mu4e"
         entry (file ,odtt:task-file)
         "* TODO %:subject\n  %u\n %a%?" :prepend t))
 
