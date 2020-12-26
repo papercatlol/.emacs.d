@@ -157,4 +157,10 @@
       '(((in-mode . "mu4e-headers-mode")
          (in-mode . "mu4e-view-mode"))))
 
+;;* mu4e-alert
+(mu4e-alert-set-default-style 'libnotify)
+(setq mu4e-alert-email-notification-types '(count))
+
+(add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+
 (provide 'configure-email)
