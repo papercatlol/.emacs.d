@@ -74,6 +74,7 @@
 ;;** configuration
 (require 'configure-ace-window)
 (require 'configure-evil)
+(require 'configure-org)
 (require 'configure-email)
 (require 'configure-git)
 (require 'configure-go-lsp)
@@ -81,7 +82,6 @@
 (require 'configure-isearch)
 (require 'configure-ivy)
 (require 'counsel-ripgrep)
-(require 'configure-org)
 ;; (require 'configure-go)
 (require 'configure-lisp)
 (require 'configure-python)

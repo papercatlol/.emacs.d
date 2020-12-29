@@ -5,6 +5,7 @@
   (setq lsp-ui-sideline-enable nil
         lsp-ui-doc-enable nil
         lsp-diagnostics-provider :none
+        lsp-completion-provider :none
         lsp-eldoc-render-all nil ; TODO: enable this but disable markup in minibuffer
         lsp-keymap-prefix "C-c C-a"
         )

@@ -148,14 +148,15 @@
 (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
 
 ;;* org-capture-template
-(setf (alist-get "m" org-capture-templates nil nil #'string=)
-      `("Work TODO from mu4e"
-        entry (file ,odtt:task-file)
-        "* TODO %:subject\n  %u\n %a%?" :prepend t))
+(with-eval-after-load 'org-capture
+  (setf (alist-get "m" org-capture-templates nil nil #'string=)
+	`("Work TODO from mu4e"
+          entry (file ,odtt:task-file)
+          "* TODO %:subject\n  %u\n %a%?" :prepend t))
 
-(setf (alist-get "m" org-capture-templates-contexts nil nil #'string=)
-      '(((in-mode . "mu4e-headers-mode")
-         (in-mode . "mu4e-view-mode"))))
+  (setf (alist-get "m" org-capture-templates-contexts nil nil #'string=)
+	'(((in-mode . "mu4e-headers-mode")
+           (in-mode . "mu4e-view-mode")))))
 
 ;;* mu4e-alert
 (mu4e-alert-set-default-style 'libnotify)

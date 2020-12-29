@@ -265,6 +265,7 @@ start revision."
  _>_: last hunk                                  ^^_b_: blame dwim
  _R_: set start revision                         ^^_B_: magit-blame popup
                                                ^^^^_f_: magit find file
+                                               ^^^^_$_: magit process buffer
 "
   ("q" nil)
   ("<escape>" nil)
@@ -291,7 +292,8 @@ start revision."
   ("r" #'vc-revert :exit t)
   ("f" #'magit-find-file-other-window :exit t)
   ("b" #'magit-blame-dwim :exit t)
-  ("B" #'magit-blame :exit t))
+  ("B" #'magit-blame :exit t)
+  ("$" #'magit-process-buffer :exit t))
 
 (define-key magit-file-mode-map (kbd "C-x g") 'hydra-git/body)
 (define-key magit-file-mode-map (kbd "C-x C-g") 'ignore)
@@ -314,6 +316,9 @@ start revision."
 ;;* magit-status in various maps
 (define-key shell-mode-map (kbd "C-x g") 'magit-status)
 (define-key compilation-mode-map (kbd "C-x g") 'magit-status)
+
+;;* git-commit fill-column
+(setq git-commit-fill-column 70)
 
 ;;* TODO: ibuffer
 
