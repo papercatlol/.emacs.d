@@ -193,10 +193,10 @@
   "Rename equake tab buffer to display current directory."
   (when equake-mode
     (let* ((regex (rx line-start (* anything)
-                      (group "%" (? (or "~" "/" ".") (* anything) (? "/") "::"))
+                      (group "%" (? (or "~" "/" ".") (* anything) (? "/")))
                       (* anything)))
            (template
-             (replace-regexp-in-string regex "%%%s::" (buffer-name) nil nil 1)))
+             (replace-regexp-in-string regex "%%%s" (buffer-name) nil nil 1)))
       (rename-buffer (format template dir)))))
 
 (defun equake-default-directory-watcher (symbol new-value operation buffer)
@@ -207,12 +207,6 @@
 (add-variable-watcher 'default-directory #'equake-default-directory-watcher)
 (advice-add #'equake-new-tab :after #'equake-add-current-dir-to-tab-name)
 (advice-add #'equake-rename-etab :after #'equake-add-current-dir-to-tab-name)
-
-;; remove spaces from tab-name: [ tab-name ] -> [tab-name]
-(defun equake-fix-tab-names-advice (tab-name)
-  (replace-regexp-in-string "\\[ " "[" (replace-regexp-in-string " \\]" "]" tab-name)))
-
-(advice-add #'equake-extract-format-tab-name :filter-return #'equake-fix-tab-names-advice)
 
 ;; add ace-window-path to modeline
 (defun equake-modeline-add-ace-window-lighter-advice (modeline)
@@ -229,7 +223,7 @@
       (equake-prev-tab))
     (kill-buffer buff)))
 
-(define-key equake-mode-map (kbd "C-Q") 'equake-kill-tab)
+(define-key equake-mode-map (kbd "C-c C-q") 'equake-kill-tab)
 
 ;; modeline colors
 (face-spec-set 'equake-tab-inactive '((t (:foreground "gray70" :background "black"))))
@@ -264,7 +258,7 @@
           (face (and tab-active-p 'equake-tab-active)))
     (when (string-empty-p tab-name)
       (setq tab-name (number-to-string tab-no))) ; set name to tab number
-    (concat " " (propertize (concat "[ " tab-name " ]") 'font-lock-face face) " ")))
+    (concat (propertize (concat "[" tab-name "]") 'font-lock-face face) " ")))
 (advice-add 'equake-extract-format-tab-name :override #'equake-extract-format-tab-name*)
 
 (defun equake-kill-tab-advice ()
