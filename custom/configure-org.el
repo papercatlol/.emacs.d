@@ -250,5 +250,47 @@ to ACTION and execute BODY forms."
 (define-key org-mode-map (kbd "C-c p") 'outline-previous-visible-heading)
 (define-key org-mode-map (kbd "C-c n") 'outline-next-visible-heading)
 
+;;* org-babel
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((lisp . t)
+   (shell . t)))
+
+;;* org-present
+(with-eval-after-load 'org-present
+  (define-key org-present-mode-keymap (kbd "C-c C-n") 'org-present-next)
+  (define-key org-present-mode-keymap (kbd "C-c C-p") 'org-present-prev)
+
+  (defvar org-present-mode-line-format nil)
+
+  (defun org-present--setup ()
+    (org-present-big)
+    (org-display-inline-images)
+    ;; (org-present-hide-cursor)
+    (setq org-present-mode-line-format mode-line-format)
+    (setq-local mode-line-format nil))
+
+  (defun org-present--teardown ()
+    (org-present-small)
+    ;; (org-remove-inline-images)
+    ;; (org-present-show-cursor)
+    (setq-local mode-line-format org-present-mode-line-format))
+
+  (add-hook 'org-present-mode-hook #'org-present--setup)
+  (add-hook 'org-present-mode-quit-hook #'org-present--teardown)
+
+  (define-key org-mode-map (kbd "C-c P") 'org-present)
+  )
+
+;;* org-rich-yank
+(define-key org-mode-map (kbd "C-M-y") 'org-rich-yank)
+
+;;* org-download
+(require 'org-download)
+
+(add-hook 'dired-mode-hook 'org-download-enable)
+
+;; TODO: combine with org-rich-yank and bind to C-M-y
+(define-key org-mode-map (kbd "C-c y") 'org-download-clipboard)
 
 (provide 'configure-org)
