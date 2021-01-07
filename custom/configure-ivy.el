@@ -24,6 +24,13 @@
 (require 'ivy-rich)
 (setq ivy-rich-path-style 'absolute)
 
+;;** counsel-M-x
+(plist-put ivy-rich-display-transformers-list
+           'counsel-M-x
+           '(:columns
+             ((counsel-M-x-transformer (:width 80))
+              (ivy-rich-counsel-function-docstring (:face font-lock-doc-face)))))
+
 ;;** counsel-package
 (defun ivy-rich-counsel-package-version (candidate)
   (ivy-rich-package-version (substring candidate 1)))
@@ -56,6 +63,40 @@
            '(:columns
              ((ivy-read-file-transformer)
               (ivy-rich-counsel-find-file-truename* (:face font-lock-doc-face)))))
+
+;;** counsel-describe-function
+(plist-put ivy-rich-display-transformers-list
+           'counsel-describe-function
+           '(:columns
+             ((counsel-describe-function-transformer (:width 50))
+              (ivy-rich-counsel-function-docstring (:face font-lock-doc-face)))))
+
+;;** counsel-describe-variable
+(plist-put ivy-rich-display-transformers-list
+           'counsel-describe-variable
+           '(:columns
+             ((counsel-describe-variable-transformer (:width 50))
+              (ivy-rich-counsel-variable-docstring (:face font-lock-doc-face)))))
+
+;;** counsel-describe-symbol
+(defun counsel-describe-symbol-transformer (symbol-name)
+  (let ((symbol (intern-soft symbol-name)))
+    (if (or (custom-variable-p symbol)
+            (commandp symbol))
+        (ivy-append-face symbol-name 'ivy-highlight-face)
+      symbol-name)))
+
+(defun ivy-rich-counsel-describe-symbol-docstring (candidate)
+  (when-let ((symbol (intern-soft candidate)))
+    (if (functionp symbol)
+        (ivy-rich-counsel-function-docstring symbol)
+      (ivy-rich-counsel-variable-docstring symbol))))
+
+(plist-put ivy-rich-display-transformers-list
+           'counsel-describe-symbol
+           '(:columns
+             ((counsel-describe-symbol-transformer (:width 50))
+              (ivy-rich-counsel-describe-symbol-docstring (:face font-lock-doc-face)))))
 
 ;;** counsel-buffers
 (cl-defun ivy-rich-counsel-buffers-dispatch (candidate &key buffer bookmark recentf ivy-view dired-recent)
@@ -683,7 +724,8 @@ enable `ivy-calling' by default and restore original position on exit."
   (let ((action (ivy--get-action ivy-last)))
     (ivy-exit-with-action
      (lambda (x)
-       (ace-window t)
+       (let ((aw-dispatch-always t))
+         (ace-window t))
        (funcall action x)))))
 
 (define-key ivy-minibuffer-map (kbd "C-c C-c") 'ivy-done-ace-window)
@@ -811,7 +853,8 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (with-eval-after-load 'comint
   (define-key comint-mode-map
     [remap comint-history-isearch-backward-regexp]
-    'counsel-shell-history))
+    'counsel-shell-history)
+  (define-key comint-mode-map (kbd "C-r") 'counsel-shell-history))
 
 ;;* swiper-evil-replace
 (with-eval-after-load 'evil
@@ -861,6 +904,10 @@ exit with that candidate, otherwise insert SPACE character as usual."
 ;;** C-h bindings
 (setq counsel-describe-function-function #'helpful-function)
 (setq counsel-describe-variable-function #'helpful-variable)
+(setq counsel-describe-symbol-function #'helpful-symbol)
+
+(define-key help-map "o" 'counsel-describe-symbol)
+
 
 (define-key counsel-describe-map (kbd "M-.") #'counsel-find-symbol)
 (define-key counsel-describe-map (kbd "M-,") #'counsel--info-lookup-symbol)
