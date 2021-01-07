@@ -20,7 +20,7 @@
  '(escape-glyph ((t (:foreground "light gray"))))
  '(font-lock-builtin-face ((t (:foreground "light gray"))))
  '(font-lock-comment-delimiter-face ((t (:inherit (font-lock-comment-face)))))
- '(font-lock-comment-face ((t (:background "gray20" :foreground "gray60"))))
+ '(font-lock-comment-face ((t (:background "gray20" :foreground "gray60" :extend t))))
  '(hl-todo ((t (:inherit font-lock-comment-face :weight extrabold :foreground "#cc9393"))))
  '(font-lock-constant-face ((t (:weight bold :foreground "light gray"))))
  '(font-lock-doc-face ((t (:inherit (font-lock-string-face)))))
@@ -133,12 +133,20 @@
                                      :underline nil))))
  ;; '(magit-section-heading ((t (:inherit magit-header-line))))
  ;; org
- '(org-level-3 ((t (:inherit default))))
- '(org-level-4 ((t (:inherit default))))
+ ;; '(org-default ((t (:inherit default :height 140))))
+ '(org-default ((t (:inherit default))))
+ '(org-level-3 ((t (:inherit org-default))))
+ '(org-level-4 ((t (:inherit org-default))))
  '(org-date ((t (:inherit font-lock-string-face :weight bold))))
  '(org-tag ((t (:inherit mode-line-emphasis))))
  '(org-todo ((t (:foreground "red4" :weight bold))))
  '(org-done ((t (:foreground "lime green" :weight bold))))
+ '(org-block-begin-line ((t (:inherit default :foreground "grey50"
+                             :underline t :extend t))))
+ '(org-block-end-line ((t (:inherit org-block-begin-line
+                           :underline nil :overline t))))
+ '(org-block ((t (:inherit font-lock-comment-face :background "grey10"))))
+ '(org-table ((t (:foreground "chocolate2"))))
  ;; ediff
  '(ediff-even-diff-A ((t (:foreground "black" :background "light grey"))))
  '(ediff-even-diff-B ((t (:foreground "black" :background "light grey"))))
