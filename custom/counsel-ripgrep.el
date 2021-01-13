@@ -2,6 +2,7 @@
 (require 'ivy)
 (require 'rg)
 
+
 ;;* vars
 (setq rg-command-line-flags '("--max-columns=160")) ; rg.el
 (setq rg-executable "rg") ; don't use `executable-find' because it fails on remote
@@ -10,9 +11,58 @@
 (setq counsel-grep-base-command (concat rg-command " --no-filename %s %s"))
 (setf (alist-get 'counsel-grep ivy-more-chars-alist) 0)
 
-;;* rg mode keybindings
-(define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
 
+;;* compilation-mode
+;; MAYBE move this somewhere else
+(with-eval-after-load 'compile
+  (defun compilation-display-next-error (n)
+    (interactive "p")
+    (compilation-next-error n)
+    (compilation-display-error))
+
+  (defun compilation-display-previous-error (n)
+    (interactive "p")
+    (compilation-display-next-error (- n)))
+
+  (with-eval-after-load 'ace-link
+    (setq ace-link--compilation-action-fn #'compilation-display-error))
+
+  (define-key compilation-mode-map (kbd "<tab>") 'compilation-next-error)
+  (define-key compilation-mode-map (kbd "o") 'compilation-display-error)
+  (define-key compilation-mode-map (kbd "m") 'compilation-display-error)
+  (define-key compilation-mode-map (kbd "M-m") 'compilation-display-error)
+  (define-key compilation-mode-map (kbd "C-j") 'compilation-display-next-error)
+  (define-key compilation-mode-map (kbd "C-k") 'compilation-display-previous-error)
+  (define-key compilation-mode-map (kbd "k") 'compilation-previous-error)
+  (define-key compilation-mode-map (kbd "j") 'compilation-next-error)
+  (define-key compilation-mode-map (kbd "h") 'backward-char)
+  (define-key compilation-mode-map (kbd "l") 'forward-char))
+
+
+;;* rg-mode
+(with-eval-after-load 'evil
+  (evil-set-initial-state 'rg-mode 'normal))
+
+(define-key rg-mode-map (kbd "<tab>") 'compilation-next-error)
+(define-key rg-mode-map (kbd "k") 'compilation-previous-error)
+(define-key rg-mode-map (kbd "j") 'compilation-next-error)
+(define-key rg-mode-map (kbd "h") 'backward-char)
+(define-key rg-mode-map (kbd "l") 'forward-char)
+(define-key rg-mode-map (kbd "m") 'compilation-display-error)
+(define-key rg-mode-map (kbd "M-m") 'compilation-display-error)
+(define-key rg-mode-map (kbd "o") 'compilation-display-error)
+(define-key rg-mode-map (kbd "C-j") 'compilation-display-next-error)
+(define-key rg-mode-map (kbd "C-k") 'compilation-display-previous-error)
+(define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
+(define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
+(define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
+(define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
+(define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
+(define-key rg-mode-map (kbd "S") 'rg-save-search)
+(define-key rg-mode-map (kbd "{") 'rg-prev-file)
+(define-key rg-mode-map (kbd "}") 'rg-next-file)
+(define-key rg-mode-map (kbd "L") 'rg-rerun-change-literal)
+(define-key rg-mode-map (kbd "C-c f") 'rg-rerun-change-files)
 
 ;;* counsel-rg-dir
 (defun counsel-rg-dir (&optional initial-input initial-directory extra-rg-args rg-prompt)
