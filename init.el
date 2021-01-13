@@ -970,6 +970,17 @@ current entry."
   (define-key ibuffer-mode-map (kbd "M-j") 'smooth-scroll/scroll-up-5)
   (define-key ibuffer-mode-map (kbd "M-k") 'smooth-scroll/scroll-down-5))
 
+;;* eww
+(define-key eww-mode-map (kbd "C-c C-n") 'eww-next-url)
+(define-key eww-mode-map (kbd "C-c C-p") 'eww-previous-url)
+(define-key eww-mode-map (kbd "n") nil)
+(define-key eww-mode-map (kbd "H") 'eww-back-url)
+(define-key eww-mode-map (kbd "L") 'eww-forward-url)
+(define-key eww-mode-map (kbd "h") nil)
+(define-key eww-mode-map (kbd "l") nil)
+;; TODO: counsel-eww-list-histories
+(define-key eww-mode-map (kbd "C-c h") 'eww-list-histories)
+
 ;;* which-key
 (setq which-key-lighter ""
       which-key-show-transient-maps t)
