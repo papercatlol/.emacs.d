@@ -93,6 +93,32 @@ Else call `magit-diff-buffer-file'."
       (diff-buffer-with-file (current-buffer))
     (message "Buffer is not modified.")))
 
+;;** ediff
+(setq ediff-split-window-function 'split-window-horizontally)
+(setq-default ediff-ignore-similar-regions t)
+
+(defun ediff-scroll-down ()
+  (interactive)
+  (ediff-scroll-vertically (- (if current-prefix-arg
+                               (prefix-numeric-value current-prefix-arg)
+                             4))))
+
+(defun ediff-scroll-up ()
+  (interactive)
+  (ediff-scroll-vertically (if current-prefix-arg
+                               (prefix-numeric-value current-prefix-arg)
+                             4)))
+
+(defun configure-ediff-keybindings ()
+  (define-key ediff-mode-map "j" 'ediff-next-difference)
+  (define-key ediff-mode-map "k" 'ediff-previous-difference)
+  (define-key ediff-mode-map (kbd "M-j") 'ediff-scroll-down)
+  (define-key ediff-mode-map (kbd "M-k") 'ediff-scroll-up)
+  (define-key ediff-mode-map "s" 'ediff-toggle-skip-similar)
+  )
+
+(add-hook 'ediff-keymap-setup-hook 'configure-ediff-keybindings)
+
 ;;** keybindings
 (define-key magit-file-mode-map (kbd "C-x =") 'diff-buffer-dwim)
 (define-key text-mode-map (kbd "C-x =") 'diff-buffer-modified)
@@ -114,6 +140,10 @@ Else call `magit-diff-buffer-file'."
 (dolist (m (list magit-status-mode-map magit-diff-mode-map))
   (define-key m (kbd "j") 'magit-forward-dwim)
   (define-key m (kbd "k") 'magit-backward-dwim)
+  (define-key m (kbd "[") 'magit-section-backward-sibling)
+  (define-key m (kbd "]") 'magit-section-forward-sibling)
+  (define-key m (kbd "C-M-k") 'magit-section-backward-sibling)
+  (define-key m (kbd "C-M-j") 'magit-section-forward-sibling)
   (define-key m (kbd "C-k") 'magit-discard)
   (define-key m (kbd "=") 'magit-diff-more-context)
   (define-key m (kbd "M-m") 'magit-diff-visit-file-other-window))
