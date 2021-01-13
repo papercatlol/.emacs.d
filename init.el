@@ -940,6 +940,36 @@ current entry."
 ;;* TODO: helm-make: add cd(counsel-cd?) binding; same for cd to git root
 (setq helm-make-completion-method 'ivy)
 
+;;* smooth-scroll
+(require 'smooth-scroll)
+
+(setq smooth-scroll/vscroll-step-size 1)
+
+(defun smooth-scroll/scroll-up-5 (&optional arg)
+  (interactive)
+  (smooth-scroll/.vscroll-aux
+   (cond (arg arg)
+         (current-prefix-arg (prefix-numeric-value))
+         (t 5))
+   t))
+
+(defun smooth-scroll/scroll-down-5 (&optional arg)
+  (interactive)
+  (smooth-scroll/.vscroll-aux
+   (cond (arg arg)
+         (current-prefix-arg (prefix-numeric-value))
+         (t 5))
+   nil))
+
+(global-set-key (kbd "M-j") 'smooth-scroll/scroll-up-5)
+(global-set-key (kbd "M-k") 'smooth-scroll/scroll-down-5)
+
+;;** ibuffer
+;; old M-j: ibuffer-jump-to-filter-group
+(with-eval-after-load 'ibuffer
+  (define-key ibuffer-mode-map (kbd "M-j") 'smooth-scroll/scroll-up-5)
+  (define-key ibuffer-mode-map (kbd "M-k") 'smooth-scroll/scroll-down-5))
+
 ;;* which-key
 (setq which-key-lighter ""
       which-key-show-transient-maps t)

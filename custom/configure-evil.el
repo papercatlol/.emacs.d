@@ -540,14 +540,6 @@
 (define-key evil-visual-state-map "Q" ":norm @q RET")
 (define-key evil-visual-state-map "." ":norm . RET")
 (define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
-(global-set-key (kbd "M-j") 'evil-scroll-line-down-dwim)
-(global-set-key (kbd "M-k") 'evil-scroll-line-up-dwim)
-;; (define-key evil-motion-state-map (kbd "M-j") 'evil-scroll-line-down-dwim)
-;; (define-key evil-normal-state-map (kbd "M-j") 'evil-scroll-line-down-dwim)
-;; (define-key evil-motion-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
-;; (define-key evil-normal-state-map (kbd "M-k") 'evil-scroll-line-up-dwim)
-;; (define-key magit-mode-map (kbd "M-j") 'evil-scroll-line-down-dwim)
-;; (define-key magit-mode-map (kbd "M-k") 'evil-scroll-line-up-dwim)
 (define-key evil-visual-state-map (kbd "C-c i") 'edit-indirect-region)
 (define-key evil-normal-state-map (kbd "C-n") 'counsel-buffers-other-frame)
 (define-key evil-motion-state-map (kbd "C-v") nil)
@@ -574,12 +566,6 @@
     (evil-set-initial-state map 'normal)
     (evil-make-overriding-map map 'normal)
     (evil-add-hjkl-bindings map)))
-
-;;** ibuffer
-;; old M-j: ibuffer-jump-to-filter-group
-(with-eval-after-load 'ibuffer
-  (define-key ibuffer-mode-map (kbd "M-j") 'evil-scroll-line-down-dwim)
-  (define-key ibuffer-mode-map (kbd "M-k") 'evil-scroll-line-up-dwim))
 
 ;;** move-text
 (defhydra move-text-hydra ()
