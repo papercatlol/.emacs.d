@@ -825,7 +825,7 @@ exit with that candidate, otherwise insert SPACE character as usual."
      #'self-insert-command)))
 
 ;; (define-key ivy-minibuffer-map (kbd "SPC") 'ivy-magical-space)
-(define-key swiper-map (kbd "SPC") 'ivy-magical-space)
+;; (define-key swiper-map (kbd "SPC") 'ivy-magical-space)
 
 ;;* ivy-done and ivy-call with prefix args
 (defun ivy-call-or-dispatching-call (dispatch)
@@ -845,6 +845,9 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (require 'dired-recent)
 
 (dired-recent-mode 1)
+
+(defvar dired-recent-save-list-timer
+  (run-with-idle-timer 120 t #'dired-recent-save-list))
 
 ;; disable C-x C-d overriding, since we will use counsel-buffers instead
 (define-key dired-recent-mode-map (kbd "C-x C-d") nil)

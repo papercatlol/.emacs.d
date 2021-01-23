@@ -10,6 +10,7 @@
  'quasi-monochrome
  '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "xos4 Terminus"))))
  '(variable-pitch ((t (:family "Fira Code 11")))) ;; Hack is also nice
+ '(fixed-pitch ((t (:family "Fira Code 11"))))    ;; Hack is also nice
  '(button ((t (:inherit (link)))))
  '(cursor ((t (:background "LimeGreen"))))
  ;; '(cursor ((t (:background "dark orange"))))
@@ -131,6 +132,9 @@
  '(magit-diff-context-highlight ((t (:foreground "grey70" :background "grey20"
                                      :weight semi-bold
                                      :underline nil))))
+ ;; '(magit-diff-removed-highlight ((t (:background "#663333"
+ ;;                                     :foreground "#eecccc"
+ ;;                                     :extend t))))
  ;; '(magit-section-heading ((t (:inherit magit-header-line))))
  ;; org
  ;; '(org-default ((t (:inherit default :height 140))))
@@ -170,6 +174,8 @@
                                  :background "black"))))
  ;; fill column
  '(fill-column-indicator ((t (:foreground "grey20"))))
+ ;; which-func
+ '(which-func ((t (:inherit font-lock-keyword-face :foreground "grey60"))))
  )
 
 (provide-theme 'quasi-monochrome)

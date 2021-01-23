@@ -197,18 +197,6 @@
   (interactive "<r>p")
   (evil-move-forward beg end (- n)))
 
-;;** `scrolling'
-(defun evil-scroll-line-up-dwim ()
-  (interactive)
-  (evil-scroll-line-up (or (and current-prefix-arg
-                                  (prefix-numeric-value current-prefix-arg))
-                             4)))
-
-(defun evil-scroll-line-down-dwim ()
-  (interactive)
-  (evil-scroll-line-down (or (and current-prefix-arg
-                                  (prefix-numeric-value current-prefix-arg))
-                             4)))
 ;;** smarter `M-w'
 (defun evil-append-symbol ()
   "Switch to Insert state just after next symbol."
