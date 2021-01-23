@@ -164,4 +164,33 @@
 
 (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
 
+;;* larger font in mu4e buffers
+(defun text-scale-increase-1 ()
+  (text-scale-increase 1))
+
+(add-hook 'mu4e-view-mode-hook #'text-scale-increase-1)
+(add-hook 'mu4e-headers-mode-hook #'text-scale-increase-1)
+(add-hook 'mu4e-compose-mode-hook #'text-scale-increase-1)
+
+;;* mu4e-headers-first/last-unread
+(defun mu4e-headers-last-unread ()
+  (interactive)
+  (goto-char (point-max))
+  (mu4e-headers-prev-unread))
+
+(define-key mu4e-headers-mode-map (kbd "}") 'mu4e-headers-last-unread)
+
+;; Most of the time this will be the first message.
+(defun mu4e-headers-first-unread ()
+  (interactive)
+  (goto-char (point-min))
+  (or (when-let* ((msg (mu4e-message-at-point t))
+                  (flags (mu4e-msg-field msg :flags)))
+        (and (member 'unread flags)     ; msg at point is unread -> don't move
+             (not (member 'trashed flags)))) ; anywhere
+      (mu4e-headers-next-unread)))
+
+(define-key mu4e-headers-mode-map (kbd "{") 'mu4e-headers-first-unread)
+
+
 (provide 'configure-email)
