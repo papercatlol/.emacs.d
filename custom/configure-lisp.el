@@ -167,6 +167,26 @@ else call eros-eval-last-sexp."
 (global-set-key [remap eval-last-sexp] #'eros-eval-last-sexp-dwim)
 (global-set-key [remap eval-defun] #'eros-eval-defun)
 
+;;** pp-eval
+(defun pp-eval-dwim (&optional expression)
+  "Evaluate EXPRESSION and pretty-print its value. If region is active, copy it
+as initial value when reading expression.
+Also add the value to the front of the list in the variable `values'."
+  (interactive)
+  (let ((expression
+         (or expression
+             (read--expression
+              "Eval: "
+              (when (region-active-p)
+                (buffer-substring-no-properties
+                 (region-beginning) (region-end)))))))
+    (message "Evaluating...")
+    (push (eval expression lexical-binding) values)
+    (pp-display-expression (car values) "*Pp Eval Output*")))
+
+(global-set-key (kbd "C-x M-e") 'pp-eval-dwim)
+(define-key emacs-lisp-mode-map (kbd "C-c M-e") 'pp-eval-dwim)
+
 ;;** elisp-slime-nav
 (require 'elisp-slime-nav)
 
@@ -681,6 +701,10 @@ otherwise insert a saved presentation."
 (define-key slime-parent-map (kbd "C-c C-a") 'slime-switch-to-sldb-buffer)
 (define-key slime-prefix-map (kbd "C-a") 'slime-switch-to-sldb-buffer)
 
+;;** if* keyword form indentation
+(setq common-lisp-indent-if*-keyword
+      (rx (? ":") (or "else" "elseif" "then" "thenret")))
+
 ;;* Code refactoring utils
 ;;** `lisp-toggle-*-form'
 (defvar lisp-keywords-with-*-variant nil
@@ -733,11 +757,9 @@ otherwise insert a saved presentation."
 (dolist (map (list lisp-mode-map emacs-lisp-mode-map slime-mode-map))
   (define-key map (kbd "C-c C-8") 'lisp-toggle-*-form)
   (define-key map (kbd "C-c C-'") 'lisp-toggle-tick)
-  (define-key map (kbd "C-c C-'") 'lisp-toggle-tick)
-  (define-key map (kbd "C-c '") 'lisp-toggle-tick)
-  (define-key map (kbd "C-c '") 'lisp-toggle-tick))
+  (define-key map (kbd "C-c C-'") 'lisp-toggle-tick))
 
-;;* copying to repl
+;;* slime repl copying/killing
 (defun slime--repl-insert-string (string &optional at-point)
   (when string
     (slime-switch-to-output-buffer)
@@ -783,6 +805,17 @@ With prefix arg, copy toplevel form."
 
 (define-key slime-mode-map [remap slime-call-defun] 'slime-copy-to-repl)
 (define-key slime-repl-mode-map (kbd "C-c C-y") 'slime-copy-to-repl)
+
+(defun slime-repl-kill-input-dwim (&optional all?)
+  "Like `slime-repl-kill-input', but kill all input with prefix arg.
+Also always use `kill-region' instead of `delete-region'."
+  (interactive "P")
+  (cond ((or all? (= (point) (marker-position slime-repl-input-start-mark)))
+         (kill-region (slime-repl-history-yank-start) (point-max)))
+        ((< (marker-position slime-repl-input-start-mark) (point))
+         (kill-region slime-repl-input-start-mark (point)))))
+
+(define-key slime-repl-mode-map [remap slime-repl-kill-input] 'slime-repl-kill-input-dwim)
 
 ;;* evaluation(eros)
 ;; Display overlays with evaluation results
@@ -854,6 +887,57 @@ With prefix arg, copy toplevel form."
   (interactive)
   (call-interactively #'sldb-continue)
   (call-interactively #'sldb-fetch-traces))
+
+;;* fancier fancy-trace
+(defun slime-toggle-trace-dwim (&optional using-context-p)
+  "Toggle trace. Tries to guess what to trace depending on
+major-mode. E.g. `slime-xref-mode'."
+  (interactive "P")
+  (let* ((spec (cond
+                ((eq major-mode 'slime-xref-mode)
+                 (when-let ((dspec (slime-xref-dspec-at-point)))
+                   (slime-dspec-operator-name dspec)))
+                (using-context-p
+                 (slime-extract-context))
+                (t (slime-symbol-at-point))))
+         (spec (slime-trace-query spec)))
+    (message "%s" (slime-eval `(swank-trace-dialog:dialog-toggle-trace
+                                (swank::from-string ,spec))))
+    (run-hooks 'slime-trace-dialog-after-toggle-hook)))
+
+(define-key slime-prefix-map [remap slime-toggle-fancy-trace] 'slime-toggle-trace-dwim)
+(define-key slime-prefix-map (kbd "C-c t") 'slime-trace-dialog)
+(define-key slime-prefix-map (kbd "C-c T") nil)
+(define-key slime-trace-dialog-minor-mode-map (kbd "C-c t") 'slime-trace-dialog)
+(define-key slime-trace-dialog-minor-mode-map (kbd "C-c T") nil)
+
+;;** slime-dspec-operator-name
+(defun slime-dspec-operator-name (dspec)
+  "Try to extract operator name from slime dspec."
+  (let ((parsed-spec (car (read-from-string dspec))))
+    (pcase parsed-spec
+      (`(:operator (method (setf ,(and (pred symbolp) name) . ,_))) (symbol-name name))
+      (`(:operator (method ,(and (pred symbolp) name) . ,_)) (symbol-name name))
+      (`(:operator (setf ,(and (pred symbolp) name) . ,_)) (symbol-name name))
+      (`(:operator ,(and (pred symbolp) name)) (symbol-name name))
+      (_ nil))))
+
+;;** slime-xref-toggle-trace-all
+(defun slime-xref-toggle-trace-all (&optional untrace)
+  "Toggle tracing for ALL operators in a `slime-xref-mode' buffer.
+TODO: With prefix arg untrace all."
+  (interactive "P")
+  (when-let* ((xrefs (slime-all-xrefs))
+              (queries
+               (loop for (dspec) in xrefs
+                     when (slime-dspec-operator-name dspec)
+                     collect `(swank-trace-dialog:dialog-toggle-trace
+                               (swank::from-string ,it)))))
+    (slime-eval `(cl:progn ,@queries))
+    (run-hooks 'slime-trace-dialog-after-toggle-hook)))
+
+;; (define-key slime-xref-mode-map (kbd "C-c A") 'slime-xref-toggle-trace-all)
+(define-key slime-xref-mode-map (kbd "C-c T") 'slime-xref-toggle-trace-all)
 
 ;;* avy-actions
 (defun avy-action-copy-to-repl (pt)
@@ -1011,6 +1095,10 @@ With prefix arg, copy toplevel form."
 (with-eval-after-load 'lispy
   (define-key emacs-lisp-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
   (define-key slime-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
+  (define-key slime-repl-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
+  (define-key emacs-lisp-mode-map (kbd "C-c x") 'hydra-lispy-x/body)
+  (define-key slime-mode-map (kbd "C-c x") 'hydra-lispy-x/body)
+  (define-key slime-repl-mode-map (kbd "C-c x") 'hydra-lispy-x/body)
   (define-key slime-mode-map (kbd "M-s") 'lispy-splice)
   )
 
