@@ -54,6 +54,7 @@
               :preselect (car (find-if (lambda (item)
                                          (and (listp item) (third item)))
                                        todos))
+              :caller 'counsel-goto-task
               ;; :dynamic-collection nil
               )))
 
@@ -254,9 +255,26 @@ to ACTION and execute BODY forms."
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((lisp . t)
-   (shell . t)))
+   (shell . t)
+   (python . t)))
+
+(defun org-special-ctrl-c-ctrl-y ()
+  "A hack to copy current lisp src block to slime repl."
+  (interactive)
+  (if-let* ((connected? (slime-connected-p))
+            (in-block? (org-in-src-block-p))
+            (info (org-babel-get-src-block-info t))
+            (lang (car info))
+            (lisp? (string= lang "lisp"))
+            (expanded-block (org-babel-expand-src-block)))
+      (slime--repl-insert-string expanded-block)
+    (call-interactively #'org-evaluate-time-range)))
+
+(define-key org-mode-map (kbd "C-c C-y") 'org-special-ctrl-c-ctrl-y)
 
 ;;* org-present
+(require 'org-present nil t)
+
 (with-eval-after-load 'org-present
   (define-key org-present-mode-keymap (kbd "C-c C-n") 'org-present-next)
   (define-key org-present-mode-keymap (kbd "C-c C-p") 'org-present-prev)
@@ -283,6 +301,11 @@ to ACTION and execute BODY forms."
   )
 
 ;;* org-rich-yank
+(org-rich-yank-enable)
+
+(setf (alist-get 'slime-repl-mode org-rich-yank-mode-translation-alist)
+      'lisp-mode)
+
 (define-key org-mode-map (kbd "C-M-y") 'org-rich-yank)
 
 ;;* org-download
