@@ -5,47 +5,81 @@
 ;; (add-hook 'python-mode-hook 'elpy-init)
 ;; (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 
-(setq python-shell-interpreter "ipython3"
-      elpy-rpc-python-command "python3.8"
-      python-shell-interpreter-args "-i --simple-prompt"
-      python-indent-guess-indent-offset-verbose nil)
+(setq python-shell-interpreter "ipython"
+      ;; see https://www.emacswiki.org/emacs/PythonProgrammingInEmacs#h5o-52
+      python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True"
+      python-indent-guess-indent-offset-verbose nil
+      python-shell-prompt-detect-failure-warning nil
 
-(setq elpy-modules '(elpy-module-sane-defaults
-                     elpy-module-eldoc
-                     elpy-module-highlight-indentation
-                     elpy-module-pyvenv
-                     elpy-module-yasnippet))
+      ;; from prelude
+      python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+      python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+      )
 
+;;* shell completion hack
+;; For some reason IPython completion doesn't work, so we remove it for the
+;; non-module completion.
+(setq python-shell-completion-setup-code
+      "
+def __PYTHON_EL_get_completions(text):
+    completions = []
+    completer = None
 
-;;* `defuns'
-(defun elpy-shell-send-region-or-top-statement()
-  (interactive)
-  (call-interactively
-   (if (region-active-p)
-       #'elpy-shell-send-region-or-buffer
-     #'elpy-shell-send-top-statement)))
+    try:
+        import readline
 
-(require 'popup)
+        try:
+            import __builtin__
+        except ImportError:
+            # Python 3
+            import builtins as __builtin__
+        builtins = dir(__builtin__)
 
-(defun elpy-doc--popup (documentation)
-  "Show DOCUMENTATION in a popup."
-  (popup-tip documentation
-             :truncate nil
-             :height 60))
+        is_ipython = ('__IPYTHON__' in builtins or
+                      '__IPYTHON__active' in builtins)
+        splits = text.split()
+        is_module = splits and splits[0] in ('from', 'import')
 
-(advice-add #'elpy-doc--show :override #'elpy-doc--popup)
+        if is_ipython and is_module:
+            from IPython.core.completerlib import module_completion
+            completions = module_completion(text.strip())
+        else:
+            # Try to reuse current completer.
+            completer = readline.get_completer()
+            if not completer:
+                # importing rlcompleter sets the completer, use it as a
+                # last resort to avoid breaking customizations.
+                import rlcompleter
+                completer = readline.get_completer()
+            if getattr(completer, 'PYTHON_EL_WRAPPED', False):
+                completer.print_mode = False
+            i = 0
+            while True:
+                completion = completer(text, i)
+                if not completion:
+                    break
+                i += 1
+                completions.append(completion)
+    except:
+        pass
+    finally:
+        if getattr(completer, 'PYTHON_EL_WRAPPED', False):
+            completer.print_mode = True
+    return completions")
 
+(defun inferior-python--enable-eldoc ()
+  "Enable basic python.el eldoc in python shell."
+  (require 'python)
+  (setq-local eldoc-documentation-function #'python-eldoc-function))
 
-;;* `keys'
-(with-eval-after-load 'elpy-mode
-  (define-key elpy-mode-map (kbd "C-c C-k") 'elpy-shell-send-region-or-buffer)
-  (define-key elpy-mode-map (kbd "C-c C-c") 'elpy-shell-send-region-or-top-statement)
-  )
-
+(add-hook 'inferior-python-mode-hook #'inferior-python--enable-eldoc)
 
 ;;* lsp
 (require 'configure-lsp)
 
 (add-hook 'python-mode-hook 'configure-lsp:init)
+
+;;* virtual env
+(require 'pyvenv)
 
 (provide 'configure-python)
