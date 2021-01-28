@@ -21,7 +21,14 @@
   (define-key mu4e-headers-mode-map "L" 'mu4e-headers-query-next)
   (define-key mu4e-headers-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
   (define-key mu4e-view-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
-  )
+
+  (evil-define-key '(normal) mu4e-view-mode-map
+    "[" 'mu4e-view-headers-prev-unread
+    "]" 'mu4e-view-headers-next-unread)
+
+  (evil-define-key '(normal) mu4e-headers-mode-map
+    "[" 'mu4e-headers-prev-unread
+    "]" 'mu4e-headers-next-unread))
 
 ;;* general
 ;; A lot of these are taken from
@@ -112,6 +119,44 @@
 	        		       ("/Papercatlol/drafts"    . ?d)
 	        		       ))
             ))))
+
+;;* HACK to allow keys other than ?o to designate "other" in `mu4e-maildir-shortcuts'
+(defvar mu4e-maildir-shortcuts-other-key ?J
+  "A char that designates 'other' option in `mu4e-maildir-shortcuts'.")
+
+(defun mu4e-ask-maildir+ (prompt)
+  "Ask the user for a shortcut (using PROMPT) as per
+(mu4e-maildir-shortcuts), then return the corresponding folder
+name. If the special shortcut 'o' (for _o_ther) is used, or if
+`(mu4e-maildir-shortcuts)' evaluates to nil, let user choose from
+all maildirs under `mu4e-maildir'."
+  (let ((prompt (mu4e-format "%s" prompt)))
+    (if (not (mu4e-maildir-shortcuts))
+        (substring-no-properties
+         (funcall mu4e-completing-read-function prompt (mu4e-get-maildirs)))
+      (let* ((mlist (append (mu4e-maildir-shortcuts)
+                            `((:maildir "Other"  :key ,mu4e-maildir-shortcuts-other-key))))
+             (fnames
+              (mapconcat
+               (lambda (item)
+                 (concat
+                  "["
+                  (propertize (make-string 1 (plist-get item :key))
+                              'face 'mu4e-highlight-face)
+                  "]"
+                  (plist-get item :maildir)))
+               mlist ", "))
+             (kar (read-char (concat prompt fnames))))
+        (if (member kar `(?/ ,mu4e-maildir-shortcuts-other-key)) ;; user chose 'other'?
+            (substring-no-properties
+             (funcall mu4e-completing-read-function prompt
+                      (mu4e-get-maildirs) nil nil "/"))
+          (or (plist-get
+               (cl-find-if (lambda (item) (= kar (plist-get item :key)))
+                           (mu4e-maildir-shortcuts)) :maildir)
+              (mu4e-warn "Unknown shortcut '%c'" kar)))))))
+
+(advice-add 'mu4e-ask-maildir :override #'mu4e-ask-maildir+)
 
 ;;* show thread at point
 (defun mu4e-show-thread-at-point ()
