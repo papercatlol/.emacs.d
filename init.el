@@ -956,29 +956,52 @@ current entry."
 ;;* TODO: helm-make: add cd(counsel-cd?) binding; same for cd to git root
 (setq helm-make-completion-method 'ivy)
 
-;;* smooth-scroll
+;;* scrolling
 (require 'smooth-scroll)
 
-(setq smooth-scroll/vscroll-step-size 2)
+(setq smooth-scroll/vscroll-step-size 4)
 
-(defun smooth-scroll/scroll-up-5 (&optional arg)
+(cl-defun smooth-scroll/scroll-n (&optional (n 8))
+  ((smooth-scroll/.vscroll-aux )))
+
+(cl-defun smooth-scroll/scroll-up-8 (&optional (arg 8))
   (interactive)
   (smooth-scroll/.vscroll-aux
-   (cond (arg arg)
-         (current-prefix-arg (prefix-numeric-value))
-         (t 5))
+   (if current-prefix-arg
+       (prefix-numeric-value)
+     arg)
    t))
 
-(defun smooth-scroll/scroll-down-5 (&optional arg)
+(cl-defun smooth-scroll/scroll-up-16 (&optional (arg 16))
+  (interactive)
+  (let ((smooth-scroll/vscroll-step-size 8))
+    (smooth-scroll/.vscroll-aux
+     (if current-prefix-arg
+         (prefix-numeric-value)
+       arg)
+     t)))
+
+(cl-defun smooth-scroll/scroll-down-8 (&optional (arg 8))
   (interactive)
   (smooth-scroll/.vscroll-aux
-   (cond (arg arg)
-         (current-prefix-arg (prefix-numeric-value))
-         (t 5))
+   (if current-prefix-arg
+       (prefix-numeric-value)
+     arg)
    nil))
 
-(global-set-key (kbd "M-j") 'smooth-scroll/scroll-up-5)
-(global-set-key (kbd "M-k") 'smooth-scroll/scroll-down-5)
+(cl-defun smooth-scroll/scroll-down-16 (&optional (arg 16))
+  (interactive)
+  (let ((smooth-scroll/vscroll-step-size 8))
+    (smooth-scroll/.vscroll-aux
+     (if current-prefix-arg
+         (prefix-numeric-value)
+       arg)
+     nil)))
+
+(global-set-key (kbd "M-j") 'smooth-scroll/scroll-up-8)
+(global-set-key (kbd "M-k") 'smooth-scroll/scroll-down-8)
+(global-set-key (kbd "C-M-j") 'smooth-scroll/scroll-up-16)
+(global-set-key (kbd "C-M-k") 'smooth-scroll/scroll-down-16)
 
 ;;** ibuffer
 ;; old M-j: ibuffer-jump-to-filter-group
@@ -1009,6 +1032,21 @@ current entry."
 (keyfreq-autosave-mode 1)
 (setq keyfreq-excluded-commands '(self-insert-command))
 
+;;* dired-display-file-and-next/prev-line
+;; TODO: group dired-related configuration
+(defun dired-display-file-and-next-line (&optional n)
+  (interactive "p")
+  (dired-display-file)
+  (next-line (or n 1)))
+
+(defun dired-display-file-and-next-line (&optional n)
+  (interactive "p")
+  (dired-display-file-and-next-line (- (or n 1))))
+
+(define-key dired-mode-map (kbd "M-o") 'dired-display-file)
+(define-key dired-mode-map (kbd "M-m") 'dired-display-file)
+(define-key dired-mode-map (kbd "M-n") 'dired-display-file-and-next-line)
+(define-key dired-mode-map (kbd "M-p") 'dired-display-file-and-prev-line)
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
