@@ -114,6 +114,7 @@ Else call `magit-diff-buffer-file'."
   (define-key ediff-mode-map "k" 'ediff-previous-difference)
   (define-key ediff-mode-map (kbd "M-j") 'ediff-scroll-down)
   (define-key ediff-mode-map (kbd "M-k") 'ediff-scroll-up)
+  (define-key ediff-mode-map (kbd "C-v") nil)
   (define-key ediff-mode-map "s" 'ediff-toggle-skip-similar)
   )
 
@@ -291,7 +292,7 @@ start revision."
  _s_: stage hunk          _U_: diff unstaged(all)  _L_: magit-log popup
  _S_: stage current file  _d_: magit-diff popup    _c_: magit-commit popup
  _G_: refresh git-gutter  _D_: vc-ediff            _r_: vc-revert
- _<_: first hunk                                 ^^_p_: magit-push popup
+ _<_: first hunk          _e_: magit-ediff popup   _p_: magit-push popup
  _>_: last hunk                                  ^^_b_: blame dwim
  _R_: set start revision                         ^^_B_: magit-blame popup
                                                ^^^^_f_: magit find file
@@ -313,6 +314,7 @@ start revision."
   ("U" #'magit-diff-unstaged-other-window)
   ("d" #'magit-diff :exit t)
   ("D" #'vc-ediff :exit t)
+  ("e" #'magit-ediff :exit t)
 
   ("g" #'magit-status :exit t)
   ("l" #'magit-log-buffer-file :exit t)
