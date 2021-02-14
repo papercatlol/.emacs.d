@@ -17,7 +17,6 @@
   (let ((inhibit-message t))
     (save-buffer)))
 
-(global-set-key (kbd "<f6>") 'counsel-org-capture)
 (define-key org-mode-map (kbd "C-c C-x <C-i>") 'org-clock-in)
 
 ;;* display time as decimal hours in clock tables
@@ -196,12 +195,17 @@ to ACTION and execute BODY forms."
   (interactive)
   (call-interactively  #'counsel-goto-task))
 
-;;* capture templates
-(setq org-capture-templates
-      `(("w" "Work" entry (file ,odtt:task-file)
-             "* TODO %?\n  %u\n  %a" :prepend t)
-        ("t" "Task" entry (file+headline "" "Tasks")
-             "* TODO %?\n  %u\n  %a")))
+;;* capture templates & org-roam
+(require 'configure-org-roam)
+
+(global-set-key (kbd "<f6>") 'hydra-org-roam/body)
+
+;; (setq org-capture-templates
+;;       `(("w" "Work" entry (file ,odtt:task-file)
+;;              "* TODO %?\n  %u\n  %a" :prepend t)
+;;         ("t" "Task" entry (file+headline "" "Tasks")
+;;              "* TODO %?\n  %u\n  %a")))
+;; (global-set-key (kbd "<f6>") 'counsel-org-capture)
 
 
 ;;* rangereport
