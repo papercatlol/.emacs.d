@@ -46,7 +46,7 @@
       (let* ((hi-lock-auto-select-face t)
              (face (highlight--read-face-name)))
         (or (facep face) (setq face 'hl-white-red))
-        (highlight-regexp (buffer-substring (mark) (point)) face))
+        (highlight-regexp (regexp-quote (buffer-substring (mark) (point))) face))
     (highlight-symbol-at-point)))
 
 (defun unhighlight-region-or-symbol (arg)
@@ -55,7 +55,7 @@
   (interactive "P")
   (cond (arg (unhighlight-regexp t))
         ((region-active-p)
-         (unhighlight-regexp (buffer-substring (mark) (point))))
+         (unhighlight-regexp (regexp-quote (buffer-substring (mark) (point)))))
         (t (unhighlight-regexp (hi-lock-regexp-okay
                                 (find-tag-default-as-symbol-regexp))))))
 
