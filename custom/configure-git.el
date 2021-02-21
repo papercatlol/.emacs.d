@@ -8,6 +8,7 @@
 (put 'magit-clean 'disabled nil)
 
 (setq magit-log-arguments '("-n64" "--graph" "--decorate" "--patch")
+      magit-define-global-key-bindings nil
       magit-diff-buffer-file-locked t
       magit-diff-refine-hunk nil
       magit-todos-auto-group-items 1000
@@ -121,14 +122,11 @@ Else call `magit-diff-buffer-file'."
 (add-hook 'ediff-keymap-setup-hook 'configure-ediff-keybindings)
 
 ;;** keybindings
-(define-key magit-file-mode-map (kbd "C-x =") 'diff-buffer-dwim)
-(define-key text-mode-map (kbd "C-x =") 'diff-buffer-modified)
-(define-key prog-mode-map (kbd "C-x =") 'diff-buffer-modified)
-(define-key magit-file-mode-map [left-fringe mouse-1] 'diff-buffer-dwim)
+(global-set-key (kbd "C-x =") 'diff-buffer-dwim)
+(global-set-key [left-fringe mouse-1] 'diff-buffer-dwim)
 
 ;; MAYBE: add hydra
-(define-key magit-file-mode-map (kbd "C-x G") 'magit-file-dispatch)
-(define-key magit-file-mode-map (kbd "C-c M-g") nil)
+(global-set-key (kbd "C-x G") 'magit-file-dispatch)
 
 (define-key magit-mode-map (kbd "C-c C-l") 'magit-toggle-buffer-lock)
 (define-key magit-mode-map (kbd "j") 'magit-forward-dwim)
@@ -196,11 +194,11 @@ Else call `magit-diff-buffer-file'."
 (require 'git-gutter-fringe)
 
 ;; only enable git-gutter in local git-tracked files
-(defun magit--file-mode-enable-git-gutter ()
+(defun maybe-enable-git-gutter ()
   (unless (file-remote-p (buffer-file-name))
     (git-gutter-mode 1)))
 
-(add-hook 'magit-file-mode-hook #'magit--file-mode-enable-git-gutter)
+(add-hook 'find-file-hook #'maybe-enable-git-gutter)
 
 (setq git-gutter:lighter ""
       git-gutter:ask-p nil)
@@ -282,7 +280,6 @@ start revision."
 
 ;;* git hydra
 ;; TODO: a function to stage current hunk or region
-;; TODO: revert-hunk
 (defhydra hydra-git (:hint nil)
   "
  ^Stage^                  ^Diff^                   ^Other^
@@ -291,11 +288,11 @@ start revision."
  _k_: prev hunk           _u_: diff unstaged(file) _l_: git log for current file
  _s_: stage hunk          _U_: diff unstaged(all)  _L_: magit-log popup
  _S_: stage current file  _d_: magit-diff popup    _c_: magit-commit popup
- _G_: refresh git-gutter  _D_: vc-ediff            _r_: vc-revert
- _<_: first hunk          _e_: magit-ediff popup   _p_: magit-push popup
- _>_: last hunk                                  ^^_b_: blame dwim
- _R_: set start revision                         ^^_B_: magit-blame popup
-                                               ^^^^_f_: magit find file
+ _C-k_: revert hunk       _D_: vc-ediff            _r_: vc-revert
+ _G_: refresh git-gutter  _e_: magit-ediff popup   _p_: magit-push popup
+ _<_: first hunk                                 ^^_b_: blame dwim
+ _>_: last hunk                                  ^^_B_: magit-blame popup
+ _R_: set start revision                         ^^_f_: magit find file
                                                ^^^^_$_: magit process buffer
 "
   ("q" nil)
@@ -304,6 +301,7 @@ start revision."
   ("k" #'git-gutter:previous-hunk)
   ("s" #'git-gutter:stage-hunk)
   ("S" #'magit-stage-buffer-file)
+  ("C-k" #'git-gutter:revert-hunk)
   ("G" #'git-gutter:update-all-windows)
   ("<" #'git-gutter:first-hunk)
   (">" #'git-gutter:last-hunk)
@@ -327,8 +325,16 @@ start revision."
   ("B" #'magit-blame :exit t)
   ("$" #'magit-process-buffer :exit t))
 
-(define-key magit-file-mode-map (kbd "C-x g") 'hydra-git/body)
-(define-key magit-file-mode-map (kbd "C-x C-g") 'ignore)
+(defun hydra-git-or-magit-status ()
+  "If in a git-controlled file, call `hydra-git/body', otherwise
+proceed to `magit-status'. With prefix arg always call `magit-status'."
+  (interactive)
+  (if (and (null current-prefix-arg) (buffer-file-name) (magit-inside-worktree-p t))
+      (hydra-git/body)
+    (call-interactively #'magit-status)))
+
+(global-set-key (kbd "C-x g") 'hydra-git-or-magit-status)
+(define-key text-mode-map (kbd "C-x C-g") 'ignore)
 
 ;;* dired
 (require 'dired-git-info)
