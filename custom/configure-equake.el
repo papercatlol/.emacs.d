@@ -1,43 +1,29 @@
 (require 'equake)
 
-;; show current directory in tab name
-(cl-defun equake-add-current-dir-to-tab-name (&optional (dir default-directory))
-  "Rename equake tab buffer to display current directory."
-  (when equake-mode
-    (let* ((regex (rx line-start (* anything)
-                      (group "%" (? (or "~" "/" ".") (* anything) (? "/")))
-                      (* anything)))
-           (template
-             (replace-regexp-in-string regex "%%%s" (buffer-name) nil nil 1)))
-      (rename-buffer (format template dir)))))
 
+;;* update modeline when default-directory changes
 (defun equake-default-directory-watcher (symbol new-value operation buffer)
-  (when buffer
+  (when (equake--tab-p buffer)
     (with-current-buffer buffer
-      (equake-add-current-dir-to-tab-name new-value))))
+      (let ((default-directory new-value))
+        (equake--update-mode-line (equake--get-tab-property 'monitor buffer))))))
 
 (add-variable-watcher 'default-directory #'equake-default-directory-watcher)
-(advice-add #'equake-new-tab :after #'equake-add-current-dir-to-tab-name)
-(advice-add #'equake-rename-etab :after #'equake-add-current-dir-to-tab-name)
 
-;; add ace-window-path to modeline
-(defun equake-modeline-add-ace-window-lighter-advice (modeline)
-  (cons `(:eval (ace-window-path-lighter)) modeline))
-
-(advice-add #'equake-mode-line :filter-return #'equake-modeline-add-ace-window-lighter-advice)
-
-;; equake-kill-tab
+;;* equake-kill-tab
 (defun equake-kill-tab ()
   (interactive)
-  (let ((buff (current-buffer)))
-    (if (< (equake--count-tabs (equake-get-monitor-name)) 2)
+  (let* ((buff (current-buffer))
+         (monitor (equake--get-monitor))
+         (tabs (alist-get monitor equake--tab-list)))
+    (if (< (length tabs) 2)
         (delete-window)
       (equake-prev-tab))
     (kill-buffer buff)))
 
 (define-key equake-mode-map (kbd "C-c C-q") 'equake-kill-tab)
 
-;; modeline colors
+;;* modeline colors
 (face-spec-set 'equake-tab-inactive '((t (:foreground "gray70" :background "black"))))
 (face-spec-set 'equake-tab-active '((t (:foreground "black" :background "gray70" :weight bold))))
 (face-spec-set 'equake-shell-type-eshell '((t (:foreground "white" :background "black"))))
@@ -45,9 +31,9 @@
 (face-spec-set 'equake-shell-type-rash '((t (:foreground "white" :background "black"))))
 (face-spec-set 'equake-shell-type-shell '((t (:foreground "white" :background "black"))))
 
-;; equake-pop
-(setq equake-default-shell 'shell)
-;; TODO: make it work with `shell'
+;;* equake-pop
+(setq (equake-default-shell 'shell))
+
 (defun equake-pop ()
   "Open equake tab for current directory in other window."
   (interactive)
@@ -60,27 +46,51 @@
       (pop-to-buffer tab)
     (equake-new-tab)))
 
-;; PATCH: don't propertize inactive tab names
-(defun equake-extract-format-tab-name* (tab-no)
-  "Extract name of an Equake tab #TAB-NO and format it for the modeline."
-  (-let* (((&alist 'monitor 'tab-no active-tab-no) (equake--get-tab-properties))
-          (tab (equake--find-tab monitor tab-no))
-          ((&alist 'tab-name) (equake--get-tab-properties tab))
-          (tab-active-p (equal tab-no active-tab-no))
-          (face (and tab-active-p 'equake-tab-active)))
-    (when (string-empty-p tab-name)
-      (setq tab-name (number-to-string tab-no))) ; set name to tab number
-    (concat (propertize (concat "[" tab-name "]") 'font-lock-face face) " ")))
-(advice-add 'equake-extract-format-tab-name :override #'equake-extract-format-tab-name*)
+(define-key equake-mode-map (kbd "<f12>") 'delete-window)
+(global-set-key (kbd "<f12>") 'equake-pop)
 
+;;* hacks to make modeline nicer
+;;** show CWD in tab name
+(defun equake--format-tab-override (tab)
+  (-let* ((tab-name
+           (abbreviate-file-name
+            (buffer-local-value 'default-directory tab)))
+          (tab-active-p (eq tab (current-buffer)))
+          (face (if tab-active-p 'equake-tab-active 'equake-tab-inactive)))
+    (propertize (concat "[" tab-name "]") 'font-lock-face face)))
+
+(advice-add 'equake--format-tab :override #'equake--format-tab-override)
+
+;;** less spacing, fix background color, don't show shell type
+(defun equake--update-mode-line-override (monitor)
+  (let* ((etab-list (alist-get monitor equake--tab-list))
+         (separator (propertize " " 'font-lock-face 'equake-tab-inactive))
+         (tabs-part (mapconcat #'equake--format-tab etab-list separator))
+         (format (if equake-show-monitor-in-mode-line
+                     (format "%s: %s" monitor tabs-part)
+                   tabs-part)))
+    (when (fboundp 'ace-window)
+      (setq format
+            (list `(:eval (ace-window-path-lighter)) format)))
+    (setq mode-line-format format)
+    (force-mode-line-update)))
+
+(advice-add 'equake--update-mode-line :override #'equake--update-mode-line-override)
+
+;;* fix for 'shell
+(defun equake--launch-shell-around (fn launchshell)
+  (if (eq launchshell 'shell)
+      (shell)
+    (funcall fn launchshell)))
+
+(advice-add 'equake--launch-shell :around #'equake--launch-shell-around)
+
+;;* equake-kill-tab: don't ask for confirmation
 (defun equake-kill-tab-advice ()
   (when-let ((proc (get-buffer-process (current-buffer))))
     (set-process-query-on-exit-flag proc nil)))
 
 (advice-add 'equake-kill-tab :before #'equake-kill-tab-advice)
-
-(define-key equake-mode-map (kbd "<f12>") 'delete-window)
-(global-set-key (kbd "<f12>") 'equake-pop)
 
 
 (provide 'configure-equake)
