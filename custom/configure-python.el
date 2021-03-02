@@ -83,3 +83,9 @@ def __PYTHON_EL_get_completions(text):
 (require 'pyvenv)
 
 (provide 'configure-python)
+
+
+;;* ein
+(require 'ein)
+
+(setq ein:output-area-inlined-images t)

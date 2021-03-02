@@ -8,6 +8,7 @@
         lsp-completion-provider :none
         lsp-eldoc-render-all nil ; TODO: enable this but disable markup in minibuffer
         lsp-keymap-prefix "C-c C-a"
+        lsp-headerline-breadcrumb-enable nil
         )
   (when (fboundp 'which-key)
     (lsp-enable-which-key-integration))
