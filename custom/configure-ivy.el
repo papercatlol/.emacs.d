@@ -267,10 +267,12 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
                                                      (locate-dominating-file default-directory ".git")
                                                      default-directory)
                                                default-directory))))
-    (counsel-fd counsel-files-base-cmd
-                :initial-input initial-input
-                :prompt "Find file: "
-                :caller 'counsel-files)))
+    (if (counsel--git-root)
+        (counsel-git initial-input)
+      (counsel-fd counsel-files-base-cmd
+                  :initial-input initial-input
+                  :prompt "Find file: "
+                  :caller 'counsel-files))))
 
 (defun counsel-dirs (&optional initial-input initial-directory)
   "Same as `counsel-files' but for directories."
@@ -480,7 +482,7 @@ buffer will be opened(current window, other window, other frame)."
     (:ivy-view
      (when (eq :frame where)
        (select-frame-set-input-focus (make-frame)))
-     (ivy-set-view-recur (cdr (assoc item ivy-views))))
+     (ivy-set-view-recur (second (assoc item ivy-views))))
     (t (cond ((string-prefix-p "{}" item)
               (ivy-new-view item))
              ((file-exists-p item)
@@ -697,6 +699,7 @@ enable `ivy-calling' by default and restore original position on exit."
 ;; other-window/frame
 (ivy-enable-calling-for-func 'counsel-outline)
 ;;* ivy-done-other-window/frame
+;;* ivy-done-other-window/frame/ace-window
 (defun ivy-done-other-window ()
   (interactive)
   (when-let* ((ivy-win (ivy--get-window ivy-last))
