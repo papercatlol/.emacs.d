@@ -320,4 +320,7 @@ to ACTION and execute BODY forms."
 ;; TODO: combine with org-rich-yank and bind to C-M-y
 (define-key org-mode-map (kbd "C-c y") 'org-download-clipboard)
 
+;; random keybindings
+(define-key org-mode-map (kbd "C-c C-8") 'org-ctrl-c-star)
+
 (provide 'configure-org)

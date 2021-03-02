@@ -14,8 +14,6 @@
 
 (org-roam-mode)
 
-(add-to-list 'minor-mode-lighters '(org-roam-mode ""))
-
 (setq org-roam-capture-templates
       '(("d"
          "default"
@@ -37,7 +35,11 @@
   ("v" org-roam-buffer-activate "view backlinks")
   ;; ("b" ora-org-roam-find-backlink "find backlink")
   ;; ("t" ora-roam-todo "todo")
-  ("j" org-roam-find-index "index"))
+  ("j" org-roam-find-index "index")
+
+  ;; inside org roam file
+  ("t" org-roam-tag-add "add tag")
+  ("a" org-roam-alias-add "add alias"))
 
 
 (provide 'configure-org-roam)

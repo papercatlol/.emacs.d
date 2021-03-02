@@ -218,6 +218,7 @@
     (eldoc-mode "")
     (explain-pause-mode "")
     (page-break-lines-mode "")
+    (org-roam-mode "")
     ))
 
 (defun cleaner-minor-modes ()
