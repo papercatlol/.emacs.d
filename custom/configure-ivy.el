@@ -965,6 +965,12 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (define-key ivy-minibuffer-map (kbd "C-h") 'ivy-backward-delete-char)
 (define-key ivy-minibuffer-map (kbd "C-w") 'ivy-backward-kill-word)
 
+;;** ivy-minibuffer-grow/shrink
+;; MAYBE increase grow/shrink step to 4?
+(with-eval-after-load 'ivy-hydra
+  (define-key ivy-minibuffer-map (kbd "C-=") 'ivy-minibuffer-grow)
+  (define-key ivy-minibuffer-map (kbd "C--") 'ivy-minibuffer-shrink))
+
 
 
 (provide 'configure-ivy)
