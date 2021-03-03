@@ -878,6 +878,17 @@ exit with that candidate, otherwise insert SPACE character as usual."
          (evil-ex (format "%%s/%s/" re))))))
   (define-key swiper-map (kbd "M-q") 'swiper-evil-replace))
 
+;;* swiper-narrow
+(defun swiper-narrow ()
+  (interactive)
+  (ivy-exit-with-action
+   (lambda (_)
+     (save-restriction
+      (call-interactively #'narrow-dwim)
+      (swiper ivy-text)))))
+
+(define-key swiper-map (kbd "C-x C-n") 'swiper-narrow)
+
 ;;* KEYS
 (defhydra hydra-M-g (global-map "M-g")
   "M-g"
