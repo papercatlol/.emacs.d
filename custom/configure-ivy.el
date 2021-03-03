@@ -533,6 +533,13 @@ buffer will be opened(current window, other window, other frame)."
 (global-set-key (kbd "C-x b") (lambda () (interactive) (message "Use C-v")))
 (define-key counsel-buffers-map (kbd "C-v") 'counsel-buffer-cycle-action)
 
+;;** switch to scratch
+(defun counsel-buffers-scratch ()
+  (interactive)
+  (ivy--done (buffer-name (startup--get-buffer-create-scratch))))
+
+(define-key counsel-buffers-map (kbd "C-s") 'counsel-buffers-scratch)
+
 ;;* ivy-special
 (cl-defmacro ivy-special (special-form &rest else)
   "Eval SPECIAL-FORM and exit minibuffer if it is empty,
@@ -558,7 +565,6 @@ otherwise eval ELSE and stay."
 
 (def-ivy-special counsel-buffers-map "C-w" windmove-up backward-kill-word)
 (def-ivy-special counsel-buffers-map "C-a" windmove-left move-beginning-of-line)
-(def-ivy-special counsel-buffers-map "C-s" windmove-down ace-swap-window)
 (def-ivy-special counsel-buffers-map "C-d" windmove-right delete-char)
 (def-ivy-special counsel-buffers-map "<C-i>" (funcall counsel-buffers-current-action user-init-file) hippie-expand)
 ;;* toggle-symbol-start/end
