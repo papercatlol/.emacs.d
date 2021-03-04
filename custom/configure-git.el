@@ -3,7 +3,6 @@
 ;;* magit
 (require 'magit)
 
-;; TODO: configure magit-blame with evil-mode
 
 (put 'magit-clean 'disabled nil)
 
@@ -329,7 +328,9 @@ start revision."
   "If in a git-controlled file, call `hydra-git/body', otherwise
 proceed to `magit-status'. With prefix arg always call `magit-status'."
   (interactive)
-  (if (and (null current-prefix-arg) (buffer-file-name) (magit-inside-worktree-p t))
+  (if (and (null current-prefix-arg)
+           (or magit-buffer-file-name (buffer-file-name))
+           (magit-inside-worktree-p t))
       (hydra-git/body)
     (call-interactively #'magit-status)))
 
@@ -357,6 +358,12 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 
 ;;* git-commit fill-column
 (setq git-commit-fill-column 70)
+
+;;* evil
+(with-eval-after-load 'evil
+  (add-hook 'git-commit-mode-hook #'evil-insert-state)
+  ;; TODO: configure magit-blame with evil-mode
+  )
 
 ;;* TODO: ibuffer
 
