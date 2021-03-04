@@ -1093,14 +1093,29 @@ TODO: With prefix arg untrace all."
 
 ;;** lispy
 (with-eval-after-load 'lispy
+  (add-hook 'emacs-lisp-mode-hook #'lispy-mode)
+  (add-hook 'lisp-mode-hook #'lispy-mode)
+
+  (defun eval-expression-enable-lispy ()
+    (when (or (eq this-command 'eval-expression)
+              (eq this-command 'pp-eval-dwim)
+              ;; TODO: slime/sldb evals
+              )
+      (lispy-mode 1)))
+  (add-hook 'minibuffer-setup-hook #'eval-expression-enable-lispy)
+
+  (define-key lispy-mode-map (kbd "M-j") nil)
+  (define-key lispy-mode-map (kbd "M-k") nil)
+  (define-key lispy-mode-map (kbd "C-,") nil)
+  (define-key lispy-mode-map (kbd "<return>") 'lispy-alt-line)
+
   (define-key emacs-lisp-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
   (define-key slime-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
   (define-key slime-repl-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
   (define-key emacs-lisp-mode-map (kbd "C-c x") 'hydra-lispy-x/body)
   (define-key slime-mode-map (kbd "C-c x") 'hydra-lispy-x/body)
   (define-key slime-repl-mode-map (kbd "C-c x") 'hydra-lispy-x/body)
-  (define-key slime-mode-map (kbd "M-s") 'lispy-splice)
-  )
+  (define-key slime-mode-map (kbd "M-s") 'lispy-splice))
 
 ;;** eval-in-repl
 (require 'eval-in-repl)

@@ -129,7 +129,8 @@
       aw-scope 'frame
       aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
       avy-style 'pre ;; 'de-bruijn
-      avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v)
+      avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v
+                     ?F ?C ?D ?G ?S ?A ?E ?V)
       lispy-avy-keys avy-keys
       view-read-only t
       slime-description-autofocus t
