@@ -959,12 +959,13 @@ current entry."
   (dired-display-file)
   (next-line (or n 1)))
 
-(defun dired-display-file-and-next-line (&optional n)
+(defun dired-display-file-and-prev-line (&optional n)
   (interactive "p")
   (dired-display-file-and-next-line (- (or n 1))))
 
 (define-key dired-mode-map (kbd "M-o") 'dired-display-file)
 (define-key dired-mode-map (kbd "M-m") 'dired-display-file)
+(define-key dired-mode-map (kbd "f") 'dired-display-file)
 (define-key dired-mode-map (kbd "M-n") 'dired-display-file-and-next-line)
 (define-key dired-mode-map (kbd "M-p") 'dired-display-file-and-prev-line)
 
@@ -1020,7 +1021,7 @@ current entry."
 ;; (global-set-key (kbd "C-x C-o") 'ace-window)
 ;; (global-set-key (kbd "C-x C-o") 'ignore)
 (global-set-key (kbd "C-x C-c") 'ace-window)
-(global-set-key (kbd "C-x C-SPC") 'other-window)
+;; (global-set-key (kbd "C-x C-SPC") 'other-window)
 (global-set-key (kbd "M-c") 'ace-window)
 ;;;
 (global-set-key (kbd "C-x M-w") 'kill-buffer-file-name)
@@ -1038,6 +1039,8 @@ current entry."
 
 (global-set-key (kbd "C-S-SPC") 'avy-goto-char-timer)
 (global-set-key (kbd "M-SPC") 'avy-goto-char-timer)
+(global-set-key (kbd "C-x C-SPC") 'avy-goto-char-timer)
+(global-set-key (kbd "<f13>") 'avy-goto-char-timer)
 (global-set-key (kbd "M-<tab>") 'other-window)
 (global-set-key (kbd "C-t") 'avy-goto-char-2)
 ;; (global-set-key (kbd "M-t") 'avy-goto-symbol-1)
