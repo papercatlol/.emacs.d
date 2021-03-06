@@ -45,7 +45,7 @@
      slurp/barf-cp
      additional-insert
      (escape insert)
-     ;;   (additional-movement normal visual motion)
+     ;; (additional-movement normal visual motion)
      )))
 
 ;;* `EVIL-MC'
@@ -423,7 +423,8 @@
 
   (evil-define-key 'insert paredit-mode-map
     (kbd "M-e") 'paredit-forward
-    (kbd "C-h") 'paredit-backward-delete)
+    ;; (kbd "C-h") 'paredit-backward-delete
+    )
 
   (evil-define-key 'motion paredit-mode-map
     (kbd "C-f") 'paredit-forward
