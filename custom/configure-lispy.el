@@ -1,6 +1,8 @@
+;;* disable C-digits theme
 (setq lispy-key-theme '(special lispy))
 (lispy-set-key-theme lispy-key-theme)
 
+;;* hooks
 (add-hook 'emacs-lisp-mode-hook #'lispy-mode)
 (add-hook 'lisp-mode-hook #'lispy-mode)
 
@@ -12,13 +14,13 @@
     (lispy-mode 1)))
 (add-hook 'minibuffer-setup-hook #'eval-expression-enable-lispy)
 
-;; unmap
+;;* unmap
 (define-key lispy-mode-map (kbd "M-j") nil)
 (define-key lispy-mode-map (kbd "M-k") nil)
 (define-key lispy-mode-map (kbd "C-,") 'er/contract-region)
 
-;; 'special' bindings - these make more sense to me
-;; w/b
+;;* 'special' bindings - these make more sense to me
+;;** w/b
 (defun lispy-down-or-mark-car (arg)
   (interactive "p")
   (lispy--remember)
@@ -39,7 +41,7 @@
 (lispy-define-key lispy-mode-map (kbd "b") 'lispy-up-or-mark-last)
 (lispy-define-key lispy-mode-map (kbd ",") 'lispy-back)
 
-;; W/S & H/L
+;;** wW/sS & H/L
 (defun lispy-goto-symbol-in-line ()
   (interactive)
   (when (region-active-p)
@@ -49,20 +51,23 @@
 (setq lispy-avy-style-symbol 'at-full)
 
 (lispy-define-key lispy-mode-map (kbd "s") 'lispy-goto-symbol-in-line)
-
-(define-key lispy-mode-map (kbd "W") 'special-lispy-move-up)
 (lispy-define-key lispy-mode-map (kbd "S") 'lispy-ace-symbol-replace)
-(define-key lispy-mode-map (kbd "M-s") 'special-lispy-splice)
+(lispy-define-key lispy-mode-map (kbd "M-s") 'lispy-splice)
+
+;; TODO: undecided on W. maybe smth like `lispy-mark-first-list'?
+(lispy-define-key lispy-mode-map (kbd "W") 'lispy-mark-list)
 
 ;; MAYBE use lispyville-drag-forward/backward instead
-(define-key lispy-mode-map (kbd "H") 'special-lispy-move-up)
-(define-key lispy-mode-map (kbd "L") 'special-lispy-move-down)
+(lispy-define-key lispy-mode-map (kbd "H") 'lispy-move-up)
+(lispy-define-key lispy-mode-map (kbd "L") 'lispy-move-down)
 
-(define-key lispy-mode-map (kbd "?") 'special-lispy-convolute)
+;;** paredit-like bindings
+(lispy-define-key lispy-mode-map (kbd "?") 'lispy-convolute)
+(define-key lispy-mode-map (kbd "M-?") 'lispy-convolute)
 (define-key lispy-mode-map (kbd "M-(") 'lispy-wrap-round)
 (define-key lispy-mode-map (kbd "M-9") 'lispy-wrap-round)
-;; avy hacks
 
+;;** avy-window-list-wrapper: add 'other option to avy-all-windows
 (defun avy-window-list-wrapper (fn)
   "Removes current window from window list if `avy-all-windows'
 is 'other."
@@ -70,6 +75,8 @@ is 'other."
       (remove (selected-window) (window-list))
     (funcall fn)))
 (advice-add 'avy-window-list :around #'avy-window-list-wrapper)
+
+;;** tT
 (defun lispy-ace-first-paren (flip-windows)
   "Go to first paren on the line. TODO: nth paren on the line?"
   (interactive "P")
@@ -93,22 +100,26 @@ is 'other."
       (avy-process candidates))))
 
 (lispy-define-key lispy-mode-map (kbd "t") 'lispy-ace-first-paren)
+(global-set-key (kbd "M-t") 'lispy-ace-first-paren)
+(lispy-define-key lispy-mode-map (kbd "T") 'lispy-teleport)
 
-(define-key lispy-mode-map (kbd "T") 'special-lispy-teleport)
+;;** cC
 (lispy-define-key lispy-mode-map (kbd "c") 'lispy-kill-at-point)
-(define-key lispy-mode-map (kbd "C") 'special-lispy-clone)
+(lispy-define-key lispy-mode-map (kbd "C") 'lispy-clone)
+
+;;** D (experimental, probably better to delete sexp at point and empty newlines
+(lispy-define-key lispy-mode-map (kbd "D") 'lispyville-delete-whole-line)
+
+;;** C-h/DEL
 (define-key lispy-mode-map (kbd "C-h") 'lispy-delete-backward)
 (when (fboundp 'evil-define-key)
   (evil-define-key '(insert) paredit-mode-map
     (kbd "C-h") 'lispy-delete-backward))
+(define-key lispy-mode-map (kbd "DEL") 'ignore)
 
-;; D (experimental, probably better to delete sexp at point and empty newlines
-(lispy-define-key lispy-mode-map (kbd "D") 'lispyville-delete-whole-line)
-
-;; global bindings
+;;** other global bindings
 (define-key lispy-mode-map (kbd "<return>") 'lispy-right)
 (define-key lispy-mode-map (kbd "RET") 'lispy-newline-and-indent)
-(define-key lispy-mode-map (kbd "DEL") 'ignore)
 (define-key lispy-mode-map (kbd "M-<return>") 'lispy-alt-line)
 (define-key emacs-lisp-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
 (define-key slime-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
