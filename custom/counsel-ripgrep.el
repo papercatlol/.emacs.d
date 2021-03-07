@@ -54,15 +54,15 @@
 (define-key rg-mode-map (kbd "C-j") 'compilation-display-next-error)
 (define-key rg-mode-map (kbd "C-k") 'compilation-display-previous-error)
 (define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
-(define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
-(define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
-(define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
-(define-key rg-mode-map (kbd "C-x C-/") 'rg-menu)
+(define-key rg-mode-map (kbd "M") 'rg-menu)
 (define-key rg-mode-map (kbd "S") 'rg-save-search)
-(define-key rg-mode-map (kbd "{") 'rg-prev-file)
-(define-key rg-mode-map (kbd "}") 'rg-next-file)
+(define-key rg-mode-map (kbd "[") 'rg-prev-file)
+(define-key rg-mode-map (kbd "]") 'rg-next-file)
 (define-key rg-mode-map (kbd "L") 'rg-rerun-change-literal)
 (define-key rg-mode-map (kbd "C-c f") 'rg-rerun-change-files)
+
+(global-set-key (kbd "M-g /") 'rg)
+(global-set-key (kbd "M-g M-/") 'rg-menu)
 
 ;;* counsel-rg-dir
 (defun counsel-rg-dir (&optional initial-input initial-directory extra-rg-args rg-prompt)
