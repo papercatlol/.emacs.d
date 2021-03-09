@@ -112,10 +112,33 @@ is 'other."
 
 ;;** C-h/DEL
 (define-key lispy-mode-map (kbd "C-h") 'lispy-delete-backward)
+
 (when (fboundp 'evil-define-key)
   (evil-define-key '(insert) paredit-mode-map
     (kbd "C-h") 'lispy-delete-backward))
+
 (define-key lispy-mode-map (kbd "DEL") 'ignore)
+
+;;** slime
+(defun lispy-slime-init ()
+  "Unbind/remap lispy keys for slime only."
+  (with-minor-mode-map-overriding (map lispy-mode)
+    (define-key map (kbd "M-.") nil)))
+
+(add-hook 'slime-mode-hook #'lispy-slime-init)
+
+;;** make C-a jump to indentation first
+(defun lispy-back-to-indentation ()
+  "If at indentation, move to beginning of line, else forward to
+`back-to-indentation'. Reveal outlines."
+  (interactive)
+  (lispy--ensure-visible)
+  (let ((pos (point)))
+    (back-to-indentation)
+    (when (eq pos (point))
+      (move-beginning-of-line 1))))
+
+(define-key lispy-mode-map (kbd "C-a") 'lispy-back-to-indentation)
 
 ;;** other global bindings
 (define-key lispy-mode-map (kbd "<return>") 'lispy-right)
