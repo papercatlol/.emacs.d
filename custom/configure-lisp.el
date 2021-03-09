@@ -533,7 +533,15 @@ prefix arg or if INTERNAL is non-nil include internal symbols."
             (slime-symbol-at-point))))
         (t (slime-symbol-at-point))))
 
-(defalias 'slime-read-symbol-name 'slime-read-symbol-name-global)
+(advice-add 'slime-read-symbol-name :override #'slime-read-symbol-name-global)
+
+(defun slime-symbol-at-point-skip-parens (orig-fn)
+  "Handle cases like |(((symbol or symbol)))| where | is the cursor position."
+  (save-excursion
+    (skip-chars-forward "(")
+    (skip-chars-backward ")")
+    (funcall orig-fn)))
+(advice-add 'slime-symbol-at-point :around #'slime-symbol-at-point-skip-parens)
 
 (defun slime--bounds-of-region-or-symbol ()
   (if (region-active-p)
