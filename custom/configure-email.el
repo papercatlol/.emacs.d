@@ -79,6 +79,7 @@
 ;;* getting mail
 (setq mu4e-get-mail-command "offlineimap")
 (setq mu4e-update-interval 180)
+(setq mu4e-hide-index-messages t)
 
 ;;* mu4e-context
 (setq mu4e-context-policy 'pick-first)
@@ -205,7 +206,7 @@ all maildirs under `mu4e-maildir'."
 
 ;;* mu4e-alert
 (mu4e-alert-set-default-style 'libnotify)
-(setq mu4e-alert-email-notification-types '(count))
+(setq mu4e-alert-email-notification-types '(count subjects))
 
 (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
 
