@@ -720,14 +720,14 @@ Else narrow-to-defun."
     (message "Copied %d lines." (count-lines (car bounds) (cdr bounds)))))
 
 ;;* pulse-cursor
-(cl-defun pulse-cursor (&key (width 1) (face 'cursor) (delay .05))
+(cl-defun pulse-cursor (&key (width 1) (face 'cursor) (delay .01))
   (let* ((pulse-delay delay)
          (pos (point))
          (beg (max (line-beginning-position) (- pos width)))
          (end (min (line-end-position) (+ pos width))))
     (pulse-momentary-highlight-region beg end face)))
 
-(cl-defun pulse-current-line (&key (face 'cursor) (delay .02))
+(cl-defun pulse-current-line (&key (face 'cursor) (delay .01))
   (let ((pulse-delay delay))
     (pulse-momentary-highlight-one-line (point) face)))
 
