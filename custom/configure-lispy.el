@@ -3,7 +3,11 @@
 (lispy-set-key-theme lispy-key-theme)
 
 ;;* lispy-x hydra
-(setq lispy-x-default-verbosity 1)
+(setq lispy-x-default-verbosity 0)
+
+(defhydra+ hydra-lispy-x (:exit t :hint 0.3 :columns e)
+  ("M" lispy-multiline "m-line")
+  ("O" lispy-oneline "1-line"))
 
 ;;* hooks
 (add-hook 'emacs-lisp-mode-hook #'lispy-mode)
@@ -23,7 +27,8 @@
 (define-key lispy-mode-map (kbd "M-k") nil)
 (define-key lispy-mode-map (kbd "C-,") 'er/contract-region)
 
-;;* 'special' bindings - these make more sense to me
+;;* 'special' bindings
+;; (these make more sense to me)
 ;;** w/b
 (defun lispy-down-or-mark-car (arg)
   (interactive "p")
@@ -127,6 +132,24 @@ is 'other."
 
 (define-key lispy-mode-map (kbd "DEL") 'ignore)
 
+;;** O
+(defun lispy-left-and-newline (arg)
+  "Call `lispy-left' ARG times, then open a newline above and
+move cursor there. If at list boundaries treat it like we're
+inside of that list."
+  (interactive "p")
+  (when (or (lispy-left-p) (lispy-right-p))
+    (cond ((plusp arg) (decf arg))
+          ((minusp arg) (incf arg))))
+  (lispy-left arg)
+  (back-to-indentation)
+  (move-beginning-of-line 1)
+  (lispy-newline-and-indent)
+  (previous-line)
+  (indent-according-to-mode))
+
+(lispy-define-key lispy-mode-map "O" 'lispy-left-and-newline)
+
 ;;** slime
 (defun lispy-slime-init ()
   "Unbind/remap lispy keys for slime only."
@@ -150,7 +173,7 @@ is 'other."
 
 ;;** other global bindings
 (define-key lispy-mode-map (kbd "<return>") 'lispy-right)
-(define-key lispy-mode-map (kbd "RET") 'lispy-newline-and-indent)
+(define-key lispy-mode-map (kbd "RET") 'lispy-newline-and-indent-plain)
 (define-key lispy-mode-map (kbd "M-<return>") 'lispy-alt-line)
 (define-key emacs-lisp-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
 (define-key slime-mode-map (kbd "C-c C-x C-x") 'hydra-lispy-x/body)
