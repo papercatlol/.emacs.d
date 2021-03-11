@@ -62,7 +62,6 @@
 (require 'paredit)
 (require 'pcmpl-args)
 (require 'pdf-tools)
-(require 'string-edit)
 (require 'uniquify)
 (require 'wgrep)
 
@@ -976,6 +975,14 @@ current entry."
 ;;* shrink-whitespace
 (global-set-key (kbd "C-c SPC") 'shrink-whitespace)
 (global-set-key (kbd "C-c S-SPC") 'grow-whitespace-around)
+
+;;* string-edit
+(require 'string-edit)
+
+(add-to-list 'load-path (expand-file-name "custom/string-edit-regexp/" user-emacs-directory))
+(require 'string-edit-regexp)
+
+(define-key string-edit-mode-map (kbd "C-c C-r") 'string-edit-toggle-regexp-mode)
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))

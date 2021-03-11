@@ -5,6 +5,7 @@
 ;;* hooks
 (add-hook 'emacs-lisp-mode-hook #'lispy-mode)
 (add-hook 'lisp-mode-hook #'lispy-mode)
+(add-hook 'string-edit-regexp-mode-hook #'lispy-mode)
 
 (defun eval-expression-enable-lispy ()
   (when (or (eq this-command 'eval-expression)
