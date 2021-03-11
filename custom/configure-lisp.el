@@ -1012,6 +1012,8 @@ TODO: With prefix arg untrace all."
 
 (with-eval-after-load 'macrostep
   (define-key macrostep-keymap (kbd "C-f") 'ace-link-macrostep)
+  (define-key macrostep-keymap (kbd "C-c C-q") 'macrostep-collapse-all)
+
   (when (fboundp 'evil-mode)
     ;; From evil-collection-macrostep.el:
     ;; Keymaps don't seem to be populated on first try.
@@ -1021,10 +1023,10 @@ TODO: With prefix arg untrace all."
     (defvar macrostep-keymap)
     (evil-make-overriding-map macrostep-keymap 'normal)
     (evil-add-hjkl-bindings macrostep-keymap 'normal
-                            "u" 'macrostep-collapse
-                            "m" 'macrostep-expand
-                            "<return>" 'macrostep-expand
-                            "<backtab>" 'macrostep-prev-macro)))
+      "u" 'macrostep-collapse
+      "m" 'macrostep-expand
+      "<return>" 'macrostep-expand
+      "<backtab>" 'macrostep-prev-macro)))
 
 ;;* counsel-outline
 (with-eval-after-load 'counsel
