@@ -1137,3 +1137,11 @@ current entry."
 ;;** C-h as Backspace
 (global-set-key (kbd "C-x h") 'help-command)
 (define-key minibuffer-local-map (kbd "C-h") 'backward-delete-char)
+
+;;** C-digit
+(global-set-key (kbd "C-0") 'delete-window)
+(global-set-key (kbd "C-1") 'delete-other-windows-toggle)
+(global-set-key (kbd "C-2") 'split-window-below*)
+(global-set-key (kbd "C-3") 'split-window-right*)
+(global-set-key (kbd "C-4") ctl-x-4-map)
+(global-set-key (kbd "C-5") ctl-x-5-map)
