@@ -217,10 +217,14 @@ If there was an active region, insert it into repl."
 
 ;;* TODO: edebug-mode: make compatible with evil-mode, add hydra
 
-;;* debugger-mode
+;;** debugger-mode
 (with-eval-after-load 'debug
   (define-key debugger-mode-map "j" 'next-line)
   (define-key debugger-mode-map "k" 'previous-line))
+
+;;** hydras in imenu
+(add-hook 'emacs-lisp-mode-hook #'hydra-add-imenu)
+
 
 ;;* slime hacks
 ;;** documentation

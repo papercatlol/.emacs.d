@@ -2,6 +2,9 @@
 (setq lispy-key-theme '(special lispy))
 (lispy-set-key-theme lispy-key-theme)
 
+;;* lispy-x hydra
+(setq lispy-x-default-verbosity 1)
+
 ;;* hooks
 (add-hook 'emacs-lisp-mode-hook #'lispy-mode)
 (add-hook 'lisp-mode-hook #'lispy-mode)
@@ -55,8 +58,11 @@
 (lispy-define-key lispy-mode-map (kbd "S") 'lispy-ace-symbol-replace)
 (lispy-define-key lispy-mode-map (kbd "M-s") 'lispy-splice)
 
-;; TODO: undecided on W. maybe smth like `lispy-mark-first-list'?
-(lispy-define-key lispy-mode-map (kbd "W") 'lispy-mark-list)
+;;** W is a matching command to B = `special-lispy-ediff-regions'
+;; MAYBE map to some ace-jump version of `w' instead
+;; MAYBE message some info about stored buffer/region for verbosity and/or
+;; highlight or blink stored region
+(lispy-define-key lispy-mode-map (kbd "W") 'lispy-store-region-and-buffer)
 
 ;; MAYBE use lispyville-drag-forward/backward instead
 (lispy-define-key lispy-mode-map (kbd "H") 'lispy-move-up)
@@ -66,6 +72,7 @@
 (lispy-define-key lispy-mode-map (kbd "?") 'lispy-convolute)
 (define-key lispy-mode-map (kbd "M-?") 'lispy-convolute)
 (define-key lispy-mode-map (kbd "M-(") 'lispy-wrap-round)
+(define-key lispy-mode-map (kbd "C-9") 'lispy-wrap-round)
 (define-key lispy-mode-map (kbd "M-9") 'lispy-wrap-round)
 
 ;;** avy-window-list-wrapper: add 'other option to avy-all-windows
