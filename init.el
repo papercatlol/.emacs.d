@@ -969,6 +969,10 @@ current entry."
 (define-key dired-mode-map (kbd "M-n") 'dired-display-file-and-next-line)
 (define-key dired-mode-map (kbd "M-p") 'dired-display-file-and-prev-line)
 
+;;* shrink-whitespace
+(global-set-key (kbd "C-c SPC") 'shrink-whitespace)
+(global-set-key (kbd "C-c S-SPC") 'grow-whitespace-around)
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)

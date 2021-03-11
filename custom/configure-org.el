@@ -322,5 +322,6 @@ to ACTION and execute BODY forms."
 
 ;; random keybindings
 (define-key org-mode-map (kbd "C-c C-8") 'org-ctrl-c-star)
+(define-key org-mode-map (kbd "C-c SPC") nil)
 
 (provide 'configure-org)
