@@ -82,7 +82,10 @@
  '(compilation-line-number ((t (:foreground "gray30" :weight bold))))
  '(show-paren-mismatch ((t (:background "firebrick3" :foreground "white" :weight extra-bold))))
  ;; ace-window
- '(aw-leading-char-face ((t (:background "black" :foreground "LimeGreen" :weight extra-bold :height 160))))
+ '(aw-leading-char-face ((t (:background "black"
+                             :foreground "lime green"
+                             :weight extra-bold
+                             :height 120))))
  '(aw-mode-line-face ((t (:foreground "white" :weight extra-bold))))
  '(aw-key-face ((t (:foreground "white" :weight extra-bold))))
  '(popup-tip-face ((t (:inherit font-lock-comment-face))))

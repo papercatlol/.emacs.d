@@ -126,12 +126,16 @@
       inhibit-startup-message t
       wgrep-auto-save-buffer t
       uniquify-buffer-name-style 'forward
+      ;; ace-window
       aw-scope 'frame
+      aw-background (display-graphic-p)
       aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
+      ;; avy
       avy-style 'pre ;; 'de-bruijn
       avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v
                      ?F ?C ?D ?G ?S ?A ?E ?V)
       lispy-avy-keys avy-keys
+      ;;
       view-read-only t
       slime-description-autofocus t
       xref-show-xrefs-function #'ivy-xref-show-xrefs
