@@ -312,7 +312,6 @@
 (evil-define-avy-motion avy-goto-symbol-2 exclusive)
 (evil-define-avy-motion avy-goto-word-2 exclusive)
 
-(global-set-key (kbd "M-t") 'evil-avy-goto-symbol-2)
 (define-key evil-motion-state-map (kbd "S") 'evil-avy-goto-symbol-2)
 
 ;;** man
@@ -370,7 +369,7 @@
   (evil-define-key '(normal insert) lispyville-mode-map
     ;; (kbd "C-t") 'lispy-ace-paren
     (kbd "C-t") 'evil-avy-goto-symbol-2
-    (kbd "M-t") 'lispy-ace-paren
+    ;; (kbd "M-t") 'lispy-ace-paren
     (kbd "M-o") 'lispyville-open-round-below-list
     (kbd "M-i") 'lispyville-insert-at-beginning-of-list
     (kbd "M-a") 'lispyville-insert-at-end-of-list*
@@ -396,7 +395,9 @@
     "gy" 'lispyville-comment-and-clone-dwim
     (kbd "M-R") 'lispyville-raise-list
     "H" 'lispyville-drag-backward
-    "L" 'lispyville-drag-forward)
+    "L" 'lispyville-drag-forward
+    (kbd  "M-h") 'highlight-region-or-symbol
+    (kbd "M-l") 'highlight-lines-matching-regexp-autocolor)
 
   (evil-define-key '(operator visual) lispyville-mode-map
     "s" 'evil-a-paren
@@ -634,5 +635,9 @@
          (evil-multiedit--start-regexp re (point-min) (point-max))))))
 
   (define-key swiper-map (kbd "C-;") 'swiper-evil-multiedit))
+
+;;* undo
+(evil-set-undo-system 'undo-tree)
+(global-undo-tree-mode 1)
 
 (provide 'configure-evil)
