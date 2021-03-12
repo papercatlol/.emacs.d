@@ -5,7 +5,7 @@
 ;;* lispy-x hydra
 (setq lispy-x-default-verbosity 0)
 
-(defhydra+ hydra-lispy-x (:exit t :hint 0.3 :columns e)
+(defhydra+ hydra-lispy-x (:exit t :hint 0.3 :columns 3)
   ("M" lispy-multiline "m-line")
   ("O" lispy-oneline "1-line"))
 
@@ -61,7 +61,7 @@
 
 (lispy-define-key lispy-mode-map (kbd "s") 'lispy-goto-symbol-in-line)
 (lispy-define-key lispy-mode-map (kbd "S") 'lispy-ace-symbol-replace)
-(lispy-define-key lispy-mode-map (kbd "M-s") 'lispy-splice)
+(define-key lispy-mode-map (kbd "M-s") 'lispy-splice)
 
 ;;** W is a matching command to B = `special-lispy-ediff-regions'
 ;; MAYBE map to some ace-jump version of `w' instead

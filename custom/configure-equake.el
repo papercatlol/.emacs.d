@@ -32,7 +32,7 @@
 (face-spec-set 'equake-shell-type-shell '((t (:foreground "white" :background "black"))))
 
 ;;* equake-pop
-(setq (equake-default-shell 'shell))
+(setq equake-default-shell 'shell)
 
 (defun equake-pop ()
   "Open equake tab for current directory in other window."

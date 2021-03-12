@@ -309,6 +309,7 @@
 
 (global-set-key (kbd "C-h h") 'toggle-help-window)
 (global-set-key (kbd "C-h k") #'helpful-key)
+(global-set-key (kbd "<f2>") #'helpful-key)
 
 ;;* windows
 ;;** display-buffer-alist
@@ -414,6 +415,7 @@ With prefix arg, call `balance-windows-area'."
 (global-set-key (kbd "C-S-q") 'delete-window)
 (global-set-key (kbd "C-M-1") 'winner-undo)
 (global-set-key (kbd "C-M-2") 'winner-redo)
+(global-set-key (kbd "C-M-3") 'rotate-frame-anticlockwise)
 
 ;;** window-as-frame
 (defun window-as-frame ()
@@ -554,12 +556,13 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 ;; Distinguish C-i and keyboard tab key
 (define-key input-decode-map (kbd "C-i") [C-i])
 
-(global-set-key (kbd "<C-i>") 'hippie-expand)
+;;(global-set-key (kbd "<C-i>") 'hippie-expand)
 (global-set-key (kbd "TAB") 'indent-for-tab-command)
 
 ;;** with-minor-mode-overriding - locally override minor mode keymap
 (cl-defmacro with-minor-mode-map-overriding ((new-map minor-mode) &body body)
   "Create a keymap locally overriding MINOR-MODE keymap and bind it to NEW-MAP inside BODY"
+  (declare (indent defun))
   (let ((old-map (gensym)))
     `(when-let* ((,old-map (alist-get ',minor-mode minor-mode-map-alist))
                  (,new-map ;; (copy-keymap ,old-map)
@@ -929,8 +932,8 @@ current entry."
 ;;** ibuffer
 ;; old M-j: ibuffer-jump-to-filter-group
 (with-eval-after-load 'ibuffer
-  (define-key ibuffer-mode-map (kbd "M-j") 'smooth-scroll/scroll-up-5)
-  (define-key ibuffer-mode-map (kbd "M-k") 'smooth-scroll/scroll-down-5))
+  (define-key ibuffer-mode-map (kbd "M-j") 'smooth-scroll/scroll-up-8)
+  (define-key ibuffer-mode-map (kbd "M-k") 'smooth-scroll/scroll-down-8))
 
 ;;* eww
 (with-eval-after-load 'eww
