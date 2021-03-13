@@ -436,6 +436,19 @@ With prefix arg, call `balance-windows-area'."
 
 (define-key help-map "e" 'toggle-echo-area-messages)
 
+;;* kill-buffer-dwim
+(defun kill-buffer-dwim (select)
+  "With prefix arg behave like regular `kill-buffer', otherwise
+immediately kill current buffer."
+  (interactive "P")
+  (if select
+      (call-interactively #'kill-buffer)
+    (let ((name (buffer-name)))
+      (kill-buffer)
+      (message "Killed buffer %s" name))))
+
+(global-set-key [remap kill-buffer] 'kill-buffer-dwim)
+
 ;;* kludges
 ;; Fix for i3wm(not gaps) and emacs 26 where display doesn't refresh when switching
 ;; to an existing frame in tabbed or stacked layout.
