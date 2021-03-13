@@ -946,7 +946,6 @@ exit with that candidate, otherwise insert SPACE character as usual."
 
 (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
 (define-key swiper-map (kbd "C-:") 'swiper-mc)
-(define-key swiper-map (kbd "C-t") 'swiper-avy)
 (define-key swiper-map (kbd "C-M-y") 'ivy-yank-symbol)
 (define-key ivy-minibuffer-map (kbd "C-,") 'ivy-minibuffer-toggle-symbol-start)
 (define-key ivy-minibuffer-map (kbd "C-.") 'ivy-minibuffer-insert-symbol-end)
@@ -965,9 +964,15 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (define-key ivy-minibuffer-map (kbd "C-p") 'ivy-previous-line-and-call)
 (define-key ivy-minibuffer-map (kbd "C-M-j") 'ivy-next-line-and-call)
 (define-key ivy-minibuffer-map (kbd "C-M-k") 'ivy-previous-line-and-call)
-(define-key ivy-minibuffer-map (kbd "C-t") 'ivy-avy)
-(define-key ivy-minibuffer-map (kbd "S-SPC") 'ivy-avy)
+
+(define-key ivy-minibuffer-map (kbd "C-c g") 'ivy-restrict-to-matches)
+
+(when (require 'ivy-avy nil t)
+  (define-key ivy-minibuffer-map (kbd "C-t") 'ivy-avy)
+  (define-key ivy-minibuffer-map (kbd "S-SPC") 'ivy-avy))
+
 (define-key swiper-map (kbd "S-SPC") 'swiper-avy)
+(define-key swiper-map (kbd "C-t") 'swiper-avy)
 ;; (define-key ivy-minibuffer-map (kbd "M-.") 'ivy-xref-action)
 (define-key ivy-minibuffer-map (kbd "M-.") 'counsel-find-symbol)
 (define-key ivy-minibuffer-map (kbd "M-,") 'counsel--info-lookup-symbol)
