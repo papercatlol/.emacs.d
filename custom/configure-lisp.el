@@ -438,6 +438,7 @@ With negative prefix arg call original `slime-edit-definition'."
 (defun slime-refresh-all-symbols ()
   (interactive)
   (when (slime-connected-p)
+    (message "slime-refresh-all-symbols: refreshing...")
     (slime-eval-async
      `(cl:let ((symbols (cl:make-hash-table))
                (names nil))
@@ -461,6 +462,9 @@ With negative prefix arg call original `slime-edit-definition'."
 
 (defvar slime-refresh-all-symbols-timer
   (run-with-idle-timer 30 t #'slime-refresh-all-symbols))
+
+(define-key slime-mode-map (kbd "C-c <f5>") 'slime-refresh-all-symbols)
+(define-key slime-repl-mode-map (kbd "C-c <f5>") 'slime-refresh-all-symbols)
 
 (defun slime-find-all-symbols (&optional internal)
   "Return symbol-names of symbols from all registered packages."
@@ -513,6 +517,8 @@ With negative prefix arg call original `slime-edit-definition'."
             :keymap slime-ivy-read-map))
 
 (setq slime-completing-read-func #'slime-ivy-read)
+
+(define-key slime-ivy-read-map (kbd "<f5>") 'slime-refresh-all-symbols)
 
 (defun slime-ivy-read--edit-definition ()
   (interactive)
