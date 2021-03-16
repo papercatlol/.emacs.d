@@ -130,6 +130,7 @@
       aw-background (display-graphic-p)
       aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
       ;; avy
+      avy-all-windows 'all-frames
       avy-style 'pre ;; 'de-bruijn
       avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v
                      ?F ?C ?D ?G ?S ?A ?E ?V)
@@ -832,6 +833,8 @@ current entry."
 (require 'em-tramp)
 
 ;;* link-hint
+(defvar link-hint-avy-all-windows nil)
+(defvar link-hint-avy-all-windows-alt 'all-frames)
 (global-set-key (kbd "C-c C-SPC") 'link-hint-open-link)
 (global-set-key (kbd "C-c o") 'link-hint-open-link)
 
