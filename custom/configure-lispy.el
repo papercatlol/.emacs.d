@@ -2,6 +2,9 @@
 (setq lispy-key-theme '(special lispy))
 (lispy-set-key-theme lispy-key-theme)
 
+;;* no lispy-colon magic (might revisit this later)
+(setq lispy-colon-p nil)
+
 ;;* lispy-x hydra
 (setq lispy-x-default-verbosity 0)
 
@@ -12,6 +15,7 @@
 ;;* hooks
 (add-hook 'emacs-lisp-mode-hook #'lispy-mode)
 (add-hook 'lisp-mode-hook #'lispy-mode)
+(add-hook 'slime-repl-mode-hook #'lispy-mode)
 (add-hook 'string-edit-regexp-mode-hook #'lispy-mode)
 
 (defun eval-expression-enable-lispy ()
@@ -61,7 +65,8 @@
 
 (lispy-define-key lispy-mode-map (kbd "s") 'lispy-goto-symbol-in-line)
 (lispy-define-key lispy-mode-map (kbd "S") 'lispy-ace-symbol-replace)
-(define-key lispy-mode-map (kbd "M-s") 'lispy-splice)
+(define-key lispy-mode-map (kbd "M-s") 'lispy-goto-symbol-in-line)
+(define-key lispy-mode-map (kbd "C-c s") 'lispy-splice)
 
 ;;** W is a matching command to B = `special-lispy-ediff-regions'
 ;; MAYBE map to some ace-jump version of `w' instead
@@ -154,9 +159,11 @@ inside of that list."
 (defun lispy-slime-init ()
   "Unbind/remap lispy keys for slime only."
   (with-minor-mode-map-overriding (map lispy-mode)
-    (define-key map (kbd "M-.") nil)))
+    (define-key map (kbd "M-.") nil)
+    (define-key map (kbd "C-j") nil)))
 
 (add-hook 'slime-mode-hook #'lispy-slime-init)
+(add-hook 'slime-repl-mode-hook #'lispy-slime-init)
 
 ;;** make C-a jump to indentation first
 (defun lispy-back-to-indentation ()
@@ -181,6 +188,6 @@ inside of that list."
 (define-key emacs-lisp-mode-map (kbd "C-c x") 'hydra-lispy-x/body)
 (define-key slime-mode-map (kbd "C-c x") 'hydra-lispy-x/body)
 (define-key slime-repl-mode-map (kbd "C-c x") 'hydra-lispy-x/body)
-(define-key slime-mode-map (kbd "M-s") 'lispy-splice)
+(define-key slime-mode-map (kbd "M-s") 'avy-goto-symbol-in-line)
 
 (provide 'configure-lispy)
