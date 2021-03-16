@@ -631,6 +631,22 @@ Else narrow-to-defun."
 (require 'dired-quick-sort)
 (dired-quick-sort-setup)
 
+;;* dired-rsync
+;; TODO: move dired stuff to a separate file
+(require 'dired-rsync)
+
+(define-key dired-mode-map (kbd "r") 'dired-rsync)
+
+;;** show rsync progress in modeline
+(with-eval-after-load 'dired+
+  (defun diredp-rsync-in-mode-name ()
+    (unless (cl-member '(:eval dired-rsync-modeline-status) mode-name :test #'equal)
+      (setq mode-name
+            (append mode-name
+                    `((:eval dired-rsync-modeline-status))))))
+
+  (advice-add 'diredp-nb-marked-in-mode-name :after #'diredp-rsync-in-mode-name))
+
 ;;* enable read-only for emacs sources
 (dir-locals-set-class-variables
  'emacs-src
