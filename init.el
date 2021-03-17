@@ -981,7 +981,7 @@ current entry."
 
 ;;* which-key
 (setq which-key-lighter ""
-      which-key-show-transient-maps t)
+      which-key-show-transient-maps nil)
 (which-key-mode)
 
 ;;* keyfreq

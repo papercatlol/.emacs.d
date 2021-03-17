@@ -59,6 +59,41 @@
 
 ;; (global-evil-mc-mode 1)
 
+;;* `evil-snipe'
+(setq evil-snipe-scope 'whole-line)
+(setq evil-snipe-repeat-scope 'whole-visible)
+(setq evil-snipe-spillover-scope 'whole-visible)
+(setq evil-snipe-repeat-keys nil)
+
+(with-eval-after-load 'evil-snipe
+  ;; Use '-' instead of ';' since it is bound to Ctl via xcape in my setup.
+  (define-key evil-snipe-parent-transient-map "-" 'evil-snipe-repeat)
+  (evil-define-key* 'motion evil-snipe-override-mode-map "-" #'evil-snipe-repeat)
+
+  ;; Experimental bindings. We will see if anything sticks.
+  (global-set-key (kbd "M-F") 'evil-snipe-f)
+  (global-set-key (kbd "M-v") 'evil-snipe-f)
+
+  (defun evil-snipe-avy ()
+    "Jump to a evil-snipe char(s) using avy."
+    (interactive)
+    (when-let ((last-keys (and evil-snipe--last
+                               (second evil-snipe--last))))
+      (let ((avy-all-windows nil))      ; TODO variable for this
+        (case (length last-keys)
+          (1 (avy-goto-char (car last-keys)))
+          (2 (avy-goto-char-2 (car last-keys) (second last-keys)))
+          (otherwise (message "evil-snipe-avy for strings longer
+           that 2 hasn't been implemented yet."))))))
+
+  ;; I wish (evil-snipe--transient-map) interned maps in created...
+  (define-key evil-snipe-parent-transient-map (kbd "C-f") 'evil-snipe-avy))
+
+(let ((avy-all-windows nil))
+  (avy-goto-char (car last-keys)))
+
+(evil-snipe-override-mode 1)
+
 ;;* `DEFUNS'
 ;; -----------------------------------------------------------------------------
 (defun end-of-defun-spammable ()
