@@ -924,7 +924,7 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
 (global-set-key [remap insert-char] 'counsel-unicode-char)
 
-;;** C-h bindings
+;;** Help bindings
 (setq counsel-describe-function-function #'helpful-function)
 (setq counsel-describe-variable-function #'helpful-variable)
 (setq counsel-describe-symbol-function #'helpful-symbol)
@@ -936,10 +936,15 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (define-key counsel-describe-map (kbd "M-,") #'counsel--info-lookup-symbol)
 
 (global-set-key (kbd "C-h <C-i>") 'counsel-info-lookup-symbol)
-(global-set-key (kbd "C-h b") 'counsel-descbinds)
-(global-set-key (kbd "C-h v") 'counsel-describe-variable)
-(global-set-key (kbd "C-h f") 'counsel-describe-function)
 (global-set-key (kbd "C-h C-l") 'counsel-find-library)
+
+;;*** Hyper
+(global-set-key (kbd "H-<C-i>") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "H-b") 'counsel-descbinds)
+(global-set-key (kbd "H-v") 'counsel-describe-variable)
+(global-set-key (kbd "H-f") 'counsel-describe-function)
+(global-set-key (kbd "H-l") 'counsel-find-library)
+(global-set-key (kbd "H-o") 'counsel-describe-symbol)
 
 ;; (global-set-key (kbd "C-h f") 'counsel-describe-function)
 ;; (global-set-key (kbd "C-h v") 'counsel-describe-variable)
