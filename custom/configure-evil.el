@@ -673,6 +673,11 @@
 
 ;;* undo
 (evil-set-undo-system 'undo-tree)
+
+(setq undo-tree-visualizer-diff t)
+(setq undo-tree-visualizer-timestamps t)
+(setq undo-tree-visualizer-relative-timestamps t)
+
 (global-undo-tree-mode 1)
 
 (provide 'configure-evil)
