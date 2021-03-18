@@ -91,6 +91,11 @@
 (add-to-list 'load-path (expand-file-name "local-elisp" user-emacs-directory))
 (require 'local-elisp-init)
 
+;;* git-controlled packages
+(let ((default-directory (expand-file-name "git" user-emacs-directory)))
+  (when (file-exists-p default-directory)
+    (normal-top-level-add-subdirs-to-load-path)))
+
 ;;* global minor modes
 (delete-selection-mode 1)
 (global-hl-todo-mode 1)

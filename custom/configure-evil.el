@@ -94,6 +94,15 @@
 
 (evil-snipe-override-mode 1)
 
+;;* `cycle-region'
+;; https://depp.brause.cc/cycle-region/
+(cycle-region-mode 1)
+
+(define-key cycle-region-preview-map "j" 'cycle-region-forward)
+(define-key cycle-region-preview-map "k" 'cycle-region-backward)
+
+(define-key evil-normal-state-map (kbd "g V") 'cycle-region-preview)
+
 ;;* `DEFUNS'
 ;; -----------------------------------------------------------------------------
 (defun end-of-defun-spammable ()
