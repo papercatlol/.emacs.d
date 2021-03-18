@@ -3,7 +3,7 @@
   "Created 2018-06-04.")
 
 (defface underlined
-    '((t (:underline (:color "tomato"))))
+    '((t (:underline (:color "LightSalmon3"))))
   "Base face for underlined text(e.g. for isearch, grep etc).")
 
 (custom-theme-set-faces
@@ -15,7 +15,7 @@
  '(cursor ((t (:background "LimeGreen"))))
  ;; '(cursor ((t (:background "dark orange"))))
  ;; '(region ((t (:background "DarkGreen" :foreground "black" :weight bold))))
- '(region ((t (:foreground "LightSalmon3" :background "grey30"))))
+ '(region ((t (:foreground "LightSalmon3" :background "gray10"))))
  ;; '(region ((t (:inherit magit-diff-file-heading-selection))))
  '(bold ((t (:inherit (default) :weight bold))))
  '(escape-glyph ((t (:foreground "light gray"))))
@@ -70,7 +70,7 @@
  ;; '(mode-line-inactive ((((class color) (type tty)) (:background "black" :foreground "white")) (t (:background "gray20" :foreground "black" :box nil))))
  '(next-error ((t (:inherit (region)))))
  '(query-replace ((t (:inherit (isearch)))))
- '(secondary-selection ((t (:background "gray15"))))
+ '(secondary-selection ((t (:inherit (region) :background "gray20"))))
  '(shadow ((t (:foreground "gray60"))))
  '(tooltip ((t (:inherit (variable-pitch) :foreground "black" :background "lightyellow"))))
  '(trailing-whitespace ((t (:background "firebrick"))))
