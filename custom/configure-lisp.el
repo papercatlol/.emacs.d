@@ -81,6 +81,18 @@ when cursor is directly inside the in-package form."
 ;;                      (concat (match-string 1 pathname) (downcase (match-string 2 pathname)))
 ;;                    pathname))))))
 
+;;* skip parens when reading symbol-at-point
+(defun symbol-at-point--skip-parens (orig-fn &rest args)
+  "Handle cases like |(((symbol or symbol)))| where | is the cursor position."
+  (save-excursion
+    (skip-chars-forward "(")
+    (skip-chars-backward ")")
+    (apply orig-fn args)))
+
+(advice-add 'slime-symbol-at-point :around #'symbol-at-point--skip-parens)
+(advice-add 'xref-find-definitions :around #'symbol-at-point--skip-parens)
+(advice-add 'elisp-slime-nav-find-elisp-thing-at-point :around #'symbol-at-point--skip-parens)
+
 ;;* Elisp
 ;;** indentation
 ;; It seems easier to use `common-lisp-indent-function' for stuff such as
@@ -544,14 +556,6 @@ prefix arg or if INTERNAL is non-nil include internal symbols."
         (t (slime-symbol-at-point))))
 
 (advice-add 'slime-read-symbol-name :override #'slime-read-symbol-name-global)
-
-(defun slime-symbol-at-point-skip-parens (orig-fn)
-  "Handle cases like |(((symbol or symbol)))| where | is the cursor position."
-  (save-excursion
-    (skip-chars-forward "(")
-    (skip-chars-backward ")")
-    (funcall orig-fn)))
-(advice-add 'slime-symbol-at-point :around #'slime-symbol-at-point-skip-parens)
 
 (defun slime--bounds-of-region-or-symbol ()
   (if (region-active-p)
