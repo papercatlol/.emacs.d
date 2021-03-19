@@ -1157,6 +1157,7 @@ current entry."
   ("g" #'magit-list-repositories "Magit list repositories")
   ("j" #'json-pretty-print-buffer "Json pretty print buffer")
   ("m" #'mu4e "mu4e")
+  ("M" #'mu4e-compose-new "mu4e compose")
   ("w" #'whitespace-mode "whitespace-mode")
   ("W" #'delete-trailing-whitespace "delete-trailing-whitespace")
   )

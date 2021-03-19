@@ -28,7 +28,8 @@
 
   (evil-define-key '(normal) mu4e-headers-mode-map
     "[" 'mu4e-headers-prev-unread
-    "]" 'mu4e-headers-next-unread))
+    "]" 'mu4e-headers-next-unread
+    "q" 'mu4e-headers-query-prev))
 
 ;;* general
 ;; A lot of these are taken from
@@ -38,6 +39,13 @@
       mu4e-compose-signature-auto-include nil
       mu4e-compose-format-flowed t)
 (setq mu4e-confirm-quit nil)
+
+;;* 24-hour time & DD.MM.YY date
+(setq mu4e-headers-time-format "%T")
+(setq mu4e-headers-date-format "%d.%m.%y")
+(setq mu4e-headers-long-date-format "%A %d %b %Y %T")
+(setq mu4e-view-date-format "%A %d %b %Y %T")
+(setq mu4e-date-format-long "%A %d %b %Y %T")
 
 ;; to view selected message in the browser, no signin, just html mail
 (add-to-list 'mu4e-headers-actions
