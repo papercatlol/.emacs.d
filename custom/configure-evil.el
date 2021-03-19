@@ -577,13 +577,6 @@
 (define-key evil-visual-state-map (kbd "C-c i") 'edit-indirect-region)
 (define-key evil-normal-state-map (kbd "C-n") 'counsel-buffers-other-frame)
 (define-key evil-motion-state-map (kbd "C-v") nil)
-(define-key evil-normal-state-map (kbd "1") 'delete-other-windows-toggle)
-(define-key evil-normal-state-map (kbd "2") 'split-window-below)
-(define-key evil-normal-state-map (kbd "3") 'split-window-right)
-(define-key evil-normal-state-map (kbd "4") ctl-x-4-map)
-(define-key evil-normal-state-map (kbd "5") ctl-x-5-map)
-(define-key evil-normal-state-map (kbd "9") 'window-toggle-side-windows)
-(define-key evil-normal-state-map (kbd "0") 'delete-window)
 
 ;;** evil keymaps bullshit
 (dolist (map (list helpful-mode-map help-mode-map
