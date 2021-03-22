@@ -29,6 +29,7 @@
 ;;* unmap
 (define-key lispy-mode-map (kbd "M-j") nil)
 (define-key lispy-mode-map (kbd "M-k") nil)
+(define-key lispy-mode-map (kbd "M-.") nil)
 (define-key lispy-mode-map (kbd "C-,") 'er/contract-region)
 
 ;;* 'special' bindings

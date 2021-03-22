@@ -90,8 +90,7 @@ when cursor is directly inside the in-package form."
     (apply orig-fn args)))
 
 (advice-add 'slime-symbol-at-point :around #'symbol-at-point--skip-parens)
-(advice-add 'xref-find-definitions :around #'symbol-at-point--skip-parens)
-(advice-add 'elisp-slime-nav-find-elisp-thing-at-point :around #'symbol-at-point--skip-parens)
+(advice-add 'elisp-slime-nav--read-symbol-at-point :around #'symbol-at-point--skip-parens)
 
 ;;* Elisp
 ;;** indentation
