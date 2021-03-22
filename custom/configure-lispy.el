@@ -165,6 +165,22 @@ inside of that list."
 (add-hook 'slime-mode-hook #'lispy-slime-init)
 (add-hook 'slime-repl-mode-hook #'lispy-slime-init)
 
+;;*** fix lispy--exit-string jumping to random places in slime repl
+(defun lispy--exit-string-slime-repl-wrapper (fn &rest args)
+  (when (eq major-mode 'slime-repl-mode)
+    (save-restriction
+      (when-let ((boundary
+                  (if (and (boundp 'slime-repl-input-start-mark)
+                           slime-repl-input-start-mark
+                           (>= (point) slime-repl-input-start-mark))
+                      slime-repl-input-start-mark
+                    (save-excursion (slime-repl-find-prompt t)
+                                    (point)))))
+        (narrow-to-region slime-repl-input-start-mark (point)))
+      (apply fn args))))
+
+(advice-add 'lispy--exit-string :around #'lispy--exit-string-slime-repl-wrapper)
+
 ;;** make C-a jump to indentation first
 (defun lispy-back-to-indentation ()
   "If at indentation, move to beginning of line, else forward to
