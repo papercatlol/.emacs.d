@@ -29,6 +29,7 @@
                        ;; slime-uncompiled-fringe
                        slime-tramp
                        slime-xref-browser
+                       slime-c-p-c
                        ))
 (slime-setup slime-contribs)
 
@@ -842,6 +843,15 @@ Also always use `kill-region' instead of `delete-region'."
 
 (define-key slime-repl-mode-map [remap slime-repl-kill-input] 'slime-repl-kill-input-dwim)
 
+;;* slime-c-p-c.el completion
+;; Use ivy instead of a completion buffer
+(pushnew 'slime-c-p-c-completion-at-point slime-completion-at-point-functions)
+
+(defun slime-display-completions-ivy (completions beg end)
+  (ivy-completion-in-region beg end completions))
+
+(advice-add 'slime-display-or-scroll-completions :override #'slime-display-completions-ivy)
+
 ;;* evaluation(eros)
 ;; Display overlays with evaluation results
 (with-eval-after-load 'eros
@@ -850,8 +860,8 @@ Also always use `kill-region' instead of `delete-region'."
     (destructuring-bind (output value)
         (slime-eval `(swank:eval-and-grab-output ,(slime-expression-at-point)))
       (eros--make-result-overlay (concat output value)
-                                 :where (point)
-                                 :duration eros-eval-result-duration)))
+        :where (point)
+        :duration eros-eval-result-duration)))
 
   (define-key slime-mode-map (kbd "C-x C-e") 'slime-eval-last-expression-eros)
   (define-key slime-repl-mode-map (kbd "C-x C-e") 'slime-eval-last-expression-eros))
@@ -1054,6 +1064,9 @@ TODO: With prefix arg untrace all."
   (define-key keymap [remap slime-edit-definition] 'slime-edit-definition-ivy)
   (define-key keymap [remap slime-edit-definition-other-window] 'slime-edit-definition-other-window-ivy)
   (define-key keymap [remap slime-edit-definition-other-frame] 'slime-edit-definition-other-frame-ivy))
+
+(define-key slime-parent-map (kbd "C-4 .") 'slime-edit-definition-other-window-ivy)
+(define-key slime-parent-map (kbd "C-5 .") 'slime-edit-definition-other-frame-ivy)
 
 (dolist (keymap (list sldb-mode-map slime-inspector-mode-map slime-trace-dialog-mode-map slime-xref-mode-map))
   (define-key keymap (kbd "k") 'previous-line)
