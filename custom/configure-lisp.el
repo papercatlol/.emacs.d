@@ -63,25 +63,6 @@ when cursor is directly inside the in-package form."
 ;;* lispy
 (require 'configure-lispy)
 
-;; Virtual pathnames resolution. Lisp printer upcases file paths
-;; which kinda fucks up unix filenames. This was an attempt to mitigate it.
-;; TODO: fix regex
-;; upper -> lower pathname tail
-;; (setq slime-filename-translations
-;;       (list (list
-;;              ".*"
-;;              #'downcase
-;;              (lambda (pathname)
-;;                (let ((case-fold-search nil))
-;;                  (message (format "path::\"%s\"" pathname))
-;;                  (if (string-match (rx line-start
-;;                                        (group (minimal-match (1+ any)))
-;;                                        (group (1+ "/" (1+ (or upper "."))))
-;;                                        line-end)
-;;                                    pathname)
-;;                      (concat (match-string 1 pathname) (downcase (match-string 2 pathname)))
-;;                    pathname))))))
-
 ;;* skip parens when reading symbol-at-point
 (defun symbol-at-point--skip-parens (orig-fn &rest args)
   "Handle cases like |(((symbol or symbol)))| where | is the cursor position."
@@ -524,7 +505,7 @@ With negative prefix arg call original `slime-edit-definition'."
             :predicate predicate
             :require-match require-match
             :initial-input initial-input
-            :history hist
+            :history (or hist 'slime-minibuffer-history)
             :def def
             :keymap slime-ivy-read-map))
 
@@ -851,6 +832,17 @@ Also always use `kill-region' instead of `delete-region'."
   (ivy-completion-in-region beg end completions))
 
 (advice-add 'slime-display-or-scroll-completions :override #'slime-display-completions-ivy)
+
+;;* sldb-fancy-break
+;; TODO: track/toggle breaks, highlight functions with breaks/traces etc
+;; TODO: slime-read-function-name
+(defun sldb-fancy-break (name)
+  "Set a breakpoint at the start of the function NAME."
+  (interactive (list (slime-read-symbol-name "Break on enter: ")))
+  (slime-eval-async `(swank:sldb-break ,name)
+    (lambda (msg) (message "%s" msg))))
+
+(define-key slime-parent-map (kbd "C-c B") 'sldb-fancy-break)
 
 ;;* evaluation(eros)
 ;; Display overlays with evaluation results
