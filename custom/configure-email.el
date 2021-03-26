@@ -263,5 +263,26 @@ all maildirs under `mu4e-maildir'."
 
 (define-key mu4e-headers-mode-map (kbd "{") 'mu4e-headers-first-unread)
 
+;;* search-narrow: set initial filter to `bug-reference' keyword at point
+(defun mu4e-headers-search-narrow+bug-reference (filter)
+  "Like `mu4e-headers-search-narrow', but set initial filter to
+`bug-reference' match in current message's subject."
+  (interactive
+   (list (read-string (mu4e-format "Narrow down to: ")
+                      (when-let* ((regexp (and bug-reference-mode
+                                               bug-reference-bug-regexp))
+                                  (msg (mu4e-message-at-point t))
+                                  (subject (mu4e-message-field msg :subject))
+                                  (keyword (and (string-match regexp subject)
+                                                (match-string-no-properties 0 subject))))
+                        (format "subject:%s" keyword))
+                      'mu4e~headers-search-hist nil t)))
+  (unless mu4e~headers-last-query
+    (mu4e-warn "There's nothing to filter"))
+  (mu4e-headers-search
+   (format "(%s) AND (%s)" mu4e~headers-last-query filter)))
+
+(advice-add 'mu4e-headers-search-narrow :override #'mu4e-headers-search-narrow+bug-reference)
+
 
 (provide 'configure-email)
