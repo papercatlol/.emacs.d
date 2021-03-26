@@ -67,8 +67,25 @@
 ;;use mu mkdir  /home/il/Maildir/acc/queue to set up first
 (setq smtpmail-queue-mail nil)  ;; start in normal mode
 
-;;from the info manual
-(setq mu4e-attachment-dir "/home/il/Downloads/")
+;;* saving attachments
+;; TODO: something clever with choosing where to save attachments
+(setq mu4e-save-multiple-attachments-without-asking t)
+(setq mu4e-attachment-dir "/home/il/Downloads/mu4e")
+
+(defun mu4e-choose-attachment-dir ()
+  "Read and create a directory path relative to
+`mu4e-attachment-dir'."
+  (when-let* ((default-directory mu4e-attachment-dir)
+              (dir (read-directory-name "mu4e attachment dir: ")))
+    (unless (file-exists-p dir) (make-directory dir t))
+    (file-name-as-directory dir)))
+
+(defun mu4e~view-request-attachments-dir-wrapper (path)
+  (let ((mu4e-attachment-dir path))
+    (mu4e-choose-attachment-dir)))
+
+(advice-add 'mu4e~view-request-attachments-dir :override
+            #'mu4e~view-request-attachments-dir-wrapper)
 
 ;;* compose in a new frame
 (setq mu4e-compose-in-new-frame t)
