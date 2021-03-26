@@ -24,6 +24,11 @@
 (unless (file-exists-p "~/.emacs.d/elpa/archives/melpa")
   (package-refresh-contents))
 
+;;* git-controlled packages
+(let ((default-directory (expand-file-name "git" user-emacs-directory)))
+  (when (file-exists-p default-directory)
+    (normal-top-level-add-subdirs-to-load-path)))
+
 (server-start)
 
 ;;** GC hacks
@@ -90,11 +95,6 @@
 ;;* ./local-elisp - private/work configuration
 (add-to-list 'load-path (expand-file-name "local-elisp" user-emacs-directory))
 (require 'local-elisp-init)
-
-;;* git-controlled packages
-(let ((default-directory (expand-file-name "git" user-emacs-directory)))
-  (when (file-exists-p default-directory)
-    (normal-top-level-add-subdirs-to-load-path)))
 
 ;;* global minor modes
 (delete-selection-mode 1)
