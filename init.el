@@ -317,6 +317,13 @@
 (global-set-key (kbd "C-h k") #'helpful-key)
 (global-set-key (kbd "<f2>") #'helpful-key)
 
+;;** override default describe functions
+(advice-add 'describe-function :override #'helpful-function)
+(advice-add 'describe-variable :override #'helpful-variable)
+(advice-add 'describe-command  :override #'helpful-callable)
+(advice-add 'describe-key      :override #'helpful-key)
+(advice-add 'describe-symbol   :override #'helpful-symbol)
+
 ;;* windows
 ;;** display-buffer-alist
 ;; Inspired by: https://protesilaos.com/codelog/2020-01-07-emacs-display-buffer/
