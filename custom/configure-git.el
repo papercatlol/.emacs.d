@@ -93,6 +93,9 @@ Else call `magit-diff-buffer-file'."
       (diff-buffer-with-file (current-buffer))
     (message "Buffer is not modified.")))
 
+(global-set-key (kbd "C-x =") 'diff-buffer-dwim)
+(global-set-key [left-fringe mouse-1] 'diff-buffer-dwim)
+
 ;;** ediff
 (setq ediff-split-window-function 'split-window-horizontally)
 (setq-default ediff-ignore-similar-regions t)
@@ -120,9 +123,55 @@ Else call `magit-diff-buffer-file'."
 
 (add-hook 'ediff-keymap-setup-hook 'configure-ediff-keybindings)
 
-;;** keybindings
-(global-set-key (kbd "C-x =") 'diff-buffer-dwim)
-(global-set-key [left-fringe mouse-1] 'diff-buffer-dwim)
+;;*** ediff-region-and-kill-ring
+(defun ediff-region-and-kill-ring (&optional beg end)
+  "If region is active: ediff current region and last string in
+kill ring. Otherwise ediff last and second-to last strings. With
+prefix arg choose string(s) from kill ring interactively."
+  (interactive
+   (when (region-active-p)
+       (list (region-beginning) (region-end))))
+  (let ((string-A nil)
+        (string-B nil))
+    (cond ((and beg end)
+           (setq string-A (buffer-substring-no-properties beg end))
+           (setq string-B (if current-prefix-arg
+                              (completing-read "String B: " kill-ring)
+                            (nth 0 kill-ring))))
+          (current-prefix-arg
+           (setq string-A (completing-read "String A: " kill-ring))
+           (setq string-B (completing-read "String B: " kill-ring)))
+          (t (setq string-A (nth 0 kill-ring))
+             (setq string-B (nth 1 kill-ring))))
+    (-let (((buffer-A end-A) (ediff--prepare-buffer-from-string "*ediff A*" string-A))
+           ((buffer-B end-B) (ediff--prepare-buffer-from-string "*ediff B*" string-B)))
+      (add-hook 'ediff-after-quit-hook-internal
+                (ediff--make-after-quit-fn buffer-A buffer-B))
+      (ediff-regions-internal
+       buffer-A 0 end-A
+       buffer-B 0 end-B
+       nil 'ediff-regions-linewise nil nil))))
+
+(defun ediff--make-after-quit-fn (buffer-A buffer-B)
+  "Make a function that will restore current window configuration
+and kill tmp buffers on call and reset the
+`ediff-after-quit-hook-internal' hook."
+  (let ((window-configuration (current-window-configuration)))
+    (lambda ()
+      (setq ediff-after-quit-hook-internal nil)
+      (set-window-configuration window-configuration)
+      (kill-buffer buffer-A)
+      (kill-buffer buffer-B))))
+
+(defun ediff--prepare-buffer-from-string (buffer-name string)
+  (when-let ((buf (get-buffer-create buffer-name)))
+    (with-current-buffer buf
+      (erase-buffer)
+      (insert string))
+    (list buf (point-max))))
+
+;; TODO: ediff hydra
+(global-set-key (kbd "H-e") 'ediff-region-and-kill-ring)
 
 ;; MAYBE: add hydra
 (global-set-key (kbd "C-x G") 'magit-file-dispatch)
