@@ -567,6 +567,56 @@ otherwise eval ELSE and stay."
 (def-ivy-special counsel-buffers-map "C-a" windmove-left move-beginning-of-line)
 (def-ivy-special counsel-buffers-map "C-d" windmove-right delete-char)
 (def-ivy-special counsel-buffers-map "<C-i>" (funcall counsel-buffers-current-action user-init-file) hippie-expand)
+
+;;* ivy-switch-caller
+;; When calling an ivy command from an active ivy minibuffer, sometimes it
+;; makes more sense to "switch" current command instead of nesting minibuffers.
+(defun ivy-switch-caller (command)
+  "Exit ivy minibuffer, call COMMAND and insert current ivy text."
+  (let ((text ivy-text)
+        (caller (ivy-state-caller ivy-last)))
+    (ivy-quit-and-run
+      (setq unread-command-events (listify-key-sequence text))
+      ;; Otherwise you'll end up with something like this: ^^^foo
+      (let ((ivy-initial-inputs-alist nil))
+        ;; or call-interactively?
+        (funcall command)))))
+
+(defun ivy-switch-caller--intern (caller)
+  (and caller (intern (concat "isc/" (symbol-name caller)))))
+
+(defun unquote-safe (thing)
+  "If THING is a quoted symbol or function, unquote it, else return THING."
+  (if (and (listp thing)
+           (or (eq (car thing) 'quote)
+               (eq (car thing) 'function)))
+      (second thing)
+    thing))
+
+(defmacro ivy-enable-caller-switching (map &rest callers)
+  (declare (indent defun))
+  (cl-labels ((%defun (name caller)
+                `(defun ,name ()
+                   (interactive)
+                   (ivy-switch-caller #',caller)))
+              (%define-key (name caller)
+                `(define-key ,map [remap ,caller] #',name)))
+    `(progn ,@(loop for caller in (mapcar #'unquote-safe callers)
+                    for switcher = (ivy-switch-caller--intern caller)
+                    when switcher
+                      collect (%defun switcher caller)
+                      and collect (%define-key switcher caller)))))
+
+(define-key ivy-minibuffer-map (kbd "C-v") nil)
+
+(ivy-enable-caller-switching ivy-minibuffer-map
+  #'counsel-find-file
+  #'counsel-files
+  #'counsel-buffers
+  #'counsel-describe-variable
+  #'counsel-describe-function
+  #'counsel-describe-symbol)
+
 ;;* toggle-symbol-start/end
 (defvar symbol-start-regex (rx symbol-start))
 
