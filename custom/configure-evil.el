@@ -89,13 +89,11 @@
   ;; I wish (evil-snipe--transient-map) interned maps in created...
   (define-key evil-snipe-parent-transient-map (kbd "C-f") 'evil-snipe-avy))
 
-(let ((avy-all-windows nil))
-  (avy-goto-char (car last-keys)))
-
 (evil-snipe-override-mode 1)
 
 ;;* `cycle-region'
 ;; https://depp.brause.cc/cycle-region/
+(require 'cycle-region)
 (cycle-region-mode 1)
 
 (define-key cycle-region-preview-map "j" 'cycle-region-forward)
@@ -117,6 +115,9 @@
   (if (region-active-p)
       (evil-delete (point) (mark))
     (evil-delete-backward-word)))
+
+(define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
+(define-key minibuffer-local-map (kbd "C-w") 'C-w-dwim)
 
 (defun q-dwim ()
   "Quit window if in read-only, else record a macro."
@@ -190,6 +191,7 @@
       (ivy-recursive-restore))))
 
 ;;** `avy-goto-symbol-in-line'
+;; TODO: extract as a package
 (defun avy-goto-symbol-in-line ()
   "Jump to start of a symbol in current line. Exclude symbol at point."
   (interactive)
@@ -222,8 +224,11 @@
              (cons 'avy-goto-symbol-in-line (list ?f ?c ?d ?g ?s ?a  ?e ?v ?q ?w ?z ?x ?r
                                                   ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\;)))
 
+;; TODO: avy-action-xref, avy-action-documentation
+
 (define-key evil-normal-state-map (kbd "s") 'avy-goto-symbol-in-line)
 (define-key evil-visual-state-map (kbd "S") 'avy-goto-symbol-in-line)
+(global-set-key (kbd "M-s") 'avy-goto-symbol-in-line)
 
 ;;** `evil-move'
 (evil-define-command evil-move-forward (beg end n)
@@ -489,6 +494,7 @@
 (define-key evil-ex-completion-map (kbd "C-k") nil)
 (define-key evil-ex-completion-map (kbd "C-d") nil)
 (define-key evil-ex-completion-map (kbd "C-f") nil)
+(define-key evil-ex-completion-map (kbd "C-h") 'backward-delete-char)
 (define-key swiper-map (kbd "M-;") 'swiper-evil-ex)
 
 ;;** `leader'
@@ -573,7 +579,6 @@
 (define-key evil-normal-state-map "Q" "@q")
 (define-key evil-visual-state-map "Q" ":norm @q RET")
 (define-key evil-visual-state-map "." ":norm . RET")
-(define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
 (define-key evil-visual-state-map (kbd "C-c i") 'edit-indirect-region)
 (define-key evil-normal-state-map (kbd "C-n") 'counsel-buffers-other-frame)
 (define-key evil-motion-state-map (kbd "C-v") nil)
@@ -666,6 +671,8 @@
     "Start evil-multiedit for the whole buffer using current swiper regexp.
 !! NOTE: This won't work if swiper matches have different lengths."
     (interactive)
+    (unless (fboundp 'evil-multiedit--start-regexp)
+      (require 'evil-multiedit))
     (ivy-exit-with-action
      (lambda (_)
        (let ((re (string-join (ivy--split ivy-text) ".*?"))) ; TODO: support ignore-order
