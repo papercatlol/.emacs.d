@@ -11,6 +11,10 @@
 (setq counsel-grep-base-command (concat rg-command " --no-filename %s %s"))
 (setf (alist-get 'counsel-grep ivy-more-chars-alist) 0)
 
+;;** custom type-aliases
+(add-to-list 'rg-custom-type-aliases '("lisp" . "*.cl"))
+(add-to-list 'rg-custom-type-aliases '("cl" . "*.cl *.lisp *.lsp"))
+
 
 ;;* compilation-mode
 ;; MAYBE move this somewhere else
