@@ -1,3 +1,6 @@
+;;* lispy-avy-keys
+(setq lispy-avy-keys avy-keys)
+
 ;;* disable C-digits theme
 (setq lispy-key-theme '(special lispy))
 (lispy-set-key-theme lispy-key-theme)
@@ -14,6 +17,7 @@
 
 ;;* hooks
 (add-hook 'emacs-lisp-mode-hook #'lispy-mode)
+(add-hook 'inferior-emacs-lisp-mode-hook #'lispy-mode)
 (add-hook 'lisp-mode-hook #'lispy-mode)
 (add-hook 'slime-repl-mode-hook #'lispy-mode)
 (add-hook 'string-edit-regexp-mode-hook #'lispy-mode)
@@ -161,7 +165,8 @@ inside of that list."
   "Unbind/remap lispy keys for slime only."
   (with-minor-mode-map-overriding (map lispy-mode)
     (define-key map (kbd "M-.") nil)
-    (define-key map (kbd "C-j") nil)))
+    (define-key map (kbd "C-j") nil)
+    (define-key map (kbd ",") 'lispy-slime-repl-comma)))
 
 (add-hook 'slime-mode-hook #'lispy-slime-init)
 (add-hook 'slime-repl-mode-hook #'lispy-slime-init)
@@ -181,6 +186,17 @@ inside of that list."
       (apply fn args))))
 
 (advice-add 'lispy--exit-string :around #'lispy--exit-string-slime-repl-wrapper)
+
+;;** slime repl comma shortcuts
+(defun lispy-slime-repl-comma ()
+  (interactive)
+  (call-interactively
+   (if (and slime-repl-mode-map
+            (or (not lispy-mode)
+                ;; Too lazy to handle whitespace input, this should be enough.
+                (= (point) (point-max))))
+       #'slime-handle-repl-shortcut
+       #'special-lispy-back)))
 
 ;;** make C-a jump to indentation first
 (defun lispy-back-to-indentation ()
