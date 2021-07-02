@@ -1027,14 +1027,34 @@ current entry."
 (require 'string-edit)
 
 (add-to-list 'load-path (expand-file-name "custom/string-edit-regexp/" user-emacs-directory))
+
+(defun se/string-at-point/escape-override (quote)
+  "Same as orig, but don't escape newlines."
+  (save-excursion
+   (se/escape "\\")
+   (se/escape quote)))
+(advice-add 'se/string-at-point/escape :override #'se/string-at-point/escape-override)
+
 (require 'string-edit-regexp)
 
 (define-key string-edit-mode-map (kbd "C-c C-r") 'string-edit-toggle-regexp-mode)
+
+;;* ansi-colors in compilation buffers
+;; https://stackoverflow.com/questions/3072648/cucumbers-ansi-colors-messing-up-emacs-compilation-buffer
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region (point-min) (point-max))))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
+
+;;** image
+(define-key image-mode-map "j" 'image-next-file)
+(define-key image-mode-map "k" 'image-previous-file)
 
 ;;** ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
