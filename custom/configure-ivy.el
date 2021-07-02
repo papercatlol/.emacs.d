@@ -267,7 +267,7 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
                                                      (locate-dominating-file default-directory ".git")
                                                      default-directory)
                                                default-directory))))
-    (if (counsel--git-root)
+    (if (and (counsel--git-root) (plusp (prefix-numeric-value current-prefix-arg)))
         (counsel-git initial-input)
       (counsel-fd counsel-files-base-cmd
                   :initial-input initial-input
@@ -480,8 +480,11 @@ buffer will be opened(current window, other window, other frame)."
     (:dired-recent (visit-directory item where))
     (:bookmark (visit-bookmark item where))
     (:ivy-view
-     (when (eq :frame where)
-       (select-frame-set-input-focus (make-frame)))
+     (case where
+       (:frame
+        (select-frame-set-input-focus (make-frame)))
+       ('nil
+        (delete-other-windows)))
      (ivy-set-view-recur (second (assoc item ivy-views))))
     (t (cond ((string-prefix-p "{}" item)
               (ivy-new-view item))
@@ -939,6 +942,9 @@ exit with that candidate, otherwise insert SPACE character as usual."
 
 (define-key swiper-map (kbd "C-x C-n") 'swiper-narrow)
 
+;;* counsel-outline
+(global-set-key (kbd "H-s") 'counsel-outline)
+
 ;;* KEYS
 (defhydra hydra-M-g (global-map "M-g")
   "M-g"
@@ -989,7 +995,7 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (global-set-key (kbd "C-h C-l") 'counsel-find-library)
 
 ;;*** Hyper
-(global-set-key (kbd "H-<C-i>") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "H-i") 'counsel-info-lookup-symbol)
 (global-set-key (kbd "H-b") 'counsel-descbinds)
 (global-set-key (kbd "H-v") 'counsel-describe-variable)
 (global-set-key (kbd "H-f") 'counsel-describe-function)
