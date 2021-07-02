@@ -59,12 +59,14 @@
 (require 'delsel)
 (require 'dired-subtree)
 (require 'expand-region)
+(require 'exec-path-from-shell)
 (require 'helpful)
 (require 'hl-todo)
 (require 'ivy-xref)
 (require 'multiple-cursors)
 (require 'paredit)
 (require 'pcmpl-args)
+(require 'pcmpl-git)
 (require 'pdf-tools)
 (require 'uniquify)
 (require 'wgrep)
@@ -134,18 +136,21 @@
       aw-background (display-graphic-p)
       aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
       ;; avy
-      avy-all-windows 'all-frames
+      ;; I'd like to use 'all-frames, but this doesn't work properly with
+      ;; i3wm tabbed layout.
+      avy-all-windows t
       avy-style 'pre ;; 'de-bruijn
       avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v
                      ?F ?C ?D ?G ?S ?A ?E ?V)
-      lispy-avy-keys avy-keys
       ;;
-      view-read-only t
+      comment-padding ""
+      view-read-only nil
       slime-description-autofocus t
       xref-show-xrefs-function #'ivy-xref-show-xrefs
       compilation-scroll-output t
       initial-major-mode 'emacs-lisp-mode
       use-dialog-box nil
+      comint-buffer-maximum-size 8192
       ;; fringe-mode '((4 . 4))
       fringe-mode '((8 . 0))
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
@@ -284,13 +289,16 @@
 (minibuffer-depth-indicate-mode 1)
 
 ;;* pdf-tools
-(pdf-loader-install)
+;;(pdf-tools-install)
 
 (define-key pdf-view-mode-map (kbd "j") 'pdf-view-next-line-or-next-page)
 (define-key pdf-view-mode-map (kbd "k") 'pdf-view-previous-line-or-previous-page)
 
 (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode)
 
+;;* exec-path-from-shell
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
 
 ;;* explain-pause-mode
 (add-to-list 'load-path (expand-file-name "custom/explain-pause-mode/" user-emacs-directory))
@@ -862,7 +870,7 @@ current entry."
 (require 'em-tramp)
 
 ;;* link-hint
-(defvar link-hint-avy-all-windows nil)
+(defvar link-hint-avy-all-windows t)
 (defvar link-hint-avy-all-windows-alt 'all-frames)
 (global-set-key (kbd "C-c C-SPC") 'link-hint-open-link)
 (global-set-key (kbd "C-c o") 'link-hint-open-link)
@@ -1215,3 +1223,6 @@ current entry."
 (global-set-key (kbd "C-3") 'split-window-right*)
 (global-set-key (kbd "C-4") ctl-x-4-map)
 (global-set-key (kbd "C-5") ctl-x-5-map)
+
+;;** Hyper (although some of them are in other files as well)
+(global-set-key (kbd "H-;") 'eval-expression)
