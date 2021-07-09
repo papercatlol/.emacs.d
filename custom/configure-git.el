@@ -131,6 +131,8 @@ prefix arg choose string(s) from kill ring interactively."
   (interactive
    (when (region-active-p)
        (list (region-beginning) (region-end))))
+  (unless (require 'ediff nil t)
+    (error "Can't load ediff.el."))
   (let ((string-A nil)
         (string-B nil))
     (cond ((and beg end)
