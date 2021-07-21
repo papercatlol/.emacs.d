@@ -6,6 +6,10 @@
 
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
 
+;; 1 char is plenty for marks. Need to set this before loading `mu4e' because
+;; other variables are calculated from it.
+(defconst mu4e~mark-fringe-len 1)
+
 (require 'mu4e)
 
 ;;* evil bindings. Some don't work though...
@@ -17,6 +21,7 @@
   (define-key mu4e-view-mode-map "V" 'evil-visual-line)
   (define-key mu4e-view-mode-map "v" 'evil-visual-char-or-expand-region)
   (define-key mu4e-view-mode-map (kbd "C-c v") 'mu4e-view-verify-msg-popup)
+  (define-key mu4e-headers-mode-map "h" 'backward-char)
   (define-key mu4e-headers-mode-map "H" 'mu4e-headers-query-prev)
   (define-key mu4e-headers-mode-map "L" 'mu4e-headers-query-next)
   (define-key mu4e-headers-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
@@ -40,6 +45,44 @@
       mu4e-compose-format-flowed t)
 (setq mu4e-confirm-quit nil)
 
+;;* columns in *mu4e-headers* view
+(setq mu4e-headers-fields
+      '((:human-date . 8)
+        (:flags . 2)
+        (:from . 30)
+        (:subject)
+        ;;(:mailing-list . 10)
+        ))
+
+;;* fancy chars
+(setq mu4e-use-fancy-chars t)
+
+;;** threads
+;; I prefer the original thin characters for threads.
+(setq mu4e-headers-thread-child-prefix '("├>" . "├>"))
+(setq mu4e-headers-thread-last-child-prefix '("└>" . "└>"))
+(setq mu4e-headers-thread-connection-prefix '("│" . "│"))
+(setq mu4e-headers-thread-orphan-prefix '("┬>" . "┬>"))
+(setq mu4e-headers-thread-single-orphan-prefix '("─>" . "─>"))
+(setq mu4e-headers-thread-blank-prefix '(" " . " "))
+;; unchanged
+(setq mu4e-headers-thread-duplicate-prefix '("=" . "≡ "))
+
+;;** flags
+;; Since we're using less characters for the 'flags' column, it's default
+;; name (Flgs) gets shortened to ellipsis.
+(setf (getf (alist-get :flags mu4e-header-info) :shortname)
+      "F")
+
+(setq mu4e-headers-visible-flags
+      '(draft flagged  ;; new
+        passed replied ;; seen
+        trashed attach encrypted
+        signed ;; unread
+        ))
+;;(setq mu4e-headers-attach-mark '("a" . "✉")) ; this symbol is too tall :c
+(setq mu4e-headers-attach-mark '("+" . "+"))
+
 ;;* 24-hour time & DD.MM.YY date
 (setq mu4e-headers-time-format "%T")
 (setq mu4e-headers-date-format "%d.%m.%y")
@@ -49,11 +92,17 @@
 
 ;; to view selected message in the browser, no signin, just html mail
 (add-to-list 'mu4e-headers-actions
-             '("Browser" . mu4e-action-view-in-browser) t)
+             '("browser" . mu4e-action-view-in-browser) t)
 
 (add-to-list 'mu4e-view-actions
-             '("Browser" . mu4e-action-view-in-browser) t)
+             '("browser" . mu4e-action-view-in-browser) t)
 
+;; TODO Need to install some email-to-pdf binary for this to work.
+(add-to-list 'mu4e-headers-actions
+             '("pdf" . mu4e-action-view-as-pdf) t)
+
+(add-to-list 'mu4e-view-actions
+             '("pdf" . mu4e-action-view-as-pdf) t)
 ;;* enable inline images
 (setq mu4e-view-show-images t)
 ;; use imagemagick, if available
@@ -103,7 +152,7 @@
 
 ;;* getting mail
 (setq mu4e-get-mail-command "offlineimap")
-(setq mu4e-update-interval 180)
+(setq mu4e-update-interval 120)
 (setq mu4e-hide-index-messages t)
 
 ;;* mu4e-context
@@ -237,7 +286,9 @@ all maildirs under `mu4e-maildir'."
 
 ;;* larger font in mu4e buffers
 (defun text-scale-increase-1 ()
-  (text-scale-increase 1))
+  (text-scale-increase 1)
+  ;;(set-frame-font "xos4 Terminus-14")
+  )
 
 (add-hook 'mu4e-view-mode-hook #'text-scale-increase-1)
 (add-hook 'mu4e-headers-mode-hook #'text-scale-increase-1)
