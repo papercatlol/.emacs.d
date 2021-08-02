@@ -526,15 +526,18 @@ With negative prefix arg call original `slime-edit-definition'."
 all external symbols if QUERY is non-nil, there is no symbol
 at point or a single prefix arg is supplied. With double
 prefix arg or if INTERNAL is non-nil include internal symbols."
-  (cond ((or current-prefix-arg query (not (slime-symbol-at-point)))
-         (let ((internal (or internal
-                             (= 16 (prefix-numeric-value current-prefix-arg)))))
-           (slime-completing-read
-            prompt
-            (slime-find-all-symbols internal)
-            nil nil
-            (slime-symbol-at-point))))
-        (t (slime-symbol-at-point))))
+  (let ((symbol (slime-symbol-at-point)))
+    (when (string-prefix-p "#:" symbol)
+      (setq symbol (substring symbol 2)))
+    (cond ((or current-prefix-arg query (not symbol))
+           (let ((internal (or internal
+                               (= 16 (prefix-numeric-value current-prefix-arg)))))
+             (slime-completing-read
+              prompt
+              (slime-find-all-symbols internal)
+              nil nil
+              symbol)))
+          (t (slime-symbol-at-point)))))
 
 (advice-add 'slime-read-symbol-name :override #'slime-read-symbol-name-global)
 
