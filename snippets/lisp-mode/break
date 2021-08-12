@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: break
+# key: br
+# expand-env: ((slime-def (when (slime-connected-p) (ignore-errors (concat (slime-definition-at-point) ": ")))))
+# --
+(break "`slime-def`$0")
