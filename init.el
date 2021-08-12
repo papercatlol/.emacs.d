@@ -1056,6 +1056,16 @@ current entry."
     (ansi-color-apply-on-region (point-min) (point-max))))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
+;;* kbd-helper
+(defun kbd-helper ()
+  "Read a key sequence and return it in a format suitable for `kbd'.
+If called interactively, quote and insert it."
+  (interactive)
+  (let ((key (key-description (read-key-sequence "Key Sequence: "))))
+    (if (interactive-p)
+        (insert (format "\"%s\"" key))
+      key)))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
