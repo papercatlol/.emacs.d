@@ -335,5 +335,19 @@ all maildirs under `mu4e-maildir'."
 
 (advice-add 'mu4e-headers-search-narrow :override #'mu4e-headers-search-narrow+bug-reference)
 
+;;* mu4e-headers-mark-for-read-backward
+
+;; Like mu4e-headers-mark-for-read, but move to prev message after marking.
+;; Since mu4e lists most recent messages first, I often find myself going
+;; through them bottom to top.
+(defun mu4e-headers-mark-for-read-backward ()
+  "Set mark MARK on the message at point or on all messages in the
+region if there is a region, then move to the previous message."
+  (interactive)
+  (mu4e-mark-set 'read)
+  (when mu4e-headers-advance-after-mark (mu4e-headers-prev)))
+
+(define-key mu4e-headers-mode-map (kbd "@") 'mu4e-headers-mark-for-read-backward)
+
 
 (provide 'configure-email)
