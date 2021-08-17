@@ -1066,6 +1066,16 @@ If called interactively, quote and insert it."
         (insert (format "\"%s\"" key))
       key)))
 
+;;* json-pretty-print-dwim
+(defun json-pretty-print-dwim ()
+  "Call `json-pretty-print' on the region if it is active or on
+the whole buffer otherwise."
+  (interactive)
+  (call-interactively
+   (if (region-active-p)
+       #'json-pretty-print
+     #'json-pretty-print-buffer)))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -1202,7 +1212,7 @@ If called interactively, quote and insert it."
   ("L" #'display-line-numbers-mode "Display line numbers mode")
   ("K" #'free-keys "Free keys in current buffer")
   ("g" #'magit-list-repositories "Magit list repositories")
-  ("j" #'json-pretty-print-buffer "Json pretty print buffer")
+  ("j" #'json-pretty-print-dwim "Json pretty print")
   ("m" #'mu4e "mu4e")
   ("M" #'mu4e-compose-new "mu4e compose")
   ("w" #'whitespace-mode "whitespace-mode")
