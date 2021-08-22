@@ -477,11 +477,14 @@ immediately kill current buffer."
 (advice-add 'select-frame-set-input-focus :after #'make-frame-visible-advice)
 
 (defun kill-buffer-file-name ()
-  "Add current buffer file name to kill ring."
+  "Add current buffer file name to kill ring. With prefix arg,
+return file name without directory."
   (interactive)
   (when-let ((filename (if (eq major-mode 'dired-mode)
                            default-directory
-                         (buffer-file-name))))
+                         (if current-prefix-arg
+                             (file-name-nondirectory (buffer-file-name))
+                           (buffer-file-name)))))
     (kill-new filename)
     (message "%s" filename)))
 
