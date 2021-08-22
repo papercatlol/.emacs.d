@@ -182,6 +182,7 @@
 	    (mu4e-sent-folder . "/home/il/mail/Papercatlol/Sent Mail")
 	    (mu4e-drafts-folder . "/home/il/mail/Papercatlol/Drafts")
 	    (mu4e-trash-folder . "/home/il/mail/Papercatlol/Trash")
+            (mu4e-inbox-dir . "/Papercatlol/INBOX")
 	    ;; (mu4e-compose-signature . "-Papercatlol")
 	    (mu4e-compose-format-flowed . t)
 	    (smtpmail-queue-dir . "/home/il/mail/Papercatlol/queue")
@@ -356,6 +357,17 @@ region if there is a region, then move to the previous message."
   (when mu4e-headers-advance-after-mark (mu4e-headers-prev)))
 
 (define-key mu4e-headers-mode-map (kbd "@") 'mu4e-headers-mark-for-read-backward)
+
+;;* mu4e-goto-inbox
+(defun mu4e-goto-inbox ()
+  (interactive)
+  (when (and mu4e-inbox-dir
+             (file-exists-p (concat (mu4e-root-maildir) mu4e-inbox-dir)))
+    (mu4e~headers-jump-to-maildir mu4e-inbox-dir)))
+
+(define-key 'mu4e-main-mode-map "I" 'mu4e-goto-inbox)
+(define-key 'mu4e-headers-mode-map "I" 'mu4e-goto-inbox)
+(define-key 'mu4e-view-mode-map "I" 'mu4e-goto-inbox)
 
 
 (provide 'configure-email)
