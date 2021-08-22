@@ -34,6 +34,7 @@
 (define-key lispy-mode-map (kbd "M-j") nil)
 (define-key lispy-mode-map (kbd "M-k") nil)
 (define-key lispy-mode-map (kbd "M-.") nil)
+(define-key lispy-mode-map (kbd ".") nil)
 (define-key lispy-mode-map (kbd "C-,") 'er/contract-region)
 
 ;;* 'special' bindings
@@ -57,7 +58,7 @@
 
 (lispy-define-key lispy-mode-map (kbd "w") 'lispy-down-or-mark-car)
 (lispy-define-key lispy-mode-map (kbd "b") 'lispy-up-or-mark-last)
-(lispy-define-key lispy-mode-map (kbd ",") 'lispy-back)
+(lispy-define-key lispy-mode-map (kbd "C-o") 'lispy-back)
 
 ;;** wW/sS & H/L
 (defun lispy-goto-symbol-in-line ()
@@ -160,6 +161,9 @@ inside of that list."
 
 (lispy-define-key lispy-mode-map "O" 'lispy-left-and-newline)
 
+;;** v
+(define-key lispy-mode-map "v" 'special-lispy-mark-list)
+
 ;;** slime
 (defun lispy-slime-init ()
   "Unbind/remap lispy keys for slime only."
@@ -182,10 +186,35 @@ inside of that list."
                       slime-repl-input-start-mark
                     (save-excursion (slime-repl-find-prompt t)
                                     (point)))))
-        (narrow-to-region slime-repl-input-start-mark (point)))
-      (apply fn args))))
+        (narrow-to-region slime-repl-input-start-mark (point-max)))
+      (apply fn args)))
+  (apply fn args))
 
 (advice-add 'lispy--exit-string :around #'lispy--exit-string-slime-repl-wrapper)
+(advice-add 'lispy--out-forward :around #'lispy--exit-string-slime-repl-wrapper)
+(advice-remove 'lispy--out-forward  #'lispy--exit-string-slime-repl-wrapper)
+
+;;*** don't touch whitespaces - this can trigger `text-read-only' error in repl
+(defun lispy-disable-whitespace-cleanup ()
+  (setq-local lispy-ignore-whitespace t))
+(add-hook 'slime-repl-mode-hook #'lispy-disable-whitespace-cleanup)
+
+;;*** also don't indent
+(add-to-list 'lispy-no-indent-modes 'slime-repl-mode)
+
+;;*** supress `text-read-only' error when indenting in slime-repl
+;; Slime repl has read-only text which triggers an error. This is a lazy solution.
+;;(defun slime-repl-ignore-text-read-only-wrapper (fn &rest args)
+;;  (if (eq major-mode 'slime-repl-mode)
+;;      (condition-case e
+;;          (apply fn args)
+;;        (error
+;;         (when (eq (car e) 'text-read-only)
+;;           (message "Text is read-only."))))
+;;    (apply fn args)))
+
+;;(advice-add 'indent-region :around #'slime-repl-ignore-text-read-only-wrapper)
+;;(advice-remove 'indent-region  #'slime-repl-ignore-text-read-only-wrapper)
 
 ;;** slime repl comma shortcuts
 (defun lispy-slime-repl-comma ()
@@ -196,7 +225,8 @@ inside of that list."
                 ;; Too lazy to handle whitespace input, this should be enough.
                 (= (point) (point-max))))
        #'slime-handle-repl-shortcut
-       #'special-lispy-back)))
+     ;; MAYBE: toggle comma on current sexp
+     #'self-insert-command)))
 
 ;;** make C-a jump to indentation first
 (defun lispy-back-to-indentation ()
