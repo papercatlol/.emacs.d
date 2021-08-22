@@ -1104,7 +1104,9 @@ the whole buffer otherwise."
     "Enable `flyspell-prog-mode' then flyspell current buffer and
 enable `hydra-flyspell'."
     (interactive)
-    (flyspell-prog-mode)
+    (if (derived-mode-p 'prog-mode)
+        (flyspell-prog-mode)
+      (flyspell-mode))
     (flyspell-buffer)
     (hydra-flyspell/body))
 
@@ -1112,6 +1114,21 @@ enable `hydra-flyspell'."
     (interactive)
     (flyspell-mode -1)
     (message "Flyspell off."))
+
+  (defun flyspell-save-to-dictionary ()
+    "Save misspelled word at point to private dictionary."
+    ;; NOTE: aspell usually stores its private dict at ~/.aspell.<lang>.pws
+    ;; Grep `$ aspell dump config` output if unsure.
+    (interactive)
+    (when-let* ((thing (flyspell-get-word))
+                (word (car thing))
+                (start (second thing)))
+      ;; From `ispell-command-loop'.
+      (when (yes-or-no-p (format "Save \"%s\" to private dictionary?" word))
+        (ispell-send-string (concat "*" word "\n"))
+        (setq ispell-pdict-modified-p '(t))
+        (ispell-pdict-save ispell-silently-savep)
+        (flyspell-unhighlight-at start))))
 
   (defhydra hydra-flyspell ()
     "Flyspell"
@@ -1122,6 +1139,7 @@ enable `hydra-flyspell'."
     ("C-f" #'flyspell-mode "Toggle flyspell mode")
     ("t" #'flyspell-mode "Toggle flyspell mode")
     ("a" #'ace-flyspell-jump-word "Ace flyspell")
+    ("i" #'flyspell-save-to-dictionary "Save word to private dictionary")
     ("q" nil "quit")
     ("C-q" #'flyspell-disable "Disable flyspell and quit" :color blue))
 
