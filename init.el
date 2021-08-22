@@ -1091,8 +1091,6 @@ the whole buffer otherwise."
 (setq flyspell-issue-message-flag nil)
 (setq ispell-silently-savep t)          ; Save personal dict w/o confirmation
 
-(add-hook 'git-commit-mode-hook 'flyspell-mode)
-
 (define-key flyspell-mode-map (kbd "C-.") nil)
 (define-key flyspell-mode-map (kbd "C-;") nil)
 (define-key flyspell-mode-map (kbd "C-M-i") nil)

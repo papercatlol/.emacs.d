@@ -436,5 +436,43 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 (define-key diff-mode-map (kbd "C-M-k") 'diff-hunk-prev)
 (define-key diff-mode-map (kbd "C-M-j") 'diff-hunk-next)
 
+;;* flyspell
+(add-hook 'git-commit-mode-hook 'flyspell-mode)
+
+(defvar flyspell-magit-ignored-faces
+  '(magit-diff-removed-highlight
+    magit-section-highlight
+    magit-hash
+    magit-filename
+    magit-diff-file-heading)
+  "List of faces to ignore when spellchecking.")
+
+(defun flyspell-magit-verify ()
+  "Used for `flyspell-generic-check-word-predicate' in programming modes."
+  (unless (eql (point) (point-min))
+    ;; (point) is next char after the word. Must check one char before.
+    (let ((f (get-text-property (1- (point)) 'face)))
+      (not (memq f flyspell-magit-ignored-faces)))))
+
+(defun flyspell-magit-mode ()
+  "Turn on `flyspell-mode' for additions only."
+  (interactive)
+  (setq flyspell-generic-check-word-predicate
+        #'flyspell-magit-verify)
+  (flyspell-mode 1))
+
+(defun magit-flyspell-hydra ()
+  (interactive)
+  (flyspell-magit-mode)
+  (flyspell-buffer)
+  (hydra-flyspell/body))
+
+(define-key magit-mode-map (kbd "C-c C-f") 'magit-flyspell-hydra)
+(define-key magit-diff-mode-map (kbd "C-c C-f") 'magit-flyspell-hydra)
+(define-key magit-log-mode-map (kbd "C-c C-f") 'magit-flyspell-hydra)
+
+;;* magit-go-forward/backward
+(define-key magit-mode-map (kbd "C-c f") 'magit-go-forward)
+(define-key magit-mode-map (kbd "C-c b") 'magit-go-backward)
 
 (provide 'configure-git)
