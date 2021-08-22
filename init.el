@@ -201,6 +201,12 @@
 (setq delete-old-versions 'please-dont)
 (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
 
+;;** desktop (save buffers & window configuration)
+(add-hook 'after-init-hook #'desktop-read)
+(add-hook 'after-init-hook #'desktop-save-mode)
+
+(setq desktop-restore-forces-onscreen nil)
+
 ;;* equake
 (require 'configure-equake)
 
