@@ -30,6 +30,8 @@
                        slime-tramp
                        slime-xref-browser
                        slime-c-p-c
+                       inferior-slime
+                       ;; slime-mrepl
                        ))
 (slime-setup slime-contribs)
 
@@ -813,7 +815,7 @@ With prefix arg, copy toplevel form."
                 (buffer-substring-no-properties beg end)))))
         (t (slime--repl-insert-string (slime-expression-at-point)))))
 
-(define-key slime-mode-map [remap slime-call-defun] 'slime-copy-to-repl)
+(define-key slime-mode-map (kbd "C-c C-y") 'slime-copy-to-repl)
 (define-key slime-repl-mode-map (kbd "C-c C-y") 'slime-copy-to-repl)
 
 (defun slime-repl-kill-input-dwim (&optional all?)
@@ -1089,7 +1091,9 @@ If there was an active region, insert it into repl."
   (define-key keymap [remap slime-edit-definition-other-frame] 'slime-edit-definition-other-frame-ivy))
 
 (define-key slime-parent-map (kbd "C-4 .") 'slime-edit-definition-other-window-ivy)
+(define-key slime-parent-map (kbd "C-4 C-.") 'slime-edit-definition-other-window-ivy)
 (define-key slime-parent-map (kbd "C-5 .") 'slime-edit-definition-other-frame-ivy)
+(define-key slime-parent-map (kbd "C-5 C-.") 'slime-edit-definition-other-frame-ivy)
 
 (dolist (keymap (list sldb-mode-map slime-inspector-mode-map slime-trace-dialog-mode-map slime-xref-mode-map))
   (define-key keymap (kbd "k") 'previous-line)
@@ -1119,6 +1123,9 @@ If there was an active region, insert it into repl."
 (define-key sldb-mode-map "h" 'backward-char)
 (define-key sldb-mode-map "l" 'forward-char)
 (define-key sldb-mode-map (kbd "C-q") 'bury-buffer)
+(define-key sldb-mode-map (kbd "C-M-j") 'sldb-down)
+(define-key sldb-mode-map "f" 'sldb-show-source)
+(define-key sldb-mode-map (kbd "C-M-k") 'sldb-up)
 (define-key slime-mode-map (kbd "C-c M-t") 'slime-toggle-trace-fdefinition)
 (define-key slime-repl-mode-map [remap swiper-at-point] 'swiper-isearch)
 (define-key slime-repl-mode-map [remap slime-repl-previous-matching-input] 'slime-repl-complete-ivy)
