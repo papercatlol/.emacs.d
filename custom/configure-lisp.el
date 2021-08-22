@@ -1046,12 +1046,19 @@ TODO: With prefix arg untrace all."
       "<return>" 'macrostep-expand
       "<backtab>" 'macrostep-prev-macro)))
 
-;;* counsel-outline
+;;* outline
+(defvar lisp-outline-regexp (rx bol (or "(" ";;" "#|")))
+
 (with-eval-after-load 'counsel
   (add-to-list 'counsel-outline-settings
                `(lisp-mode
-                 :outline-regexp ,(rx bol (or "(" ";;" "#|"))
+                 :outline-regexp ,lisp-outline-regexp
                  :display-style 'title)))
+
+(defun set-lisp-outline-regexp ()
+  (setq-local outline-regexp lisp-outline-regexp))
+(add-hook 'lisp-mode-hook #'set-lisp-outline-regexp)
+(add-hook 'emacs-lisp-mode-hook #'set-lisp-outline-regexp)
 
 ;;* ielm
 (setq ielm-dynamic-return nil)
