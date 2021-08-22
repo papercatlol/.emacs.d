@@ -568,6 +568,7 @@ if there is a sole window."
 (define-key edit-indirect-mode-map (kbd "C-x C-w") 'edit-indirect-commit)
 (define-key edit-indirect-mode-map (kbd "C-x q") 'bury-buffer)
 (define-key edit-indirect-mode-map (kbd "C-x ESC") 'edit-indirect-abort)
+(define-key edit-indirect-mode-map (kbd "C-c C-q") 'edit-indirect-abort)
 
 ;;** hippie-expand + paredit fix
 (require 'hippie-exp)
@@ -593,6 +594,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key input-decode-map (kbd "C-i") [C-i])
 
 ;;(global-set-key (kbd "<C-i>") 'hippie-expand)
+(global-set-key (kbd "<C-i>") 'completion-at-point)
 (global-set-key (kbd "TAB") 'indent-for-tab-command)
 
 ;;** with-minor-mode-overriding - locally override minor mode keymap
@@ -842,7 +844,10 @@ current entry."
      (outline-back-to-heading)
      (bicycle-cycle-local))))
 
-(define-key prog-mode-map (kbd "C-x C-<tab>") 'bicycle-cycle*)
+(dolist (map (list prog-mode-map emacs-lisp-mode-map lisp-mode-map))
+  (define-key map (kbd "C-TAB") 'bicycle-cycle*)
+  (define-key map (kbd "C-<tab>") 'bicycle-cycle*)
+  (define-key map (kbd "C-M-i") 'bicycle-cycle*))
 
 ;; fix a weird bug where `outline-regexp' matches a "(c)" at the start of the file
 (defun bicycle--level-advice (fn &rest args)
@@ -1205,6 +1210,7 @@ enable `hydra-flyspell'."
 (global-set-key (kbd "M-g g") 'avy-goto-line)
 (global-set-key (kbd "M-g M-g") 'avy-goto-line)
 
+;;** multiple-cursors
 (global-unset-key (kbd "C-x m"))
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
@@ -1217,6 +1223,7 @@ enable `hydra-flyspell'."
 (global-set-key (kbd "C-x m h") 'mc-hide-unmatched-lines-mode)
 
 
+;;** dired
 (global-set-key (kbd "C-x C-d") 'dired)
 (define-key dired-mode-map (kbd "<backspace>") 'diredp-up-directory)
 (define-key dired-mode-map (kbd "C-t") 'avy-goto-word-or-subword-1)
@@ -1293,3 +1300,6 @@ enable `hydra-flyspell'."
 
 ;;** Hyper (although some of them are in other files as well)
 (global-set-key (kbd "H-;") 'eval-expression)
+
+;;** comint
+(define-key comint-mode-map (kbd "C-c C-x") nil)
