@@ -42,7 +42,8 @@
 (setq mu4e-view-prefer-html t
       mu4e-headers-auto-update t
       mu4e-compose-signature-auto-include nil
-      mu4e-compose-format-flowed t)
+      mu4e-compose-format-flowed t
+      mu4e-headers-show-threads nil)
 (setq mu4e-confirm-quit nil)
 
 ;;* columns in *mu4e-headers* view
@@ -82,6 +83,13 @@
         ))
 ;;(setq mu4e-headers-attach-mark '("a" . "✉")) ; this symbol is too tall :c
 (setq mu4e-headers-attach-mark '("+" . "+"))
+(setq mu4e-headers-replied-mark '("R" . "◄"))
+
+;;** mu4e-marks
+(setf (getf (alist-get 'read mu4e-marks) :char)
+      '("!" . "✔"))
+(setf (getf (alist-get 'unread mu4e-marks) :char)
+      '("?" . "x"))
 
 ;;* 24-hour time & DD.MM.YY date
 (setq mu4e-headers-time-format "%T")
