@@ -62,9 +62,6 @@ when cursor is directly inside the in-package form."
 (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
 
 
-;;* lispy
-(require 'configure-lispy)
-
 ;;* skip parens when reading symbol-at-point
 (defun symbol-at-point--skip-parens (orig-fn &rest args)
   "Handle cases like |(((symbol or symbol)))| where | is the cursor position."
@@ -1173,5 +1170,7 @@ If there was an active region, insert it into repl."
 (define-key emacs-lisp-mode-map (kbd "C-c <return>") 'macrostep-expand)
 (define-key emacs-lisp-mode-map (kbd "C-c RET") 'macrostep-expand)
 
+;;* lispy
+(require 'configure-lispy)
 
 (provide 'configure-lisp)
