@@ -1265,6 +1265,9 @@ enable `hydra-flyspell'."
 (global-set-key (kbd "C-x m SPC") 'set-rectangular-region-anchor)
 (global-set-key (kbd "C-x m h") 'mc-hide-unmatched-lines-mode)
 
+(setq mc/insert-numbers-default 1)
+(global-set-key (kbd "C-x m 1") 'mc/insert-numbers)
+(global-set-key (kbd "C-x m 2") 'mc/insert-letters)
 
 ;;** dired
 (global-set-key (kbd "C-x C-d") 'dired)
