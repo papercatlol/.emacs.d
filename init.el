@@ -1079,6 +1079,50 @@ the whole buffer otherwise."
        #'json-pretty-print
      #'json-pretty-print-buffer)))
 
+;;* flyspell
+;; TODO: ivy wrapper for `flyspell-correct-word-before-point'
+;; (maybe https://github.com/d12frosted/flyspell-correct).
+;; TODO: hydra heads to remember word at point for current session/forever
+(setq flyspell-issue-message-flag nil)
+(setq ispell-silently-savep t)          ; Save personal dict w/o confirmation
+
+(add-hook 'git-commit-mode-hook 'flyspell-mode)
+
+(define-key flyspell-mode-map (kbd "C-.") nil)
+(define-key flyspell-mode-map (kbd "C-;") nil)
+(define-key flyspell-mode-map (kbd "C-M-i") nil)
+
+;; Need `evil' for `evil-prev-flyspell-error'. If you don't use `evil',
+;; you will have to define that function manually.
+(with-eval-after-load 'evil
+  (defun flyspell-hydra ()
+    "Enable `flyspell-prog-mode' then flyspell current buffer and
+enable `hydra-flyspell'."
+    (interactive)
+    (flyspell-prog-mode)
+    (flyspell-buffer)
+    (hydra-flyspell/body))
+
+  (defun flyspell-disable ()
+    (interactive)
+    (flyspell-mode -1)
+    (message "Flyspell off."))
+
+  (defhydra hydra-flyspell ()
+    "Flyspell"
+    ("j" #'evil-next-flyspell-error "next error")
+    ("k" #'evil-prev-flyspell-error "prev error")
+    ("SPC" #'flyspell-auto-correct-word "auto-correct word")
+    ("g" #'flyspell-buffer "Flyspell buffer")
+    ("C-f" #'flyspell-mode "Toggle flyspell mode")
+    ("t" #'flyspell-mode "Toggle flyspell mode")
+    ("a" #'ace-flyspell-jump-word "Ace flyspell")
+    ("q" nil "quit")
+    ("C-q" #'flyspell-disable "Disable flyspell and quit" :color blue))
+
+  (define-key flyspell-mode-map (kbd "C-c C-f") 'hydra-flyspell/body)
+  (define-key prog-mode-map (kbd "C-c C-f") 'flyspell-hydra))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
