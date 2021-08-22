@@ -8,7 +8,15 @@
       org-hide-leading-stars t
       org-special-ctrl-a/e t
       org-special-ctrl-k t
-      org-special-ctrl-o t)
+      org-special-ctrl-o t
+      org-cycle-separator-lines 0
+      org-return-follows-link t
+      org-startup-folded 'content
+      ;; src blocks
+      org-edit-src-content-indentation 0
+      org-edit-src-persistent-message nil
+      org-src-window-setup 'current-window
+      )
 
 (advice-add 'org-archive-default-command :after #'org-save-all-org-buffers)
 (add-hook 'org-clock-out-hook #'save-buffer-no-message)
