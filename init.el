@@ -1150,6 +1150,27 @@ enable `hydra-flyspell'."
   (define-key flyspell-mode-map (kbd "C-c C-f") 'hydra-flyspell/body)
   (define-key prog-mode-map (kbd "C-c C-f") 'flyspell-hydra))
 
+;;* define-word
+;; https://github.com/abo-abo/define-word
+(require 'define-word)
+
+(defun define-word-dwim (word service)
+  (interactive
+   (list (read-string "Define word: "
+                      (if (region-active-p)
+                          (buffer-substring-no-properties
+                           (region-beginning)
+                           (region-end))
+                        (word-at-point)))
+         (if current-prefix-arg
+             (intern
+              (completing-read
+               "Service: " define-word-services))
+           define-word-default-service)))
+  (define-word word service))
+
+(global-set-key (kbd "H-d") 'define-word-dwim)
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
