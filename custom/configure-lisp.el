@@ -1053,6 +1053,27 @@ TODO: With prefix arg untrace all."
                  :outline-regexp ,(rx bol (or "(" ";;" "#|"))
                  :display-style 'title)))
 
+;;* ielm
+(setq ielm-dynamic-return nil)
+
+;;** switch to ielm
+(defun elisp-switch-to-ielm ()
+  "Switch to ielm buffer if exists or call `ielm'.
+If there was an active region, insert it into repl."
+  (interactive)
+  (let ((selection (and (region-active-p)
+                        (buffer-substring-no-properties (region-beginning) (region-end)))))
+    (if-let ((buf (get-buffer "*ielm*")))
+        (pop-to-buffer buf)
+      (ielm))
+    (when selection (insert selection))))
+
+(define-key emacs-lisp-mode-map (kbd "C-c C-z") 'elisp-switch-to-ielm)
+;;** keys
+(with-eval-after-load 'ielm
+  (define-key inferior-emacs-lisp-mode-map (kbd "C-c C-z") 'quit-window)
+  (define-key inferior-emacs-lisp-mode-map (kbd "C-m") 'ielm-send-input)
+  (define-key inferior-emacs-lisp-mode-map (kbd "C-j") 'ielm-return))
 ;;* KEYS
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation)
