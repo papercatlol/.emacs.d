@@ -11,6 +11,8 @@
       magit-diff-buffer-file-locked t
       magit-diff-refine-hunk nil
       magit-todos-auto-group-items 1000
+      ;; if T, magit-status will jump to current file position in status buffer
+      magit-status-goto-file-position nil
       magit-section-visibility-indicator (quote (magit-fringe-bitmap+ . magit-fringe-bitmap-)))
 
 ;;** widen fringe for magit windows
@@ -187,15 +189,15 @@ and kill tmp buffers on call and reset the
 (define-key magit-mode-map (kbd "C-x g") 'magit-status)
 
 (dolist (m (list magit-status-mode-map magit-diff-mode-map))
-  (define-key m (kbd "j") 'magit-forward-dwim)
-  (define-key m (kbd "k") 'magit-backward-dwim)
+  (define-key m (kbd "j") 'magit-next-line)
+  (define-key m (kbd "k") 'magit-previous-line)
   (define-key m (kbd "[") 'magit-section-backward-sibling)
   (define-key m (kbd "]") 'magit-section-forward-sibling)
   (define-key m (kbd "C-M-k") 'magit-section-backward-sibling)
   (define-key m (kbd "C-M-j") 'magit-section-forward-sibling)
   (define-key m (kbd "C-k") 'magit-discard)
   (define-key m (kbd "=") 'magit-diff-more-context)
-  (define-key m (kbd "M-m") 'magit-diff-visit-file-other-window))
+  (define-key m (kbd "M-m") 'magit-diff-visit-worktree-file-other-window))
 
 ;;** header-line for files in other revisions
 (defun magit--set-header-line (&rest args)
@@ -408,6 +410,7 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 (define-key compilation-mode-map (kbd "C-x g") 'magit-status)
 
 ;;* git-commit fill-column
+(add-hook 'git-commit-mode-hook #'display-fill-column-indicator-mode)
 (setq git-commit-fill-column 70)
 
 ;;* evil
@@ -426,5 +429,12 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 ;; (add-to-list git-link-remote-alist ...)
 
 ;;* TODO: git-timemachine
+
+
+;;* diff-mode
+(define-key diff-mode-map (kbd "M-k") nil)
+(define-key diff-mode-map (kbd "C-M-k") 'diff-hunk-prev)
+(define-key diff-mode-map (kbd "C-M-j") 'diff-hunk-next)
+
 
 (provide 'configure-git)
