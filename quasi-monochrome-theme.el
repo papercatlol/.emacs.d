@@ -179,6 +179,10 @@
  '(fill-column-indicator ((t (:foreground "grey20"))))
  ;; which-func
  '(which-func ((t (:inherit font-lock-keyword-face :foreground "grey60"))))
- )
+ ;; js2-mode
+ '(js2-function-param ((t (:inherit default))))
+ '(js2-jsdoc-value ((t (:inherit js2-jsdoc-tag))))
+ '(js2-jsdoc-type ((t (:inherit js2-jsdoc-tag))))
+)
 
 (provide-theme 'quasi-monochrome)

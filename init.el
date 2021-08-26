@@ -92,6 +92,7 @@
 ;; (require 'configure-go)
 (require 'configure-lisp)
 (require 'configure-python)
+(require 'configure-js)
 
 ;;* ./local-elisp - private/work configuration
 (add-to-list 'load-path (expand-file-name "local-elisp" user-emacs-directory))
