@@ -244,6 +244,12 @@ inside of that list."
 
 (define-key lispy-mode-map (kbd "C-a") 'lispy-back-to-indentation)
 
+;;* regular slurp/barf
+(define-key lispy-mode-map (kbd "C-c C-x .") 'lispy-forward-slurp-sexp)
+(define-key lispy-mode-map (kbd "C-c C-x ,") 'lispy-forward-barf-sexp)
+(define-key lispy-mode-map (kbd "C-c C-x <") 'lispy-backward-slurp-sexp)
+(define-key lispy-mode-map (kbd "C-c C-x >") 'lispy-backward-barf-sexp)
+
 ;;** other global bindings
 (define-key lispy-mode-map (kbd "<return>") 'lispy-right)
 (define-key lispy-mode-map (kbd "RET") 'lispy-newline-and-indent-plain)
