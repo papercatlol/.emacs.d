@@ -13,7 +13,12 @@
       magit-todos-auto-group-items 1000
       ;; if T, magit-status will jump to current file position in status buffer
       magit-status-goto-file-position nil
-      magit-section-visibility-indicator (quote (magit-fringe-bitmap+ . magit-fringe-bitmap-)))
+      magit-section-visibility-indicator (quote (magit-fringe-bitmap+ . magit-fringe-bitmap-))
+      magit-section-initial-visibility-alist '((untracked . hide)
+                                               (stashes . hide)))
+
+;;* transient
+(setq transient-default-level 5)        ; up to 7, default is 4
 
 ;;** widen fringe for magit windows
 (defun magit-status-set-wide-fringe (&optional arg)
@@ -197,7 +202,8 @@ and kill tmp buffers on call and reset the
   (define-key m (kbd "C-M-j") 'magit-section-forward-sibling)
   (define-key m (kbd "C-k") 'magit-discard)
   (define-key m (kbd "=") 'magit-diff-more-context)
-  (define-key m (kbd "M-m") 'magit-diff-visit-worktree-file-other-window))
+  (define-key m (kbd "M-m") 'magit-diff-visit-worktree-file-other-window)
+  (define-key m "H" 'magit-section-up))
 
 ;;** header-line for files in other revisions
 (defun magit--set-header-line (&rest args)
@@ -332,6 +338,8 @@ start revision."
 
 ;;* git hydra
 ;; TODO: a function to stage current hunk or region
+;; TODO: look at smerge hydra here:
+;; https://github.com/angrybacon/dotemacs/blob/master/dotemacs.org#hydra-git
 (defhydra hydra-git (:hint nil)
   "
  ^Stage^                  ^Diff^                   ^Other^
