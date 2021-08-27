@@ -1197,6 +1197,22 @@ enable `hydra-flyspell'."
 
 (global-set-key (kbd "H-d") 'define-word-dwim)
 
+;;* dumb-jump
+(require 'dumb-jump)
+
+(setq dumb-jump-prefer-searcher 'rg)
+
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+
+;;* custom-mode
+(define-key custom-mode-map "j" 'next-line)
+(define-key custom-mode-map "k" 'previous-line)
+(define-key custom-mode-map (kbd "C-M-j") 'widget-forward)
+(define-key custom-mode-map (kbd "C-M-k") 'widget-backward)
+
+(with-eval-after-load 'evil
+  (define-key custom-mode-map "n" 'evil-search-next))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -1244,7 +1260,8 @@ enable `hydra-flyspell'."
   ("t" #'ibuffer-exchange-filters "ibuffer-exchange-filters")
   ("v" #'ibuffer-filter-by-visiting-file "ibuffer-filter-by-visiting-file")
   ("x" #'ibuffer-delete-saved-filters "ibuffer-delete-saved-filters")
-  ("|" #'ibuffer-or-filter "ibuffer-or-filter"))
+  ("|" #'ibuffer-or-filter "ibuffer-or-filter")
+  ("q" nil "quit"))
 
 (with-eval-after-load 'ibuffer
   (define-key ibuffer-mode-map (kbd "/") 'hydra-ibuffer-filters/body))
@@ -1312,10 +1329,11 @@ enable `hydra-flyspell'."
 (global-set-key (kbd "<f5>") 'revert-buffer)
 
 ;;** hydra-cantrips with random useful commands.
-(defhydra hydra-cantrips-prefix-map (:columns 1 :exit t)
+(defhydra hydra-cantrips (:columns 1 :exit t)
   "cantrips"
   ("s" #'string-edit-at-point "string-edit-at-point")
   ("p" #'counsel-package "counsel-package")
+  ("P" #'list-processes "list-processes")
   ("r" #'rename-file-and-buffer "rename-file-and-buffer")
   ("d" #'describe-text-properties "describe-text-properties")
   ;; ("f" #'describe-face "describe-face")
@@ -1343,15 +1361,10 @@ enable `hydra-flyspell'."
   ("M" #'mu4e-compose-new "mu4e compose")
   ("w" #'whitespace-mode "whitespace-mode")
   ("W" #'delete-trailing-whitespace "delete-trailing-whitespace")
+  ("q" nil "quit")
   )
 
-(defun hydra-cantrips-M-x ()
-  (interactive)
-  (ivy-exit-with-action
-   (lambda (x)
-     (hydra-cantrips-prefix-map/body))))
-
-(global-set-key (kbd "M-z") 'hydra-cantrips-prefix-map/body)
+(global-set-key (kbd "M-z") 'hydra-cantrips/body)
 
 ;;** ace-link
 (ace-link-setup-default (kbd "C-f"))
@@ -1375,3 +1388,7 @@ enable `hydra-flyspell'."
 
 ;;** comint
 (define-key comint-mode-map (kbd "C-c C-x") nil)
+
+;;** xref--xref-buffer-mode
+(define-key xref--xref-buffer-mode-map (kbd "M-m") 'xref-show-location-at-point)
+(define-key xref--xref-buffer-mode-map (kbd "f") 'xref-show-location-at-point)
