@@ -365,9 +365,13 @@ region if there is a region, then move to the previous message."
              (file-exists-p (concat (mu4e-root-maildir) mu4e-inbox-dir)))
     (mu4e~headers-jump-to-maildir mu4e-inbox-dir)))
 
-(define-key 'mu4e-main-mode-map "I" 'mu4e-goto-inbox)
-(define-key 'mu4e-headers-mode-map "I" 'mu4e-goto-inbox)
-(define-key 'mu4e-view-mode-map "I" 'mu4e-goto-inbox)
+
+(define-key mu4e-main-mode-map "I" 'mu4e-goto-inbox)
+(define-key mu4e-headers-mode-map "I" 'mu4e-goto-inbox)
+(define-key mu4e-view-mode-map "I" 'mu4e-goto-inbox)
+
+;;* flyspell
+(add-hook 'mu4e-compose-mode-hook #'flyspell-mode)
 
 
 (provide 'configure-email)

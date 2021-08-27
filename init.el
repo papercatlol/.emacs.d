@@ -1099,6 +1099,7 @@ the whole buffer otherwise."
 (setq ispell-silently-savep t)          ; Save personal dict w/o confirmation
 
 (define-key flyspell-mode-map (kbd "C-.") nil)
+(define-key flyspell-mode-map (kbd "C-,") nil)
 (define-key flyspell-mode-map (kbd "C-;") nil)
 (define-key flyspell-mode-map (kbd "C-M-i") nil)
 
@@ -1145,11 +1146,35 @@ enable `hydra-flyspell'."
     ("t" #'flyspell-mode "Toggle flyspell mode")
     ("a" #'ace-flyspell-jump-word "Ace flyspell")
     ("i" #'flyspell-save-to-dictionary "Save word to private dictionary")
+    ("u" #'undo-tree-undo "Undo")       ; Is there a generic way to call undo?
+    ("$" #'ispell-word "ispell")
     ("q" nil "quit")
     ("C-q" #'flyspell-disable "Disable flyspell and quit" :color blue))
 
+  ;; Make it seem like `flyspell-auto-correct-word' has been called normally.
+  ;; Otherwise repeated calls wouldn't cycle through replacement candidates.
+  ;; TODO a better interface to `flyspell-auto-correct-word' (ivy, avy-like
+  ;; candidate selection by key or at least show available candidates inline).
+  (defun hydra-flyspell--flyspell-auto-correct-word-advice (func &rest args)
+    (setq this-command 'flyspell-auto-correct-word)
+    (apply func args))
+  (advice-add 'hydra-flyspell/flyspell-auto-correct-word :around
+              #'hydra-flyspell--flyspell-auto-correct-word-advice)
+
   (define-key flyspell-mode-map (kbd "C-c C-f") 'hydra-flyspell/body)
   (define-key prog-mode-map (kbd "C-c C-f") 'flyspell-hydra))
+
+;; Display flyspell corrections in a popup instead if the minibuffer.
+(defvar flyspell-display-next-corrections-popup-height 10)
+
+(defun flyspell-display-next-corrections--advice (corrections)
+  (popup-tip (string-join (remove-duplicates
+                           (subseq corrections 1
+                                   (1+ flyspell-display-next-corrections-popup-height))
+                           :test #'string=)
+                          "\n")))
+(advice-add 'flyspell-display-next-corrections :override
+            #'flyspell-display-next-corrections--advice)
 
 ;;* define-word
 ;; https://github.com/abo-abo/define-word
