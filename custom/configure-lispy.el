@@ -33,6 +33,12 @@
     (lispy-mode 1)))
 (add-hook 'minibuffer-setup-hook #'eval-expression-enable-lispy)
 
+;;* disable lispy in magit-blame
+;; FIXME this is a temporary solution. Ideally both magit-blame and lispy
+;; keybindings should be available either via a hydra-magit-blame, higher
+;; priority for magit-blame or some special keybind magic.
+(add-to-list 'magit-blame-disable-modes 'lispy-mode)
+
 ;;* unmap
 (define-key lispy-mode-map (kbd "M-j") nil)
 (define-key lispy-mode-map (kbd "M-k") nil)

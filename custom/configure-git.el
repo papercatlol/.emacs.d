@@ -424,8 +424,59 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 ;;* evil
 (with-eval-after-load 'evil
   (add-hook 'git-commit-mode-hook #'evil-insert-state)
-  ;; TODO: configure magit-blame with evil-mode
-  )
+  (add-hook 'magit-blame-mode-hook #'evil-insert-state))
+
+;;* blame
+;; MAYBE differentiate older/newer changes with lighter/darker colors
+;; MAYBE rainbow-commits
+;; TODO show (hunk number/hunks in commit) for hunks together with commit info
+
+;; more visible minor-mode lighter
+(setf (alist-get 'magit-blame-mode minor-mode-alist)
+      (list (concat " "
+                    (propertize "Blame"
+                                'face 'error))))
+
+;; `margin' style: make default, show line separators, reduce width.
+(setq magit-blame-styles
+      '((margin
+         (margin-format . (" %s%f" " %C %a" " %H"))
+         (margin-width . 40)
+         (margin-face . magit-blame-margin)
+         (margin-body-face . (magit-blame-dimmed))
+         (show-lines . t))
+        (headings
+         (heading-format . "%-20a %C %s\n"))
+        (highlight
+         (highlight-face . magit-blame-highlight))
+        (lines
+         (show-lines . t)
+         (show-message . t))))
+
+;;
+(defun magit-blame-refresh ()
+  (interactive)
+  (magit-blame--refresh))
+
+;; keybindings
+(define-key magit-blame-mode-map (kbd "j") 'magit-blame-next-chunk)
+(define-key magit-blame-mode-map (kbd "k") 'magit-blame-previous-chunk)
+(define-key magit-blame-mode-map (kbd "C-M-j") 'magit-blame-next-chunk-same-commit)
+(define-key magit-blame-mode-map (kbd "C-M-k") 'magit-blame-previous-chunk-same-commit)
+(define-key magit-blame-mode-map (kbd "R") 'magit-blame-reverse)
+(define-key magit-blame-mode-map (kbd "m") 'magit-show-commit)
+(define-key magit-blame-mode-map (kbd "g") 'magit-blame-refresh)
+
+(define-key magit-blame-read-only-mode-map (kbd "f") 'magit-diff-show-or-scroll-down)
+(define-key magit-blame-read-only-mode-map (kbd "a") 'magit-blame-addition)
+(define-key magit-blame-read-only-mode-map (kbd "n") 'magit-blame-next-chunk-same-commit)
+(define-key magit-blame-read-only-mode-map (kbd "p") 'magit-blame-previous-chunk-same-commit)
+(define-key magit-blame-read-only-mode-map (kbd "DEL") 'magit-blame-removal)
+(define-key magit-blame-read-only-mode-map (kbd "C-h") 'magit-blame-removal)
+(define-key magit-blame-read-only-mode-map (kbd "C-d") 'magit-blame-removal)
+
+(with-eval-after-load 'evil
+  (define-key magit-blame-read-only-mode-map (kbd "SPC") leader-map))
 
 ;;* TODO: ibuffer
 
