@@ -27,6 +27,20 @@
 (define-key js2-mode-map (kbd "C-c C-s") 'counsel-imenu-dwim)
 (define-key js2-mode-map (kbd "C-c s") 'js2-mode-show-element)
 
+;;** swap C-c f and C-c C-s
+(define-key js2-mode-map (kbd "C-c C-f") 'flyspell-hydra)
+(define-key js2-mode-map (kbd "C-c f") 'js2-mode-toggle-hide-functions)
+
+;;** folding
+;; HACK handle various `%VAR_NAME% = function` and `export function` cases.
+(defun js2-mode-toggle-element--wrapper (fn &rest args)
+  (save-excursion
+   (re-search-forward "function" (line-end-position) t)
+   (apply fn args)))
+(advice-add 'js2-mode-toggle-element :around #'js2-mode-toggle-element--wrapper)
+
+(define-key js2-mode-map (kbd "<C-tab>") 'js2-mode-toggle-element)
+
 ;;* js2-refactor
 (require 'js2-refactor)
 
