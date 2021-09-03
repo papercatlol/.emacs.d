@@ -637,6 +637,26 @@ Else narrow-to-defun."
 
 (global-set-key (kbd "C-x C-n") 'narrow-dwim)
 
+;;** message-truncated
+(defun string-truncate-height (str height)
+  "Truncate string to be under HEIGHT lines."
+  (with-temp-buffer
+    (insert str)
+    (if (> (count-screen-lines) height)
+        (string-trim
+         (buffer-substring-no-properties
+          (point-min)
+          (progn (goto-char (point-min)) (forward-visible-line height)
+                 (backward-char) (point))))
+      str)))
+
+(defun display-truncated-message (format-string &rest args)
+  "Like `message', but truncate displayed string if it doesn't fit."
+  (let* ((max-height (* (frame-height) max-mini-window-height))
+         (str (apply #'format format-string args)))
+    (message (string-truncate-height str max-height))))
+
+
 ;;* dired-jump-other-frame
 (defun dired-jump-other-frame (&optional file-name)
   "Like \\[dired-jump] (`dired-jump') but in other frame."

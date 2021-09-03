@@ -133,8 +133,7 @@ When called second time consecutively, call `helpful-symbol' for SYMBOL."
                        (documentation-property symbol 'variable-documentation))))
       (setq *elisp-documentation-last-symbol* symbol)
       ;; TODO: truncate docs that are more that a page long
-      (let ((max-mini-window-height 1.0))
-        (display-message-or-buffer (format "%s" doc))))))
+      (display-truncated-message (format "%s" doc)))))
 
 (define-key emacs-lisp-mode-map (kbd "C-c C-d") 'elisp-documentation)
 (define-key read-expression-map (kbd "C-c C-d") 'elisp-documentation)
@@ -220,13 +219,15 @@ If there was an active region, insert it into repl."
 
 ;;* slime hacks
 ;;** documentation
-(defun slime-documentation ()
+(defun slime-documentation-symbol (symbol-name)
+  (slime-eval `(swank:documentation-symbol ,symbol-name)))
+
+(defun slime-documentation-minibuffer ()
   "Display `swank:documentation-symbol' in the minibuffer"
   (interactive)
   (when-let* ((symbol-name (slime-read-symbol-name "Describe symbol: "))
-              (doc (slime-eval `(swank:documentation-symbol ,symbol-name))))
-    (let ((max-mini-window-height 1.0))
-      (message doc))))
+              (doc (slime-documentation-symbol symbol-name)))
+    (display-truncated-message doc)))
 
 ;; Slime documentation is opened in fundamental-mode by default. Force it to open
 ;; in help-mode instead. MAYBE: define slime-description-mode.
@@ -245,7 +246,7 @@ If there was an active region, insert it into repl."
  display-buffer-alist
  "*slime-description*"
  '((display-buffer-in-side-window)
-   (window-width . 0.25)
+   (window-width . fit-window-to-buffer)
    (side . left)
    (slot . 0))
  #'string=)
@@ -1080,9 +1081,11 @@ If there was an active region, insert it into repl."
   (define-key inferior-emacs-lisp-mode-map (kbd "C-c C-z") 'quit-window)
   (define-key inferior-emacs-lisp-mode-map (kbd "C-m") 'ielm-send-input)
   (define-key inferior-emacs-lisp-mode-map (kbd "C-j") 'ielm-return))
+
 ;;* KEYS
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
-  (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation)
+  (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation-minibuffer)
+  (define-key keymap (kbd "C-c C-d d") 'slime-documentation)
   (define-key keymap [remap slime-edit-definition] 'slime-edit-definition-ivy)
   (define-key keymap [remap slime-edit-definition-other-window] 'slime-edit-definition-other-window-ivy)
   (define-key keymap [remap slime-edit-definition-other-frame] 'slime-edit-definition-other-frame-ivy))

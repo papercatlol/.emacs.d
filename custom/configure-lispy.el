@@ -39,6 +39,13 @@
 ;; priority for magit-blame or some special keybind magic.
 (add-to-list 'magit-blame-disable-modes 'lispy-mode)
 
+;;* lispy documentation
+(with-eval-after-load 'slime
+  (advice-add 'lispy--lisp-describe :override #'slime-documentation-symbol)
+  (define-key lispy-mode-map (kbd "C-c C-x d") 'lispy-describe-inline)
+  (define-key lispy-mode-map (kbd "C-c C-x C-d") 'lispy-describe-inline)
+  (define-key lispy-mode-map (kbd "C-c d") 'lispy-describe-inline))
+
 ;;* unmap
 (define-key lispy-mode-map (kbd "M-j") nil)
 (define-key lispy-mode-map (kbd "M-k") nil)
