@@ -98,6 +98,8 @@
 ;; (require 'configure-go)
 (require 'configure-lisp)
 (require 'configure-python)
+(require 'configure-java)
+
 (require 'configure-js)
 (require 'configure-html)
 
