@@ -328,9 +328,6 @@
 (define-key evil-motion-state-map (kbd "<C-i>") 'evil-jump-forward-dwim)
 (define-key evil-motion-state-map (kbd "<tab>") 'tab-indent)
 
-(with-eval-after-load 'bicycle
-  (define-key evil-motion-state-map (kbd "C-<tab>") 'bicycle-cycle*))
-
 ;;** avy-goto-symbol-2
 (defun avy-goto-symbol-2 (char1 char2 &optional arg beg end word)
   "Like `avy-goto-symbol-1', but query for 2 chars."

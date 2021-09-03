@@ -243,6 +243,7 @@ all maildirs under `mu4e-maildir'."
 (advice-add 'mu4e-ask-maildir :override #'mu4e-ask-maildir+)
 
 ;;* show thread at point
+;; TODO look at https://github.com/rougier/mu4e-thread-folding
 (defun mu4e-show-thread-at-point ()
   (interactive)
   (when-let ((msg (mu4e-message-at-point t)))

@@ -51,6 +51,19 @@
 ;; (setq org-clock-out-switch-to-state "TODO")
 ;; (setq org-clock-in-switch-to-state "CURRENT")
 
+;;** org todo keyword faces
+(setq org-todo-keyword-faces
+      '(("GERRIT" . "#ee7b00"
+         ;;"dark orange"
+         )
+        ("CURRENT" . "#eec600"
+         ;; "gold"
+         )
+        ("WAITING" . "#ee7b00"
+         ;;"dark orange"
+         )))
+
+;;** counsel-goto-task
 (cl-defun counsel-goto-task (&optional (files (list odtt:task-file)))
   (interactive)
   (when-let ((odtt:current-files files)

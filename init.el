@@ -18,7 +18,6 @@
 (when (< emacs-major-version 24)
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 
-(setq package-enable-at-startup nil)
 (package-initialize)
 
 (unless (file-exists-p "~/.emacs.d/elpa/archives/melpa")
@@ -42,6 +41,13 @@
 (setq gc-cons-threshold #x40000000) ; 1GB
 
 (defvar gc-timer (run-with-idle-timer 30 t #'gc-with-time))
+
+;;*** test gc on frame focus-out
+(defun gc-on-focus-out ()
+  (unless (frame-focus-state)
+    (gc-with-time)))
+
+(advice-add 'after-focus-change-function :after #'gc-on-focus-out)
 
 ;;* theme
 (load-theme 'quasi-monochrome t)
@@ -149,11 +155,17 @@
       slime-description-autofocus t
       xref-show-xrefs-function #'ivy-xref-show-xrefs
       compilation-scroll-output t
+      ;; scratch
+      initial-scratch-message ""
       initial-major-mode 'emacs-lisp-mode
+      ;;
       use-dialog-box nil
       comint-buffer-maximum-size 8192
       ;; fringe-mode '((4 . 4))
       fringe-mode '((8 . 0))
+      read-process-output-max (* 1024 1024)
+      ;; this sometimes bugs out hydra's if set to T
+      switch-to-buffer-preserve-window-point nil
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
@@ -453,6 +465,7 @@ With prefix arg, call `balance-windows-area'."
     (select-frame frame)))
 
 (define-key ctl-x-5-map "5" 'window-as-frame)
+(define-key ctl-x-5-map (kbd "C-5") 'window-as-frame)
 
 ;;** toggle *messages* buffer
 (defun toggle-echo-area-messages ()
@@ -1317,6 +1330,8 @@ enable `hydra-flyspell'."
 (global-set-key (kbd "M-g M-g") 'avy-goto-line)
 
 ;;** multiple-cursors
+;; TODO hydra-multiple-cursors
+;; Looks interesting: https://hungyi.net/posts/hydra-for-evil-mc/
 (global-unset-key (kbd "C-x m"))
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)

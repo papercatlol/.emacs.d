@@ -141,6 +141,10 @@ if there are more than 2 of them."
 ;; Since there is C-x C-j for dired anyway
 (define-key ctl-x-map (kbd "C-d") 'ace-delete-window)
 
+;; HACK since dired sets its C-x C-d binding at autoload (no idea if this works)
+(with-eval-after-load 'dired
+  (define-key ctl-x-map (kbd "C-d") 'ace-delete-window))
+
 ;;* ace-replace-window
 (defun aw-replace-window (window)
   "Move the current buffer to WINDOW.

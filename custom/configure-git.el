@@ -190,6 +190,7 @@ and kill tmp buffers on call and reset the
 (define-key magit-mode-map (kbd "k") 'magit-backward-dwim)
 (define-key magit-log-mode-map (kbd "j") 'magit-next-line)
 (define-key magit-log-mode-map (kbd "k") 'magit-previous-line)
+(define-key magit-log-mode-map (kbd "m") 'magit-diff-show-or-scroll-down)
 
 (define-key magit-mode-map (kbd "C-x g") 'magit-status)
 
@@ -468,6 +469,7 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 (define-key magit-blame-mode-map (kbd "g") 'magit-blame-refresh)
 
 (define-key magit-blame-read-only-mode-map (kbd "f") 'magit-diff-show-or-scroll-down)
+(define-key magit-blame-read-only-mode-map (kbd "b") 'magit-diff-show-or-scroll-up)
 (define-key magit-blame-read-only-mode-map (kbd "a") 'magit-blame-addition)
 (define-key magit-blame-read-only-mode-map (kbd "n") 'magit-blame-next-chunk-same-commit)
 (define-key magit-blame-read-only-mode-map (kbd "p") 'magit-blame-previous-chunk-same-commit)
