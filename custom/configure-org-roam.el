@@ -4,16 +4,16 @@
 ;; https://oremacs.com/2020/12/31/happy-new-year/
 ;; https://github.com/abo-abo/oremacs/blob/github/modes/ora-org-roam.el
 
+;;* vars
 (setq org-roam-directory (expand-file-name "roam" org-directory))
 (setq org-roam-db-location (expand-file-name "org-roam.db" org-roam-directory))
 (setq org-roam-buffer-position 'bottom)
 (setq org-roam-completion-system 'ivy)
 
-;; experimental
+;;* [experimental] completion everywhere
 (setq org-roam-completion-everywhere t)
 
-(org-roam-mode)
-
+;;* templates
 (setq org-roam-capture-templates
       '(("d"
          "default"
@@ -24,8 +24,16 @@
          :head "#+title: ${title}\n"
          :unnarrowed t)))
 
-;; TODO: org-roam-capture-ref-templates, org-roam-protocol
+;;* enable
+(org-roam-mode)
 
+;;* TODO: org-roam-capture: parse #tags from title on new capture
+;; (capture "test #foo #bar") => new file "test" with tags #foo and #bar
+
+
+;;* TODO: org-roam-capture-ref-templates, org-roam-protocol
+
+;;* hydra-org-roam
 (defhydra hydra-org-roam (:exit t)
   "org-roam"
   ("i" org-roam-insert "insert")
