@@ -61,6 +61,8 @@ when cursor is directly inside the in-package form."
 (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
 (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
 
+(define-key paredit-mode-map (kbd "C-}") nil)
+(define-key paredit-mode-map (kbd "C-{") nil)
 
 ;;* skip parens when reading symbol-at-point
 (defun symbol-at-point--skip-parens (orig-fn &rest args)

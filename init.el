@@ -1249,6 +1249,49 @@ enable `hydra-flyspell'."
 (with-eval-after-load 'evil
   (define-key custom-mode-map "n" 'evil-search-next))
 
+;;* resize windows horizontally
+(defun get-window-resize-delta ()
+  (if current-prefix-arg
+      (prefix-numeric-value current-prefix-arg)
+    4))
+
+(defun window-right-aligned-p (&optional window)
+  "T if WINDOW's center is horizontally to the right of the
+center of the frame."
+  (destructuring-bind (left top right bottom)
+      (window-edges window)
+    (let ((window-center (/ (+ left right) 2))
+          (frame-center (/ (frame-width) 2)))
+      (> window-center frame-center))))
+
+(defun window-grow-horizontally (delta)
+  (interactive (list (get-window-resize-delta)))
+  (window-resize (selected-window) delta t))
+
+(defun window-shrink-horizontally (delta)
+  (interactive (list (get-window-resize-delta)))
+  (window-grow-horizontally (- delta)))
+
+(defun window-resize-left (delta)
+  "Grow window horizontally if it is right-aligned, otherwise
+shrink it. Think 'drag window's left border to the left' (this
+isn't that intuitive if you have more that two horizontal
+windows)."
+  (interactive (list (get-window-resize-delta)))
+  (if (window-right-aligned-p)
+      (window-grow-horizontally delta)
+    (window-shrink-horizontally delta)))
+
+(defun window-resize-right (delta)
+  "Inverse of `window-resize-left'."
+  (interactive (list (get-window-resize-delta)))
+  (if (window-right-aligned-p)
+      (window-shrink-horizontally delta)
+    (window-grow-horizontally delta)))
+
+(global-set-key (kbd "C-}") 'window-resize-right)
+(global-set-key (kbd "C-{") 'window-resize-left)
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
