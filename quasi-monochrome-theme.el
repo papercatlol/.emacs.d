@@ -12,7 +12,7 @@
  '(variable-pitch ((t (:family "Fira Code 11")))) ;; Hack is also nice
  '(fixed-pitch ((t (:family "Fira Code 11"))))    ;; Hack is also nice
  '(button ((t (:inherit (link)))))
- '(cursor ((t (:background "LimeGreen"))))
+ '(cursor ((t (:background "white"))))
  ;; '(cursor ((t (:background "dark orange"))))
  ;; '(region ((t (:background "DarkGreen" :foreground "black" :weight bold))))
  '(region ((t (:foreground "LightSalmon3" :background "gray10"))))
@@ -129,12 +129,14 @@
                           ))))
  '(magit-diff-hunk-heading-highlight ((t (:foreground "grey70" :background "grey35"
                                           :weight bold
-                                          :box t
+                                          ;;:box t
+                                          ;;:underline t
                                           ;; :overline "tomato"
                                           ))))
  '(magit-diff-context-highlight ((t (:foreground "grey70" :background "grey20"
                                      :weight semi-bold
                                      :underline nil))))
+ '(magit-section-highlight ((t (:background  "grey10"))))
  ;; '(magit-diff-removed-highlight ((t (:background "#663333"
  ;;                                     :foreground "#eecccc"
  ;;                                     :extend t))))
@@ -146,14 +148,16 @@
  '(org-level-4 ((t (:inherit org-default))))
  '(org-date ((t (:inherit font-lock-string-face :weight bold))))
  '(org-tag ((t (:inherit mode-line-emphasis))))
- '(org-todo ((t (:foreground "red4" :weight bold))))
- '(org-done ((t (:foreground "lime green" :weight bold))))
+ '(org-todo ((t (:foreground "#833333" :weight bold))))
+ '(org-done ((t (:foreground "#44cf44" ;;"#338333"
+                 :weight bold))))
  '(org-block-begin-line ((t (:inherit default :foreground "grey50"
                              :underline t :extend t))))
  '(org-block-end-line ((t (:inherit org-block-begin-line
                            :underline nil :overline t))))
  '(org-block ((t (:inherit font-lock-comment-face :background "grey10"))))
  '(org-table ((t (:foreground "chocolate2"))))
+ '(org-headline-done ((t (:inherit org-default))))
  ;; ediff
  '(ediff-even-diff-A ((t (:foreground "black" :background "light grey"))))
  '(ediff-even-diff-B ((t (:foreground "black" :background "light grey"))))
@@ -179,10 +183,13 @@
  '(fill-column-indicator ((t (:foreground "grey20"))))
  ;; which-func
  '(which-func ((t (:inherit font-lock-keyword-face :foreground "grey60"))))
+ ;; mu4e
+ '(mu4e-header-face ((t (:inherit font-lock-type-face :foreground "grey60"))))
+ '(mu4e-header-title-face ((t (:inherit font-lock-type-face))))
+ '(mu4e-header-value-face ((t (:inherit font-lock-type-face))))
  ;; js2-mode
  '(js2-function-param ((t (:inherit default))))
  '(js2-jsdoc-value ((t (:inherit js2-jsdoc-tag))))
- '(js2-jsdoc-type ((t (:inherit js2-jsdoc-tag))))
-)
+ '(js2-jsdoc-type ((t (:inherit js2-jsdoc-tag)))))
 
 (provide-theme 'quasi-monochrome)
