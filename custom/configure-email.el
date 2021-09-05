@@ -374,5 +374,45 @@ region if there is a region, then move to the previous message."
 ;;* flyspell
 (add-hook 'mu4e-compose-mode-hook #'flyspell-mode)
 
+;;* wrapper around `mu4e-found-func'
+(defvar-local mu4e~headers-last-count 0
+  "The number of results returned by most recent query.")
+
+(defun mu4e~headers-found-silent-handler (count)
+  "Cache COUNT and suppress messages."
+  (when (buffer-live-p (mu4e-get-headers-buffer))
+    (with-current-buffer (mu4e-get-headers-buffer)
+      (setq mu4e~headers-last-count count)
+      (let ((inhibit-message t))
+        (mu4e~headers-found-handler count)))))
+
+(setq mu4e-found-func #'mu4e~headers-found-silent-handler)
+
+;;* custom header-line for `mu4e-headers'
+(defface mu4e-header-line-face
+    ;; TODO inherit background from `header-line' face.
+    '((t (:inherit default :background "gray15")))
+  "Face for mu4e header-line."
+  :group 'mu4e-faces)
+
+(defun mu4e~better-header-line ()
+  (cl-labels ((%find (query)
+                (cl-find query (plist-get mu4e~server-props :queries)
+                         :key (lambda (q) (plist-get q :query))
+                         :test #'string=)))
+    (let ((today (%find "date:today..now"))
+          (unread (%find "flag:unread AND NOT flag:trashed")))
+      (propertize (format "Today: (%s/%s)   Unread: %s   Hits: %s   Query: %s"
+                          (plist-get today :unread) (plist-get today :count)
+                          (plist-get unread :count)
+                          mu4e~headers-last-count
+                          mu4e~headers-last-query)
+                  'face 'mu4e-header-line-face))))
+
+(defun mu4e~better-header-line-format ()
+  `(:eval (mu4e~better-header-line)))
+
+(advice-add 'mu4e~header-line-format :override #'mu4e~better-header-line-format)
+
 
 (provide 'configure-email)

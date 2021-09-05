@@ -57,12 +57,10 @@
  '(mode-line-highlight ((t (:foreground "aquamarine3" :box nil :bold nil))))
  '(mode-line-emphasis ((t (:foreground "aquamarine3"))))
  ;; header-line
- '(header-line ((t (:background "gray15"
+ '(header-line ((t (:background "#1f2f2f"
                     :foreground "white"
                     :overline nil
-                    :bold t
-                    ;; :underline (:color "gray60" :style line)
-                    ))))
+                    :bold t))))
  ;; '(mode-line ((t (:box nil :foreground "black" :background "gray60"))))
  ;; '(mode-line-buffer-id ((t (:weight bold))))
  ;; '(mode-line-emphasis ((t (:weight bold))))
