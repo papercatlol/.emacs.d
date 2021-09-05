@@ -1383,7 +1383,7 @@ windows)."
 (global-set-key (kbd "C-x C-SPC") 'avy-goto-char-timer)
 (global-set-key (kbd "<f13>") 'avy-goto-char-timer)
 (global-set-key (kbd "M-<tab>") 'other-window)
-(global-set-key (kbd "C-t") 'avy-goto-char-2)
+(global-set-key (kbd "C-t") 'avy-goto-word-2)
 ;; (global-set-key (kbd "M-t") 'avy-goto-symbol-1)
 (global-set-key (kbd "M-g g") 'avy-goto-line)
 (global-set-key (kbd "M-g M-g") 'avy-goto-line)

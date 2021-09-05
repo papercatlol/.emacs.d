@@ -422,7 +422,7 @@
     (kbd "M-m") 'lispyville-newline-and-parentheses)
 
   (evil-define-key '(insert) slime-repl-mode-map
-    (kbd "C-t") 'evil-avy-goto-char-2)
+    (kbd "C-t") 'evil-avy-goto-symbol-2)
 
   (evil-define-key 'motion lispyville-mode-map
     "[" #'lispyville-previous-opening
@@ -548,6 +548,7 @@
 (define-key evil-normal-state-map (kbd "M-,") nil)
 (define-key evil-normal-state-map (kbd "C-.") nil)
 (define-key evil-normal-state-map (kbd "C-,") nil)
+(define-key evil-normal-state-map (kbd "C-t") nil)
 (define-key evil-motion-state-map (kbd "C-b") nil)
 (define-key evil-motion-state-map (kbd "C-e") nil)
 
