@@ -1135,7 +1135,7 @@ If there was an active region, insert it into repl."
 (define-key slime-repl-mode-map (kbd "C-c n") 'slime-repl-next-prompt)
 
 ;;** package-related utils
-(define-key slime-mode-map (kbd "C-c w") 'slime-kill-package-name)
+(define-key slime-mode-map (kbd "C-c M-w") 'slime-kill-package-name)
 (define-key slime-mode-map (kbd "C-c C-p") 'slime-sync-package-and-default-directory)
 (define-key sldb-mode-map (kbd "C-c C-p") 'sldb-sync-frame-package)
 (define-key slime-repl-mode-map (kbd "C-c C-p") 'slime-repl-set-default-package)

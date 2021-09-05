@@ -1292,6 +1292,19 @@ windows)."
 (global-set-key (kbd "C-}") 'window-resize-right)
 (global-set-key (kbd "C-{") 'window-resize-left)
 
+;;* show-toplevel
+;; Inspired by `lispy-show-top-level' and `topsy'.
+(defun show-toplevel ()
+  "Show first line of the top-level form containing point."
+  (interactive)
+  (minibuffer-message
+   (save-excursion
+    (beginning-of-defun)
+    (font-lock-ensure (point) (line-end-position))
+    (buffer-substring (point) (line-end-position)))))
+
+(define-key prog-mode-map (kbd "C-c w") 'show-toplevel)
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
