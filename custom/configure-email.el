@@ -408,19 +408,30 @@ region if there is a region, then move to the previous message."
            ;; HACK divide by 2 because mu4e doubles the results for some reason
            (today-count (/ (plist-get today :count) 2))
            (today-unread (/ (plist-get today :unread) 2))
-           (unread-count
-            (/ (plist-get (%find "flag:unread AND NOT flag:trashed") :count) 2)))
-      (propertize (format "Today: (%s/%s)   Unread: %s   Hits: %s   Query: %s"
+           (unread-count (mu4e~headers-count-unread)))
+      (propertize (format "Today: %s/%s   Hits: %s   Unread: %s   Query: %s"
                           (- today-count today-unread) today-count
-                          unread-count
                           mu4e~headers-last-count
+                          unread-count
                           mu4e~headers-last-query)
                   'face 'mu4e-header-line-face))))
+
+(defun mu4e~headers-count-unread ()
+  "Return the number of unread messages in the current header view."
+  (let ((count 0))
+    (mu4e-headers-for-each
+     (lambda (msg)
+       (let ((flags (mu4e-msg-field msg :flags)))
+         (when (and (memq 'unread flags) (not (memq 'trashed flags)))
+           (incf count)))))
+    count))
 
 (defun mu4e~better-header-line-format ()
   `(:eval (mu4e~better-header-line)))
 
 (advice-add 'mu4e~header-line-format :override #'mu4e~better-header-line-format)
+;; Refresh server props?
+(add-hook 'mu4e-index-updated-hook #'mu4e~start)
 
 ;;* mark-for-read dwim
 (defun mu4e-headers-mark-for-read-dwim (mark-all)
