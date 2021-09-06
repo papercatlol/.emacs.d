@@ -404,13 +404,15 @@ region if there is a region, then move to the previous message."
                 (cl-find query (plist-get mu4e~server-props :queries)
                          :key (lambda (q) (plist-get q :query))
                          :test #'string=)))
-    (let ((today (%find "date:today..now"))
-          (unread (%find "flag:unread AND NOT flag:trashed")))
+    (let* ((today (%find "date:today..now"))
+           ;; HACK divide by 2 because mu4e doubles the results for some reason
+           (today-count (/ (plist-get today :count) 2))
+           (today-unread (/ (plist-get today :unread) 2))
+           (unread-count
+            (/ (plist-get (%find "flag:unread AND NOT flag:trashed") :count) 2)))
       (propertize (format "Today: (%s/%s)   Unread: %s   Hits: %s   Query: %s"
-                          (- (plist-get today :count)
-                             (plist-get today :unread))
-                          (plist-get today :count)
-                          (plist-get unread :count)
+                          (- today-count today-unread) today-count
+                          unread-count
                           mu4e~headers-last-count
                           mu4e~headers-last-query)
                   'face 'mu4e-header-line-face))))
@@ -419,6 +421,25 @@ region if there is a region, then move to the previous message."
   `(:eval (mu4e~better-header-line)))
 
 (advice-add 'mu4e~header-line-format :override #'mu4e~better-header-line-format)
+
+;;* mark-for-read dwim
+(defun mu4e-headers-mark-for-read-dwim (mark-all)
+  "Mark header at point with read. With prefix arg mark all unread instead."
+  (interactive "P")
+  (if mark-all
+      ;; Code copied from `mu4e-headers-mark-all-unread-read' because I don't
+      ;; want to load `mu4e-contrib'.
+      (mu4e-headers-mark-for-each-if
+       (cons 'read nil)
+       (lambda (msg _param)
+         (memq 'unread (mu4e-msg-field msg :flags))))
+    (call-interactively #'mu4e-headers-mark-for-read)))
+
+(define-key mu4e-headers-mode-map "!" 'mu4e-headers-mark-for-read-dwim)
+
+(with-eval-after-load 'evil
+  (evil-define-key '(normal) mu4e-headers-mode-map
+    "!" 'mu4e-headers-mark-for-read-dwim))
 
 
 (provide 'configure-email)
