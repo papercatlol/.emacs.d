@@ -90,6 +90,10 @@
       '("!" . "✔"))
 (setf (getf (alist-get 'unread mu4e-marks) :char)
       '("?" . "x"))
+(setf (getf (alist-get 'flag mu4e-marks) :char)
+      '("+" . "+"))
+(setf (getf (alist-get 'unflag mu4e-marks) :char)
+      '("-" . "-"))
 
 ;;* 24-hour time & DD.MM.YY date
 (setq mu4e-headers-time-format "%T")
@@ -403,7 +407,9 @@ region if there is a region, then move to the previous message."
     (let ((today (%find "date:today..now"))
           (unread (%find "flag:unread AND NOT flag:trashed")))
       (propertize (format "Today: (%s/%s)   Unread: %s   Hits: %s   Query: %s"
-                          (plist-get today :unread) (plist-get today :count)
+                          (- (plist-get today :count)
+                             (plist-get today :unread))
+                          (plist-get today :count)
                           (plist-get unread :count)
                           mu4e~headers-last-count
                           mu4e~headers-last-query)
