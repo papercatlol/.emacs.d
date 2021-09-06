@@ -52,7 +52,8 @@
                   ;; :box (:line-width 1 :color "gray50")
                   :overline "gray60"
                   ))))
- '(mode-line-inactive ((t (:background "gray15" :foreground "#41544B" :bold nil))))
+ '(mode-line-inactive ((t (:background "gray15" :foreground "#41544B" :bold nil
+                           :overline "gray60"))))
  '(mode-line-buffer-id ((t (:background nil :foreground "white" :bold nil))))
  '(mode-line-highlight ((t (:foreground "aquamarine3" :box nil :bold nil))))
  '(mode-line-emphasis ((t (:foreground "aquamarine3"))))

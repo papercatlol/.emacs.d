@@ -404,6 +404,13 @@
      (side . left)
      (slot . 1)
      (window-parameters . ((no-other-window . t))))
+   #'string=)
+  (map-put
+   display-buffer-alist
+   (rx "*compilation" (* any))
+   '((display-buffer-reuse-window)
+     (reusable-frames . visible)
+     (inhibit-switch-frame . t))
    #'string=))
 
 (setq even-window-sizes 'height-only)
@@ -985,6 +992,7 @@ current entry."
 
 ;;* TODO: helm-make: add cd(counsel-cd?) binding; same for cd to git root
 (setq helm-make-completion-method 'ivy)
+(setq helm-make-cache-targets t)
 
 ;;* scrolling
 (require 'smooth-scroll)
@@ -1106,6 +1114,17 @@ current entry."
   (let ((inhibit-read-only t))
     (ansi-color-apply-on-region (point-min) (point-max))))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
+;;* display compilation command in header-line of the *compilation* buffer
+(defun compilation-header-line ()
+  (and compilation-arguments
+       (stringp (car compilation-arguments))
+       (car compilation-arguments)))
+
+(defun compilation--set-up-header-line-format ()
+  (setq header-line-format `(:eval (compilation-header-line))))
+
+(add-hook 'compilation-mode-hook #'compilation--set-up-header-line-format)
 
 ;;* kbd-helper
 (defun kbd-helper ()
