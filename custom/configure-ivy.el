@@ -756,7 +756,6 @@ enable `ivy-calling' by default and restore original position on exit."
               :caller 'counsel-imenu)))
 
 ;; other-window/frame
-(ivy-enable-calling-for-func 'counsel-outline)
 ;;* ivy-done-other-window/frame
 ;;* ivy-done-other-window/frame/ace-window
 (defun ivy-done-other-window ()

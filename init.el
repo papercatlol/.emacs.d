@@ -860,13 +860,29 @@ otherwise activate iedit-mode."
 ;;* outline-mode, bicycle-mode
 (require 'bicycle)
 
+(setq outline-blank-line t)
+
 (add-hook 'prog-mode-hook #'outline-minor-mode)
 
 ;; change ellipsis to something more distinct
+(defvar outline-ellipsis " ↓" ;;" ↳"
+  "The ellipsis to use for outlines.")
+
 (set-display-table-slot standard-display-table
                         'selective-display
-                        (string-to-vector " >"))
+                        (string-to-vector outline-ellipsis))
 
+(defun outline--set-ellipsis ()
+  (when-let ((display-table (or (window-display-table)
+                                buffer-display-table)))
+    (set-display-table-slot display-table
+                            'selective-display
+                            (string-to-vector outline-ellipsis))))
+
+(add-hook 'outline-mode-hook #'outline--set-ellipsis)
+(add-hook 'outline-minor-mode-hook #'outline--set-ellipsis)
+
+;;
 (defun bicycle-cycle-body ()
   "Cycle between showing and hiding function bodies."
   (interactive)

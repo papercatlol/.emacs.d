@@ -15,8 +15,9 @@
   ("M" lispy-multiline "m-line")
   ("O" lispy-oneline "1-line"))
 
-;;* outline regexp
-(setq lispy-outline lisp-outline-regexp)
+;;;;* outline regexp
+;; FIXME this breaks lispy
+;;(setq lispy-outline lisp-outline-regexp)
 
 ;;* hooks
 (add-hook 'emacs-lisp-mode-hook #'lispy-mode)
