@@ -944,6 +944,12 @@ exit with that candidate, otherwise insert SPACE character as usual."
 ;;* counsel-outline
 (global-set-key (kbd "H-s") 'counsel-outline)
 
+;;* pretty-print face attributes action for counsel-faces
+(ivy-add-actions
+ 'counsel-faces
+ '(("a" face-attributes-pretty-print "pp face attributes")))
+
+
 ;;* KEYS
 (defhydra hydra-M-g (global-map "M-g")
   "M-g"

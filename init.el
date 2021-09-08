@@ -1340,6 +1340,27 @@ windows)."
 
 (define-key prog-mode-map (kbd "C-c w") 'show-toplevel)
 
+;;* face-attributes-pretty-print
+(defun face-attributes-pretty-print (face)
+  "Insert a `defface'-style attribute list for FACE.
+If there is a symbol at point, insert only the attribute list,
+else insert the face name as well."
+  (interactive (let* ((faces (mapcar #'symbol-name (face-list)))
+                      (symbol-at-point (symbol-at-point))
+                      (initial-input (and symbol-at-point
+                                          (symbol-name symbol-at-point))))
+                 (list (completing-read "Face: " faces nil t initial-input))))
+  (when (stringp face)
+    (setq face (intern face)))
+
+  (let ((attributes `((t ,(face-attr-construct face))))
+        (symbol-bounds (bounds-of-thing-at-point 'symbol)))
+    (if (null symbol-bounds)
+        (setq attributes `'(,face ,attributes))
+      (goto-char (cdr symbol-bounds))
+      (insert " "))
+    (prin1 attributes (current-buffer))))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -1468,6 +1489,7 @@ windows)."
   ("=" #'describe-char "describe-char")
   ("f" #'describe-face "describe-face")
   ("F" #'counsel-faces "counsel-faces")
+  ("M-f" #'face-attributes-pretty-print "pp face attributes")
   ("i" #'ielm "ielm")
   ("/" #'rg-dwim "rg-dwim")
   ("b" #'counsel-descbinds "counsel-descbinds")
