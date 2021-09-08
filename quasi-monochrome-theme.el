@@ -21,8 +21,16 @@
 (custom-theme-set-faces
  'quasi-monochrome
  '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "xos4 Terminus"))))
- '(variable-pitch ((t (:family "Fira Code 11")))) ;; Hack is also nice
- '(fixed-pitch ((t (:family "Fira Code 11"))))    ;; Hack is also nice
+ ;; fixed & ariable-pitch fonts
+ ;;'(variable-pitch ((t (:family "Fira Code" :height 110))))
+ ;;'(variable-pitch ((t (:family "Hack" :height 110))))
+ ;;'(variable-pitch ((t (:family "Input Sans Narrow" :height 110))))
+ '(variable-pitch ((t (:family "Input Sans Condensed" :height 110))))
+ ;;'(fixed-pitch ((t (:family "Fira Code 11" :height 110))))
+ ;;'(fixed-pitch ((t (:family "Input Sans Narrow" :height 110))))
+ '(fixed-pitch ((t (:family "Input Sans Condensed" :height 110))))
+ ;;'(fixed-pitch-serif ((t (:family "Fira Code" :height 110))))
+ '(fixed-pitch-serif ((t (:family "Input Serif Narrow" :height 110))))
  '(button ((t (:inherit (link)))))
  '(cursor ((t (:background "white"))))
  ;; '(cursor ((t (:background "dark orange"))))
