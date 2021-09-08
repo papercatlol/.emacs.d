@@ -1323,6 +1323,10 @@ windows)."
 (global-set-key (kbd "C-M-}") 'window-resize-right)
 (global-set-key (kbd "C-M-{") 'window-resize-left)
 
+;;* resize windows vertically
+(global-set-key (kbd "C-M-+") 'enlarge-window)
+(global-set-key (kbd "C-M-_") 'shrink-window)
+
 ;;* show-toplevel
 ;; Inspired by `lispy-show-top-level' and `topsy'.
 (defun show-toplevel ()
