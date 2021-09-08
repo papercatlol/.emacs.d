@@ -358,60 +358,52 @@
 ;; Inspired by: https://protesilaos.com/codelog/2020-01-07-emacs-display-buffer/
 (progn
   ;; bottom side window
-  (map-put
-   display-buffer-alist
-   (rx "*" (or "Backtrace" "Warnings" "Compile-Log" "Messages") "*")
+  (setf
+   (alist-get (rx "*" (or "Backtrace" "Warnings" "Compile-Log" "Messages") "*")
+              display-buffer-alist nil nil #'equal)
    '((display-buffer-in-side-window)
      (window-height . 0.16)
      (side . bottom)
      (slot . 1)
-     (window-parameters . ((no-other-window . t))))
-   #'string=)
-  (map-put
-   display-buffer-alist
-   (rx (or (and (? "e") "shell") "vterm" "EQUAKE[") (* any))
+     (window-parameters . ((no-other-window . t)))))
+  (setf
+   (alist-get (rx (or (and (? "e") "shell") "vterm" "EQUAKE[") (* any))
+              display-buffer-alist nil nil #'equal)
    '((display-buffer-in-side-window)
      (window-height . 0.2)
      (side . bottom)
      (slot . 0)
-     (window-parameters . ((no-other-window . t))))
-   #'string=)
+     (window-parameters . ((no-other-window . t)))))
   ;; right side window
-  (map-put
-   display-buffer-alist
-   "\\*Faces\\*"
+  (setf
+   (alist-get (rx "*" (or "Faces" "Colors") (* any))
+              display-buffer-alist nil nil #'equal)
    '((display-buffer-in-side-window)
      (window-width . 0.3)
      (side . right)
      (slot . 0)
-     (window-parameters . ((no-other-window . t))))
-   #'string=)
+     (window-parameters . ((no-other-window . t)))))
   ;; left side window
-  (map-put
-   display-buffer-alist
-   (rx (or "*help" "*info" "*apropos" "*man" "*woman") (* any))
+  (setf
+   (alist-get (rx (or "*help" "*info" "*apropos" "*man" "*woman") (* any))
+              display-buffer-alist nil nil #'equal)
    '((display-buffer-in-side-window)
      (window-width . 0.2)
      (side . left)
      (slot . 0)
-     (window-parameters . ((no-other-window . t))))
-   #'string=)
-  (map-put
-   display-buffer-alist
-   "\\*Custom.*"
+     (window-parameters . ((no-other-window . t)))))
+  (setf
+   (alist-get "\\*Custom.*" display-buffer-alist nil nil #'equal)
    '((display-buffer-in-side-window)
      (window-width . 0.3)
      (side . left)
      (slot . 1)
-     (window-parameters . ((no-other-window . t))))
-   #'string=)
-  (map-put
-   display-buffer-alist
-   (rx "*compilation" (* any))
+     (window-parameters . ((no-other-window . t)))))
+  (setf
+   (alist-get (rx "*compilation" (* any)) display-buffer-alist nil nil #'equal)
    '((display-buffer-reuse-window)
      (reusable-frames . visible)
-     (inhibit-switch-frame . t))
-   #'string=))
+     (inhibit-switch-frame . t))))
 
 (setq even-window-sizes 'height-only)
 

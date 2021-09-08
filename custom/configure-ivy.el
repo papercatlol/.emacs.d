@@ -16,7 +16,7 @@
       ivy-initial-inputs-alist (delete (assoc 'counsel-M-x ivy-initial-inputs-alist)
                                        ivy-initial-inputs-alist))
 (setq counsel-find-file-at-point t)
-(map-put ivy-height-alist 'counsel-find-file 20)
+(setf (alist-get 'counsel-find-file ivy-height-alist) 20)
 
 (ivy-mode 1)
 
@@ -211,7 +211,7 @@
 (advice-add 'ivy-add-prompt-count :around #'ivy-add-prompt-count*)
 
 ;;* ivy completion height
-(map-put ivy-height-alist 'ivy-completion-in-region 20)
+(setf (alist-get 'ivy-completion-in-region ivy-height-alist) 20)
 
 ;;* counsel-files
 ;; (defvar counsel-rg-delay (* 0.1 1000)
@@ -308,7 +308,7 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
             :caller caller))
 
 ;;* swiper-dwim
-(map-put ivy-height-alist 'swiper 15)
+(setf (alist-get 'swiper ivy-height-alist) 15)
 
 (defun swiper-dwim ()
   "If region is active and no prefix arg is supplied, search for selected text,
@@ -734,7 +734,7 @@ enable `ivy-calling' by default and restore original position on exit."
 ;;* counsel-imenu-anywhere
 (require 'imenu-anywhere)
 
-(map-put ivy-height-alist 'counsel-imenu 15)
+(setf (alist-get 'counsel-imenu ivy-height-alist) 15)
 
 (defun counsel-imenu-dwim (anywhere)
   (interactive "P")

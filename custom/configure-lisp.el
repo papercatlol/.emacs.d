@@ -244,14 +244,11 @@ If there was an active region, insert it into repl."
       (goto-char (point-min)))))
 (advice-add 'slime-show-description :override #'slime-show-description-help-mode)
 
-(map-put
- display-buffer-alist
- "*slime-description*"
- '((display-buffer-in-side-window)
-   (window-width . fit-window-to-buffer)
-   (side . left)
-   (slot . 0))
- #'string=)
+(setf (alist-get "*slime-description*" display-buffer-alist nil nil #'equal)
+      '((display-buffer-in-side-window)
+        (window-width . fit-window-to-buffer)
+        (side . left)
+        (slot . 0)))
 
 ;;*** hyperspec
 
