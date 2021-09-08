@@ -1361,6 +1361,16 @@ else insert the face name as well."
       (insert " "))
     (prin1 attributes (current-buffer))))
 
+;;* space-after M-SPC/S-SPC
+(defun space-after ()
+  "Insert a space after cursor: '|' -> '| '."
+  (interactive)
+  (insert " ")
+  (backward-char))
+(global-set-key (kbd "M-SPC") 'space-after)
+(global-set-key (kbd "S-SPC") 'space-after)
+
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
