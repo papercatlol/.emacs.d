@@ -91,7 +91,9 @@
   "If buffer is modified and no prefix arg is supplied, call `diff-buffer-with-file'.
 Else call `magit-diff-buffer-file'."
   (if (and (not force-magit) (buffer-modified-p))
-      (diff-buffer-with-file (current-buffer))
+      (if (buffer-file-name)
+          (diff-buffer-with-file (current-buffer))
+        (error "Buffer isn't visiting a file"))
     (call-interactively #'magit-diff-buffer-file)))
 
 (defun diff-buffer-modified ()
@@ -535,5 +537,11 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 ;;* magit-go-forward/backward
 (define-key magit-mode-map (kbd "C-c f") 'magit-go-forward)
 (define-key magit-mode-map (kbd "C-c b") 'magit-go-backward)
+
+;;* git-rebase-mode
+(with-eval-after-load 'git-rebase 
+  (define-key git-rebase-mode-map "j" 'forward-line)
+  (define-key git-rebase-mode-map "k" 'git-rebase-backward-line)
+  (define-key git-rebase-mode-map "u" 'git-rebase-undo))
 
 (provide 'configure-git)

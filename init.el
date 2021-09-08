@@ -275,7 +275,7 @@
                     '(:eval (ace-window-path-lighter))
                     (list (propertize "%b" 'face 'mode-line-buffer-id))
                     ":%l %p "
-                    '(:eval (string-trim evil-mode-line-tag))
+                    '(:eval (string-trim (or evil-mode-line-tag "")))
                     '(:eval (when slime-mode (concat " " (slime-current-package))))
                     '(vc-mode vc-mode)
                     " ["
@@ -693,7 +693,9 @@ Else narrow-to-defun."
                                             when (buffer-file-name b)
                                                  collect it)))
                   (current-buffer))))
-    (diff-buffer-with-file buffer)))
+    (if (buffer-file-name buffer)
+        (diff-buffer-with-file buffer)
+      (error "Buffer isn't visiting a file"))))
 
 ;;* dired-quick-sort
 (require 'dired-quick-sort)
@@ -822,14 +824,14 @@ Else narrow-to-defun."
     (message "Copied %d lines." (count-lines (car bounds) (cdr bounds)))))
 
 ;;* pulse-cursor
-(cl-defun pulse-cursor (&key (width 1) (face 'cursor) (delay .01))
+(cl-defun pulse-cursor (&key (width 1) (face 'cursor) (delay 0.01))
   (let* ((pulse-delay delay)
          (pos (point))
          (beg (max (line-beginning-position) (- pos width)))
          (end (min (line-end-position) (+ pos width))))
     (pulse-momentary-highlight-region beg end face)))
 
-(cl-defun pulse-current-line (&key (face 'cursor) (delay .01))
+(cl-defun pulse-current-line (&key (face 'cursor) (delay 0.01))
   (let ((pulse-delay delay))
     (pulse-momentary-highlight-one-line (point) face)))
 
