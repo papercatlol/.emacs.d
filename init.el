@@ -95,6 +95,8 @@
 (require 'configure-isearch)
 (require 'configure-ivy)
 (require 'counsel-ripgrep)
+(require 'configure-w3m)
+
 ;; (require 'configure-go)
 (require 'configure-lisp)
 (require 'configure-python)

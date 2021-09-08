@@ -18,6 +18,11 @@
   '((t (:inherit ediff-diff-base)))
   "Base face for odd ediff regions.")
 
+;; w3m
+(defface w3m-tab-base
+    '((t (:inherit default :background "grey20" :bold t)))
+  "Bace face for w3m tab bar.")
+
 (custom-theme-set-faces
  'quasi-monochrome
  '(default ((t (:inherit nil :stipple nil :background "black" :foreground "light gray" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "xos4" :family "xos4 Terminus"))))
@@ -228,6 +233,23 @@
  ;; js2-mode
  '(js2-function-param ((t (:inherit default))))
  '(js2-jsdoc-value ((t (:inherit js2-jsdoc-tag))))
- '(js2-jsdoc-type ((t (:inherit js2-jsdoc-tag)))))
+ '(js2-jsdoc-type ((t (:inherit js2-jsdoc-tag))))
+ ;; w3m-mode
+ '(w3m-anchor ((t (:inherit font-lock-keyword-face :underline t))))
+ '(w3m-header-line-title ((t (:inherit default :foreground "cadet blue"
+                              :bold t))))
+ '(w3m-header-line-content ((t (:inherit w3m-header-line-title :bold nil))))
+ ;; w3m-mode tabs
+ '(w3m-tab-base ((t (:inherit default :background "grey20" :bold t))))
+ '(w3m-tab-background ((t (:inherit w3m-tab-base))))
+ '(w3m-tab-selected ((t (:inherit w3m-tab-base :inverse-video t))))
+ '(w3m-tab-selected-background ((t (:inherit w3m-tab-base))))
+ '(w3m-tab-selected-retrieving ((t (:inherit w3m-tab-selected :background "red"))))
+ '(w3m-tab-unselected ((t (:inherit w3m-tab-base))))
+ '(w3m-tab-unselected-unseen ((t (:inherit w3m-tab-base))))
+ '(w3m-tab-unselected-retrieving ((t (:inherit w3m-tab-base :underline "red"))))
+ '(w3m-tab-mouse ((t (:inherit w3m-tab-base
+                      :background "Gray75" :foreground "white"))))
+ )
 
 (provide-theme 'quasi-monochrome)
