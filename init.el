@@ -1320,8 +1320,8 @@ windows)."
       (window-shrink-horizontally delta)
     (window-grow-horizontally delta)))
 
-(global-set-key (kbd "C-}") 'window-resize-right)
-(global-set-key (kbd "C-{") 'window-resize-left)
+(global-set-key (kbd "C-M-}") 'window-resize-right)
+(global-set-key (kbd "C-M-{") 'window-resize-left)
 
 ;;* show-toplevel
 ;; Inspired by `lispy-show-top-level' and `topsy'.
