@@ -5,6 +5,18 @@
 (defface underlined
     '((t (:underline (:color "LightSalmon3"))))
   "Base face for underlined text(e.g. for isearch, grep etc).")
+;; ediff
+(defface ediff-diff-base
+  '((t (:inherit default)))
+  "Base face for ediff regions.")
+
+(defface ediff-even-diff-base
+  '((t (:inherit ediff-diff-base)))
+  "Base face for even ediff regions.")
+
+(defface ediff-odd-diff-base
+  '((t (:inherit ediff-diff-base)))
+  "Base face for odd ediff regions.")
 
 (custom-theme-set-faces
  'quasi-monochrome
@@ -121,6 +133,12 @@
  '(avy-goto-char-timer-face ((t ;; (:box (:line-width 1 :color "LimeGreen"))
                               (:underline (:color "LimeGreen"))
                               )))
+ ;; diff
+ '(diff-removed ((t (:background "#3f0001"))))
+ '(diff-added ((t (:background "#002800"))))
+ '(diff-refine-added ((t (:background "#006000"))))
+ '(diff-refine-removed ((t (:background "#710001"))))
+
  ;; magit
  '(magit-header-line ((t (:foreground "white" :background "black" :weight regular ;; :underline t
                           ;; :box t
@@ -157,13 +175,26 @@
  '(org-block ((t (:inherit font-lock-comment-face :background "grey10"))))
  '(org-table ((t (:foreground "chocolate2"))))
  '(org-headline-done ((t (:inherit org-default))))
+
  ;; ediff
- '(ediff-even-diff-A ((t (:foreground "black" :background "light grey"))))
- '(ediff-even-diff-B ((t (:foreground "black" :background "light grey"))))
- '(ediff-even-diff-C ((t (:foreground "black" :background "light grey"))))
- '(ediff-odd-diff-A ((t (:foreground "black" :background "light grey"))))
- '(ediff-odd-diff-B ((t (:foreground "black" :background "light grey"))))
- '(ediff-odd-diff-C ((t (:foreground "black" :background "light grey"))))
+ '(ediff-current-diff-A ((t (:inherit diff-removed))))
+ '(ediff-current-diff-B ((t (:inherit diff-added))))
+ '(ediff-fine-diff-A ((t (:inherit diff-refine-removed))))
+ '(ediff-fine-diff-B ((t (:inherit diff-refine-added))))
+ ;; TODO
+ ;;'(ediff-current-diff-C ((t (:background "#888833"))))
+ ;;'(ediff-current-diff-C ((t (:background "#f8f850"))))
+ ;;'(ediff-fine-diff-C ((t (:background "#aaaa22"))))
+ ;;'(ediff-fine-diff-C ((t (:background "#fefe90"))))
+
+ '(ediff-diff-base ((t (:foreground "cadet blue" :background "grey10"))))
+ '(ediff-even-diff-A ((t (:inherit ediff-even-diff-base))))
+ '(ediff-even-diff-B ((t (:inherit ediff-even-diff-base))))
+ '(ediff-even-diff-C ((t (:inherit ediff-even-diff-base))))
+ '(ediff-odd-diff-A ((t (:inherit ediff-odd-diff-base))))
+ '(ediff-odd-diff-B ((t (:inherit ediff-odd-diff-base))))
+ '(ediff-odd-diff-C ((t (:inherit ediff-odd-diff-base))))
+
  ;;
  '(dgi-commit-message-face ((t (:inherit font-lock-string-face))))
  '(iedit-occurrence ((t (:box (:color "DarkViolet")))))
