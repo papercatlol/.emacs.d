@@ -92,5 +92,20 @@
 
 (advice-add 'equake-kill-tab :before #'equake-kill-tab-advice)
 
+;;* bookmark support
+(defun bookmark-make-record-equake-shell ()
+  `((filename . ,default-directory)
+    (handler . bookmark-equake-shell-handler)))
+
+(defun bookmark-equake-shell-handler (bmk-record)
+  (let ((default-directory (bookmark-get-filename bmk-record)))
+    (equake-pop)))
+
+(defun equake-enable-bookmarks ()
+  (setq-local bookmark-make-record-function #'bookmark-make-record-equake-shell))
+
+(add-hook 'equake-mode-hook #'equake-enable-bookmarks)
+
+
 
 (provide 'configure-equake)

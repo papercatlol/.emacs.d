@@ -1160,6 +1160,9 @@ If there was an active region, insert it into repl."
 (define-key slime-trace-dialog-mode-map "l" 'forward-char)
 (define-key slime-trace-dialog-mode-map "C-n" nil)
 
+;;** slime-macroexpansion-minor-mode
+(define-key slime-macroexpansion-minor-mode-map (kbd "C-c C-q") 'bury-buffer)
+
 ;;** eval-in-repl
 (require 'eval-in-repl)
 
