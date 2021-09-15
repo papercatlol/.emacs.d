@@ -11,7 +11,46 @@
 (setq counsel-grep-base-command (concat rg-command " --no-filename %s %s"))
 (setf (alist-get 'counsel-grep ivy-more-chars-alist) 0)
 
-;;** custom type-aliases
+;;* *rg* results buffer style
+(setq rg-show-columns nil)
+(setq rg-align-line-column-separator ":")
+(setq rg-align-position-content-separator ": ")
+;; These two actually mean "min length"
+(setq rg-align-line-number-field-length 1)
+(setq rg-align-column-number-field-length 1)
+
+;; Aggressively simplified `rg-perform-position-numbers-alignment'.
+(defun rg-perform-position-numbers-alignment--override
+    (line-number &optional column-number context-marker)
+  "Return aligned LINE-NUMBER, COLUMN-NUMBER and CONTEXT-MARKER."
+  (cl-assert (if column-number (not context-marker) context-marker))
+  (concat line-number
+          (if (and column-number rg-show-columns)
+              (concat rg-align-line-column-separator column-number)
+            context-marker)
+          rg-align-position-content-separator))
+
+(advice-add 'rg-perform-position-numbers-alignment :override
+            #'rg-perform-position-numbers-alignment--override)
+
+(setf
+ (alist-get (rx "*rg" (* any))
+            display-buffer-alist nil nil #'equal)
+ '((display-buffer-reuse-window display-buffer-in-direction)
+   (direction . left)
+   (window-width . 70)
+   (reusable-frames . nil)))
+
+(defvar rg-truncate-lines t
+  "*rg* buffer setting for `truncate-lines'.")
+
+(defun rg--set-truncate-lines ()
+  (setq truncate-lines rg-truncate-lines))
+
+(add-hook 'rg-mode-hook #'rg--set-truncate-lines)
+
+
+;;* custom type-aliases
 (add-to-list 'rg-custom-type-aliases '("lisp" . "*.cl"))
 (add-to-list 'rg-custom-type-aliases '("cl" . "*.cl *.lisp *.lsp"))
 
@@ -64,6 +103,8 @@
 (define-key rg-mode-map (kbd "]") 'rg-next-file)
 (define-key rg-mode-map (kbd "L") 'rg-rerun-change-literal)
 (define-key rg-mode-map (kbd "C-c f") 'rg-rerun-change-files)
+(define-key rg-mode-map (kbd "C-{") 'rg-back-history)
+(define-key rg-mode-map (kbd "C-}") 'rg-forward-history)
 
 (global-set-key (kbd "M-g /") 'rg)
 (global-set-key (kbd "M-g M-/") 'rg-menu)
