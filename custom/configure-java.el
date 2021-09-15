@@ -1,14 +1,14 @@
 ;; -*- lexical-binding: t -*-
 
-(require 'configure-lsp)
-(require 'lsp-java)
+;;* eglot (lsp)
+(add-hook 'java-mode-hook 'eglot-ensure)
 
-(setq lsp-java-server-install-dir "~/work/java-lsp/")
-
-(add-to-list 'lsp-enabled-clients 'jdtls)
-
-
-(add-hook 'java-mode-hook 'configure-lsp:init)
+(with-eval-after-load 'eglot
+  (define-key java-mode-map (kbd "C-c C-c") 'eglot-code-actions)
+  (define-key java-mode-map (kbd "C-c M-q") 'eglot-rename)
+  (define-key java-mode-map (kbd "C-c =") 'eglot-format)
+  (define-key java-mode-map (kbd "C-c C-d") 'eldoc)
+  )
 
 ;;* electric-pairs
 (add-hook 'java-mode 'electric-pair-local-mode)
