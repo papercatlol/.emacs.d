@@ -70,6 +70,7 @@
  '(link ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
  '(link-visited ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
  '(minibuffer-prompt ((t (:weight bold :foreground "light gray"))))
+ '(completions-annotations ((t (:inherit font-lock-string-face))))
  ;; vertical window separator
  '(vertical-border ((t (:foreground "gray60"))))
  ;; mode-line
@@ -186,7 +187,8 @@
  '(org-block-end-line ((t (:inherit org-block-begin-line
                            :underline nil :overline t))))
  '(org-block ((t (:inherit font-lock-comment-face :background "grey10"))))
- '(org-table ((t (:foreground "chocolate2"))))
+ '(org-table ((t (:foreground "CadetBlue4"))))
+ '(org-formula ((t (:foreground "CadetBlue1"))))
  '(org-headline-done ((t (:inherit org-default))))
 
  ;; ediff
@@ -194,11 +196,8 @@
  '(ediff-current-diff-B ((t (:inherit diff-added))))
  '(ediff-fine-diff-A ((t (:inherit diff-refine-removed))))
  '(ediff-fine-diff-B ((t (:inherit diff-refine-added))))
- ;; TODO
- ;;'(ediff-current-diff-C ((t (:background "#888833"))))
- ;;'(ediff-current-diff-C ((t (:background "#f8f850"))))
- ;;'(ediff-fine-diff-C ((t (:background "#aaaa22"))))
- ;;'(ediff-fine-diff-C ((t (:background "#fefe90"))))
+ '(ediff-current-diff-C ((t (:background "DarkGoldenrod4"))))
+ '(ediff-fine-diff-C ((t (:background "DarkGoldenrod"))))
 
  '(ediff-diff-base ((t (:foreground "cadet blue" :background "grey10"))))
  '(ediff-even-diff-A ((t (:inherit ediff-even-diff-base))))
