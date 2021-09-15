@@ -1370,7 +1370,13 @@ else insert the face name as well."
 (global-set-key (kbd "M-SPC") 'space-after)
 (global-set-key (kbd "S-SPC") 'space-after)
 
+;;* previous/next-buffer
+;; `this' means do not switch to a buffer shown on the frame that hosts the
+;; window `switch-to-prev-buffer' is acting upon.
+(setq switch-to-prev-buffer-skip 'this)
 
+(global-set-key (kbd "M-[") 'previous-buffer)
+(global-set-key (kbd "M-]") 'next-buffer)
 
 ;;* flymake config
 (with-eval-after-load 'flymake
