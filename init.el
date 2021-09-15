@@ -1371,6 +1371,11 @@ else insert the face name as well."
 (global-set-key (kbd "S-SPC") 'space-after)
 
 
+
+;;* flymake config
+(with-eval-after-load 'flymake
+  (require 'configure-flymake))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
