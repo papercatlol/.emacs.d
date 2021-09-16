@@ -106,13 +106,6 @@
  '(success ((t (:foreground "gray40" :weight bold :underline t))))
  '(compilation-line-number ((t (:foreground "gray30" :weight bold))))
  '(show-paren-mismatch ((t (:background "firebrick3" :foreground "white" :weight extra-bold))))
- ;; ace-window
- '(aw-leading-char-face ((t (:background "black"
-                             :foreground "lime green"
-                             :weight extra-bold
-                             :height 120))))
- '(aw-mode-line-face ((t (:foreground "white" :weight extra-bold))))
- '(aw-key-face ((t (:foreground "white" :weight extra-bold))))
  '(popup-tip-face ((t (:inherit font-lock-comment-face))))
  '(popup-face ((t (:background "gray12" :foreground "white"))))
  '(popup-isearch-match ((t (:inherit isearch))))
@@ -134,19 +127,16 @@
  '(swiper-match-face-2 ((t (:inherit swiper-match-face-1))))
  '(swiper-match-face-3 ((t (:inherit swiper-match-face-1))))
  '(swiper-match-face-4 ((t (:inherit swiper-match-face-1))))
- ;; '(avy-lead-face ((t (:background "white" :foreground "black" :weight extra-bold))))
- ;; '(avy-lead-face-0 ((t (:inherit avy-lead-face :foreground "black"))))
- ;; '(avy-lead-face-2 ((t (:inherit avy-lead-face :foreground "dark red"))))
- '(avy-lead-face ((t (:background "darkgreen" :foreground "white"
-                      :weight extra-bold
-                      :underline nil))))
- ;; '(avy-lead-face ((t (:background "white" :foreground "dark red" :weight extra-bold))))
+ ;; avy
+ '(avy-lead-face ((t (:foreground "LimeGreen" :weight bold :box 1))))
  '(avy-lead-face-0 ((t (:inherit avy-lead-face))))
  '(avy-lead-face-1 ((t (:inherit avy-lead-face))))
  '(avy-lead-face-2 ((t (:inherit avy-lead-face))))
- '(avy-goto-char-timer-face ((t ;; (:box (:line-width 1 :color "LimeGreen"))
-                              (:underline (:color "LimeGreen"))
-                              )))
+ '(avy-goto-char-timer-face ((t (:underline (:color "LimeGreen")))))
+ ;; ace-window
+ '(aw-leading-char-face ((t (:inherit avy-lead-face :box nil :height 200))))
+ '(aw-mode-line-face ((t (:foreground "white" :weight extra-bold))))
+ '(aw-key-face ((t (:foreground "white" :weight extra-bold))))
  ;; diff
  '(diff-removed ((t (:background "#3f0001"))))
  '(diff-added ((t (:background "#002800"))))
