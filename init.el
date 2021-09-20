@@ -513,11 +513,10 @@ immediately kill current buffer."
   "Add current buffer file name to kill ring. With prefix arg,
 return file name without directory."
   (interactive)
-  (when-let ((filename (if (eq major-mode 'dired-mode)
-                           default-directory
-                         (if current-prefix-arg
-                             (file-name-nondirectory (buffer-file-name))
-                           (buffer-file-name)))))
+  (let ((filename (or (buffer-file-name)
+                      (directory-file-name default-directory))))
+    (when current-prefix-arg
+      (setq filename (file-name-nondirectory filename)))
     (kill-new filename)
     (message "%s" filename)))
 
@@ -529,7 +528,8 @@ return file name without directory."
   (let ((filename (buffer-file-name)))
     (if (not (and filename (file-exists-p filename)))
         (message "Buffer is not visiting a file!")
-      (let ((new-name (read-file-name "New name: ")))
+      (let ((new-name (counsel--find-file-1
+                       "New name: " filename nil 'rename-file-and-buffer)))
         (cond
          ((vc-backend filename) (vc-rename-file filename new-name))
          (t
