@@ -239,6 +239,13 @@
  '(w3m-tab-unselected-retrieving ((t (:inherit w3m-tab-base :underline "red"))))
  '(w3m-tab-mouse ((t (:inherit w3m-tab-base
                       :background "Gray75" :foreground "white"))))
+ ;; tldr
+ '(tldr-title ((t (:weight bold :height 1.2))))
+ '(tldr-description ((t (:inherit default))))
+ '(tldr-command-itself ((t (:inherit font-lock-keyword-face))))
+ '(tldr-code-block ((t (:inherit font-lock-string-face))))
+ '(tldr-command-argument ((t (:foreground "#eee"))))
+ '(tldr-command-argument ((t (:inherit default))))
  )
 
 (provide-theme 'quasi-monochrome)
