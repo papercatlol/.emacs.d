@@ -603,23 +603,6 @@ if there is a sole window."
 (define-key edit-indirect-mode-map (kbd "C-x ESC") 'edit-indirect-abort)
 (define-key edit-indirect-mode-map (kbd "C-c C-q") 'edit-indirect-abort)
 
-;;** hippie-expand + paredit fix
-(require 'hippie-exp)
-
-(defvar he-need-paredit-fix? t)
-
-(defun he-paredit-fix (str &optional trans-case)
-  "Remove extra paren when expanding line in paredit.
-https://www.emacswiki.org/emacs/HippieExpand#toc9"
-  (and he-need-paredit-fix?
-       paredit-mode
-       (equal "(" (substring he-search-string 0 1))
-       (equal ")" (substring str -1))
-       (looking-at-p ")")
-       (backward-delete-char 1)))
-
-(advice-add #'he-substitute-string :after #'he-paredit-fix)
-
 ;;** tab key hacks
 (setq tab-always-indent 'complete)
 
@@ -745,13 +728,14 @@ Else narrow-to-defun."
 
 (yas-global-mode)
 
+;;* hippie-expand
+(require 'hippie-exp)
+
 ;;** use hippie-expand instead of TAB
 (define-key yas-minor-mode-map (kbd "<tab>") nil)
 (define-key yas-minor-mode-map (kbd "TAB") nil)
 
-;; (add-to-list 'hippie-expand-try-functions-list
-;;              'yas-hippie-try-expand)
-
+;;** try-functions-list
 (setq hippie-expand-try-functions-list
       '(yas-hippie-try-expand
         try-expand-dabbrev-visible
@@ -775,37 +759,76 @@ Else narrow-to-defun."
   (let ((this-command 'hippie-expand--all)
         (last-command last-command)
         (buffer-modified (buffer-modified-p))
+        (buffer-undo-list t)            ; Don't blow up undo-list
         (hippie-expand-function (or hippie-expand-function 'hippie-expand))
         (he-need-paredit-fix? nil)
+        (he-string-bounds nil)
         (expansions nil))
-    (flet ((ding)) ; avoid the (ding) when hippie-expand exhausts its options.
+    (flet ((ding))   ; avoid the (ding) when hippie-expand exhausts its options.
       (while (progn
                (funcall hippie-expand-function nil)
                (setq last-command 'hippie-expand--all)
                ;; Expanders like to reset markers, so we save them.
-               (push (list (car he-tried-table)
-                           he-search-string
-                           (copy-marker he-string-beg)
-                           (copy-marker he-string-end))
-                     expansions)
+               (when (car he-tried-table)
+                 ;; Save initial string bounds
+                 (unless he-string-bounds
+                   (setq he-string-bounds (cons (copy-marker he-string-beg)
+                                                (copy-marker he-string-end))))
+                 (push (list (car he-tried-table)
+                             he-search-string
+                             (copy-marker he-string-beg)
+                             (copy-marker he-string-end))
+                       expansions))
                (not (equal he-num -1)))))
     ;; Evaluating the completions modifies the buffer, however we will finish
     ;; up in the same state that we began.
     (set-buffer-modified-p buffer-modified)
+    (when he-string-bounds
+      (setq he-string-beg (car he-string-bounds))
+      (setq he-string-end (cdr he-string-bounds)))
     (reverse expansions)))
 
 (defun hippie-expand-completion ()
   (interactive)
   (when-let* ((expansions (hippie-expand--all))
-              ;; MAYBE: use completion-in-region; see `dabbrev-completion' for reference
-              (expansion (completing-read "Hippie expand: " (mapcar #'car expansions)))
-              (metadata (alist-get expansion expansions nil nil #'string=))
-              (he-search-string (car metadata))
-              (he-string-beg (second metadata))
-              (he-string-end (third metadata)))
-    (he-substitute-string expansion t)))
+              (candidates (remove-duplicates (mapcar #'car expansions) :test #'equal)))
+    (completion-in-region (marker-position he-string-beg)
+                          (marker-position he-string-end)
+                          candidates)))
 
 (global-set-key [remap dabbrev-completion] 'hippie-expand-completion)
+
+;;** hippie-expand-completion-visible
+(defun hippie-expand-completion-visible (&optional all-buffers?)
+  "Use hippie-expand to complete visible dabbrev/list/line. With
+prefix arg expand from all buffers."
+  (interactive "P")
+  (let ((hippie-expand-try-functions-list
+         (if all-buffers?
+             '(try-expand-dabbrev-visible
+               try-expand-list-all-buffers
+               try-expand-line-all-buffers)
+           '(try-expand-dabbrev-all-buffers
+             try-expand-list
+             try-expand-line))))
+    (call-interactively #'hippie-expand-completion)))
+
+(global-set-key (kbd "M-'") 'hippie-expand-completion-visible)
+
+;;** paredit fix
+(defvar he-need-paredit-fix? t)
+
+(defun he-paredit-fix (str &optional trans-case)
+  "Remove extra paren when expanding line in paredit.
+https://www.emacswiki.org/emacs/HippieExpand#toc9"
+  (and he-need-paredit-fix?
+       paredit-mode
+       (equal "(" (substring he-search-string 0 1))
+       (equal ")" (substring str -1))
+       (looking-at-p ")")
+       (backward-delete-char 1)))
+
+(advice-add #'he-substitute-string :after #'he-paredit-fix)
 
 ;; TODO: figure out how to add snippets to completion candidates
 ;; and how `completion-extra-properties' work
@@ -818,7 +841,6 @@ Else narrow-to-defun."
 
 ;; (defun yas--completion-exit-function (string status)
 ;;   (yas-expand))
-
 
 ;;* copy for reddit
 (defun copy-for-reddit ()
