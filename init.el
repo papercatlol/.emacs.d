@@ -100,7 +100,9 @@
 ;; (require 'configure-go)
 (require 'configure-lisp)
 (require 'configure-python)
-(require 'configure-java)
+
+(with-eval-after-load 'java-mode
+  (require 'configure-java))
 
 (require 'configure-js)
 (require 'configure-html)
@@ -230,8 +232,14 @@
 
 ;;
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
+;;* paredit-everywhere
 (add-hook 'prog-mode-hook 'paredit-everywhere-mode)
 
+(with-eval-after-load 'paredit-everywhere
+  (define-key paredit-everywhere-mode-map (kbd "M-]") 'nil))
+
+
+;;* built-in commands
 (defalias 'yes-or-no-p 'y-or-n-p)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -470,6 +478,7 @@ With prefix arg, call `balance-windows-area'."
 
 (define-key ctl-x-5-map "5" 'window-as-frame)
 (define-key ctl-x-5-map (kbd "C-5") 'window-as-frame)
+(define-key ctl-x-5-map (kbd "C-2") 'make-frame-command)
 
 ;;** toggle *messages* buffer
 (defun toggle-echo-area-messages ()
@@ -1050,8 +1059,11 @@ current entry."
 
 (global-set-key (kbd "M-j") 'smooth-scroll/scroll-up-8)
 (global-set-key (kbd "M-k") 'smooth-scroll/scroll-down-8)
-(global-set-key (kbd "C-M-j") 'smooth-scroll/scroll-up-16)
-(global-set-key (kbd "C-M-k") 'smooth-scroll/scroll-down-16)
+
+;;** scroll-other-window
+(setq next-screen-context-lines 50)       ; originally 2
+(global-set-key (kbd "C-M-j") 'scroll-other-window)
+(global-set-key (kbd "C-M-k") 'scroll-other-window-down)
 
 ;;** ibuffer
 ;; old M-j: ibuffer-jump-to-filter-group
@@ -1102,6 +1114,7 @@ current entry."
 ;;* shrink-whitespace
 (global-set-key (kbd "C-c SPC") 'shrink-whitespace)
 (global-set-key (kbd "C-c S-SPC") 'grow-whitespace-around)
+(global-set-key (kbd "M-\\")  'shrink-whitespace)
 
 ;;* string-edit
 (require 'string-edit)
@@ -1147,6 +1160,8 @@ If called interactively, quote and insert it."
     (if (interactive-p)
         (insert (format "\"%s\"" key))
       key)))
+
+(global-set-key (kbd "H-k") 'kbd-helper)
 
 ;;* json-pretty-print-dwim
 (defun json-pretty-print-dwim ()
@@ -1229,7 +1244,8 @@ enable `hydra-flyspell'."
               #'hydra-flyspell--flyspell-auto-correct-word-advice)
 
   (define-key flyspell-mode-map (kbd "C-c C-f") 'hydra-flyspell/body)
-  (define-key prog-mode-map (kbd "C-c C-f") 'flyspell-hydra))
+  (define-key prog-mode-map (kbd "C-c C-f") 'flyspell-hydra)
+  (define-key markdown-mode-map (kbd "C-c C-f") 'flyspell-hydra))
 
 ;; Display flyspell corrections in a popup instead if the minibuffer.
 (defvar flyspell-display-next-corrections-popup-height 10)
