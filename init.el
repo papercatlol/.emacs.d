@@ -768,11 +768,9 @@ Else narrow-to-defun."
                (funcall hippie-expand-function nil)
                (setq last-command 'hippie-expand--all)
                ;; Expanders like to reset markers, so we save them.
-               (push (list (car he-tried-table)
-                           he-search-string
-                           (copy-marker he-string-beg)
-                           (copy-marker he-string-end))
-                     expansions)
+               (when-let (expansion (car he-tried-table))
+                 (push (cons expansion (length he-search-string))
+                       expansions))
                (not (equal he-num -1)))))
     ;; Evaluating the completions modifies the buffer, however we will finish
     ;; up in the same state that we began.
@@ -783,12 +781,20 @@ Else narrow-to-defun."
   (interactive)
   (when-let* ((expansions (hippie-expand--all))
               ;; MAYBE: use completion-in-region; see `dabbrev-completion' for reference
-              (expansion (completing-read "Hippie expand: " (mapcar #'car expansions)))
-              (metadata (alist-get expansion expansions nil nil #'string=))
-              (he-search-string (car metadata))
-              (he-string-beg (second metadata))
-              (he-string-end (third metadata)))
+              (expansion
+               (if (fboundp 'ivy-read)
+                   (ivy-read "Hippie expand: " (mapcar #'car expansions)
+                             :caller 'hippie-expand-completion)
+                 (completing-read "Hippie expand: " (mapcar #'car expansions))))
+              (len (alist-get expansion expansions nil nil #'string=)))
+    (he-init-string (- (point) len) (point))
     (he-substitute-string expansion t)))
+
+;; Truncate long candidates. `try-expand-list' in particular likes to suggest
+;; page-long expansions.
+(with-eval-after-load 'ivy
+  (ivy-configure 'hippie-expand-completion
+    :format-fn #'counsel--yank-pop-format-function))
 
 (global-set-key [remap dabbrev-completion] 'hippie-expand-completion)
 
@@ -800,8 +806,8 @@ prefix arg expand from all buffers."
   (let ((hippie-expand-try-functions-list
          (if all-buffers?
              '(try-expand-dabbrev-visible
-               try-expand-list-all-buffers
-               try-expand-line-all-buffers)
+               try-expand-line-all-buffers
+               try-expand-list-all-buffers)
            '(try-expand-dabbrev-all-buffers
              try-expand-list
              try-expand-line))))
@@ -819,7 +825,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
        paredit-mode
        (equal "(" (substring he-search-string 0 1))
        (equal ")" (substring str -1))
-       (looking-at-p ")")
+       (looking-at-p (rx (* space) ")"))
        (backward-delete-char 1)))
 
 (advice-add #'he-substitute-string :after #'he-paredit-fix)
