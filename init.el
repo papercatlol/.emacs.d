@@ -762,39 +762,33 @@ Else narrow-to-defun."
         (buffer-undo-list t)            ; Don't blow up undo-list
         (hippie-expand-function (or hippie-expand-function 'hippie-expand))
         (he-need-paredit-fix? nil)
-        (he-string-bounds nil)
         (expansions nil))
     (flet ((ding))   ; avoid the (ding) when hippie-expand exhausts its options.
       (while (progn
                (funcall hippie-expand-function nil)
                (setq last-command 'hippie-expand--all)
                ;; Expanders like to reset markers, so we save them.
-               (when (car he-tried-table)
-                 ;; Save initial string bounds
-                 (unless he-string-bounds
-                   (setq he-string-bounds (cons (copy-marker he-string-beg)
-                                                (copy-marker he-string-end))))
-                 (push (list (car he-tried-table)
-                             he-search-string
-                             (copy-marker he-string-beg)
-                             (copy-marker he-string-end))
-                       expansions))
+               (push (list (car he-tried-table)
+                           he-search-string
+                           (copy-marker he-string-beg)
+                           (copy-marker he-string-end))
+                     expansions)
                (not (equal he-num -1)))))
     ;; Evaluating the completions modifies the buffer, however we will finish
     ;; up in the same state that we began.
     (set-buffer-modified-p buffer-modified)
-    (when he-string-bounds
-      (setq he-string-beg (car he-string-bounds))
-      (setq he-string-end (cdr he-string-bounds)))
-    (reverse expansions)))
+    (reverse (remove-duplicates expansions :key #'car :test #'equal))))
 
 (defun hippie-expand-completion ()
   (interactive)
   (when-let* ((expansions (hippie-expand--all))
-              (candidates (remove-duplicates (mapcar #'car expansions) :test #'equal)))
-    (completion-in-region (marker-position he-string-beg)
-                          (marker-position he-string-end)
-                          candidates)))
+              ;; MAYBE: use completion-in-region; see `dabbrev-completion' for reference
+              (expansion (completing-read "Hippie expand: " (mapcar #'car expansions)))
+              (metadata (alist-get expansion expansions nil nil #'string=))
+              (he-search-string (car metadata))
+              (he-string-beg (second metadata))
+              (he-string-end (third metadata)))
+    (he-substitute-string expansion t)))
 
 (global-set-key [remap dabbrev-completion] 'hippie-expand-completion)
 
