@@ -47,6 +47,87 @@
   (define-key lispy-mode-map (kbd "C-c C-x C-d") 'lispy-describe-inline)
   (define-key lispy-mode-map (kbd "C-c d") 'lispy-describe-inline))
 
+;;* lispy-ace-bind-variable
+(defun lispy-ace-bind-variable ()
+  "Use `avy' to select a sexp to append to current let bindings."
+  (interactive)
+  (let* ((inhibit-message t)
+         (let-bounds (lispy--let-bounds))
+         (beg (move-marker (make-marker) (car let-bounds)))
+         (end (move-marker (make-marker) (cdr let-bounds))))
+    (require 'iedit)
+    (goto-char beg)
+    (lispy-flow 1)
+    (lispy-different)
+    (lispy-flow 1)
+    (lispy-newline-and-indent-plain)
+    (insert "()")
+    (backward-char 1)
+    (lispy-ace-paren-inner 1 #'avy-action-yank (1+ beg) (1- end))
+    (lispy-clone 1)
+    (iedit-start (regexp-quote (lispy--string-dwim)) beg end)
+    (iedit-toggle-selection)
+    (iedit-prev-occurrence 1)
+    (lispy-mark)))
+
+(defhydra+ hydra-lispy-x (:exit t :hint 0.3 :columns 3)
+  ("b" lispy-ace-bind-variable "ace bind variable"))
+
+
+;;** lispy--let-bounds
+(defvar lispy--let-regexp (rx "(" (or "let" "when-let" "bind")))
+
+(defun lispy--let-bounds ()
+  "Return closest outer let bounds."
+  (save-excursion
+    (or (loop repeat 50
+              when (looking-at-p lispy--let-regexp)
+              do (return (lispy--bounds-dwim))
+              until (looking-at-p "^(")
+              do (lispy--out-backward 1))
+        (error "No let form found"))))
+
+;;* lispy-ace-paren-inner
+;; TODO same for outer parens (maybe bind inner/outer to q/Q)
+;; TODO more convenient lispy-avy interface
+(defun lispy-ace-paren-inner (&optional arg action beg end)
+  "Jump to an open paren within the current sexp.
+ARG can extend the bounds to the current defun."
+  (interactive "p")
+  (setq arg (or arg 1))
+  (lispy--remember)
+  (deactivate-mark)
+  (let ((avy-keys lispy-avy-keys)
+        (bnd (if (and beg end)
+                 (cons beg end)
+               (save-excursion
+                 (unless (eq arg 1)
+                   (lispy--out-backward 50))
+                 (destructuring-bind (beg . end)
+                     (lispy--bounds-dwim)
+                   ;; Skip sexp at point. TODO also skip sexps that are one
+                   ;; keystroke away (f, d, h, l, j, k, [, ], etc). Or MAYBE
+                   ;; show those sexps with the second(or every) avy-char being
+                   ;; the lispy motion key. E.g.:
+                   ;;|(if X
+                   ;;    [~f](fn1 [f](list 1 2))
+                   ;;  [a](fn2 [af](list 3 4)))
+                   ;;[~j](if Y
+                   ;;    [j](fn3 [jf](list 5 6))
+                   ;;  [d](fn4 [df](list 7 8)))
+                   ;; Think a hybrid between lispy hints and avy keys.
+                   (cons (1+ beg) (1- end)))))))
+    (avy-with lispy-ace-paren
+      (setq avy-action action)
+      (lispy--avy-do
+       lispy-left
+       bnd
+       (lambda () (and (not (lispy--in-string-or-comment-p))
+                       (not (eq (point) (car bnd)))
+                       (not (eq (point) (cdr bnd)))))
+       lispy-avy-style-paren))))
+
+
 ;;* unmap
 (define-key lispy-mode-map (kbd "M-j") nil)
 (define-key lispy-mode-map (kbd "M-k") nil)
