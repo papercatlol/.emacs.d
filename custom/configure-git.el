@@ -20,7 +20,7 @@
 ;;* transient
 (setq transient-default-level 5)        ; up to 7, default is 4
 
-;;** widen fringe for magit windows
+;;* widen fringe for magit windows
 (defun magit-status-set-wide-fringe (&optional arg)
   (display-line-numbers-mode -1)
   (set-window-fringes nil 11 5))
@@ -29,7 +29,7 @@
 (add-hook 'magit-refs-mode-hook #'magit-status-set-wide-fringe)
 (add-hook 'magit-revision-sections-hook #'magit-status-set-wide-fringe)
 
-;;** j/k movement
+;;* j/k movement
 (defun magit-forward-dwim ()
   (interactive)
   (if (region-active-p)
@@ -42,7 +42,7 @@
       (magit-previous-line)
     (magit-section-backward)))
 
-;;** show unstaged diff for current buffer, diff helper functions
+;;* show unstaged diff for current buffer
 (defun magit-diff-buffer-file-unstaged ()
   "Like `magit-diff-buffer-file', but show unstaged diff only."
   (interactive)
@@ -58,34 +58,34 @@
             (magit-diff--goto-position file line col))))
     (user-error "Buffer isn't visiting a file")))
 
-(defun magit-diff-buffer-file-other-window ()
-  "Like `magit-diff-buffer-file', but don't focus new window."
-  (interactive)
-  (let ((win (selected-window)))
-    (call-interactively #'magit-diff-buffer-file)
-    (select-window win)))
+;;* diff helper functions
+(defmacro def-no-select (fn &optional new-fn)
+  "Define a new function named NEW-FN that behaves exactly like
+FN, but restores selected window afterwards. If NEW-FN is
+omitted, the functions name will be FN-no-select."
+  (let ((new-fn
+         (cond ((null new-fn)
+                (intern (concat (symbol-name fn) "-no-select")))
+               ((symbolp new-fn)
+                new-fn)))
+        (documentation
+         (format "Like `%s', but restore selected window afterwards." fn)))
+    (unless (and fn (fboundp fn) new-fn)
+      (error "bad args: %s %s" fn new-fn))
+    `(defun ,new-fn (&rest args)
+       ,documentation
+       (interactive)
+       (save-selected-window
+         (if (interactive-p)
+             (call-interactively #',fn)
+           (apply #',fn args))))))
 
-(defun magit-diff-buffer-file-unstaged-other-window ()
-  "Like `magit-diff-buffer-file-unstaged', but don't focus new window."
-  (interactive)
-  (let ((win (selected-window)))
-    (call-interactively #'magit-diff-buffer-file-unstaged)
-    (select-window win)))
+(def-no-select magit-diff-buffer-file)
+(def-no-select magit-diff-buffer-file-unstaged)
+(def-no-select magit-diff-unstaged)
+(def-no-select magit-diff-visit-worktree-file-other-window)
 
-(defun magit-diff-unstaged-other-window ()
-  "Like `magit-diff-unstaged', but don't focus new window."
-  (interactive)
-  (let ((win (selected-window)))
-    (call-interactively #'magit-diff-unstaged)
-    (select-window win)))
-
-;;** stage current buffer
-(defun magit-stage-buffer-file ()
-  (interactive)
-  (magit-stage-file (buffer-file-name)))
-(pushnew 'magit-stage-buffer-file magit-post-stage-hook-commands)
-
-;;** diff-buffer-dwim
+;;* diff-buffer-dwim
 (defun diff-buffer-dwim (force-magit)
   (interactive "P")
   "If buffer is modified and no prefix arg is supplied, call `diff-buffer-with-file'.
@@ -105,7 +105,13 @@ Else call `magit-diff-buffer-file'."
 (global-set-key (kbd "C-x =") 'diff-buffer-dwim)
 (global-set-key [left-fringe mouse-1] 'diff-buffer-dwim)
 
-;;** ediff
+;;* stage current buffer
+(defun magit-stage-buffer-file ()
+  (interactive)
+  (magit-stage-file (buffer-file-name)))
+(pushnew 'magit-stage-buffer-file magit-post-stage-hook-commands)
+
+;;* ediff
 (setq ediff-split-window-function 'split-window-horizontally)
 (setq-default ediff-ignore-similar-regions t)
 
@@ -132,7 +138,7 @@ Else call `magit-diff-buffer-file'."
 
 (add-hook 'ediff-keymap-setup-hook 'configure-ediff-keybindings)
 
-;;*** ediff-region-and-kill-ring
+;;** ediff-region-and-kill-ring
 (defun ediff-region-and-kill-ring (&optional beg end)
   "If region is active: ediff current region and last string in
 kill ring. Otherwise ediff last and second-to last strings. With
@@ -181,8 +187,25 @@ and kill tmp buffers on call and reset the
       (insert string))
     (list buf (point-max))))
 
+;;** magit-ediff-show-*-buffer-file
+(defun magit-ediff-show-unstaged-buffer-file ()
+  "Show unstaged changes for current file using Ediff."
+  (interactive)
+  (magit-ediff-show-unstaged (buffer-file-name)))
+
+(defun magit-ediff-show-staged-buffer-file ()
+  "Show staged changes for current file using Ediff."
+  (interactive)
+  (magit-ediff-show-staged (buffer-file-name)))
+
+(defun magit-ediff-show-working-tree-buffer-file ()
+  "Show working-tree changes for current file using Ediff."
+  (interactive)
+  (magit-ediff-show-working-tree (buffer-file-name)))
+
 ;; TODO: ediff hydra
 (global-set-key (kbd "H-e") 'ediff-region-and-kill-ring)
+
 
 ;; MAYBE: add hydra
 (global-set-key (kbd "C-x G") 'magit-file-dispatch)
@@ -206,6 +229,7 @@ and kill tmp buffers on call and reset the
   (define-key m (kbd "C-k") 'magit-discard)
   (define-key m (kbd "=") 'magit-diff-more-context)
   (define-key m (kbd "M-m") 'magit-diff-visit-worktree-file-other-window)
+  (define-key m (kbd "M-RET") 'magit-diff-visit-worktree-file-other-window-no-select)
   (define-key m "H" 'magit-section-up))
 
 ;;** header-line for files in other revisions
@@ -343,20 +367,19 @@ start revision."
 ;; TODO: a function to stage current hunk or region
 ;; TODO: look at smerge hydra here:
 ;; https://github.com/angrybacon/dotemacs/blob/master/dotemacs.org#hydra-git
-(defhydra hydra-git (:hint nil)
+(defhydra hydra-git (:hint nil :color pink)
   "
- ^Stage^                  ^Diff^                   ^Other^
- ^^^^^^---------------------------------------------------------------------------------
- _j_: next hunk           _=_: diff(file)          _g_: magit-status
- _k_: prev hunk           _u_: diff unstaged(file) _l_: git log for current file
- _s_: stage hunk          _U_: diff unstaged(all)  _L_: magit-log popup
- _S_: stage current file  _d_: magit-diff popup    _c_: magit-commit popup
- _C-k_: revert hunk       _D_: vc-ediff            _r_: vc-revert
- _G_: refresh git-gutter  _e_: magit-ediff popup   _p_: magit-push popup
- _<_: first hunk                                 ^^_b_: blame dwim
- _>_: last hunk                                  ^^_B_: magit-blame popup
- _R_: set start revision                         ^^_f_: magit find file
-                                               ^^^^_$_: magit process buffer
+ ^Stage^                  ^Diff^                    ^File^               ^Other^
+ ^^^^^^-------------------------------------------------------------------------------------------------------
+ _j_: next hunk           _==_: ediff unstaged      _f_: find file(blob) _g_: magit-status
+ _k_: prev hunk           _u_: diff unstaged(file)  _p_: prev blob       _l_: git log for current file
+ _s_: stage hunk          _U_: diff unstaged(all)   _n_: next blob       _L_: magit-log popup
+ _S_: stage current file  _d_: magit-diff popup     _C-j_: blob file     _c_: magit-commit popup
+ _C-k_: revert hunk       _D_: vc-ediff             _Fd_: delete file    _r_: vc-revert
+ _G_: refresh git-gutter  _e_: magit-ediff popup    _Fu_: untrack file   _P_: magit-push popup
+ _<_: first hunk          _SPC_: diff(file)         _Fr_: rename file    _b_: blame dwim
+ _>_: last hunk           _=s_: ediff staged        _Fc_: checkout file  _B_: magit-blame popup
+ _R_: set start revision  _=w_: ediff worktree                         ^^_$_: magit process buffer
 "
   ("q" nil)
   ("<escape>" nil)
@@ -370,20 +393,33 @@ start revision."
   (">" #'git-gutter:last-hunk)
   ("R" #'git-gutter:set-start-revision-magit)
 
-  ("=" #'magit-diff-buffer-file-other-window)
-  ("u" #'magit-diff-buffer-file-unstaged-other-window)
-  ("U" #'magit-diff-unstaged-other-window)
+  ("==" #'magit-ediff-show-unstaged-buffer-file :exit t)
+  ("=s" #'magit-ediff-show-staged-buffer-file :exit t)
+  ("=w" #'magit-ediff-show-working-tree-buffer-file :exit t)
+  ("u" #'magit-diff-buffer-file-unstaged-no-select)
+  ("U" #'magit-diff-unstaged-no-select)
   ("d" #'magit-diff :exit t)
   ("D" #'vc-ediff :exit t)
   ("e" #'magit-ediff :exit t)
+  ("SPC" #'magit-diff-buffer-file-no-select)
+
+  ("f" #'magit-find-file-other-window :exit t)
+  ("p" #'magit-blob-previous)
+  ("n" #'magit-blob-next)
+  ("C-j" #'magit-blob-visit-file)
+  ("C-q" #'magit-blob-visit-file :exit t)
+  ("Fr" #'magit-file-rename :exit t)
+  ("Fd" #'magit-file-delete :exit t)
+  ("Fu" #'magit-file-untrack :exit t)
+  ("Fc" #'magit-file-checkout :exit t)
+
 
   ("g" #'magit-status :exit t)
   ("l" #'magit-log-buffer-file :exit t)
   ("L" #'magit-log :exit t)
   ("c" #'magit-commit :exit t)
-  ("p" #'magit-push :exit t)
+  ("P" #'magit-push :exit t)
   ("r" #'vc-revert :exit t)
-  ("f" #'magit-find-file-other-window :exit t)
   ("b" #'magit-blame-dwim :exit t)
   ("B" #'magit-blame :exit t)
   ("$" #'magit-process-buffer :exit t))
@@ -536,10 +572,12 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 
 ;;* magit-go-forward/backward
 (define-key magit-mode-map (kbd "C-c f") 'magit-go-forward)
+(define-key magit-mode-map (kbd "C-{") 'magit-go-forward)
 (define-key magit-mode-map (kbd "C-c b") 'magit-go-backward)
+(define-key magit-mode-map (kbd "C-}") 'magit-go-backward)
 
 ;;* git-rebase-mode
-(with-eval-after-load 'git-rebase 
+(with-eval-after-load 'git-rebase
   (define-key git-rebase-mode-map "j" 'forward-line)
   (define-key git-rebase-mode-map "k" 'git-rebase-backward-line)
   (define-key git-rebase-mode-map "u" 'git-rebase-undo))
