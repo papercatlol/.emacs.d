@@ -900,7 +900,8 @@ otherwise activate iedit-mode."
 (add-hook 'prog-mode-hook #'outline-minor-mode)
 
 ;; change ellipsis to something more distinct
-(defvar outline-ellipsis " ↓" ;;" ↳"
+(defvar outline-ellipsis ;;" ↓" " ↳"
+  " ⌄"
   "The ellipsis to use for outlines.")
 
 (set-display-table-slot standard-display-table

@@ -89,11 +89,11 @@
 (setf (getf (alist-get 'read mu4e-marks) :char)
       '("!" . "✔"))
 (setf (getf (alist-get 'unread mu4e-marks) :char)
-      '("?" . "x"))
+      '("?" . "✘"))
 (setf (getf (alist-get 'flag mu4e-marks) :char)
-      '("+" . "+"))
+      '("+" . "✚"))
 (setf (getf (alist-get 'unflag mu4e-marks) :char)
-      '("-" . "-"))
+      '("-" . "╺"))
 
 ;;* 24-hour time & DD.MM.YY date
 (setq mu4e-headers-time-format "%T")
