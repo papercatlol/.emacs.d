@@ -2,11 +2,11 @@
 
 
 ;;* update modeline when default-directory changes
-(defun equake-default-directory-watcher (symbol new-value operation buffer)
-  (when (equake--tab-p buffer)
-    (with-current-buffer buffer
+(defun equake-default-directory-watcher (symbol new-value operation buf)
+  (when (equake--tab-p buf)
+    (with-current-buffer buf
       (let ((default-directory new-value))
-        (equake--update-mode-line (equake--get-tab-property 'monitor buffer))))))
+        (equake--update-mode-line (equake--get-tab-property 'monitor buf))))))
 
 (add-variable-watcher 'default-directory #'equake-default-directory-watcher)
 
@@ -22,9 +22,11 @@
     (kill-buffer buff)))
 
 (define-key equake-mode-map (kbd "C-c C-q") 'equake-kill-tab)
+(define-key equake-mode-map (kbd "C-M-_") 'nil)
+(define-key equake-mode-map (kbd "C-M-+") 'nil)
 
 ;;* modeline colors
-(face-spec-set 'equake-tab-inactive '((t (:foreground "gray70" :background "black"))))
+(face-spec-set 'equake-tab-inactive '((t (:foreground "gray70"))))
 (face-spec-set 'equake-tab-active '((t (:foreground "black" :background "gray70" :weight bold))))
 (face-spec-set 'equake-shell-type-eshell '((t (:foreground "white" :background "black"))))
 (face-spec-set 'equake-shell-type-term '((t (:foreground "white" :background "black"))))
@@ -34,20 +36,57 @@
 ;;* equake-pop
 (setq equake-default-shell 'shell)
 
-(defun equake-pop ()
-  "Open equake tab for current directory in other window."
-  (interactive)
-  (if-let* ((dir default-directory)
-            (tab (find-if (lambda (buffer)
-                            (with-current-buffer buffer
-                              (and equake-mode
-                                   (string= default-directory dir))))
-                          (buffer-list))))
-      (pop-to-buffer tab)
-    (equake-new-tab)))
+(defun equake-pop (&optional new-tab)
+  "Pop to equake buffer. With prefix arg open a new equake tab."
+  (interactive "P")
+  (if new-tab
+      (equake-new-tab)
+    (if-let ((buf (or (equake-find-visible-buffer)
+                      (equake-find-buffer))))
+        (pop-to-buffer buf)
+      (when-let* ((dir default-directory)
+                  (tab (equake-find-buffer
+                        (lambda (buf)
+                          (string= (buffer-local-value 'default-directory buf)
+                                   dir)))))
+        (pop-to-buffer tab)))))
 
 (define-key equake-mode-map (kbd "<f12>") 'delete-window)
 (global-set-key (kbd "<f12>") 'equake-pop)
+
+;;* equake-new-tab-dwim
+(defun equake-new-tab-dwim (&optional shell)
+  "Like `equake-new-tab', but query for shell type with prefix arg."
+  (interactive (when current-prefix-arg
+                 (list (intern
+                        (completing-read "Choose shell: "
+                                         equake-available-shells
+                                         nil t nil nil
+                                         (symbol-name equake-default-shell))))))
+  (equake-new-tab shell))
+
+(define-key equake-mode-map [remap equake-new-tab] 'equake-new-tab-dwim)
+
+;;* utils for finding equake buffers
+(defun equake-buffer-p (buf)
+  "Check if BUF as `equake-mode' enabled."
+  (buffer-local-value 'equake-mode buf))
+
+(defun equake-find-buffer (&optional predicate)
+  "Find an equake buffer."
+  (loop for buf in (buffer-list)
+        when (and (equake-buffer-p buf)
+                  (or (null predicate)
+                      (and (functionp predicate)
+                           (funcall predicate buf))))
+        return buf))
+
+(defun equake-find-visible-buffer (&optional return-window)
+  "Find an equake buffer among windows on current frame."
+  (loop for win in (window-list)
+        for buf = (window-buffer win)
+        when (equake-buffer-p buf)
+        return (if return-window win buf)))
 
 ;;* hacks to make modeline nicer
 ;;** show CWD in tab name
@@ -56,6 +95,7 @@
            (abbreviate-file-name
             (buffer-local-value 'default-directory tab)))
           (tab-active-p (eq tab (current-buffer)))
+          ;; TODO make inactive tabs change bg with (in)active modeline
           (face (if tab-active-p 'equake-tab-active 'equake-tab-inactive)))
     (propertize (concat "[" tab-name "]") 'font-lock-face face)))
 
@@ -71,17 +111,29 @@
                    tabs-part)))
     (when (fboundp 'ace-window)
       (setq format
-            (list `(:eval (ace-window-path-lighter)) format)))
+            (list `(:eval (ace-window-path-lighter))
+                  "(" '(:eval mode-name) ") "
+                  format)))
     (setq mode-line-format format)
     (force-mode-line-update)))
 
 (advice-add 'equake--update-mode-line :override #'equake--update-mode-line-override)
 
-;;* fix for 'shell
+;;* fix for 'shell and buffer pop-ups
 (defun equake--launch-shell-around (fn launchshell)
-  (if (eq launchshell 'shell)
-      (shell)
-    (funcall fn launchshell)))
+  ;; Select visible equake window.
+  (unless (bound-and-true-p equake-mode)
+    (when-let ((win (equake-find-visible-buffer t)))
+      (select-window win)))
+  ;; We don't want to popup new windows if we're in an equake window already.
+  (let ((display-buffer-alist
+         (if (bound-and-true-p equake-mode)
+             '((".*" (display-buffer-same-window display-buffer-in-side-window)))
+           display-buffer-alist)))
+    ;; Equake tries to delete other windows when launching `shell'.
+    (if (eq launchshell 'shell)
+        (shell)
+      (funcall fn launchshell))))
 
 (advice-add 'equake--launch-shell :around #'equake--launch-shell-around)
 
@@ -94,10 +146,11 @@
 
 ;;* bookmark support
 (defun bookmark-make-record-equake-shell ()
-  `((filename . ,default-directory)
-    (handler . bookmark-equake-shell-handler)))
+  `(,default-directory
+    (filename . ,default-directory)
+    (handler . equake-shell-bookmark-jump)))
 
-(defun bookmark-equake-shell-handler (bmk-record)
+(defun equake-shell-bookmark-jump (bmk-record)
   (let ((default-directory (bookmark-get-filename bmk-record)))
     (equake-pop)))
 
