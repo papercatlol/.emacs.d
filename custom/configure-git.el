@@ -105,6 +105,19 @@ Else call `magit-diff-buffer-file'."
 (global-set-key (kbd "C-x =") 'diff-buffer-dwim)
 (global-set-key [left-fringe mouse-1] 'diff-buffer-dwim)
 
+;;** magit-diff-narrow-to-file
+(defun magit-diff-narrow-to-file ()
+  "Restrict (narrow) current diff to `magit-file-at-point'. If
+already narrowed, widen."
+  (interactive)
+  (setq magit-buffer-diff-files
+        (unless magit-buffer-diff-files
+          (list (or (buffer-file-name) (magit-file-at-point)))))
+  (magit-refresh)
+  (message (if-let (file (car magit-buffer-diff-files))
+               (format "Narrow to %s" file)
+             "Widen")))
+
 ;;* stage current buffer
 (defun magit-stage-buffer-file ()
   (interactive)
@@ -230,6 +243,7 @@ and kill tmp buffers on call and reset the
   (define-key m (kbd "=") 'magit-diff-more-context)
   (define-key m (kbd "M-m") 'magit-diff-visit-worktree-file-other-window)
   (define-key m (kbd "M-RET") 'magit-diff-visit-worktree-file-other-window-no-select)
+  (define-key m (kbd "C-x C-n") 'magit-diff-narrow-to-file)
   (define-key m "H" 'magit-section-up))
 
 ;;** header-line for files in other revisions
