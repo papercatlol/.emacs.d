@@ -176,10 +176,22 @@ Also add the value to the front of the list in the variable `values'."
               "Eval: "
               (when (region-active-p)
                 (buffer-substring-no-properties
-                 (region-beginning) (region-end)))))))
+                 (region-beginning) (region-end))))))
+        (out-buffer-name "*Pp Eval Output*")
+        (temp-buffer-show-function #'pop-to-buffer))
     (message "Evaluating...")
     (push (eval expression lexical-binding) values)
-    (pp-display-expression (car values) "*Pp Eval Output*")))
+    ;; From `pp-display-expression'. We always want to create a new buffer.
+    ;; TODO extract this to somewhere, maybe create a pp-result-mode
+    (with-output-to-temp-buffer out-buffer-name
+      (pp expression)
+      (with-current-buffer standard-output
+        (emacs-lisp-mode)
+        (setq buffer-read-only nil)
+        (set (make-local-variable 'font-lock-verbose) nil)
+        (local-set-key (kbd "C-c C-q") 'quit-window)
+        (when (fboundp 'evil-insert-state)
+          (evil-insert-state))))))
 
 (global-set-key (kbd "C-x M-e") 'pp-eval-dwim)
 (define-key emacs-lisp-mode-map (kbd "C-c M-e") 'pp-eval-dwim)

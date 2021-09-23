@@ -1603,6 +1603,7 @@ else insert the face name as well."
 
 ;;** Hyper (although some of them are in other files as well)
 (global-set-key (kbd "H-;") 'eval-expression)
+(global-set-key (kbd "<H-return>") 'eval-expression)
 
 ;;** comint
 (define-key comint-mode-map (kbd "C-c C-x") nil)
