@@ -158,15 +158,18 @@
                           :underline t
                           ))))
  '(magit-diff-hunk-heading-highlight ((t (:foreground "grey70" :background "grey35"
-                                          :weight bold
-                                          ;;:box t
-                                          ;;:underline t
-                                          ;; :overline "tomato"
-                                          ))))
+                                          :weight bold))))
  '(magit-diff-context-highlight ((t (:foreground "grey70" :background "grey20"
                                      :weight semi-bold
                                      :underline nil))))
  '(magit-section-highlight ((t (:background  "grey10"))))
+ '(magit-section-heading ((t (:foreground "#43666b" :underline t :weight bold))))
+ '(magit-filename ((t (:weight normal :inherit font-lock-string-face))))
+ '(magit-diff-file-heading ((t (:extend t :weight bold
+                                :inherit font-lock-string-face))))
+ '(magit-tag ((t (:foreground "salmon"))))
+ '(magit-branch-local ((t (:foreground "LightSkyBlue2"))))
+ '(magit-branch-remote ((t (:foreground "DarkSeaGreen3"))))
  ;; '(magit-diff-removed-highlight ((t (:background "#663333"
  ;;                                     :foreground "#eecccc"
  ;;                                     :extend t))))
