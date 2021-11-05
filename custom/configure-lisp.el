@@ -811,7 +811,7 @@ otherwise insert a saved presentation."
          t)))))
 
 (defun slime-copy-to-repl (toplevel)
-  "Copy region to repl if active, else copy last sexp.
+  "Copy region to repl if active, else copy current form.
 With prefix arg, copy toplevel form."
   (interactive "P")
   (cond ((region-active-p)
@@ -822,7 +822,12 @@ With prefix arg, copy toplevel form."
              (destructuring-bind (beg end) (slime-region-for-defun-at-point)
                (slime--repl-insert-string
                 (buffer-substring-no-properties beg end)))))
-        (t (slime--repl-insert-string (slime-expression-at-point)))))
+        (t (slime--repl-insert-string
+            (save-excursion
+             (when (slime-inside-string-p)
+               (skip-chars-forward "^\"")
+               (forward-char 1))
+             (or (prin1-to-string (list-at-point)) ""))))))
 
 (define-key slime-mode-map (kbd "C-c C-y") 'slime-copy-to-repl)
 (define-key slime-repl-mode-map (kbd "C-c C-y") 'slime-copy-to-repl)
