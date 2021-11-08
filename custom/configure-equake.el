@@ -159,6 +159,16 @@
 
 (add-hook 'equake-mode-hook #'equake-enable-bookmarks)
 
+;;* HACK make shell understand ..+ aliases
+(defun shell-directory-tracker-handle-up-dir-alias (old-fn str)
+  "A hack to make shell understand ..+ aliases."
+  (if (string-match (rx bol (group "." (1+ ".")) (* blank) eol) str)
+      (shell-process-cd (match-string-no-properties 1 str))
+    (funcall old-fn str)))
+
+(advice-add 'shell-directory-tracker :around
+            #'shell-directory-tracker-handle-up-dir-alias)
+
 
 
 (provide 'configure-equake)
