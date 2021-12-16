@@ -1429,6 +1429,15 @@ else insert the face name as well."
   (define-key tldr-mode-map (kbd "j") 'next-line)
   (define-key tldr-mode-map (kbd "k") 'previous-line))
 
+;;* highlight-tabs-mode
+(defun highlight-tabs-mode ()
+  "Enable `whitespace-mode' for tabs only."
+  (interactive)
+  (let ((whitespace-style '(face tabs)))
+    (whitespace-mode)))
+
+(add-hook 'prog-mode-hook #'highlight-tabs-mode)
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -1580,6 +1589,7 @@ else insert the face name as well."
   ("v" #'counsel-describe-variable "Describe variable")
   ("w" #'whitespace-mode "whitespace-mode")
   ("W" #'delete-trailing-whitespace "delete-trailing-whitespace")
+  ("<tab>" #'untabify "untabify")
   )
 
 (global-set-key (kbd "M-z") 'hydra-cantrips/body)

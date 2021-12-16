@@ -106,7 +106,8 @@
  '(secondary-selection ((t (:inherit (region) :background "gray20"))))
  '(shadow ((t (:foreground "gray60"))))
  '(tooltip ((t (:inherit (variable-pitch) :foreground "black" :background "lightyellow"))))
- '(trailing-whitespace ((t (:background "firebrick"))))
+ '(trailing-whitespace ((t (:underline (:color "firebrick" :style wave)))))
+ '(whitespace-tab ((t (:inherit trailing-whitespace))))
  '(show-paren-match ((t (:foreground "white" :background "black"
                          :weight ultrabold))))
  '(idle-highlight ((t (:inherit region :weight extra-bold))))
