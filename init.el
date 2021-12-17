@@ -1613,8 +1613,24 @@ else insert the face name as well."
 (global-set-key (kbd "M-<tab>") 'other-window)
 (global-set-key (kbd "C-t") 'avy-goto-word-2)
 ;; (global-set-key (kbd "M-t") 'avy-goto-symbol-1)
-(global-set-key (kbd "M-g g") 'avy-goto-line)
-(global-set-key (kbd "M-g M-g") 'avy-goto-line)
+
+;;** hydra-M-g
+(defhydra hydra-M-g (global-map "M-g")
+  "M-g"
+  ("n" next-error)
+  ("M-n" next-error)
+  ("j" next-error)
+  ("M-j" next-error)
+  ("p" previous-error)
+  ("M-p" previous-error)
+  ("k" previous-error)
+  ("M-k" previous-error)
+  ("g" avy-goto-line)
+  ("M-g" avy-goto-line)
+  ("c" goto-char)
+  ("M-c" goto-char)
+  ("q" nil)
+  ("RET" nil))
 
 ;;** multiple-cursors
 ;; TODO hydra-multiple-cursors

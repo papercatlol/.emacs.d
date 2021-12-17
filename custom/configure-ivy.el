@@ -950,18 +950,6 @@ exit with that candidate, otherwise insert SPACE character as usual."
 
 
 ;;* KEYS
-(defhydra hydra-M-g (global-map "M-g")
-  "M-g"
-  ("n" next-error)
-  ("M-n" next-error)
-  ("j" next-error)
-  ("p" previous-error)
-  ("M-p" previous-error)
-  ("k" previous-error)
-  ("g" avy-goto-line)
-  ("M-g" avy-goto-line)
-  ("c" goto-char))
-
 (global-set-key (kbd "M-x") 'counsel-M-x)
 ;; (global-set-key (kbd "C-x b") 'counsel-buffers)
 (global-set-key (kbd "C-x 4 b") 'counsel-buffers-other-window)
