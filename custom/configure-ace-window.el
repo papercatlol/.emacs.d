@@ -81,7 +81,7 @@ after splitting."
         (?+ balance-windows-horizontally)
         (?= balance-windows-area)
         (?? aw-show-dispatch-help)
-        (,(kbd-char "M-c") aw-flip-window)
+        (,(kbd-char "M-c") aw-delete-window "Delete Window")
         (,(kbd-char "<tab>") other-window)
         (,(kbd-char "M-<tab>") other-window)
         (,(kbd-char "TAB") other-window)
