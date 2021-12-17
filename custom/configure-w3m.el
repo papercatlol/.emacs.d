@@ -1,11 +1,12 @@
 ;; -*- lexical-binding: t -*-
 
 (require 'w3m-load)
+(require 'w3m)
 
 
 ;; Always ask for an url.
 (setq w3m-quick-start nil)
-(setq w3m-process-inhibit-quit)
+;; (setq w3m-process-inhibit-quit nil)
 
 ;;* never pop up (or switch to) frames
 (advice-add 'w3m-popup-buffer :override #'pop-to-buffer)
@@ -70,7 +71,7 @@ confirmation if this is there is only one tab open."
 (define-key w3m-mode-map (kbd "G") 'w3m-goto-url)
 (define-key w3m-mode-map (kbd "b") 'backward-word)
 (define-key w3m-mode-map (kbd "w") 'forward-word)
-(define-key w3m-mode-map (kbd "M-w") 'w3m-print-this-url)
+(define-key w3m-mode-map (kbd "C-x M-w") 'w3m-print-this-url)
 
 ;;* evil
 (with-eval-after-load 'evil
