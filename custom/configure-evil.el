@@ -507,10 +507,6 @@
 (with-eval-after-load 'markdown-mode (define-key markdown-view-mode-map (kbd "SPC") leader-map))
 (with-eval-after-load 'simple (define-key special-mode-map (kbd "SPC") leader-map))
 (with-eval-after-load 'tabulated-list (define-key tabulated-list-mode-map (kbd "SPC") leader-map))
-(with-eval-after-load 'magit
-  (define-key magit-diff-mode-map (kbd "SPC") leader-map)
-  (define-key magit-status-mode-map (kbd "SPC") leader-map)
-  (define-key magit-mode-map (kbd "SPC") leader-map))
 (define-key splash-screen-keymap (kbd "SPC") leader-map)
 
 (define-key leader-map (kbd "SPC") 'evil-avy-goto-char-timer)

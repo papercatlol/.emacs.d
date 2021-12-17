@@ -6,7 +6,7 @@
 
 (put 'magit-clean 'disabled nil)
 
-(setq magit-log-arguments '("-n64" "--graph" "--decorate" "--patch")
+(setq magit-log-arguments '("-n64" "--decorate" "--patch")
       magit-define-global-key-bindings nil
       magit-diff-buffer-file-locked t
       magit-diff-refine-hunk nil
@@ -42,7 +42,8 @@
       (magit-previous-line)
     (magit-section-backward)))
 
-;;* show unstaged diff for current buffer
+;;* diff
+;;** show unstaged diff for current buffer
 (defun magit-diff-buffer-file-unstaged ()
   "Like `magit-diff-buffer-file', but show unstaged diff only."
   (interactive)
@@ -58,7 +59,7 @@
             (magit-diff--goto-position file line col))))
     (user-error "Buffer isn't visiting a file")))
 
-;;* diff helper functions
+;;** diff helper functions
 (defmacro def-no-select (fn &optional new-fn)
   "Define a new function named NEW-FN that behaves exactly like
 FN, but restores selected window afterwards. If NEW-FN is
@@ -85,7 +86,7 @@ omitted, the functions name will be FN-no-select."
 (def-no-select magit-diff-unstaged)
 (def-no-select magit-diff-visit-worktree-file-other-window)
 
-;;* diff-buffer-dwim
+;;** diff-buffer-dwim
 (defun diff-buffer-dwim (force-magit)
   (interactive "P")
   "If buffer is modified and no prefix arg is supplied, call `diff-buffer-with-file'.
