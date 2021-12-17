@@ -121,19 +121,21 @@
 
 ;;* fix for 'shell and buffer pop-ups
 (defun equake--launch-shell-around (fn launchshell)
-  ;; Select visible equake window.
-  (unless (bound-and-true-p equake-mode)
-    (when-let ((win (equake-find-visible-buffer t)))
-      (select-window win)))
-  ;; We don't want to popup new windows if we're in an equake window already.
-  (let ((display-buffer-alist
-         (if (bound-and-true-p equake-mode)
-             '((".*" (display-buffer-same-window display-buffer-in-side-window)))
-           display-buffer-alist)))
-    ;; Equake tries to delete other windows when launching `shell'.
-    (if (eq launchshell 'shell)
-        (shell)
-      (funcall fn launchshell))))
+  ;; Select visible equake window, but remember original default-directory.
+  (let ((dir default-directory))
+    (unless (bound-and-true-p equake-mode)
+      (when-let ((win (equake-find-visible-buffer t)))
+        (select-window win)))
+    ;; We don't want to popup new windows if we're in an equake window already.
+    (let ((display-buffer-alist
+            (if (bound-and-true-p equake-mode)
+                '((".*" (display-buffer-same-window display-buffer-in-side-window)))
+              display-buffer-alist)))
+      (let ((default-directory dir))
+        ;; Equake tries to delete other windows when launching `shell'.
+        (if (eq launchshell 'shell)
+            (shell)
+          (funcall fn launchshell))))))
 
 (advice-add 'equake--launch-shell :around #'equake--launch-shell-around)
 
@@ -168,7 +170,6 @@
 
 (advice-add 'shell-directory-tracker :around
             #'shell-directory-tracker-handle-up-dir-alias)
-
 
 
 (provide 'configure-equake)
