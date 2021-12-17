@@ -16,14 +16,20 @@
 (with-eval-after-load 'evil
   (require 'evil-collection)
   (evil-collection-mu4e-setup)
+  (define-key mu4e-view-mode-map "h" 'backward-char)
   (define-key mu4e-view-mode-map "j" 'next-line)
   (define-key mu4e-view-mode-map "k" 'previous-line)
+  (define-key mu4e-view-mode-map "n" nil)
+  (define-key mu4e-view-mode-map "N" nil)
+  (define-key mu4e-view-mode-map "l" 'forward-char)
   (define-key mu4e-view-mode-map "V" 'evil-visual-line)
   (define-key mu4e-view-mode-map "v" 'evil-visual-char-or-expand-region)
   (define-key mu4e-view-mode-map (kbd "C-c v") 'mu4e-view-verify-msg-popup)
   (define-key mu4e-headers-mode-map "h" 'backward-char)
   (define-key mu4e-headers-mode-map "H" 'mu4e-headers-query-prev)
   (define-key mu4e-headers-mode-map "L" 'mu4e-headers-query-next)
+  (define-key mu4e-headers-mode-map "n" nil)
+  (define-key mu4e-headers-mode-map "N" nil)
   (define-key mu4e-headers-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
   (define-key mu4e-view-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
 
@@ -297,16 +303,6 @@ all maildirs under `mu4e-maildir'."
 (setq mu4e-alert-email-notification-types '(count subjects))
 
 (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
-
-;;* larger font in mu4e buffers
-(defun text-scale-increase-1 ()
-  (text-scale-increase 1)
-  ;;(set-frame-font "xos4 Terminus-14")
-  )
-
-(add-hook 'mu4e-view-mode-hook #'text-scale-increase-1)
-(add-hook 'mu4e-headers-mode-hook #'text-scale-increase-1)
-(add-hook 'mu4e-compose-mode-hook #'text-scale-increase-1)
 
 ;;* mu4e-headers-first/last-unread
 (defun mu4e-headers-last-unread ()
