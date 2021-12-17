@@ -239,16 +239,17 @@
 (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
 
 ;;** desktop (save buffers & window configuration)
-(add-hook 'after-init-hook #'desktop-read)
-(add-hook 'after-init-hook #'desktop-save-mode)
+;;(add-hook 'after-init-hook #'desktop-read)
+;;(add-hook 'after-init-hook #'desktop-save-mode)
 
-(setq desktop-restore-forces-onscreen nil)
+;;(setq desktop-restore-forces-onscreen nil)
 
 ;;* equake
 (require 'configure-equake)
 
 ;;
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
+
 ;;* paredit-everywhere
 (add-hook 'prog-mode-hook 'paredit-everywhere-mode)
 
@@ -396,7 +397,7 @@
   (setf
    (alist-get (rx (or (and (? "e") "shell") "vterm" "EQUAKE[") (* any))
               display-buffer-alist nil nil #'equal)
-   '((display-buffer-in-side-window)
+   '((display-buffer-reuse-window display-buffer-in-side-window)
      (window-height . 0.2)
      (side . bottom)
      (slot . 0)
@@ -578,6 +579,11 @@ if there is a sole window."
 
 (global-set-key [remap delete-other-windows] 'delete-other-windows-toggle)
 
+;;** previous-window
+(defun other-window-backwards ()
+  (interactive)
+  (other-window -1))
+
 ;;** edit-indirect
 (require 'edit-indirect)
 
@@ -679,7 +685,10 @@ Else narrow-to-defun."
 
 (defun display-truncated-message (format-string &rest args)
   "Like `message', but truncate displayed string if it doesn't fit."
-  (let* ((max-height (* (frame-height) max-mini-window-height))
+  (let* ((max-height (cl-typecase max-mini-window-height
+                       (float (* (frame-height) max-mini-window-height))
+                       (integer max-mini-window-height)
+                       (t 40)))
          (str (apply #'format format-string args)))
     (message (string-truncate-height str max-height))))
 
@@ -823,10 +832,10 @@ prefix arg expand from all buffers."
   (interactive "P")
   (let ((hippie-expand-try-functions-list
          (if all-buffers?
-             '(try-expand-dabbrev-visible
+             '(try-expand-dabbrev-all-buffers
                try-expand-line-all-buffers
                try-expand-list-all-buffers)
-           '(try-expand-dabbrev-all-buffers
+           '(try-expand-dabbrev-visible
              try-expand-list
              try-expand-line))))
     (call-interactively #'hippie-expand-completion)))
@@ -1102,7 +1111,7 @@ current entry."
 (global-set-key (kbd "M-k") 'smooth-scroll/scroll-down-8)
 
 ;;** scroll-other-window
-(setq next-screen-context-lines 50)       ; originally 2
+(setq next-screen-context-lines 41)       ; originally 2
 (global-set-key (kbd "C-M-j") 'scroll-other-window)
 (global-set-key (kbd "C-M-k") 'scroll-other-window-down)
 
@@ -1441,6 +1450,8 @@ else insert the face name as well."
 
 ;;* tldr
 (with-eval-after-load 'tldr
+  (setq tldr-use-word-at-point t)
+
   (with-eval-after-load 'evil
     (evil-set-initial-state 'tldr-mode 'emacs))
 
