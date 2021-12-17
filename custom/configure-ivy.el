@@ -1040,6 +1040,7 @@ exit with that candidate, otherwise insert SPACE character as usual."
 
 (define-key ivy-minibuffer-map (kbd "C-h") 'ivy-backward-delete-char)
 (define-key ivy-minibuffer-map (kbd "C-w") 'ivy-backward-kill-word)
+(define-key ivy-minibuffer-map (kbd "C-c C-u") 'ivy-kill-whole-line)
 
 ;;** ivy-minibuffer-grow/shrink
 ;; MAYBE increase grow/shrink step to 4?
