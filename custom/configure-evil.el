@@ -552,6 +552,11 @@
 (define-key evil-motion-state-map (kbd "C-b") nil)
 (define-key evil-motion-state-map (kbd "C-e") nil)
 
+;;** [experimental] remap `evil-redo' to [C-y]. See
+;; [[file:configure-ivy.el::global-set-key (kbd "C-r") 'avy-goto-char-2]]
+(define-key evil-normal-state-map (kbd "C-r") nil)
+(define-key evil-normal-state-map (kbd "C-y") 'evil-redo)
+
 ;;** insert state
 ;; (define-key evil-insert-state-map (kbd "M-o") 'evil-open-below)
 ;; TODO: think about it; maybe bind insert-state M-s to normal-state s etc.

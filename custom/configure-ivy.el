@@ -917,8 +917,7 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (with-eval-after-load 'comint
   (define-key comint-mode-map
     [remap comint-history-isearch-backward-regexp]
-    'counsel-shell-history)
-  (define-key comint-mode-map (kbd "C-r") 'counsel-shell-history))
+    'counsel-shell-history))
 
 ;;* swiper-evil-replace
 (with-eval-after-load 'evil
@@ -968,7 +967,6 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (global-set-key (kbd "C-x 4 b") 'counsel-buffers-other-window)
 (global-set-key (kbd "C-x 5 b") 'counsel-buffers-other-frame)
 (global-set-key (kbd "C-M-s") 'swiper-all)
-(global-set-key (kbd "C-r") 'counsel-grep-or-swiper)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
 (global-set-key (kbd "C-x f") 'counsel-files)
 (global-set-key (kbd "C-x d") 'counsel-dirs)
@@ -999,7 +997,7 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (global-set-key (kbd "C-h <C-i>") 'counsel-info-lookup-symbol)
 (global-set-key (kbd "C-h C-l") 'counsel-find-library)
 
-;;*** Hyper
+;;** Hyper
 (global-set-key (kbd "H-i") 'counsel-info-lookup-symbol)
 (global-set-key (kbd "H-b") 'counsel-descbinds)
 (global-set-key (kbd "H-v") 'counsel-describe-variable)
@@ -1010,7 +1008,15 @@ exit with that candidate, otherwise insert SPACE character as usual."
 ;; (global-set-key (kbd "C-h f") 'counsel-describe-function)
 ;; (global-set-key (kbd "C-h v") 'counsel-describe-variable)
 
-(define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+;;** counsel-minibuffer-history
+(define-key minibuffer-local-map (kbd "M-r") 'counsel-minibuffer-history)
+(define-key read-expression-map (kbd "M-r") 'counsel-minibuffer-history)
+
+;;** ivy-reverse-i-search
+(define-key ivy-minibuffer-map (kbd "C-r") nil)
+(define-key ivy-minibuffer-map (kbd "M-r") 'ivy-reverse-i-search)
+
+;;;
 (define-key swiper-map (kbd "C-:") 'swiper-mc)
 (define-key swiper-map (kbd "C-M-y") 'ivy-yank-symbol)
 (define-key ivy-minibuffer-map (kbd "C-,") 'ivy-minibuffer-toggle-symbol-start)

@@ -169,8 +169,10 @@
       ;; i3wm tabbed layout.
       avy-all-windows t
       avy-style 'pre ;; 'de-bruijn
-      avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v
-                     ?F ?C ?D ?G ?S ?A ?E ?V)
+      avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v ?q ?w ?z ?x ?r
+                     ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\;
+                     ?F ?C ?D ?G ?S ?A ?E ?V ?Q ?W ?Z ?X ?R
+                     ?J ?N ?K ?H ?L ?O ?I ?U ?P)
       ;;
       comment-padding ""
       view-read-only nil
@@ -1445,6 +1447,72 @@ else insert the face name as well."
   (define-key tldr-mode-map (kbd "j") 'next-line)
   (define-key tldr-mode-map (kbd "k") 'previous-line))
 
+;;* avy
+;;TODO move avy-related configuration to a separate file
+;;** avy-goto-char-2-special hacks
+(defvar avy-key-translations
+  (loop for (key translation)
+        ;; TODO allow regexps & shorter input
+        in '(("C-r" "(")
+             ;; Lisp common keywords.
+             ("C-d" "(def")
+             ("C-i" "(if")
+             ("C-w" "(when")
+             ("C-s" "(set")
+             ("C-l" "(let")
+             ("C-t" "then")
+             ("C-e" "else")
+             ;; RET = no char. Useful when you want to search for 1 char only.
+             ("RET")
+             )
+        collect (cons (string-to-char (kbd key))
+                      (listify-key-sequence translation))))
+
+(defun avy-read-char (prompt)
+  (let* ((char (read-char prompt))
+         (translation (assoc char avy-key-translations)))
+    (if translation
+        (cdr translation)
+      (list char))))
+
+(defun avy-goto-char-2-special (&optional all-frames)
+  "Like `avy-goto-char-2', but translate some keys. See
+`avy-key-translations'."
+  (interactive "P")
+  (let* ((input-1 (avy-read-char "Char 1: "))
+         (input-2 (unless (second input-1)
+                    (avy-read-char "Char 2: ")))
+         (avy-all-windows (if all-frames 'all-frames t))
+         ;; HACK prevent avy from flipping `avy-all-windows'
+         (current-prefix-arg nil))
+    (avy-with avy-goto-char-2-special
+      (avy-jump
+       (regexp-quote (concatenate 'string input-1 input-2))))))
+
+(setf (alist-get 'avy-goto-char-2 avy-styles-alist) 'at)
+(setf (alist-get 'avy-goto-char-2-special avy-styles-alist) 'at)
+
+(global-set-key (kbd "C-r") 'avy-goto-char-2-special)
+(define-key minibuffer-local-map (kbd "C-r") 'avy-goto-char-2-special)
+
+;;** avy-goto-symbol-definition-2
+(defun avy-goto-symbol-definition-2 ()
+  (interactive)
+  (call-interactively #'avy-goto-symbol-2)
+  ;; HACK different modes remap M-. to their xref equivalent, so we just emulate
+  ;; M-. keypress event. LF a better way to do this...
+  (setq unread-command-events (listify-key-sequence (kbd "M-."))))
+
+(global-set-key (kbd "C-M-.") 'avy-goto-symbol-definition-2)
+
+;;** avy-action-goto-definition
+(defun avy-action-goto-definition (pt)
+  "Goto definition of symbol at PT."
+  (goto-char pt)
+  (setq unread-command-events (listify-key-sequence (kbd "M-."))))
+
+(setf (alist-get ?. avy-dispatch-alist) #'avy-action-goto-definition)
+(setf (alist-get ?  avy-dispatch-alist) #'avy-action-goto-definition)
 ;;* highlight-tabs-mode
 (defun highlight-tabs-mode ()
   "Enable `whitespace-mode' for tabs only."
