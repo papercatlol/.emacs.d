@@ -19,33 +19,40 @@
                             (>= (overlay-end ov) (point)))))
           collect (overlay-start ov)))
 
-;;* hydra-flymake
-(defun flymake-action ()
+;;* code actions
+(defun flymake-lsp-code-action ()
+  "Trigger lsp code action depending on backend."
   (interactive)
-  "If in `eglot-mode', trigger code action, otherwise just
-  display flymake message."
-  (display-local-help 1)                ; numeric arg = don't show empty help
-  (when (bound-and-true-p eglot--managed-mode)
-    (call-interactively #'eglot-code-actions)))
+  (cond ((bound-and-true-p lsp-mode)
+         (call-interactively #'lsp-execute-code-action))
+        ((bound-and-true-p eglot--managed-mode)
+         (call-interactively #'eglot-code-actions))))
 
+;;* hydra-flymake
 (defhydra hydra-flymake (:hint nil)
   "
  Flymake
  ---------------------------------------------------------------------------------
- _j_: next error          _b_: diagnostics buffer
- _k_: prev error          _l_: log buffer
- _a_, _s_: ace-flymake    _C-k_: stop all syntax checks
- _SPC_: act
+ _j_:   ^^next error          _b_: diagnostics buffer
+ _k_:   ^^prev error          _l_: log buffer
+ _a_,_s_: ace-flymake       _C-k_: stop all syntax checks
+ _SPC_: ^^diplay msg          _q_: quit
+ _RET_: code actions
 "
   ("q" nil)
   ("k" #'flymake-goto-prev-error)
   ("j" #'flymake-goto-next-error)
   ("a" #'ace-flymake)
   ("s" #'ace-flymake)
-  ("SPC" #'flymake-action)
+  ("SPC" #'display-local-help)
+  ("RET" #'flymake-lsp-code-action)
+  ("C-c C-c" #'eglot-code-actions)
   ("b" #'flymake-show-diagnostics-buffer :color blue)
   ("l" #'flymake-switch-to-log-buffer :color blue)
-  ("C-k" #'flymake-proc-stop-all-syntax-checks))
+  ("C-k" #'flymake-proc-stop-all-syntax-checks)
+
+  ("C-l" #'recenter-top-bottom)
+  )
 
 (define-key flymake-mode-map (kbd "C-c f") 'hydra-flymake/body)
 (define-key flymake-mode-map (kbd "C-c k") 'hydra-flymake/flymake-goto-prev-error)
