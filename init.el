@@ -84,27 +84,42 @@
 (require 'ace-link)
 (require 'compilation-to-dired)
 (require 'dired+)
+
 ;;** configuration
 (require 'configure-ace-window)
 (require 'configure-evil)
 (require 'configure-org)
 (require 'configure-email)
 (require 'configure-git)
-(require 'configure-go-lsp)
 (require 'configure-highlight)
 (require 'configure-isearch)
 (require 'configure-ivy)
 (require 'counsel-ripgrep)
 (require 'configure-w3m)
 
-;; (require 'configure-go)
+;;* language-specific configs
+;; TODO non-lisp configs when an a specific mode is enabled for the first time
+;;** lisp (CL + Elisp)
 (require 'configure-lisp)
+
+;;** go
+;; (require 'configure-go-lsp)
+
+;;** python
 (require 'configure-python)
 
-(with-eval-after-load 'java-mode
-  (require 'configure-java))
+;;** java
+(defun configure-java-once ()
+  (require 'configure-java)
+  ;; (eglot-ensure)
+  (remove-hook 'java-mode-hook 'configure-java-once))
 
+(add-hook 'java-mode-hook 'configure-java-once)
+
+;;** javascript
 (require 'configure-js)
+
+;;** html
 (require 'configure-html)
 
 ;;* ./local-elisp - private/work configuration
@@ -1060,7 +1075,7 @@ current entry."
     (smooth-scroll/.vscroll-aux
      (if current-prefix-arg
          (prefix-numeric-value)
-       arg)
+         arg)
      t)))
 
 (cl-defun smooth-scroll/scroll-down-8 (&optional (arg 8))
@@ -1542,6 +1557,8 @@ else insert the face name as well."
 ;;** dired
 (global-set-key (kbd "C-x C-d") 'dired)
 (define-key dired-mode-map (kbd "<backspace>") 'diredp-up-directory)
+(define-key dired-mode-map (kbd "C-h") 'dired-up-directory)
+(define-key dired-mode-map (kbd "C-w") 'dired-up-directory)
 (define-key dired-mode-map (kbd "C-t") 'avy-goto-word-or-subword-1)
 (define-key dired-mode-map (kbd "<tab>") 'dired-subtree-toggle)
 (define-key dired-mode-map (kbd "i") 'dired-toggle-read-only)
@@ -1549,7 +1566,6 @@ else insert the face name as well."
 (define-key dired-mode-map (kbd "M-z") nil)
 (define-key dired-mode-map (kbd "M-c") nil)
 (define-key dired-mode-map (kbd "L") 'dired-do-symlink)
-(define-key dired-mode-map (kbd "C-h") 'dired-up-directory)
 (define-key dired-mode-map (kbd "C-f") 'forward-char)
 
 ;;
