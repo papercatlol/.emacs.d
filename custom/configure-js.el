@@ -41,6 +41,27 @@
 
 (define-key js2-mode-map (kbd "<C-tab>") 'js2-mode-toggle-element)
 
+;;** js2 errors
+(defun js2-previous-error (&optional arg reset)
+  "Move to previous parse error."
+  (interactive "p")
+  (js2-next-error (if (numberp arg) (- arg) arg) reset))
+
+(define-key js2-mode-map (kbd "M-n") 'js2-next-error)
+(define-key js2-mode-map (kbd "M-p") 'js2-previous-error)
+
+;; js2-error-buffer-mode (js2-display-error-list)
+(define-key js2-error-buffer-mode-map (kbd "j") 'next-line)
+(define-key js2-error-buffer-mode-map (kbd "k") 'previous-line)
+(define-key js2-error-buffer-mode-map (kbd "C-j") 'js2-error-buffer-next)
+(define-key js2-error-buffer-mode-map (kbd "C-k") 'js2-error-buffer-prev)
+(define-key js2-error-buffer-mode-map (kbd "f") 'js2-error-buffer-view)
+(define-key js2-error-buffer-mode-map (kbd "m") 'js2-error-buffer-view)
+(define-key js2-error-buffer-mode-map (kbd "q") 'quit-window)
+
+(with-eval-after-load 'evil
+  (evil-set-initial-state 'js2-error-buffer-mode 'emacs))
+
 ;;* js2-refactor
 (require 'js2-refactor)
 
@@ -56,7 +77,7 @@
 ------------------------------------------------------------------------------------------------------------------------------
 [_p_] Localize Parameter       [_ev_] Extract variable   [_wi_] Wrap buffer in IIFE    [_k_]  js2 kill      [_l_] log this
 [_ef_] Extract function        [_iv_] Inline variable    [_ig_] Inject global in IIFE  [_ss_] split string  [_dt_] debug this
-[_ip_] Introduce parameter     [_r_] Rename variable     [_ee_] Expand node at point   [_>_] forward slurp
+[_ip_] Introduce parameter     [_r_] Rename variable     [_ee_] Expand node at point   [_>_] forward slurp  [_b_] display error list
 [_em_] Extract method          [_vt_] Var to this        [_cc_] Contract node at point [_<_] forward barf
 [_ao_] Arguments to object     [_sv_] Split var decl.    [_uw_] unwrap
 [_tf_] Toggle fun exp and decl [_ag_] Add var to globals
@@ -87,6 +108,8 @@
   (">" js2r-forward-slurp)
   ("<" js2r-forward-barf)
   ("k" js2r-kill)
+  ;; regular js2- mappings
+  ("b" js2-display-error-list)
   ("q" nil))
 
 (define-key js2-mode-map (kbd "C-c C-x") 'hydra-js2-refactor/body)
@@ -102,5 +125,13 @@
 (add-hook 'js2-mode-hook #'xref-js2-add-xref-backend)
 
 (define-key js2-mode-map (kbd "M-.") nil)
+
+;;* tern
+;; https://ternjs.net/doc/manual.html#emacs
+(add-to-list 'load-path
+             (expand-file-name "git/tern/emacs" user-emacs-directory))
+(autoload 'tern-mode "tern.el" nil t)
+
+(add-hook 'js-mode-hook #'tern-mode)
 
 (provide 'configure-js)
