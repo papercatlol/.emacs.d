@@ -585,23 +585,13 @@
     (evil-add-hjkl-bindings map)))
 
 ;;** move-text
-(defhydra move-text-hydra ()
+(defhydra hydra-move-text ()
   ("j" evil-move-forward "down")
   ("k" evil-move-backward "up")
-  ("C-g" nil "exit"))
+  ("q" nil "exit"))
 
-(defun evil-move-forward-and-hydra ()
-  (interactive)
-  (call-interactively #'evil-move-forward)
-  (move-text-hydra/body))
-
-(defun evil-move-backward-and-hydra ()
-  (interactive)
-  (call-interactively #'evil-move-backward)
-  (move-text-hydra/body))
-
-(define-key evil-visual-state-map (kbd "C-c j") 'evil-move-forward-and-hydra)
-(define-key evil-visual-state-map (kbd "C-c k") 'evil-move-backward-and-hydra)
+(define-key evil-visual-state-map (kbd "C-c j") 'hydra-move-text/evil-move-forward)
+(define-key evil-visual-state-map (kbd "C-c k") 'hydra-move-text/evil-move-backward)
 
 ;;** dired
 (with-eval-after-load 'dired-rsync
