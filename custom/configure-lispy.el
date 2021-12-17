@@ -338,11 +338,73 @@ inside of that list."
 
 (define-key lispy-mode-map (kbd "C-a") 'lispy-back-to-indentation)
 
-;;* regular slurp/barf
-(define-key lispy-mode-map (kbd "C-c C-x .") 'lispy-forward-slurp-sexp)
-(define-key lispy-mode-map (kbd "C-c C-x ,") 'lispy-forward-barf-sexp)
-(define-key lispy-mode-map (kbd "C-c C-x <") 'lispy-backward-slurp-sexp)
-(define-key lispy-mode-map (kbd "C-c C-x >") 'lispy-backward-barf-sexp)
+;;** ielm <return>
+(defun lispy-ielm-init ()
+  (with-minor-mode-map-overriding (map lispy-mode)
+    (define-key map (kbd "RET") 'ielm-send-input)))
+
+(add-hook 'ielm-mode-hook #'lispy-ielm-init)
+
+;;** more intuitive `lispy-open-line'
+(defun lispy-open-line-different (arg)
+  "If on paren, open ARG lines on the different side of the
+current sexp, otherwise open lines before current sexp if ARG is
+positive and after if negative."
+  (interactive "p")
+  (save-excursion
+   (cond ((or (lispy-left-p) (lispy-right-p))
+          (lispy-different))
+         ((minusp arg)
+          (lispy--out-forward 1))
+         (t
+          (lispy--out-backward 1)))
+   (loop repeat (abs arg)
+         do (lispy-newline-and-indent))))
+
+(define-key lispy-mode-map [remap lispy-open-line] 'lispy-open-line-different)
+
+;;** avy-action-lispy-x
+(defhydra+ hydra-lispy-x (:after-exit (lispy--x-restore-point))
+  ("q" nil))
+
+(defvar lispy--x-old-point nil
+  "Value of `point' before calling `avy-action-lispy-x'.")
+
+(defun lispy--x-restore-point ()
+  (when (markerp lispy--x-old-point)
+    (with-current-buffer (marker-buffer lispy--x-old-point)
+      (goto-char lispy--x-old-point)
+      (setq lispy--x-old-point nil))))
+
+(defun avy-action-lispy-x (pt)
+  "Call `lispy-x' at PT. Restore point after hydra exits."
+  (let ((lispy-x-default-verbosity 1))
+    (setq lispy--x-old-point (move-marker (make-marker) (point)))
+    (goto-char pt)
+    (lispy-x)))
+
+(setf (alist-get (aref (kbd "C-x") 0) avy-dispatch-alist) #'avy-action-lispy-x)
+
+;;** regular slurp/barf
+(define-key lispy-mode-map (kbd "C-c >") 'lispy-forward-slurp-sexp)
+(define-key lispy-mode-map (kbd "C-c <") 'lispy-forward-barf-sexp)
+(define-key lispy-mode-map (kbd "C-c ,") 'lispy-backward-slurp-sexp)
+(define-key lispy-mode-map (kbd "C-c .") 'lispy-backward-barf-sexp)
+
+;;** lispy input overlay map
+(define-key lispy-map-keymap (kbd "C-.") 'lispy-mark-symbol)
+
+;;** lispy-slime-space
+(defun lispy-slime-space ()
+  "Like `lispy-space', but do slime autodoc magic as well."
+  (interactive)
+  (call-interactively #'lispy-space)
+  (when-let ((doc (slime-autodoc)))
+    (eldoc-message doc)))
+
+(eldoc-add-command 'lispy-slime-space)
+
+(define-key lispy-mode-map (kbd "SPC") 'lispy-slime-space)
 
 ;;** other global bindings
 (define-key lispy-mode-map (kbd "<return>") 'lispy-right)
