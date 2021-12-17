@@ -10,13 +10,15 @@
       org-special-ctrl-k t
       org-special-ctrl-o t
       org-cycle-separator-lines 0
-      org-return-follows-link t
+      org-return-follows-link nil
       org-startup-folded 'content
+      org-use-fast-tag-selection 'expert
       ;; src blocks
       org-edit-src-content-indentation 0
       org-edit-src-persistent-message nil
       org-src-window-setup 'current-window
       )
+
 
 (advice-add 'org-archive-default-command :after #'org-save-all-org-buffers)
 (add-hook 'org-clock-out-hook #'save-buffer-no-message)
@@ -344,5 +346,10 @@ to ACTION and execute BODY forms."
 ;; random keybindings
 (define-key org-mode-map (kbd "C-c C-8") 'org-ctrl-c-star)
 (define-key org-mode-map (kbd "C-c SPC") nil)
+(define-key org-mode-map (kbd "C-,") nil)
+(define-key org-mode-map (kbd "C-c h") 'org-up-element)
+(define-key org-mode-map (kbd "C-c l") 'org-down-element)
+(define-key org-mode-map (kbd "C-c L") 'org-toggle-link-display)
+(define-key org-mode-map (kbd "C-c I") 'org-toggle-inline-images)
 
 (provide 'configure-org)
