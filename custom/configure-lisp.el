@@ -256,7 +256,7 @@ If there was an active region, insert it into repl."
       (goto-char (point-min)))))
 (advice-add 'slime-show-description :override #'slime-show-description-help-mode)
 
-(setf (alist-get "*slime-description*" display-buffer-alist nil nil #'equal)
+(setf (alist-get (rx "*slime-description" (* any)) display-buffer-alist nil nil #'equal)
       '((display-buffer-in-side-window)
         (window-width . fit-window-to-buffer)
         (side . left)
@@ -1098,6 +1098,12 @@ If there was an active region, insert it into repl."
   (define-key inferior-emacs-lisp-mode-map (kbd "C-m") 'ielm-send-input)
   (define-key inferior-emacs-lisp-mode-map (kbd "C-j") 'ielm-return))
 
+;;* yasnippet in slime-repl
+(defun slime-repl-activate-yasnippet ()
+  (yas-activate-extra-mode 'lisp-mode))
+
+(add-hook 'slime-repl-mode-hook #'slime-repl-activate-yasnippet)
+
 ;;* KEYS
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation-minibuffer)
@@ -1123,6 +1129,9 @@ If there was an active region, insert it into repl."
 (define-key slime-connection-list-mode-map (kbd "t") 'slime-trace-dialog)
 (define-key sldb-mode-map (kbd "<tab>") 'sldb-toggle-details)
 (define-key slime-inspector-mode-map (kbd "DEL") 'slime-inspector-pop)
+(define-key slime-inspector-mode-map (kbd "C-h") 'slime-inspector-pop)
+(define-key slime-inspector-mode-map (kbd "C-w") 'slime-inspector-pop)
+(define-key slime-inspector-mode-map (kbd "<mouse-8>") 'slime-inspector-pop)
 (define-key slime-mode-map (kbd "C-c p") 'slime-pprint-eval-last-expression)
 (define-key slime-mode-map (kbd "C-c <C-i>") 'slime-complete-symbol-global)
 (define-key slime-minibuffer-map (kbd "C-c <C-i>") 'slime-complete-symbol-global)
@@ -1134,6 +1143,7 @@ If there was an active region, insert it into repl."
 (define-key slime-repl-mode-map (kbd "C-c t") 'slime-trace-dialog)
 (define-key sldb-mode-map (kbd "C-c C-t") 'slime-trace-dialog-toggle-trace)
 (define-key sldb-mode-map (kbd "C-c t") 'slime-trace-dialog)
+(define-key sldb-mode-map (kbd "T") 'slime-trace-dialog)
 (define-key sldb-mode-map "G" 'sldb-fetch-traces)
 (define-key sldb-mode-map "C" 'sldb-continue-and-fetch-traces)
 (define-key sldb-mode-map "h" 'backward-char)
@@ -1147,6 +1157,14 @@ If there was an active region, insert it into repl."
 (define-key slime-repl-mode-map [remap slime-repl-previous-matching-input] 'slime-repl-complete-ivy)
 (define-key slime-repl-mode-map (kbd "C-c p") 'slime-repl-previous-prompt)
 (define-key slime-repl-mode-map (kbd "C-c n") 'slime-repl-next-prompt)
+(define-key slime-mode-map (kbd "C-c a") 'slime-autodoc-manually)
+(define-key slime-repl-mode-map (kbd "C-c a") 'slime-autodoc-manually)
+
+;;** slime-next/prev-location
+(define-key slime-editing-map (kbd "C-M-.") nil)
+(define-key slime-editing-map (kbd "C-c j") 'slime-next-location)
+(define-key slime-editing-map (kbd "C-c k") 'slime-previous-location)
+
 
 ;;** package-related utils
 (define-key slime-mode-map (kbd "C-c M-w") 'slime-kill-package-name)
