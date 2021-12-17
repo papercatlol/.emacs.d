@@ -652,11 +652,12 @@ Else if region is active - narrow-to-region.
 Else narrow-to-defun."
   ;; MAYBE: save nested narrows
   ;; MAYBE: restore screen position after `widen'
-  ;; MAYBE: support `org-narrow-to-block'
   (cond ((and (not nest) (buffer-narrowed-p))
          (widen))
         ((region-active-p)
          (call-interactively #'narrow-to-region))
+        ((eq major-mode 'org-mode)
+         (call-interactively #'org-narrow-to-subtree))
         (t (call-interactively #'narrow-to-defun))))
 
 (global-set-key (kbd "C-x C-n") 'narrow-dwim)
