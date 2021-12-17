@@ -399,10 +399,13 @@ If the input is empty, insert active region or symbol-at-point."
       (append buffers
               bookmarks
               views
+              ;; Checking for existing dired buffers is very slow if some of the
+              ;; directories are remote.
+              ;; (cl-remove-if #'dired-find-buffer-nocreate dired-recent)
+              dired-recent
               ;; Remove open files from the list. Note that while
               ;; `get-file-buffer'doesn't detect renamed buffers, it
               ;; is A LOT faster than `find-buffer-visiting'.
-              (cl-remove-if #'dired-find-buffer-nocreate dired-recent)
               (cl-remove-if #'get-file-buffer recent-files)))))
 
 ;; TODO: ivy-occur for this
