@@ -1098,6 +1098,16 @@ If there was an active region, insert it into repl."
   (define-key inferior-emacs-lisp-mode-map (kbd "C-m") 'ielm-send-input)
   (define-key inferior-emacs-lisp-mode-map (kbd "C-j") 'ielm-return))
 
+;;* avy-goto-paren-1
+(defun avy-goto-paren-1 ()
+  (interactive)
+  (let ((avy-style 'at))
+    (avy-goto-char-2 ?\( (read-char "char following paren: "))))
+
+(define-key paredit-mode-map (kbd "C-(") nil)
+(global-set-key (kbd "C-(") 'avy-goto-paren-1)
+(global-set-key (kbd "C-9") 'avy-goto-paren-1)
+
 ;;* yasnippet in slime-repl
 (defun slime-repl-activate-yasnippet ()
   (yas-activate-extra-mode 'lisp-mode))

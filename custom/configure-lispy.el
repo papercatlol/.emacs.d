@@ -186,7 +186,6 @@ ARG can extend the bounds to the current defun."
 (lispy-define-key lispy-mode-map (kbd "?") 'lispy-convolute)
 (define-key lispy-mode-map (kbd "M-?") 'lispy-convolute)
 (define-key lispy-mode-map (kbd "M-(") 'lispy-wrap-round)
-(define-key lispy-mode-map (kbd "C-9") 'lispy-wrap-round)
 (define-key lispy-mode-map (kbd "M-9") 'lispy-wrap-round)
 
 ;;** avy-window-list-wrapper: add 'other option to avy-all-windows
