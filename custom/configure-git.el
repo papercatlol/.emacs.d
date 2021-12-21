@@ -597,4 +597,7 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
   (define-key git-rebase-mode-map "k" 'git-rebase-backward-line)
   (define-key git-rebase-mode-map "u" 'git-rebase-undo))
 
+;;* magit-process-mode
+(define-key magit-process-mode-map (kbd "C-k") 'magit-process-kill)
+
 (provide 'configure-git)
