@@ -600,4 +600,14 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 ;;* magit-process-mode
 (define-key magit-process-mode-map (kbd "C-k") 'magit-process-kill)
 
+;;* magit-jump staged/unstaged
+(defun magit-jump-between-staged-unstaged ()
+  (interactive)
+  (let ((pt (point)))
+    (magit-jump-to-staged)
+    (when (eq pt (point))
+      (magit-jump-to-unstaged))))
+
+(define-key magit-status-mode-map (kbd "H-s") 'magit-jump-between-staged-unstaged)
+
 (provide 'configure-git)
