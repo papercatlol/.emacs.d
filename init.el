@@ -1161,6 +1161,23 @@ current entry."
 (define-key dired-mode-map (kbd "M-n") 'dired-display-file-and-next-line)
 (define-key dired-mode-map (kbd "M-p") 'dired-display-file-and-prev-line)
 
+;;* xdg-open-file
+;; https://www.reddit.com/r/emacs/comments/cgbpvl/opening_media_files_straight_from_gnu_emacs_dired/
+(defun xdg-open-file (file)
+  (interactive "fxdg-open: ")
+  (let ((process-connection-type nil))
+    (start-process
+     "" nil shell-file-name
+     shell-command-switch
+     (format "nohup 1>/dev/null 2>/dev/null xdg-open %s"
+             (shell-quote-argument (expand-file-name file))))))
+
+(defun dired-xdg-open-file ()
+  (interactive)
+  (xdg-open-file (dired-file-name-at-point)))
+
+(define-key dired-mode-map (kbd "<M-return>") 'dired-xdg-open-file)
+
 ;;* shrink-whitespace
 (global-set-key (kbd "C-c SPC") 'shrink-whitespace)
 (global-set-key (kbd "C-c S-SPC") 'grow-whitespace-around)
@@ -1524,6 +1541,7 @@ else insert the face name as well."
 
 (setf (alist-get ?. avy-dispatch-alist) #'avy-action-goto-definition)
 (setf (alist-get ?  avy-dispatch-alist) #'avy-action-goto-definition)
+
 ;;* highlight-tabs-mode
 (defun highlight-tabs-mode ()
   "Enable `whitespace-mode' for tabs only."
@@ -1702,6 +1720,7 @@ else insert the face name as well."
   ("w" #'whitespace-mode "whitespace-mode")
   ("W" #'delete-trailing-whitespace "delete-trailing-whitespace")
   ("<tab>" #'untabify "untabify")
+  ("C-o" #'xdg-open-file "open file external")
   )
 
 (global-set-key (kbd "M-z") 'hydra-cantrips/body)
