@@ -74,7 +74,7 @@
               :action #'odtt:ivy-action-clock-in
               :keymap counsel-goto-task-map
               :preselect (car (find-if (lambda (item)
-                                         (and (listp item) (third item)))
+                                         (and (listp item) (cl-third item)))
                                        todos))
               :caller 'counsel-goto-task
               ;; :dynamic-collection nil
@@ -97,7 +97,7 @@
                     (save-restriction
                      (widen)
                      (goto-char (point-min))
-                     (loop for match = (re-search-forward org-todo-line-regexp nil t)
+                     (cl-loop for match = (re-search-forward org-todo-line-regexp nil t)
                            while match
                            for beg = (match-beginning 0)
                            for end = (line-end-position)
@@ -143,14 +143,14 @@ to ACTION and execute BODY forms."
 
 ;;** actions
 (defun odtt:ivy-action-goto (item)
-  (org-goto-marker-or-bmk (second item)))
+  (org-goto-marker-or-bmk (cl-second item)))
 
 (defun odtt:ivy-goto-task ()
   (interactive)
   (ivy-exit-with-action #'odtt:ivy-action-goto))
 
 (defun odtt:ivy-action-clock-in (item)
-  (if-let* ((marker (and (listp item) (second item)))
+  (if-let* ((marker (and (listp item) (cl-second item)))
             (buf (marker-buffer marker)))
       (when (buffer-live-p buf)
         (with-current-buffer buf
@@ -179,7 +179,7 @@ to ACTION and execute BODY forms."
        (insert title)))))
 
 (defun odtt:ivy-action-cycle-todo (item)
-  (with-selected-marker (second item)
+  (with-selected-marker (cl-second item)
     (let ((inhibit-message t))
       (call-interactively #'org-todo))))
 

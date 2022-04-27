@@ -78,11 +78,11 @@
     "Jump to a evil-snipe char(s) using avy."
     (interactive)
     (when-let ((last-keys (and evil-snipe--last
-                               (second evil-snipe--last))))
+                               (cl-second evil-snipe--last))))
       (let ((avy-all-windows nil))      ; TODO variable for this
         (case (length last-keys)
           (1 (avy-goto-char (car last-keys)))
-          (2 (avy-goto-char-2 (car last-keys) (second last-keys)))
+          (2 (avy-goto-char-2 (car last-keys) (cl-second last-keys)))
           (otherwise (message "evil-snipe-avy for strings longer
            that 2 hasn't been implemented yet."))))))
 
@@ -202,7 +202,7 @@
          (end (1- (line-end-position)))
          (redundant (list (point) (1+ (point)))))
     (cl-flet ((%filter (candidates)
-                (loop for candidate in candidates
+                (cl-loop for candidate in candidates
                       unless (member (caar candidate) redundant)
                         collect candidate)))
       (when-let (bounds (bounds-of-thing-at-point 'symbol))
@@ -270,7 +270,7 @@
   (let* ((jumps (cl-remove-duplicates (evil--jumps-savehist-sync)
                                       :test #'equal))
          (ivy-items
-           (loop for (pos file) in jumps
+           (cl-loop for (pos file) in jumps
                  when (find-buffer-visiting file)
                    collect (with-current-buffer it
                              (save-excursion
@@ -291,9 +291,9 @@
               :caller 'evil-show-jumps-ivy)))
 
 (defun evil-show-jumps-ivy-action (item)
-  (when-let ((buf (get-file-buffer (third item))))
+  (when-let ((buf (get-file-buffer (cl-third item))))
     (switch-to-buffer buf)
-    (goto-char (second item))))
+    (goto-char (cl-second item))))
 
 (with-eval-after-load 'configure-ivy
   (ivy-enable-calling-for-func #'evil-show-jumps-ivy))

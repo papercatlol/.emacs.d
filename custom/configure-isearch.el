@@ -5,8 +5,8 @@
 
 (defun occur-more-context (arg)
   (interactive "p")
-  (let ((nlines (+ arg (second occur-revert-arguments))))
-    (setf (second occur-revert-arguments) (if (minusp nlines) 0 nlines))
+  (let ((nlines (+ arg (cl-second occur-revert-arguments))))
+    (setf (cl-second occur-revert-arguments) (if (minusp nlines) 0 nlines))
     (revert-buffer)))
 
 (defun occur-less-context (arg)
@@ -15,7 +15,7 @@
 
 (defun occur-no-context ()
   (interactive)
-  (setf (second occur-revert-arguments) 0)
+  (setf (cl-second occur-revert-arguments) 0)
   (revert-buffer))
 
 (defun occur-show-next ()
@@ -32,7 +32,7 @@
   (interactive)
   (save-excursion
    (let ((bufs nil))
-     (loop
+     (cl-loop
        for pos = (next-single-property-change
                   (or pos (point-min))
                   'occur-target
@@ -42,7 +42,7 @@
        when (get-pos-property pos 'occur-target)
          do (when-let* ((buf (marker-buffer it))
                         (modified? (buffer-modified-p buf)))
-              (pushnew buf bufs)))
+              (cl-pushnew buf bufs)))
      (if (null bufs)
          (message "Nothing to save.")
        (dolist (buf bufs)

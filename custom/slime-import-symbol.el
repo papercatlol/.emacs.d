@@ -21,7 +21,7 @@ For new imports uses
          package-import first-export)
      (down-list 1)
      (forward-sexp 1)
-     (loop for sexp-start = (point)
+     (cl-loop for sexp-start = (point)
            for sexp = (read buf)
            do (when (consp sexp)
                 (when (or (eq :import-from (car sexp))

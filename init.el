@@ -57,6 +57,9 @@
 (setq-default fill-column 80)
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 
+;;* use deprecated CL lib because I cba to rename everything at the moment
+(require 'cl)
+
 ;;;
 (require 'avy)
 (require 'ace-window)
@@ -317,7 +320,7 @@
 ;; frames in i3wm title layout for some reason(because they aren't visible?).
 (defun set-frame-title-fn ()
   (let* ((window-names
-           (loop for w in (window-list)
+           (cl-loop for w in (window-list)
                  for b = (window-buffer w)
                  unless (minibufferp b)
                    collect (format "[%s]" (buffer-name b))))
@@ -362,7 +365,7 @@
 
 (cl-defun toggle-help-window ()
   (interactive)
-  (or (loop for w in (window-list)
+  (or (cl-loop for w in (window-list)
             for b = (window-buffer w)
             when (eq 'helpful-mode (buffer-local-value 'major-mode b))
               do (progn (setq helpful-last-buffer b)
@@ -596,7 +599,7 @@ if there is a sole window."
 (defun edit-indirect-visit-indirect-buffer ()
   "Visit indirect buffer linked to overlay at point."
   (interactive)
-  (when-let ((buffer (loop for ov in (overlays-at (point))
+  (when-let ((buffer (cl-loop for ov in (overlays-at (point))
                            thereis (overlay-get ov 'edit-indirect-buffer))))
     (switch-to-buffer-other-window buffer)))
 
@@ -708,7 +711,7 @@ Else narrow-to-defun."
   (let ((buffer (if prompt
                     (get-buffer
                      (completing-read "Buffer: "
-                                      (loop for b in (buffer-list)
+                                      (cl-loop for b in (buffer-list)
                                             when (buffer-file-name b)
                                                  collect it)))
                   (current-buffer))))
@@ -1277,7 +1280,7 @@ enable `hydra-flyspell'."
     (interactive)
     (when-let* ((thing (flyspell-get-word))
                 (word (car thing))
-                (start (second thing)))
+                (start (cl-second thing)))
       ;; From `ispell-command-loop'.
       (when (yes-or-no-p (format "Save \"%s\" to private dictionary?" word))
         (ispell-send-string (concat "*" word "\n"))
@@ -1479,7 +1482,7 @@ else insert the face name as well."
 ;;TODO move avy-related configuration to a separate file
 ;;** avy-goto-char-2-special hacks
 (defvar avy-key-translations
-  (loop for (key translation)
+  (cl-loop for (key translation)
         ;; TODO allow regexps & shorter input
         in '(("C-r" "(")
              ;; Lisp common keywords.
@@ -1508,7 +1511,7 @@ else insert the face name as well."
 `avy-key-translations'."
   (interactive "P")
   (let* ((input-1 (avy-read-char "Char 1: "))
-         (input-2 (unless (second input-1)
+         (input-2 (unless (cl-second input-1)
                     (avy-read-char "Char 2: ")))
          (avy-all-windows (if all-frames 'all-frames t))
          ;; HACK prevent avy from flipping `avy-all-windows'

@@ -292,26 +292,26 @@ If there was an active region, insert it into repl."
                                       (slime-pop-to-location (slime-xref.location (car xrefs)) where))
                                      ;; ((:error "..."))
                                      ((slime-length= xrefs 1)
-                                      (error "%s" (second (slime-xref.location (car xrefs)))))
+                                      (error "%s" (cl-second (slime-xref.location (car xrefs)))))
                                      (t
                                       (let* ((items (mapcar (lambda (xref)
                                                               (let* ((spec (downcase
                                                                             (replace-regexp-in-string "[\n ]+" " " (slime-xref.dspec xref))))
                                                                      (location (slime-xref.location xref))
-                                                                     (file (second (assoc :file (cdr location))))
-                                                                     (line (line-number-at-pos (second (assoc :position (cdr location))))))
+                                                                     (file (cl-second (assoc :file (cdr location))))
+                                                                     (line (line-number-at-pos (cl-second (assoc :position (cdr location))))))
                                                                 (and spec file line location (list spec file line location))))
                                                             xrefs))
                                              (sorted-items (sort (remove nil items)
                                                                  (lambda (i1 i2)
-                                                                   (if (string= (second i1) (second i2))
-                                                                       (< (third i1) (third i2))
-                                                                       (string< (second i1) (second i2)))))))
+                                                                   (if (string= (cl-second i1) (cl-second i2))
+                                                                       (< (cl-third i1) (cl-third i2))
+                                                                       (string< (cl-second i1) (cl-second i2)))))))
                                         (ivy-read "Edit definition of: "
                                                   sorted-items
                                                   :action (lambda (item)
                                                             (slime-push-definition-stack)
-                                                            (slime-pop-to-location (fourth item) where))))))))))
+                                                            (slime-pop-to-location (cl-fourth item) where))))))))))
 
 (defun slime-edit-definition-ivy (arg)
   "`slime-edit-definition' but use `ivy' to select a candidate.
@@ -344,8 +344,8 @@ With negative prefix arg call original `slime-edit-definition'."
 (defun slime-repl-set-package--push-package (&rest args)
   ;; TODO: check if this works properly for multiple swank connections
   (let ((package (slime-lisp-package)))
-    (pushnew package slime-repl-package-stack)
-    (pushnew package slime-read-package-name-history)))
+    (cl-pushnew package slime-repl-package-stack)
+    (cl-pushnew package slime-read-package-name-history)))
 (advice-add 'slime-repl-set-package :after #'slime-repl-set-package--push-package)
 
 (ivy-enable-calling-for-func #'slime-edit-definition-ivy)
@@ -376,7 +376,7 @@ With negative prefix arg call original `slime-edit-definition'."
 (defun slime-package-name (&optional prefix)
   (when-let ((packages (slime-all-packages t)))
     (if prefix
-        (loop for p in packages
+        (cl-loop for p in packages
               when (string-prefix-p prefix (car p))
                 collect p)
       packages)))
@@ -397,7 +397,7 @@ With negative prefix arg call original `slime-edit-definition'."
                                               ,(slime-current-package)))))
     (when prefix
       (setq prefix (string-trim-left prefix ":")))
-    (loop for arg in (cdr (member '&key (read args)))
+    (cl-loop for arg in (cdr (member '&key (read args)))
           until (= ?& (aref (symbol-name arg) 0))
           for name = (symbol-name arg)
           when (or (null prefix)
@@ -846,7 +846,7 @@ Also always use `kill-region' instead of `delete-region'."
 
 ;;* slime-c-p-c.el completion
 ;; Use ivy instead of a completion buffer
-(pushnew 'slime-c-p-c-completion-at-point slime-completion-at-point-functions)
+(cl-pushnew 'slime-c-p-c-completion-at-point slime-completion-at-point-functions)
 
 (defun slime-display-completions-ivy (completions beg end)
   (ivy-completion-in-region beg end completions))
@@ -976,7 +976,7 @@ TODO: With prefix arg untrace all."
   (interactive "P")
   (when-let* ((xrefs (slime-all-xrefs))
               (queries
-               (loop for (dspec) in xrefs
+               (cl-loop for (dspec) in xrefs
                      when (slime-dspec-operator-name dspec)
                      collect `(swank-trace-dialog:dialog-toggle-trace
                                (swank::from-string ,it)))))
@@ -1030,17 +1030,17 @@ TODO: With prefix arg untrace all."
         (prop-macro-start 'macrostep-macro-start)
         (ov-original-text 'macrostep-original-text))
     ;; macro forms that can be expanded
-    (loop with pt = (window-start)
+    (cl-loop with pt = (window-start)
           while (and pt (< pt (window-end)))
           when (get-text-property pt prop-macro-start)
-            do (pushnew pt candidates)
+            do (cl-pushnew pt candidates)
           do (setq pt (next-single-property-change pt prop-macro-start)))
     ;; macro forms that can be collapsed
-    (loop for ov in macrostep-overlays
+    (cl-loop for ov in macrostep-overlays
           for start = (overlay-start ov)
           when (and (>= start (window-start))
                     (<= start (window-end)))
-            do (pushnew start candidates))
+            do (cl-pushnew start candidates))
     (nreverse candidates)))
 
 (setf (alist-get 'ace-link-macrostep avy-styles-alist) 'pre)

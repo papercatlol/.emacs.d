@@ -59,7 +59,7 @@ See `avian:overlay-pos-at' and `avian:overlay-pos-pre'")
                                       (group (1+ (not whitespace)))
                                       symbol-end)))
            (suffixes
-             (loop for line in ivy--old-cands
+             (cl-loop for line in ivy--old-cands
                    append (mapcar #'second (s-match-strings-all regex line)))))
       (cl-labels ((%skip-keys (keys)
                     "Skip keys that are valid suffixes for current input."
@@ -68,7 +68,7 @@ See `avian:overlay-pos-at' and `avian:overlay-pos-pre'")
                                    keys)))
         ;; (message "skip-keys: %s" (%skip-keys avian:keys))
         (with-selected-window window
-          (loop for pos in positions
+          (cl-loop for pos in positions
                 for keys = (%skip-keys avian:keys) then (%skip-keys keys)
                 do (let* ((key (car keys))
                           (ov (avian:make-overlay pos key)))
@@ -85,7 +85,7 @@ See `avian:overlay-pos-at' and `avian:overlay-pos-pre'")
            (visible-overlays
              (save-excursion
               (goto-char (window-start))
-              (loop for i to (window-height)
+              (cl-loop for i to (window-height)
                     append (overlays-in (line-beginning-position) (line-end-position))
                     do (forward-line))))
            (visible-positions
@@ -127,7 +127,7 @@ See `avian:overlay-pos-at' and `avian:overlay-pos-pre'")
 (defun avian:selected-overlay ()
   (let ((max-length (apply #'max (mapcar #'length avian:keys))))
     (save-excursion
-     (loop repeat (1- max-length)
+     (cl-loop repeat (1- max-length)
            with key = ""
            with overlays = avian:*overlays*
            do (progn
@@ -140,7 +140,7 @@ See `avian:overlay-pos-at' and `avian:overlay-pos-pre'")
                 (backward-char 1))))))
 
 (cl-defun avian:find-overlay (str &optional (overlays avian:*overlays*))
-  (loop for (key . ov) in overlays
+  (cl-loop for (key . ov) in overlays
         with prefix
         when (string= key str)
           return (values ov nil)

@@ -110,14 +110,14 @@ updates command results. FLAG is a string."
                                  (or (keymapp (symbol-value keymap))
                                      (error "%s is not a keymap." (symbol-name keymap)))))
          (keymap-name (or (and keymap-provided-p keymap)
-                          (and (csc/quoted-symbol-p keymap) (second keymap))
+                          (and (csc/quoted-symbol-p keymap) (cl-second keymap))
                           (and bind (intern (concat (symbol-name name) "-map")))))
          (keymap-def (and keymap-name (not keymap-provided-p)
                           `(defvar ,keymap-name
                              (let ((m (make-sparse-keymap)))
                                (set-keymap-parent m counsel-shell-command-map)
                                m))))
-         (bindings (and bind (loop for (key command) on (csc/unquote bind) by #'cddr
+         (bindings (and bind (cl-loop for (key command) on (csc/unquote bind) by #'cddr
                                    collect `(define-key ,keymap-name,key ,command))))
          (default-args (csc/ensure-quoted default-args))
          (csc-args (reduce #'append
@@ -144,7 +144,7 @@ updates command results. FLAG is a string."
 
 (defun csc/quoted-symbol-p (x)
   (and (csc/quoted-p x)
-       (symbolp (second x))
+       (symbolp (cl-second x))
        (not (cddr x))))
 
 (defun csc/ensure-quoted (x)
@@ -154,7 +154,7 @@ updates command results. FLAG is a string."
 
 (defun csc/unquote (x)
   (if (csc/quoted-p x)
-      (second x)
+      (cl-second x)
     x))
 
 

@@ -80,7 +80,7 @@
 (defun lispy--let-bounds ()
   "Return closest outer let bounds."
   (save-excursion
-    (or (loop repeat 50
+    (or (cl-loop repeat 50
               when (looking-at-p lispy--let-regexp)
               do (return (lispy--bounds-dwim))
               until (looking-at-p "^(")
@@ -213,7 +213,7 @@ is 'other."
               (narrow-to-region (window-start) (window-end)))
             (goto-char (point-min))
             (let ((regexp (rx bol (* space) "(")))
-              (loop while (search-forward-regexp regexp nil t)
+              (cl-loop while (search-forward-regexp regexp nil t)
                     do (let ((m (make-marker)))
                          (push (cons (move-marker m (1- (point)))
                                      (selected-window))
@@ -358,7 +358,7 @@ positive and after if negative."
           (lispy--out-forward 1))
          (t
           (lispy--out-backward 1)))
-   (loop repeat (abs arg)
+   (cl-loop repeat (abs arg)
          do (lispy-newline-and-indent))))
 
 (define-key lispy-mode-map [remap lispy-open-line] 'lispy-open-line-different)

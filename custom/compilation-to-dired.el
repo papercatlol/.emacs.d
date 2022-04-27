@@ -18,7 +18,7 @@
                                     (concat (file-name-as-directory dir) file)
                                   file)))
                  (when (file-exists-p filename)
-                  (pushnew filename files :test #'string=))))
+                  (cl-pushnew filename files :test #'string=))))
              compilation-locs)
     (reverse files)))
 

@@ -143,7 +143,7 @@ With prefix arg force refresh."
       (goto-char (car range))
       (when-let ((inner-beg (re-search-forward "{$" nil t)))
         (setf (car range) inner-beg)
-        (decf (second range))))
+        (decf (cl-second range))))
     range))
 
 (evil-define-text-object go-a-func (count &optional beg end type)

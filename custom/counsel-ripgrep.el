@@ -152,7 +152,7 @@ from git root."
   "Change search directory to Nth parent of ther current directory."
   (interactive "p")
   ;; there must be a better way
-  (let ((new-dir (loop for i from n downto 0
+  (let ((new-dir (cl-loop for i from n downto 0
                        for dir = default-directory
                        then (file-name-directory (directory-file-name dir))
                        finally (return dir))))

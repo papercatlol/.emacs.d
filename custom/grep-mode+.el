@@ -9,7 +9,7 @@
     (error "Not in a compilation buffer"))
   (save-excursion
     (goto-char (point-min))
-    (loop for msg = (condition-case nil
+    (cl-loop for msg = (condition-case nil
                         (compilation-next-file 1)
                       (user-error nil))
           while msg

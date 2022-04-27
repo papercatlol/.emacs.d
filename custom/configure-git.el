@@ -123,7 +123,7 @@ already narrowed, widen."
 (defun magit-stage-buffer-file ()
   (interactive)
   (magit-stage-file (buffer-file-name)))
-(pushnew 'magit-stage-buffer-file magit-post-stage-hook-commands)
+(cl-pushnew 'magit-stage-buffer-file magit-post-stage-hook-commands)
 
 ;;* ediff
 (setq ediff-split-window-function 'split-window-horizontally)

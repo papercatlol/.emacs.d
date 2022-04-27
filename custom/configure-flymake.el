@@ -12,7 +12,7 @@
      (ace-flymake-collect))))
 
 (defun ace-flymake-collect ()
-  (loop for ov in (overlays-in (window-start) (window-end))
+  (cl-loop for ov in (overlays-in (window-start) (window-end))
         when (and (overlay-get ov 'flymake-diagnostic)
                   ;; skip overlay at point
                   (not (and (<= (overlay-start ov) (point))

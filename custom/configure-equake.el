@@ -74,7 +74,7 @@
 
 (defun equake-find-buffer (&optional predicate)
   "Find an equake buffer."
-  (loop for buf in (buffer-list)
+  (cl-loop for buf in (buffer-list)
         when (and (equake-buffer-p buf)
                   (or (null predicate)
                       (and (functionp predicate)
@@ -83,7 +83,7 @@
 
 (defun equake-find-visible-buffer (&optional return-window)
   "Find an equake buffer among windows on current frame."
-  (loop for win in (window-list)
+  (cl-loop for win in (window-list)
         for buf = (window-buffer win)
         when (equake-buffer-p buf)
         return (if return-window win buf)))

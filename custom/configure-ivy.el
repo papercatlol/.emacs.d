@@ -114,8 +114,8 @@
     (cl-labels ((%flatten (tree)
                   (when (consp tree)
                     (case (car tree)
-                      (buffer (push (second tree) buffers))
-                      (file (push (file-name-nondirectory (second tree)) buffers))
+                      (buffer (push (cl-second tree) buffers))
+                      (file (push (file-name-nondirectory (cl-second tree)) buffers))
                       (t (mapc #'%flatten (cdr tree)))))))
       (%flatten (cadr (assoc candidate ivy-views)))
       buffers)))
@@ -383,16 +383,16 @@ If the input is empty, insert active region or symbol-at-point."
              ;; strings as an input from ivy.
              (propertize str counsel-buffers--prop prop)))
     (let ((buffers
-            (loop for b in (internal-complete-buffer "" nil t)
+            (cl-loop for b in (internal-complete-buffer "" nil t)
                   unless (get-buffer-window b) ; exclude visible windows
                     collect (%cand b :buffer)))
-          (recent-files (loop for f in recentf-list
+          (recent-files (cl-loop for f in recentf-list
                               collect (%cand f :recentf)))
-          (bookmarks (loop for b in (bookmark-all-names)
+          (bookmarks (cl-loop for b in (bookmark-all-names)
                            collect (%cand b :bookmark)))
-          (views (loop for v in ivy-views
+          (views (cl-loop for v in ivy-views
                        collect (%cand (car v) :ivy-view)))
-          (dired-recent (loop for d in (or dired-recent-directories
+          (dired-recent (cl-loop for d in (or dired-recent-directories
                                            (progn (dired-recent-load-list)
                                                   dired-recent-directories))
                               collect (%cand d :dired-recent))))
@@ -488,7 +488,7 @@ buffer will be opened(current window, other window, other frame)."
         (select-frame-set-input-focus (make-frame)))
        ('nil
         (delete-other-windows)))
-     (ivy-set-view-recur (second (assoc item ivy-views))))
+     (ivy-set-view-recur (cl-second (assoc item ivy-views))))
     (t (cond ((string-prefix-p "{}" item)
               (ivy-new-view item))
              ((file-exists-p item)
@@ -596,7 +596,7 @@ otherwise eval ELSE and stay."
   (if (and (listp thing)
            (or (eq (car thing) 'quote)
                (eq (car thing) 'function)))
-      (second thing)
+      (cl-second thing)
     thing))
 
 (defmacro ivy-enable-caller-switching (map &rest callers)
@@ -607,7 +607,7 @@ otherwise eval ELSE and stay."
                    (ivy-switch-caller #',caller)))
               (%define-key (name caller)
                 `(define-key ,map [remap ,caller] #',name)))
-    `(progn ,@(loop for caller in (mapcar #'unquote-safe callers)
+    `(progn ,@(cl-loop for caller in (mapcar #'unquote-safe callers)
                     for switcher = (ivy-switch-caller--intern caller)
                     when switcher
                       collect (%defun switcher caller)

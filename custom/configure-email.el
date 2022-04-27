@@ -78,7 +78,7 @@
 ;;** flags
 ;; Since we're using less characters for the 'flags' column, it's default
 ;; name (Flgs) gets shortened to ellipsis.
-(setf (getf (alist-get :flags mu4e-header-info) :shortname)
+(setf (cl-getf (alist-get :flags mu4e-header-info) :shortname)
       "F")
 
 (setq mu4e-headers-visible-flags
@@ -92,13 +92,13 @@
 (setq mu4e-headers-replied-mark '("R" . "◄"))
 
 ;;** mu4e-marks
-(setf (getf (alist-get 'read mu4e-marks) :char)
+(setf (cl-getf (alist-get 'read mu4e-marks) :char)
       '("!" . "✔"))
-(setf (getf (alist-get 'unread mu4e-marks) :char)
+(setf (cl-getf (alist-get 'unread mu4e-marks) :char)
       '("?" . "✘"))
-(setf (getf (alist-get 'flag mu4e-marks) :char)
+(setf (cl-getf (alist-get 'flag mu4e-marks) :char)
       '("+" . "✚"))
-(setf (getf (alist-get 'unflag mu4e-marks) :char)
+(setf (cl-getf (alist-get 'unflag mu4e-marks) :char)
       '("-" . "╺"))
 
 ;;* 24-hour time & DD.MM.YY date
