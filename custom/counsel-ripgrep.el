@@ -6,7 +6,7 @@
 ;;* vars
 (setq rg-command-line-flags '("--max-columns=160")) ; rg.el
 (setq rg-executable "rg") ; don't use `executable-find' because it fails on remote
-(setq rg-command " rg --no-heading --line-number --color never -M 160")
+(setq rg-command "rg --no-heading --line-number --color never -M 160")
 (setq counsel-rg-base-command (concat rg-command " --sort path %s"))
 (setq counsel-grep-base-command (concat rg-command " --no-filename %s %s"))
 (setf (alist-get 'counsel-grep ivy-more-chars-alist) 0)
@@ -33,13 +33,13 @@
 (advice-add 'rg-perform-position-numbers-alignment :override
             #'rg-perform-position-numbers-alignment--override)
 
-(setf
- (alist-get (rx "*rg" (* any))
-            display-buffer-alist nil nil #'equal)
- '((display-buffer-reuse-window display-buffer-in-direction)
-   (direction . left)
-   (window-width . 70)
-   (reusable-frames . nil)))
+;;(setf
+;; (alist-get (rx "*rg" (* any))
+;;            display-buffer-alist nil nil #'equal)
+;; '((display-buffer-reuse-window display-buffer-in-direction)
+;;   (direction . left)
+;;   (window-width . 70)
+;;   (reusable-frames . nil)))
 
 (defvar rg-truncate-lines t
   "*rg* buffer setting for `truncate-lines'.")
@@ -53,34 +53,6 @@
 ;;* custom type-aliases
 (add-to-list 'rg-custom-type-aliases '("lisp" . "*.cl"))
 (add-to-list 'rg-custom-type-aliases '("cl" . "*.cl *.lisp *.lsp"))
-
-
-;;* compilation-mode
-;; MAYBE move this somewhere else
-(with-eval-after-load 'compile
-  (defun compilation-display-next-error (n)
-    (interactive "p")
-    (compilation-next-error n)
-    (compilation-display-error))
-
-  (defun compilation-display-previous-error (n)
-    (interactive "p")
-    (compilation-display-next-error (- n)))
-
-  (with-eval-after-load 'ace-link
-    (setq ace-link--compilation-action-fn #'compilation-display-error))
-
-  (define-key compilation-mode-map (kbd "<tab>") 'compilation-next-error)
-  (define-key compilation-mode-map (kbd "o") 'compilation-display-error)
-  (define-key compilation-mode-map (kbd "m") 'compilation-display-error)
-  (define-key compilation-mode-map (kbd "M-m") 'compilation-display-error)
-  (define-key compilation-mode-map (kbd "C-j") 'compilation-display-next-error)
-  (define-key compilation-mode-map (kbd "C-k") 'compilation-display-previous-error)
-  (define-key compilation-mode-map (kbd "k") 'compilation-previous-error)
-  (define-key compilation-mode-map (kbd "j") 'compilation-next-error)
-  (define-key compilation-mode-map (kbd "h") 'backward-char)
-  (define-key compilation-mode-map (kbd "l") 'forward-char))
-
 
 ;;* rg-mode
 (with-eval-after-load 'evil
@@ -105,6 +77,7 @@
 (define-key rg-mode-map (kbd "C-c f") 'rg-rerun-change-files)
 (define-key rg-mode-map (kbd "C-{") 'rg-back-history)
 (define-key rg-mode-map (kbd "C-}") 'rg-forward-history)
+(define-key rg-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
 
 (global-set-key (kbd "M-g /") 'rg)
 (global-set-key (kbd "M-g M-/") 'rg-menu)

@@ -12,6 +12,9 @@
 ;; Precompute activation actions to speed up startup.
 (setq package-quickstart t)
 
+;; Native-compile packages
+(setq package-native-compile t)
+
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/"))
 
@@ -261,7 +264,7 @@
 
 
 ;;* built-in commands
-(defalias 'yes-or-no-p 'y-or-n-p)
+(setq use-short-answers t)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
@@ -338,7 +341,8 @@
 (setq resize-mini-windows t
       max-mini-window-height 0.4
       minibuffer-eldef-shorten-default t
-      enable-recursive-minibuffers t)
+      enable-recursive-minibuffers t
+      minibuffer-follows-selected-frame nil)
 (minibuffer-depth-indicate-mode 1)
 
 ;;* pdf-tools
@@ -631,6 +635,7 @@ if there is a sole window."
 
 ;;** tab key hacks
 (setq tab-always-indent 'complete)
+(setq tab-first-completion 'word-or-paren)
 
 ;; Distinguish C-i and keyboard tab key
 (define-key input-decode-map (kbd "C-i") [C-i])
@@ -669,6 +674,8 @@ Else narrow-to-defun."
          (call-interactively #'narrow-to-region))
         ((eq major-mode 'org-mode)
          (call-interactively #'org-narrow-to-subtree))
+        ((eq major-mode 'shell-mode)
+         (call-interactively #'shell-narrow-to-prompt))
         (t (call-interactively #'narrow-to-defun))))
 
 (global-set-key (kbd "C-x C-n") 'narrow-dwim)
@@ -696,7 +703,10 @@ Else narrow-to-defun."
     (message (string-truncate-height str max-height))))
 
 
-;;* dired-jump-other-frame
+;;* dired
+(setq dired-do-revert-buffer t)
+
+;;** dired-jump-other-frame
 (defun dired-jump-other-frame (&optional file-name)
   "Like \\[dired-jump] (`dired-jump') but in other frame."
   (interactive
@@ -705,7 +715,7 @@ Else narrow-to-defun."
   (let ((pop-up-frames t))
     (dired-jump t file-name)))
 
-;;* diff-buffer-with-file
+;;** diff-buffer-with-file
 (defun diff-current-buffer-with-file (prompt)
   (interactive "P")
   (let ((buffer (if prompt
@@ -719,19 +729,19 @@ Else narrow-to-defun."
         (diff-buffer-with-file buffer)
       (error "Buffer isn't visiting a file"))))
 
-;;* dired-quick-sort
+;;** dired-quick-sort
 (require 'dired-quick-sort)
 (dired-quick-sort-setup)
 
 (setq dired-listing-switches "-laGh1v --group-directories-first")
 
-;;* dired-rsync
+;;** dired-rsync
 ;; TODO: move dired stuff to a separate file
 (require 'dired-rsync)
 
 (define-key dired-mode-map (kbd "r") 'dired-rsync)
 
-;;** show rsync progress in modeline
+;; show rsync progress in modeline
 (with-eval-after-load 'dired+
   (defun diredp-rsync-in-mode-name ()
     (unless (cl-member '(:eval dired-rsync-modeline-status) mode-name :test #'equal)
@@ -1552,7 +1562,8 @@ else insert the face name as well."
   (let ((whitespace-style '(face tabs)))
     (whitespace-mode)))
 
-(add-hook 'prog-mode-hook #'highlight-tabs-mode)
+(add-hook 'lisp-mode-hook #'highlight-tabs-mode)
+(add-hook 'emacs-mode-hook #'highlight-tabs-mode)
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
@@ -1685,7 +1696,7 @@ else insert the face name as well."
 (define-key dired-mode-map (kbd "L") 'dired-do-symlink)
 (define-key dired-mode-map (kbd "C-f") 'forward-char)
 
-;;
+;;** revert-buffer
 (global-set-key (kbd "<f5>") 'revert-buffer)
 
 ;;** hydra-cantrips with random useful commands.
@@ -1711,6 +1722,7 @@ else insert the face name as well."
   ("L" #'display-line-numbers-mode "Display line numbers mode")
   ("m" #'mu4e "mu4e")
   ("M" #'mu4e-compose-new "mu4e compose")
+  ("M-m" #'memory-report "Memory report")
   ("o" #'helpful-symbol "Describe symbol")
   ("p" #'counsel-package "counsel-package")
   ("P" #'list-processes "list-processes")

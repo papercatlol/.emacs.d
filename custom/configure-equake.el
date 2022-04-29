@@ -171,5 +171,10 @@
 (advice-add 'shell-directory-tracker :around
             #'shell-directory-tracker-handle-up-dir-alias)
 
+;;* compilation-shell-minor-mode
+(add-hook 'shell-mode-hook #'compilation-minor-mode)
+(define-key compilation-shell-minor-mode-map (kbd "C-c j") 'compilation-next-error)
+(define-key compilation-shell-minor-mode-map (kbd "C-c k") 'compilation-previous-error)
+
 
 (provide 'configure-equake)

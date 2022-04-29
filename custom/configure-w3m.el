@@ -72,6 +72,8 @@ confirmation if this is there is only one tab open."
 (define-key w3m-mode-map (kbd "b") 'backward-word)
 (define-key w3m-mode-map (kbd "w") 'forward-word)
 (define-key w3m-mode-map (kbd "C-x M-w") 'w3m-print-this-url)
+(define-key w3m-mode-map (kbd "M-[") nil)
+(define-key w3m-mode-map (kbd "M-]") nil)
 
 ;;* evil
 (with-eval-after-load 'evil
