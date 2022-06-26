@@ -261,6 +261,9 @@
  '(tldr-code-block ((t (:inherit font-lock-string-face))))
  '(tldr-command-argument ((t (:foreground "#eee"))))
  '(tldr-command-argument ((t (:inherit default))))
+ ;; denote
+ '(denote-dired-field-date ((t (:foreground "#354b0f"))))
+ '(denote-dired-field-keywords ((t (:inherit bold :foreground "light slate gray"))))
  )
 
 (provide-theme 'quasi-monochrome)
