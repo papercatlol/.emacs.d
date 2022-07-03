@@ -935,6 +935,16 @@ Also always use `kill-region' instead of `delete-region'."
   (call-interactively #'sldb-continue)
   (call-interactively #'sldb-fetch-traces))
 
+;;** fix for emacs 28: `make-text-button' now returns a new string.
+(defun slime-trace-dialog--button (title lambda &rest props)
+  (let ((string (format "%s" title)))
+    (apply #'make-text-button string nil
+           'action #'(lambda (button)
+                       (funcall lambda button))
+           'mouse-face 'highlight
+           'face 'slime-inspector-action-face
+           props)))
+
 ;;* fancier fancy-trace
 (defun slime-toggle-trace-dwim (&optional using-context-p)
   "Toggle trace. Tries to guess what to trace depending on
@@ -1204,7 +1214,10 @@ If there was an active region, insert it into repl."
 ;;** slime-trace-dialog
 (define-key slime-trace-dialog-mode-map "h" 'backward-char)
 (define-key slime-trace-dialog-mode-map "l" 'forward-char)
+(define-key slime-trace-dialog-mode-map "F" 'slime-trace-dialog-autofollow-mode)
+(define-key slime-trace-dialog-mode-map "(" 'slime-trace-dialog-hide-details-mode)
 (define-key slime-trace-dialog-mode-map "C-n" nil)
+(define-key slime-trace-dialog--detail-mode-map (kbd "C-f") 'link-hint-open-link)
 
 ;;** slime-macroexpansion-minor-mode
 (define-key slime-macroexpansion-minor-mode-map (kbd "C-c C-q") 'bury-buffer)
