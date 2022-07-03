@@ -122,6 +122,12 @@ normally. With prefix argument, prompt for file type first."
          (unless (cdr keywords) (setq keywords (car keywords)))
          (denote title (or keywords (denote--keywords-prompt))))))))
 
+;;* automatically add new notes to vc
+(defun denote--vc-register-after (&rest _)
+  (save-buffer)
+  (vc-register))
+
+(advice-add 'denote :after #'denote--vc-register-after)
 
 ;;* hydra-denote
 (defhydra hydra-denote (:exit t :columns 1)
@@ -149,7 +155,7 @@ normally. With prefix argument, prompt for file type first."
   (interactive
    (list (dired-get-marked-files t current-prefix-arg nil nil t)
          (read-directory-name "Denote directory: " (denote-directory))))
-  (unless (file-exists-p dir) (error "Directory does not exist: %a" dir))
+  (unless (file-exists-p dir) (error "Directory does not exist: %s" dir))
 
   (dolist (file files)
     (let* ((filename (file-name-base file))
