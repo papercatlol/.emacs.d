@@ -20,7 +20,7 @@
                        slime-macrostep
                        slime-presentations
                        slime-package-fu
-                       ;; slime-scratch
+                       slime-scratch
                        slime-references
                        ;; slime-fontifying-fu
                        slime-trace-dialog
@@ -1208,6 +1208,10 @@ If there was an active region, insert it into repl."
 
 ;;** slime-macroexpansion-minor-mode
 (define-key slime-macroexpansion-minor-mode-map (kbd "C-c C-q") 'bury-buffer)
+
+;;** slime-scratch
+(define-key slime-mode-map (kbd "C-c M-s") 'slime-scratch)
+(define-key slime-repl-mode-map (kbd "C-c M-s") 'slime-scratch)
 
 ;;** eval-in-repl
 (require 'eval-in-repl)
