@@ -657,6 +657,8 @@
 
 ;;* undo
 (evil-set-undo-system 'undo-tree)
+(setq undo-tree-history-directory-alist
+      `(("." . ,(expand-file-name "undo-tree" user-emacs-directory))))
 
 (setq undo-tree-visualizer-diff t)
 (setq undo-tree-visualizer-timestamps t)

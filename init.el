@@ -238,11 +238,12 @@
                 shell-command-history)))
 (savehist-mode)
 
-;;** backups
+;;** backups & tmp files
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups"))))
 (setq version-control t)
 (setq delete-old-versions 'please-dont)
 (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
+(setq lock-file-name-transforms '((".*" "~/.emacs.d/lock-files/" t)))
 
 ;;** desktop (save buffers & window configuration)
 ;;(add-hook 'after-init-hook #'desktop-read)
