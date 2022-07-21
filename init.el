@@ -1580,6 +1580,16 @@ else insert the face name as well."
 (add-hook 'lisp-mode-hook #'highlight-tabs-mode)
 (add-hook 'emacs-mode-hook #'highlight-tabs-mode)
 
+;;* proced
+;; f - filtering, F - format (# columns)
+(global-set-key (kbd "H-p") 'proced)
+(define-key ctl-x-map (kbd "P") 'proced)
+
+(define-key proced-mode-map (kbd "j") 'next-line)
+(define-key proced-mode-map (kbd "k") 'previous-line)
+(define-key proced-mode-map (kbd "C-k") 'proced-omit-processes)
+(define-key proced-mode-map (kbd "G") 'proced-toggle-auto-update)
+(define-key proced-mode-map (kbd "S") 'proced-sort-interactive)
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
