@@ -714,6 +714,8 @@ Else narrow-to-defun."
 ;;* dired
 (setq dired-do-revert-buffer t)
 
+(add-hook 'dired-mode-hook 'hl-line-mode)
+
 ;;** dired-jump-other-frame
 (defun dired-jump-other-frame (&optional file-name)
   "Like \\[dired-jump] (`dired-jump') but in other frame."
@@ -741,7 +743,7 @@ Else narrow-to-defun."
 (require 'dired-quick-sort)
 (dired-quick-sort-setup)
 
-(setq dired-listing-switches "-laGh1v --group-directories-first")
+(setq dired-listing-switches "-laGh1v")
 
 ;;** dired-rsync
 ;; TODO: move dired stuff to a separate file
