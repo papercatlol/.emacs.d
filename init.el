@@ -69,6 +69,7 @@
 (require 'async)
 (require 'beginend)
 (require 'delsel)
+(require 'dired-x)
 (require 'dired-subtree)
 (require 'expand-region)
 (require 'exec-path-from-shell)
@@ -77,6 +78,7 @@
 (require 'ivy-xref)
 (require 'multiple-cursors)
 (require 'paredit)
+(require 'pcmpl-gnu)
 (require 'pcmpl-args)
 (require 'pcmpl-git)
 (require 'pdf-tools)
@@ -89,7 +91,7 @@
 (add-to-list 'load-path (expand-file-name "custom/ace-link/" user-emacs-directory))
 (require 'ace-link)
 (require 'compilation-to-dired)
-(require 'dired+)
+;; (require 'dired+)
 
 ;;** configuration
 (require 'configure-ace-window)
@@ -137,6 +139,9 @@
 (global-hl-todo-mode 1)
 (tooltip-mode -1)
 (global-so-long-mode 1)
+
+;; MAYBE hydra-vlf
+(require 'vlf-setup)
 
 ;;* async
 (dired-async-mode t)
@@ -196,6 +201,7 @@
       read-process-output-max (* 1024 1024)
       ;; this sometimes bugs out hydra's if set to T
       switch-to-buffer-preserve-window-point nil
+      bookmark-set-fringe-mark nil
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
@@ -298,6 +304,7 @@
                 mode))
           minor-mode-alist))
 
+(require 'org-clock)
 (setq-default mode-line-format
               (list "%e"
                     mode-line-front-space
@@ -1560,6 +1567,7 @@ else insert the face name as well."
 (defun highlight-tabs-mode ()
   "Enable `whitespace-mode' for tabs only."
   (interactive)
+  (require 'whitespace)
   (let ((whitespace-style '(face tabs)))
     (whitespace-mode)))
 
