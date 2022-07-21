@@ -27,6 +27,7 @@
 (evil-set-initial-state 'slime-trace-dialog-mode 'emacs)
 (evil-set-initial-state 'slime-popup-buffer-mode  'emacs)
 (evil-set-initial-state 'edebug-mode 'emacs)
+(evil-set-initial-state 'Info-mode 'emacs)
 (evil-set-initial-state 'ibuffer-mode 'normal)
 
 

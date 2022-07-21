@@ -1742,6 +1742,7 @@ else insert the face name as well."
 (define-key dired-mode-map (kbd "M-c") nil)
 (define-key dired-mode-map (kbd "L") 'dired-do-symlink)
 (define-key dired-mode-map (kbd "C-f") 'forward-char)
+(define-key dired-mode-map (kbd "C-k") 'dired-do-kill-lines)
 
 ;;** revert-buffer
 (global-set-key (kbd "<f5>") 'revert-buffer)
@@ -1814,3 +1815,10 @@ else insert the face name as well."
 ;;** xref--xref-buffer-mode
 (define-key xref--xref-buffer-mode-map (kbd "M-m") 'xref-show-location-at-point)
 (define-key xref--xref-buffer-mode-map (kbd "f") 'xref-show-location-at-point)
+
+;;** info-mode
+(define-key Info-mode-map "j" 'next-line)
+(define-key Info-mode-map "k" 'previous-line)
+(define-key Info-mode-map "h" 'backward-char)
+(define-key Info-mode-map "l" 'forward-char)
+(define-key Info-mode-map (kbd "C-w") 'Info-backward-node)
