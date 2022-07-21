@@ -1002,6 +1002,10 @@ current entry."
           (bicycle--level)))))
 (advice-add 'bicycle--level :around #'bicycle--level-advice)
 
+;;* hideshow (mainly for json files)
+(setf (alist-get 'js-mode hs-special-modes-alist)
+      '("{" "}" "/[*/]" nil))
+(define-key hs-minor-mode-map (kbd "C-<tab>") 'hs-toggle-hiding)
 ;;* tramp
 (setq-default tramp-verbose 5)
 
