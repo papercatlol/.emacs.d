@@ -1590,6 +1590,28 @@ else insert the face name as well."
 (define-key proced-mode-map (kbd "C-k") 'proced-omit-processes)
 (define-key proced-mode-map (kbd "G") 'proced-toggle-auto-update)
 (define-key proced-mode-map (kbd "S") 'proced-sort-interactive)
+;;* search code on github
+;; https://dd.reddit.com/r/emacs/comments/also27/second_trial_for_a_weekly_tipstricksetc_thread/eg0iiga/
+(defvar github-search-code-history nil)
+(defvar github-search-code-default-lang "Emacs+Lisp")
+
+(defun github-search-code (query &optional lang)
+  ;; Search GitHub for Elisp code with QUERY as search string. The QUERY should
+  ;; consist of words separated with a space.
+  (interactive
+   (let* ((elisp-tag "Emacs+Lisp")
+          (lang (when current-prefix-arg
+                  (read-string "Lang: " nil nil
+                               github-search-code-default-lang))))
+     (list (read-string "Search github: " nil 'github-search-code-history)
+           lang)))
+  (unless lang (setq lang github-search-code-default-lang))
+
+  (let ((url (format "https://github.com/search?l=%s&q=%s&type=Code"
+                     lang query)))
+    (browse-url (url-encode-url url))))
+
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
