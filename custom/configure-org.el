@@ -218,10 +218,10 @@ to ACTION and execute BODY forms."
   (interactive)
   (call-interactively  #'counsel-goto-task))
 
-;;* capture templates & org-roam
-(require 'configure-org-roam)
+;;* capture templates & denote
+;;(require 'configure-org-roam)
 
-(global-set-key (kbd "<f6>") 'hydra-org-roam/body)
+;;(global-set-key (kbd "<f6>") 'hydra-org-roam/body)
 
 ;; (setq org-capture-templates
 ;;       `(("w" "Work" entry (file ,odtt:task-file)
@@ -229,6 +229,8 @@ to ACTION and execute BODY forms."
 ;;         ("t" "Task" entry (file+headline "" "Tasks")
 ;;              "* TODO %?\n  %u\n  %a")))
 ;; (global-set-key (kbd "<f6>") 'counsel-org-capture)
+
+(require 'configure-denote)
 
 
 ;;* rangereport
@@ -246,21 +248,21 @@ to ACTION and execute BODY forms."
     (setq params (plist-put params :end nil))
     (while (<= start end)
       (save-excursion
-        (insert "\n\n"
-                (format-time-string (car org-time-stamp-formats)
-                                    (seconds-to-time start))
-                "----------------\n")
-        (org-dblock-write:clocktable
+       (insert "\n\n"
+               (format-time-string (car org-time-stamp-formats)
+                                   (seconds-to-time start))
+               "----------------\n")
+       (org-dblock-write:clocktable
+        (plist-put
          (plist-put
-          (plist-put
-           params
-           :tstart
-           (format-time-string (car org-time-stamp-formats)
-                               (seconds-to-time start)))
-          :tend
+          params
+          :tstart
           (format-time-string (car org-time-stamp-formats)
-                              (seconds-to-time end))))
-        (setq start (+ 86400 start))))))
+                              (seconds-to-time start)))
+         :tend
+         (format-time-string (car org-time-stamp-formats)
+                             (seconds-to-time end))))
+       (setq start (+ 86400 start))))))
 
 ;;* org-table: copy field at point
 (defun org-table-kill-field (&optional N)
@@ -288,13 +290,16 @@ to ACTION and execute BODY forms."
 (defun org-special-ctrl-c-ctrl-y ()
   "A hack to copy current lisp src block to slime repl."
   (interactive)
-  (if-let* ((connected? (slime-connected-p))
-            (in-block? (org-in-src-block-p))
+  (if-let* ((in-block? (org-in-src-block-p))
             (info (org-babel-get-src-block-info t))
             (lang (car info))
-            (lisp? (string= lang "lisp"))
             (expanded-block (org-babel-expand-src-block)))
-      (slime--repl-insert-string expanded-block)
+      (cond ((and (slime-connected-p) (string= lang "lisp"))
+             (slime--repl-insert-string expanded-block))
+            ((string= lang "shell")
+             (equake-pop)
+             (goto-char (point-max))
+             (insert expanded-block)))
     (call-interactively #'org-evaluate-time-range)))
 
 (define-key org-mode-map (kbd "C-c C-y") 'org-special-ctrl-c-ctrl-y)
@@ -333,7 +338,34 @@ to ACTION and execute BODY forms."
 (setf (alist-get 'slime-repl-mode org-rich-yank-mode-translation-alist)
       'lisp-mode)
 
-(define-key org-mode-map (kbd "C-M-y") 'org-rich-yank)
+;; Add major mode translation functionality back.
+(defun org-rich-yank+ ()
+  "Yank, surrounded by #+BEGIN_SRC block with major mode of originating buffer."
+  (interactive)
+  (if org-rich-yank--buffer
+      (let* ((source-mode (org-rich-yank--major-mode))
+             (paste
+               (concat
+                (format "#+BEGIN_SRC %s\n"
+                        (replace-regexp-in-string "-mode$" "" (symbol-name source-mode)))
+                (org-rich-yank--trim-nl (current-kill 0))
+                (format "\n#+END_SRC\n")
+                (org-rich-yank--link))))
+        (insert
+         (if org-rich-yank-add-target-indent
+             (org-rich-yank-indent paste)
+           paste)))
+    (message "`org-rich-yank' doesn't know the source buffer – please `kill-ring-save' and try again.")))
+
+(defvar org-rich-yank-mode-translation-alist nil
+  "Alist major-mode -> mode to use in the org src code block.")
+
+(defun org-rich-yank--major-mode ()
+  (when-let ((mode (buffer-local-value 'major-mode org-rich-yank--buffer)))
+    (or (alist-get mode org-rich-yank-mode-translation-alist)
+        mode)))
+
+(define-key org-mode-map (kbd "C-M-y") 'org-rich-yank+)
 
 ;;* org-download
 (require 'org-download)
@@ -342,6 +374,13 @@ to ACTION and execute BODY forms."
 
 ;; TODO: combine with org-rich-yank and bind to C-M-y
 (define-key org-mode-map (kbd "C-c y") 'org-download-clipboard)
+
+;;* timestamps
+;; [C-u] to include time
+;; [C-u C-u] to simply insert current timestamp (maybe reverse this behavior?)
+;; `org-time-stamp'          = <2022-07-19 Tue>
+;; `org-time-stamp-inactive' = [2022-07-19 Tue]
+(define-key ctl-x-map (kbd "T") 'org-time-stamp-inactive)
 
 ;; random keybindings
 (define-key org-mode-map (kbd "C-c C-8") 'org-ctrl-c-star)
