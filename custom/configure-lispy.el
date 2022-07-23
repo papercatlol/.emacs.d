@@ -19,11 +19,12 @@
 ;; FIXME this breaks lispy
 ;;(setq lispy-outline lisp-outline-regexp)
 
-;;* hooks
+;;* enable lispy-mode
 (add-hook 'emacs-lisp-mode-hook #'lispy-mode)
 (add-hook 'inferior-emacs-lisp-mode-hook #'lispy-mode)
 (add-hook 'lisp-mode-hook #'lispy-mode)
 (add-hook 'slime-repl-mode-hook #'lispy-mode)
+(add-hook 'sly-repl-mode-hook #'lispy-mode)
 (add-hook 'string-edit-regexp-mode-hook #'lispy-mode)
 
 (defun eval-expression-enable-lispy ()
@@ -33,6 +34,7 @@
             )
     (lispy-mode 1)))
 (add-hook 'minibuffer-setup-hook #'eval-expression-enable-lispy)
+(add-to-list 'lispy-no-indent-modes 'minibuffer-mode)
 
 ;;* disable lispy in magit-blame
 ;; FIXME this is a temporary solution. Ideally both magit-blame and lispy
@@ -40,7 +42,7 @@
 ;; priority for magit-blame or some special keybind magic.
 (add-to-list 'magit-blame-disable-modes 'lispy-mode)
 
-;;* lispy documentation
+;;* lispy inline documentation + slime
 (with-eval-after-load 'slime
   (advice-add 'lispy--lisp-describe :override #'slime-documentation-symbol)
   (define-key lispy-mode-map (kbd "C-c C-x d") 'lispy-describe-inline)
@@ -272,6 +274,9 @@ inside of that list."
 (add-hook 'slime-mode-hook #'lispy-slime-init)
 (add-hook 'slime-repl-mode-hook #'lispy-slime-init)
 
+(add-hook 'sly-mode-hook #'lispy-slime-init)
+(add-hook 'sly-mrepl-mode-hook #'lispy-slime-init)
+
 ;;*** fix lispy--exit-string jumping to random places in slime repl
 (defun lispy--exit-string-slime-repl-wrapper (fn &rest args)
   (when (eq major-mode 'slime-repl-mode)
@@ -298,6 +303,7 @@ inside of that list."
 
 ;;*** also don't indent
 (add-to-list 'lispy-no-indent-modes 'slime-repl-mode)
+(add-to-list 'lispy-no-indent-modes 'sly-mrepl-mode)
 
 ;;*** supress `text-read-only' error when indenting in slime-repl
 ;; Slime repl has read-only text which triggers an error. This is a lazy solution.
@@ -317,13 +323,18 @@ inside of that list."
 (defun lispy-slime-repl-comma ()
   (interactive)
   (call-interactively
-   (if (and slime-repl-mode-map
-            (or (not lispy-mode)
-                ;; Too lazy to handle whitespace input, this should be enough.
-                (= (point) (point-max))))
-       #'slime-handle-repl-shortcut
-     ;; MAYBE: toggle comma on current sexp
-     #'self-insert-command)))
+   (cond ((and (eq major-mode 'slime-repl-mode)
+               (or (not lispy-mode)
+                   ;; Too lazy to handle whitespace input, this should be enough.
+                   (= (point) (point-max))))
+          #'slime-handle-repl-shortcut)
+         ((and (eq major-mode 'sly-mrepl-mode)
+               (or (not lispy-mode)
+                   ;; Too lazy to handle whitespace input, this should be enough.
+                   (= (point) (point-max))))
+          #'sly-mrepl-shortcut)
+         ;; MAYBE: toggle comma on current sexp
+         (t #'self-insert-command))))
 
 ;;** make C-a jump to indentation first
 (defun lispy-back-to-indentation ()
