@@ -175,6 +175,12 @@
 (add-hook 'shell-mode-hook #'compilation-shell-minor-mode)
 (define-key compilation-shell-minor-mode-map (kbd "C-c j") 'compilation-next-error)
 (define-key compilation-shell-minor-mode-map (kbd "C-c k") 'compilation-previous-error)
+(define-key compilation-shell-minor-mode-map (kbd "M-<return>") nil)
+(define-key compilation-shell-minor-mode-map (kbd "M-RET") nil)
+(define-key compilation-shell-minor-mode-map (kbd "C-c C-m") 'compile-goto-error)
+
+;; MAYBE try `dirtrack-mode' instead of `shell-dirtrack-mode'
+;; https://www.masteringemacs.org/article/running-shells-in-emacs-overview
 
 
 (provide 'configure-equake)

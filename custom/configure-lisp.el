@@ -222,6 +222,7 @@ If there was an active region, insert it into repl."
   (define-key inferior-emacs-lisp-mode-map (kbd "C-c C-z") 'quit-window))
 
 ;;* TODO: edebug-mode: make compatible with evil-mode, add hydra
+(define-key edebug-mode-map (kbd "C-c C-d") nil)
 
 ;;** debugger-mode
 (with-eval-after-load 'debug
@@ -1191,7 +1192,7 @@ If there was an active region, insert it into repl."
 (define-key slime-mode-map (kbd "C-c M-w") 'slime-kill-package-name)
 (define-key slime-mode-map (kbd "C-c C-p") 'slime-sync-package-and-default-directory)
 (define-key sldb-mode-map (kbd "C-c C-p") 'sldb-sync-frame-package)
-(define-key slime-repl-mode-map (kbd "C-c C-p") 'slime-repl-set-default-package)
+(define-key slime-repl-mode-map (kbd "C-c p") 'slime-repl-set-default-package)
 (define-key slime-mode-map (kbd "C-c C-x C-s") 'slime-export-symbol-at-point)
 
 ;;** presentations

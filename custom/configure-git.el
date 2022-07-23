@@ -148,6 +148,7 @@ already narrowed, widen."
   (define-key ediff-mode-map (kbd "M-k") 'ediff-scroll-up)
   (define-key ediff-mode-map (kbd "C-v") nil)
   (define-key ediff-mode-map "s" 'ediff-toggle-skip-similar)
+  (define-key ediff-mode-map (kbd "C-j") 'ediff-jump-to-difference)
   )
 
 (add-hook 'ediff-keymap-setup-hook 'configure-ediff-keybindings)
