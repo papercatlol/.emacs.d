@@ -335,6 +335,9 @@ to ACTION and execute BODY forms."
 ;;* org-rich-yank
 (org-rich-yank-enable)
 
+(defvar org-rich-yank-mode-translation-alist nil
+  "Alist major-mode -> mode to use in the org src code block.")
+
 (setf (alist-get 'slime-repl-mode org-rich-yank-mode-translation-alist)
       'lisp-mode)
 
@@ -356,9 +359,6 @@ to ACTION and execute BODY forms."
              (org-rich-yank-indent paste)
            paste)))
     (message "`org-rich-yank' doesn't know the source buffer – please `kill-ring-save' and try again.")))
-
-(defvar org-rich-yank-mode-translation-alist nil
-  "Alist major-mode -> mode to use in the org src code block.")
 
 (defun org-rich-yank--major-mode ()
   (when-let ((mode (buffer-local-value 'major-mode org-rich-yank--buffer)))
