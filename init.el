@@ -684,6 +684,8 @@ Else narrow-to-defun."
          (call-interactively #'org-narrow-to-subtree))
         ((eq major-mode 'shell-mode)
          (call-interactively #'shell-narrow-to-prompt))
+        ((eq major-mode 'slime-repl-mode)
+         (call-interactively #'slime-repl-narrow-to-prompt))
         (t (call-interactively #'narrow-to-defun))))
 
 (global-set-key (kbd "C-x C-n") 'narrow-dwim)
@@ -1706,10 +1708,10 @@ else insert the face name as well."
   ("M-p" previous-error)
   ("k" previous-error)
   ("M-k" previous-error)
-  ("g" avy-goto-line)
-  ("M-g" avy-goto-line)
-  ("c" goto-char)
-  ("M-c" goto-char)
+  ("g" avy-goto-line :exit t)
+  ("M-g" avy-goto-line :exit t)
+  ("c" goto-char :exit t )
+  ("M-c" goto-char :exit t)
   ("q" nil)
   ("RET" nil))
 

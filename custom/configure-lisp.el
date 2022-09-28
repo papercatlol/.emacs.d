@@ -1126,6 +1126,23 @@ If there was an active region, insert it into repl."
 
 (add-hook 'slime-repl-mode-hook #'slime-repl-activate-yasnippet)
 
+;;* slime-repl-narrow-to-prompt
+(defun slime-repl-narrow-to-prompt ()
+  "Narrow buffer to the prompt (and any following output) at point."
+  (interactive)
+  (let ((start (save-excursion
+                (move-end-of-line 1)
+                (slime-repl-previous-prompt)
+                (point)))
+        (end (save-excursion
+              (let ((p (point)))
+                (slime-repl-next-prompt)
+                (if (eq p (point))
+                    (point-max)
+                  (previous-line)
+                  (line-end-position))))))
+    (narrow-to-region start end)))
+
 ;;* KEYS
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation-minibuffer)

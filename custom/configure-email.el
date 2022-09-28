@@ -30,6 +30,7 @@
   (define-key mu4e-headers-mode-map "L" 'mu4e-headers-query-next)
   (define-key mu4e-headers-mode-map "n" nil)
   (define-key mu4e-headers-mode-map "N" nil)
+  (define-key mu4e-headers-mode-map "X" 'mu4e-kill-update-mail)
   (define-key mu4e-headers-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
   (define-key mu4e-view-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
 
