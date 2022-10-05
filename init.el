@@ -790,6 +790,7 @@ Else narrow-to-defun."
 ;;** try-functions-list
 (setq hippie-expand-try-functions-list
       '(yas-hippie-try-expand
+        try-tempo-complete-tag
         try-expand-dabbrev-visible
         try-complete-file-name-partially
         try-complete-file-name
@@ -866,6 +867,14 @@ prefix arg expand from all buffers."
     (call-interactively #'hippie-expand-completion)))
 
 (global-set-key (kbd "M-'") 'hippie-expand-completion-visible)
+
+;;** hippie expand tempo tags
+;; https://www.emacswiki.org/emacs/HippieExpand#h5o-10
+(require 'tempo)
+
+(defun try-tempo-complete-tag (old)
+  (unless old
+    (tempo-complete-tag)))
 
 ;;** paredit fix
 (defvar he-need-paredit-fix? t)

@@ -3,6 +3,10 @@
 ;;* general
 (require 'org)
 
+;;* quickly insert src blocks and stuff (e.g. <s)
+;; We use hippie-expand to trigger `tempo.el' tag expansion
+(require 'org-tempo)
+
 (setq org-default-notes-file (concat org-directory "/notes.org")
       org-startup-indented t
       org-hide-leading-stars t
