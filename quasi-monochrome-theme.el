@@ -3,7 +3,7 @@
   "Created 2018-06-04.")
 
 (defface underlined
-    '((t (:underline (:color "LightSalmon3"))))
+    '((t (:underline (:color "purple"))))
   "Base face for underlined text(e.g. for isearch, grep etc).")
 ;; ediff
 (defface ediff-diff-base
@@ -82,13 +82,10 @@
  '(vertical-border ((t (:foreground "gray60"))))
  ;; mode-line
  '(mode-line ((t (:background "black" :foreground "#c5c9c0" :bold nil
-                  ;; :box (:line-width 1 :color "gray50")
-                  :overline "gray60"
-                  ))))
- '(mode-line-inactive ((t (:background "gray15" :foreground "#41544B" :bold nil
-                           :overline "gray60"))))
- '(mode-line-buffer-id ((t (:background nil :foreground "white" :bold nil))))
- '(mode-line-highlight ((t (:foreground "aquamarine3" :box nil :bold nil))))
+                  :box (:line-width 1 :color "gray70")))))
+ '(mode-line-inactive ((t (:background "gray15" :foreground "#41544B"))))
+ '(mode-line-buffer-id ((t (:background nil :foreground "white"))))
+ '(mode-line-highlight ((t (:foreground "aquamarine3" :box t))))
  '(mode-line-emphasis ((t (:foreground "aquamarine3"))))
  ;; header-line
  '(header-line ((t (:background "#1f2f2f"
@@ -125,9 +122,9 @@
  '(popup-tip-face ((t (:inherit font-lock-comment-face :weight normal))))
  '(error ((t (:foreground "firebrick" :weight bold))))
  '(hl-line ((t (:background "gray10"))))
- ;; '(ivy-current-match ((t (:background "gray50" :foreground "white"))))
- '(ivy-current-match ((t (:inherit region ;; :foreground "white"
-                          ))))
+ '(ivy-current-match ((t (:inherit region
+                          :background "SteelBlue4"
+                          :foreground "white"))))
  '(ivy-minibuffer-match-face-1 ((t (:inherit underlined))))
  '(ivy-minibuffer-match-face-2 ((t (:inherit ivy-minibuffer-match-face-1))))
  '(ivy-minibuffer-match-face-3 ((t (:inherit ivy-minibuffer-match-face-1))))
