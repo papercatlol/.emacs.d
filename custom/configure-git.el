@@ -6,8 +6,7 @@
 
 (put 'magit-clean 'disabled nil)
 
-(setq magit-log-arguments '("-n64" "--decorate" "--patch")
-      magit-define-global-key-bindings nil
+(setq magit-define-global-key-bindings nil
       magit-diff-buffer-file-locked t
       magit-diff-refine-hunk nil
       magit-todos-auto-group-items 1000
@@ -16,6 +15,9 @@
       magit-section-visibility-indicator (quote (magit-fringe-bitmap+ . magit-fringe-bitmap-))
       magit-section-initial-visibility-alist '((untracked . hide)
                                                (stashes . hide)))
+
+(put 'magit-log-mode 'magit-log-default-arguments
+     '("-n64" "--decorate"))
 
 ;;* transient
 (setq transient-default-level 5)        ; up to 7, default is 4
