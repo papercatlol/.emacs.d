@@ -111,11 +111,16 @@
   (backward-char))
 
 (defun C-w-dwim ()
-  "Kill region if active, else delete a word backward."
+  "Kill region if active, else delete a word backward.
+With universal arg or if cursor is after a closing paren kill sexp at point."
   (interactive)
-  (if (region-active-p)
-      (evil-delete (point) (mark))
-    (evil-delete-backward-word)))
+  (or (and (or current-prefix-arg (looking-back ")"))
+           (when-let ((bounds (bounds-of-thing-at-point 'sexp)))
+             (kill-region (car bounds) (cdr bounds))
+             t))
+      (and (region-active-p)
+           (evil-delete (point) (mark)))
+      (evil-delete-backward-word)))
 
 (define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
 (define-key minibuffer-local-map (kbd "C-w") 'C-w-dwim)
