@@ -100,12 +100,13 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'letf* 'let)
     (%copy-indent 'cl-letf 'let)
     (%copy-indent 'cl-letf* 'let)
+    (%copy-indent 'cl-typecase 'typecase)
     (%copy-indent 'while 'when)
     (%copy-indent 'evil-define-key 'defun)
     (%copy-indent 'avy-with 'when)
     (%copy-indent 'with-ivy-window 'save-excursion)
     (%copy-indent 'evil-define-command 'defun)
-    ;; (put 'if 'common-lisp-indent-function 2)
+    (put 'if 'common-lisp-indent-function 2)
     (put 'if-let 'common-lisp-indent-function 2)
     (put 'if-let* 'common-lisp-indent-function 2)))
 
@@ -349,7 +350,7 @@ With negative prefix arg call original `slime-edit-definition'."
     (cl-pushnew package slime-read-package-name-history)))
 (advice-add 'slime-repl-set-package :after #'slime-repl-set-package--push-package)
 
-(ivy-enable-calling-for-func #'slime-edit-definition-ivy)
+;;(ivy-enable-calling-for-func #'slime-edit-definition-ivy)
 
 ;;** completion
 ;; (defvar *slime-internal-symbols* nil)
@@ -829,7 +830,9 @@ With prefix arg, copy toplevel form."
              (when (slime-inside-string-p)
                (skip-chars-forward "^\"")
                (forward-char 1))
-             (or (prin1-to-string (list-at-point)) ""))))))
+             (if-let ((bounds (bounds-of-thing-at-point 'list)))
+                 (buffer-substring-no-properties (car bounds) (cdr bounds))
+               ""))))))
 
 (define-key slime-mode-map (kbd "C-c C-y") 'slime-copy-to-repl)
 (define-key slime-repl-mode-map (kbd "C-c C-y") 'slime-copy-to-repl)
@@ -859,7 +862,7 @@ Also always use `kill-region' instead of `delete-region'."
 ;; TODO: slime-read-function-name
 (defun sldb-fancy-break (name)
   "Set a breakpoint at the start of the function NAME."
-  (interactive (list (slime-read-symbol-name "Break on enter: ")))
+  (interactive (list (slime-read-symbol-name "Break on enter: " t)))
   (slime-eval-async `(swank:sldb-break ,name)
     (lambda (msg) (message "%s" msg))))
 
@@ -1191,6 +1194,10 @@ If there was an active region, insert it into repl."
 (define-key sldb-mode-map (kbd "C-M-j") 'sldb-down)
 (define-key sldb-mode-map "f" 'sldb-show-source)
 (define-key sldb-mode-map (kbd "C-M-k") 'sldb-up)
+(define-key sldb-mode-map (kbd "C-j") 'sldb-down)
+(define-key sldb-mode-map (kbd "C-k") 'sldb-up)
+(define-key sldb-mode-map (kbd "w") 'forward-word)
+(define-key sldb-mode-map (kbd "b") 'backward-word)
 (define-key slime-mode-map (kbd "C-c M-t") 'slime-toggle-trace-fdefinition)
 (define-key slime-repl-mode-map [remap swiper-at-point] 'swiper-isearch)
 (define-key slime-repl-mode-map [remap slime-repl-previous-matching-input] 'slime-repl-complete-ivy)

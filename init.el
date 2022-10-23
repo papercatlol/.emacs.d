@@ -102,6 +102,7 @@
 (require 'configure-highlight)
 (require 'configure-isearch)
 (require 'configure-ivy)
+(require 'configure-compilation)
 (require 'counsel-ripgrep)
 (require 'configure-w3m)
 
@@ -296,6 +297,7 @@
     (explain-pause-mode "")
     (page-break-lines-mode "")
     (org-roam-mode "")
+    (yas-minor-mode "")
     ))
 
 (defun cleaner-minor-modes ()
@@ -358,6 +360,7 @@
 
 (define-key pdf-view-mode-map (kbd "j") 'pdf-view-next-line-or-next-page)
 (define-key pdf-view-mode-map (kbd "k") 'pdf-view-previous-line-or-previous-page)
+(define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
 
 (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode)
 
@@ -388,6 +391,7 @@
 (global-set-key (kbd "C-h h") 'toggle-help-window)
 (global-set-key (kbd "C-h k") #'helpful-key)
 (global-set-key (kbd "<f2>") #'helpful-key)
+(define-key help-map (kbd "M-k") #'describe-keymap)
 
 ;;** override default describe functions
 (advice-add 'describe-function :override #'helpful-function)
@@ -1720,6 +1724,7 @@ else insert the face name as well."
 (global-set-key (kbd "C-x C-SPC") 'avy-goto-char-timer)
 (global-set-key (kbd "<f13>") 'avy-goto-char-timer)
 (global-set-key (kbd "M-<tab>") 'other-window)
+(global-set-key (kbd "<f15>") 'other-window)
 (global-set-key (kbd "C-t") 'avy-goto-word-2)
 ;; (global-set-key (kbd "M-t") 'avy-goto-symbol-1)
 
@@ -1787,6 +1792,7 @@ else insert the face name as well."
   ("c" #'counsel-colors-emacs "counsel-colors-emacs")
   ("C" #'rainbow-mode "rainbow-mode")
   ("d" #'describe-text-properties "describe-text-properties")
+  ("D" #'shortdoc-display-group "shortdoc-display-group")
   ("e" #'toggle-debug-on-error "toggle-debug-on-error")
   ("f" #'describe-face "describe-face")
   ("F" #'counsel-faces "counsel-faces")
@@ -1836,8 +1842,9 @@ else insert the face name as well."
 (global-set-key (kbd "C-5") ctl-x-5-map)
 
 ;;** Hyper (although some of them are in other files as well)
-(global-set-key (kbd "H-;") 'eval-expression)
+(global-set-key (kbd "H-;") 'pp-eval-expression)
 (global-set-key (kbd "<H-return>") 'eval-expression)
+(global-set-key (kbd "H-w") 'org-store-link)
 
 ;;** comint
 (define-key comint-mode-map (kbd "C-c C-x") nil)

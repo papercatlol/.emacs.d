@@ -160,7 +160,7 @@ Delete the current window."
 
 ;;* aw-counsel-buffers
 (defun aw-counsel-buffers (window)
-  "Selece buffer in WINDOW."
+  "Select buffer in WINDOW."
   (aw-switch-to-window window)
   (counsel-buffers))
 

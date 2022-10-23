@@ -417,6 +417,13 @@ positive and after if negative."
 
 (define-key lispy-mode-map (kbd "SPC") 'lispy-slime-space)
 
+;;** lispy-tick: don't insert space
+(defun lispy-tick--no-space (fn &rest args)
+  (let ((lispy-no-space t))
+    (apply fn args)))
+
+(advice-add 'lispy-tick :around #'lispy-tick--no-space)
+
 ;;** other global bindings
 (define-key lispy-mode-map (kbd "<return>") 'lispy-right)
 (define-key lispy-mode-map (kbd "RET") 'lispy-newline-and-indent-plain)

@@ -1,5 +1,4 @@
 (require 'anzu)
-(require 'expand-region)
 (require 'loccur)
 (global-anzu-mode 1)
 
@@ -60,6 +59,7 @@
 (global-set-key (kbd "M-o") 'occur)
 (global-set-key (kbd "C-x C-o") 'occur)
 (global-set-key (kbd "C-x M-o") 'loccur)
+(define-key isearch-mode-map (kbd "C-h") 'isearch-delete-char)
 (define-key loccur-mode-map (kbd "C-x M-o") 'loccur-mode)
 (define-key occur-mode-map (kbd "n") 'occur-show-next)
 (define-key occur-mode-map (kbd "p") 'occur-show-prev)
