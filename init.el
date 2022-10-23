@@ -149,7 +149,10 @@
 (async-bytecomp-package-mode t)
 
 ;;* reverse-im
+(setq reverse-im-avy-action-char nil)
+
 (require 'reverse-im)
+
 (set-keymap-parent function-key-map
                    (make-composed-keymap
                     (list (reverse-im--im-to-keymap "russian-computer")
@@ -945,6 +948,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 (define-key package-menu-mode-map (kbd "k") 'previous-line)
 
 ;;* iedit
+;; TODO: hydra-iedit
 (defun iedit-mode* ()
   "If iedit-mode is active, restrict to current region or defun,
 otherwise activate iedit-mode."
@@ -1583,6 +1587,38 @@ else insert the face name as well."
 
 (setf (alist-get ?. avy-dispatch-alist) #'avy-action-goto-definition)
 (setf (alist-get ?  avy-dispatch-alist) #'avy-action-goto-definition)
+
+;;** fix evil + avy-goto-char-timer
+;; Don't wrap with `evil-enclose-avy-for-motion' to allow movement between
+;; windows in visual-state.
+(with-eval-after-load 'evil
+  (evil-define-command evil-avy-goto-char-timer (&optional count)
+    "Evil motion for `avy-goto-char-timer'."
+    :repeat abort :type inclusive
+    :jump t :keep-visual t
+    (interactive "<c>")
+    (evil-without-repeat (call-interactively 'avy-goto-char-timer))))
+
+;;** avy-action-donate
+(defun avy-action-donate (pt)
+  "Yank active region or sexp-at-point to the point after PT. Moves
+the cursor to the new position as well."
+  (when-let ((text
+              (save-selected-window
+               (select-window (cdr (ring-ref avy-ring 0)))
+               (when-let ((bounds (or (and (region-active-p)
+                                           (cons (region-beginning) (region-end)))
+                                      (bounds-of-thing-at-point 'list)
+                                      (bounds-of-thing-at-point 'sexp))))
+                 (buffer-substring-no-properties (car bounds) (cdr bounds))))))
+    (goto-char pt)
+    (avy-forward-item)
+    (insert text)))
+
+(setf (alist-get ?m avy-dispatch-alist) #'avy-action-donate)
+(setf (alist-get (aref (kbd "C-y") 0) avy-dispatch-alist) #'avy-action-donate)
+
+;;** TODO avy + edebug (avy-action-toggle-breakpoint or smth)
 
 ;;* embark (trying it out)
 (require 'configure-embark)
