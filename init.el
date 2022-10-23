@@ -1580,6 +1580,9 @@ else insert the face name as well."
 (setf (alist-get ?. avy-dispatch-alist) #'avy-action-goto-definition)
 (setf (alist-get ?  avy-dispatch-alist) #'avy-action-goto-definition)
 
+;;* embark (trying it out)
+(require 'configure-embark)
+
 ;;* highlight-tabs-mode
 (defun highlight-tabs-mode ()
   "Enable `whitespace-mode' for tabs only."
