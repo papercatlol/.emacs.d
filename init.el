@@ -1627,6 +1627,20 @@ else insert the face name as well."
                      lang query)))
     (browse-url (url-encode-url url))))
 
+;;* conf-mode
+(defhydra hydra-conf-mode (:columns 1 :exit t)
+  "Conf-mode"
+  ("c" 'conf-colon-mode "conf-colon-mode")
+  ("j" 'conf-javaprop-mode "conf-javaprop-mode")
+  ("p" 'conf-ppd-mode "conf-ppd-mode")
+  ("u" 'conf-unix-mode "conf-unix-mode")
+  ("w" 'conf-windows-mode "conf-windows-mode")
+  ("x" 'conf-xdefaults-mode "conf-xdefaults-mode")
+  (":" 'conf-colon-mode "conf-colon-mode"))
+
+(with-eval-after-load 'conf-mode
+  (define-key conf-mode-map (kbd "C-c C-x") nil)
+  (define-key conf-mode-map (kbd "C-c C-c") 'hydra-conf-mode/body))
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
