@@ -134,7 +134,8 @@
               'face 'ivy-subdir))
 
 (defun ivy-rich-counsel-buffers-buffer-path (candidate)
-  (buffer-file-name (get-buffer candidate)))
+  (or (buffer-file-name (get-buffer candidate))
+      default-directory))
 
 (defun constantly (x)
   (lambda (&rest args)
@@ -920,7 +921,8 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (with-eval-after-load 'comint
   (define-key comint-mode-map
     [remap comint-history-isearch-backward-regexp]
-    'counsel-shell-history))
+    'counsel-shell-history)
+  (define-key comint-mode-map (kbd "C-c M-r") 'counsel-shell-history))
 
 ;;* swiper-evil-replace
 (with-eval-after-load 'evil
@@ -951,6 +953,85 @@ exit with that candidate, otherwise insert SPACE character as usual."
  'counsel-faces
  '(("a" face-attributes-pretty-print "pp face attributes")))
 
+;;* counsel-global-mark-ring
+(defun counsel-global-mark-ring ()
+  "Browse `global-mark-ring' interactively."
+  (interactive)
+  (let* ((counsel--global-mark-ring-calling-point (point-marker))
+         (marks (delete-dups (copy-sequence global-mark-ring)))
+         (candidates (loop for m in marks
+                           when (counsel--global-mark-candidate m)
+                             collect it)))
+    (if candidates
+        (ivy-read "Global marks: " candidates
+                  :require-match t
+                  :update-fn #'counsel--global-mark-ring-update-fn
+                  :action #'counsel--goto-global-mark-cand
+                  :unwind #'counsel--global-mark-ring-unwind
+                  :caller 'counsel-global-mark-ring)
+      (message "Mark ring is empty"))))
+
+(defvar counsel--global-mark-ring-calling-point nil
+  "Marker of the starting position.")
+
+(defun counsel--global-mark-candidate (mark)
+  (when-let ((buf (marker-buffer mark))
+             (pos (marker-position mark)))
+    (with-current-buffer buf
+      (save-excursion
+       (save-restriction
+        (unless (<= (point-min) pos (point-max))
+          (if widen-automatically
+              (widen)
+            (return)))
+        (goto-char pos)
+        (concat
+         (propertize (format "%s:%s:" (buffer-name buf) (line-number-at-pos))
+                     'face 'shadow 'mark mark)
+         (buffer-substring-no-properties (line-beginning-position)
+                                         (line-end-position))))))))
+
+(defun counsel--global-mark-ring-unwind ()
+  (switch-to-marker counsel--global-mark-ring-calling-point))
+
+(defun counsel--global-mark-ring-update-fn ()
+  "Show global mark preview."
+  (when-let ((mark (get-text-property 0 'mark (ivy-state-current ivy-last))))
+    (with-ivy-window (switch-to-marker mark))))
+
+(defun counsel--goto-global-mark-cand (&optional cand)
+  (when-let* ((cand (or cand (ivy-state-current ivy-last)))
+              (mark (get-text-property 0 'mark cand)))
+    (switch-to-marker mark)))
+
+(defun switch-to-marker (marker)
+  (when-let ((buf (marker-buffer marker))
+             (pos (marker-position marker)))
+    (set-buffer buf)
+    (or (and (>= pos (point-min))
+             (<= pos (point-max)))
+        (if widen-automatically
+            (widen)
+          (error "Marker is outside accessible part of buffer %s"
+                 (buffer-name buf))))
+    (goto-char pos)
+    (switch-to-buffer buf)))
+
+(ivy--alist-set 'ivy-sort-functions-alist 'counsel-mark-ring nil)
+
+(defun pop-global-mark+ (&optional arg)
+  "With universal arg call `counsel-global-mark-ring'."
+  (interactive "P")
+  (call-interactively (if arg #'counsel-global-mark-ring #'pop-global-mark)))
+
+(global-set-key (kbd "<C-i>") 'pop-global-mark+)
+
+(defun pop-mark+ (&optional arg)
+  "With universal arg call `counsel-mark-ring'."
+  (interactive "P")
+  (call-interactively (if arg #'counsel-mark-ring #'pop-to-mark-command)))
+
+(global-set-key (kbd "C-o") 'pop-mark+)
 
 ;;* KEYS
 (global-set-key (kbd "M-x") 'counsel-M-x)

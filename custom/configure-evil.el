@@ -114,13 +114,13 @@
   "Kill region if active, else delete a word backward.
 With universal arg or if cursor is after a closing paren kill sexp at point."
   (interactive)
-  (or (and (or current-prefix-arg (looking-back ")"))
-           (when-let ((bounds (bounds-of-thing-at-point 'sexp)))
-             (kill-region (car bounds) (cdr bounds))
-             t))
-      (and (region-active-p)
-           (evil-delete (point) (mark)))
-      (evil-delete-backward-word)))
+  (if (region-active-p)
+      (evil-delete (point) (mark))
+    (or (and (or current-prefix-arg (looking-back ")"))
+             (when-let ((bounds (bounds-of-thing-at-point 'sexp)))
+               (kill-region (car bounds) (cdr bounds))
+               t))
+        (evil-delete-backward-word))))
 
 (define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
 (define-key minibuffer-local-map (kbd "C-w") 'C-w-dwim)
@@ -314,12 +314,12 @@ With universal arg or if cursor is after a closing paren kill sexp at point."
   (if arg (evil-show-jumps-ivy)
     (call-interactively #'evil-jump-forward)))
 
-(defun evil-set-jump* ()
-  "Interactive version of `evil-set-jump'."
-  (interactive)
-  (evil-set-jump))
+;;(defun evil-set-jump* ()
+;;  "Interactive version of `evil-set-jump'."
+;;  (interactive)
+;;  (evil-set-jump))
 
-(define-key evil-motion-state-map (kbd "C-SPC") 'evil-set-jump*)
+;;(define-key evil-motion-state-map (kbd "C-SPC") 'evil-set-jump*)
 
 (setq evil-jumps-cross-buffers nil)
 
@@ -330,8 +330,9 @@ With universal arg or if cursor is after a closing paren kill sexp at point."
   (let ((tab-always-indent t))
     (call-interactively #'indent-for-tab-command)))
 
-(define-key evil-motion-state-map (kbd "C-o") 'evil-jump-backward-dwim)
-(define-key evil-motion-state-map (kbd "<C-i>") 'evil-jump-forward-dwim)
+;;(define-key evil-motion-state-map (kbd "C-o") 'evil-jump-backward-dwim)
+(define-key evil-motion-state-map (kbd "C-o") 'pop-mark+)
+;;(define-key evil-motion-state-map (kbd "<C-i>") 'evil-jump-forward-dwim)
 (define-key evil-motion-state-map (kbd "<tab>") 'tab-indent)
 
 ;;** avy-goto-symbol-2

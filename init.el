@@ -206,6 +206,9 @@
       ;; this sometimes bugs out hydra's if set to T
       switch-to-buffer-preserve-window-point nil
       bookmark-set-fringe-mark nil
+      ;; mark ring sizes
+      mark-ring-max 32
+      global-mark-ring-max 512
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
