@@ -1682,6 +1682,31 @@ the cursor to the new position as well."
   (define-key conf-mode-map (kbd "C-c C-x") nil)
   (define-key conf-mode-map (kbd "C-c C-c") 'hydra-conf-mode/body))
 
+;;* append-to-other-window
+(defvar-local append-to-other-window-target nil)
+
+(defun append-to-other-window (&optional force-select-window)
+  "Append to specified (via `ace-window') WINDOW the text of the region.
+With prefix-arg force window selection."
+  (interactive "P")
+  (require 'ace-window)
+  (when-let ((oldbuf (current-buffer))
+             (beg (region-beginning))
+             (end (region-end))
+             (target-window
+              (or (and (null force-select-window)
+                       (windowp append-to-other-window-target)
+                       ;; Check if window is still visible.
+                       (member append-to-other-window-target (window-list))
+                       append-to-other-window-target)
+                  (setq append-to-other-window-target
+                        (aw-select " Ace - Append to Window")))))
+    (with-selected-window target-window
+      (barf-if-buffer-read-only)
+      (insert-buffer-substring oldbuf beg end))))
+
+(define-key ctl-x-r-map "a" 'append-to-other-window)
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
