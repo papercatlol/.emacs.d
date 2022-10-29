@@ -1710,6 +1710,42 @@ With prefix-arg force window selection."
 
 (define-key ctl-x-r-map "a" 'append-to-other-window)
 
+;;* mosey
+(require 'mosey)
+
+(defvar mosey-starting-point nil "Position of initial mosey invocation.")
+
+(defun mosey-set-starting-point ()
+  (unless (and mosey-starting-point
+               (<= (line-beginning-position)
+                   mosey-starting-point
+                   (line-end-position)))
+    (setq mosey-starting-point (point))))
+
+(defun mosey-goto-starting-point ()
+  (when mosey-starting-point
+    (goto-char mosey-starting-point)
+    (setq mosey-starting-point nil)))
+
+(defun mosey-backward-bounce+ (go-back)
+  "Like `mosey-backward-bounce', but go back to the point where
+mosey was first called with prefix arg."
+  ;; MAYBE just use `set-mark-command' instead?
+  (interactive "P")
+  (if (and go-back mosey-starting-point)
+      (mosey-goto-starting-point)
+    (mosey '(mosey-set-starting-point
+             beginning-of-line
+             back-to-indentation
+             mosey-goto-beginning-of-comment-text)
+           :bounce t :backward t)))
+
+(global-set-key (kbd "C-a") 'mosey-backward-bounce+)
+
+;; This is similar in spirit, so set it here instead of configure-lispy.el
+(with-eval-after-load 'lispy
+  (global-set-key (kbd "C-e") 'lispy-move-end-of-line))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
