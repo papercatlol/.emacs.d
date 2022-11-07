@@ -361,6 +361,8 @@
       minibuffer-follows-selected-frame nil)
 (minibuffer-depth-indicate-mode 1)
 
+(global-set-key (kbd "H-SPC") 'switch-to-minibuffer)
+
 ;;* pdf-tools
 ;;(pdf-tools-install)
 
@@ -1376,7 +1378,7 @@ enable `hydra-flyspell'."
     ("j" #'evil-next-flyspell-error "next error")
     ("k" #'evil-prev-flyspell-error "prev error")
     ("SPC" #'flyspell-auto-correct-word "auto-correct word")
-    ("g" #'flyspell-buffer "Flyspell buffer")
+    ("g" #'flyspell-buffer "Flyspell whole buffer")
     ("C-f" #'flyspell-mode "Toggle flyspell mode")
     ("t" #'flyspell-mode "Toggle flyspell mode")
     ("a" #'ace-flyspell-jump-word "Ace flyspell")
@@ -1398,7 +1400,8 @@ enable `hydra-flyspell'."
 
   (define-key flyspell-mode-map (kbd "C-c C-f") 'hydra-flyspell/body)
   (define-key prog-mode-map (kbd "C-c C-f") 'flyspell-hydra)
-  (define-key markdown-mode-map (kbd "C-c C-f") 'flyspell-hydra))
+  (define-key markdown-mode-map (kbd "C-c C-f") 'flyspell-hydra)
+  (define-key org-mode-map (kbd "C-c C-f") 'flyspell-hydra))
 
 ;; Display flyspell corrections in a popup instead if the minibuffer.
 (defvar flyspell-display-next-corrections-popup-height 10)

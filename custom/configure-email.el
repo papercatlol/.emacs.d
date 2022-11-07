@@ -13,6 +13,7 @@
 (require 'mu4e)
 
 ;;* evil bindings. Some don't work though...
+;; TODO get rid of `evil-collection'
 (with-eval-after-load 'evil
   (require 'evil-collection)
   (evil-collection-mu4e-setup)
@@ -25,14 +26,16 @@
   (define-key mu4e-view-mode-map "V" 'evil-visual-line)
   (define-key mu4e-view-mode-map "v" 'evil-visual-char-or-expand-region)
   (define-key mu4e-view-mode-map (kbd "C-c v") 'mu4e-view-verify-msg-popup)
+  (define-key mu4e-view-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
   (define-key mu4e-headers-mode-map "h" 'backward-char)
+  (define-key mu4e-headers-mode-map "s" 'mu4e-headers-search)
+  (define-key mu4e-headers-mode-map "S" 'mu4e-headers-search-edit)
   (define-key mu4e-headers-mode-map "H" 'mu4e-headers-query-prev)
   (define-key mu4e-headers-mode-map "L" 'mu4e-headers-query-next)
   (define-key mu4e-headers-mode-map "n" nil)
   (define-key mu4e-headers-mode-map "N" nil)
   (define-key mu4e-headers-mode-map "X" 'mu4e-kill-update-mail)
   (define-key mu4e-headers-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
-  (define-key mu4e-view-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
 
   (evil-define-key '(normal) mu4e-view-mode-map
     "[" 'mu4e-view-headers-prev-unread
@@ -41,7 +44,9 @@
   (evil-define-key '(normal) mu4e-headers-mode-map
     "[" 'mu4e-headers-prev-unread
     "]" 'mu4e-headers-next-unread
-    "q" 'mu4e-headers-query-prev))
+    "q" 'mu4e-headers-query-prev
+    "s" 'mu4e-headers-search
+    "S" 'mu4e-headers-search-edit))
 
 ;;* general
 ;; A lot of these are taken from
@@ -190,9 +195,9 @@
 		     msg '(:from :to :cc :bcc) "papercatlol@gmail.com")))
     :vars '((user-mail-address . "papercatlol@gmail.com")
 	    (user-full-name . "papercatlol")
-	    (mu4e-sent-folder . "/home/il/mail/Papercatlol/Sent Mail")
-	    (mu4e-drafts-folder . "/home/il/mail/Papercatlol/Drafts")
-	    (mu4e-trash-folder . "/home/il/mail/Papercatlol/Trash")
+	    (mu4e-sent-folder . "/Papercatlol/Sent Mail")
+	    (mu4e-drafts-folder . "/Papercatlol/Drafts")
+	    (mu4e-trash-folder . "/Papercatlol/Trash")
             (mu4e-inbox-dir . "/Papercatlol/INBOX")
 	    ;; (mu4e-compose-signature . "-Papercatlol")
 	    (mu4e-compose-format-flowed . t)
@@ -387,7 +392,7 @@ region if there is a region, then move to the previous message."
       (let ((inhibit-message t))
         (mu4e~headers-found-handler count)))))
 
-(setq mu4e-found-func #'mu4e~headers-found-silent-handler)
+(defvar mu4e-found-func #'mu4e~headers-found-silent-handler)
 
 ;;* custom header-line for `mu4e-headers'
 (defface mu4e-header-line-face

@@ -607,9 +607,9 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 (defun magit-jump-between-staged-unstaged ()
   (interactive)
   (let ((pt (point)))
-    (magit-jump-to-staged)
+    (magit-jump-to-staged t)
     (when (eq pt (point))
-      (magit-jump-to-unstaged))))
+      (magit-jump-to-unstaged t))))
 
 (define-key magit-status-mode-map (kbd "H-s") 'magit-jump-between-staged-unstaged)
 

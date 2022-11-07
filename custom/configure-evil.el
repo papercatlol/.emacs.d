@@ -113,11 +113,12 @@
 
 (defun C-w-dwim ()
   "Kill region if active, else delete a word backward.
-With universal arg or if cursor is after a closing paren kill sexp at point."
+With universal arg or if cursor is after a closing paren or
+double quote kill sexp at point."
   (interactive)
   (if (region-active-p)
       (evil-delete (point) (mark))
-    (or (and (or current-prefix-arg (looking-back ")"))
+    (or (and (or current-prefix-arg (looking-back (rx (or ?\" ?\)))))
              (when-let ((bounds (bounds-of-thing-at-point 'sexp)))
                (kill-region (car bounds) (cdr bounds))
                t))

@@ -174,7 +174,9 @@
  ;; org
  ;; '(org-default ((t (:inherit default :height 140))))
  '(org-default ((t (:inherit default))))
- '(org-level-3 ((t (:inherit org-default))))
+ '(org-level-1 ((t (:inherit outline-1))))
+ '(org-level-2 ((t (:inherit org-level-1 :weight normal))))
+ '(org-level-3 ((t (:inherit org-level-1 :weight light))))
  '(org-level-4 ((t (:inherit org-default))))
  '(org-date ((t (:inherit font-lock-string-face :weight normal))))
  '(org-tag ((t (:inherit mode-line-emphasis))))

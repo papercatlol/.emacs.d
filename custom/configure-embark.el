@@ -10,7 +10,7 @@
         embark-isearch-highlight-indicator))
 
 (global-set-key (kbd "H-a") 'embark-act)
-(global-set-key (kbd "H-SPC") 'embark-act)
+;;(global-set-key (kbd "H-SPC") 'embark-act)
 
 ;;* indentation for embark.el macros
 (put 'embark-define-keymap lisp-indent-function '(as defun))
