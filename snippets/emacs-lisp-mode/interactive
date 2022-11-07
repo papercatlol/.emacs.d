@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: interactive
+# key: i
+# --
+(interactive$1)$0
