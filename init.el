@@ -129,7 +129,8 @@
 (require 'configure-js)
 
 ;;** html
-(require 'configure-html)
+(with-eval-after-load 'sgml-mode
+  (require 'configure-html))
 
 ;;* ./local-elisp - private/work configuration
 (add-to-list 'load-path (expand-file-name "local-elisp" user-emacs-directory))
