@@ -790,6 +790,43 @@ Else narrow-to-defun."
 
 (yas-global-mode)
 
+;;** helpful new snippet template
+;; Inspired by: https://mjdiloreto.github.io/posts/yasnippet-helpful-buffer/
+(setq yas-new-snippet-default
+  (concat
+   (yas-escape-text "\
+# -*- mode: snippet -*-
+# http://joaotavora.github.io/yasnippet/snippet-development.html#org9801aa7
+
+## Embed Emacs-Lisp code by using back-quotes (\\`).
+## DON'T MODIFY THE BUFFER INSIDE BACKQUOTES!
+#
+## Placeholders - ${N:default}
+#
+## Transforming Mirrors
+# #define \"${1:mydefine$(upcase yas-text)}\"
+#
+## Transforming fields - ${N:name:$(elisp)} or ${N:$$(elisp)}
+# #define \"${1:$$(upcase yas-text)}\"
+#
+## Choose a value from a list of options
+# <div align=\"${2:$$(yas-choose-value '(\"right\" \"center\" \"left\"))}\">
+#
+## Useful things bound inside evaluated elisp
+# | variable         | description                                             |
+# |------------------+---------------------------------------------------------|
+# | yas-text         | the current text of this field                          |
+# | yas-field-value  | the current text of $1 (or $2, etc.)                    |
+# | yas-modified-p   | whether the field is modified                           |
+# | yas-choose-value | user chooses from a list of options                     |
+# | yas-verify-value | Verify that the current field value is in POSSIBILITIES |
+#
+")
+   "# name: $1
+# key: ${2:${1:$(yas--key-from-desc yas-text)}}
+# --
+$0`(yas-escape-text yas-selected-text)`"))
+
 ;;* hippie-expand
 (require 'hippie-exp)
 

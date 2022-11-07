@@ -29,6 +29,7 @@
 (evil-set-initial-state 'edebug-mode 'emacs)
 (evil-set-initial-state 'Info-mode 'emacs)
 (evil-set-initial-state 'ibuffer-mode 'normal)
+(evil-set-initial-state 'snippet-mode 'insert)
 
 
 ;;* `LISPYVILLE'
