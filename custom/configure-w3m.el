@@ -77,7 +77,8 @@ confirmation if this is there is only one tab open."
 
 ;;* evil
 (with-eval-after-load 'evil
-  (evil-collection-w3m-setup)
+  (when (require 'evil-collection nil t)
+    (evil-collection-w3m-setup))
   (evil-set-initial-state 'w3m-mode 'emacs))
 
 

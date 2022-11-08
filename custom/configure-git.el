@@ -272,15 +272,15 @@ and kill tmp buffers on call and reset the
         ("~/aur/" . 1)))
 
 ;;** magit-delta
-(require 'magit-delta)
+(when (and (require 'magit-delta nil t)
+           (executable-find magit-delta-delta-executable))
+  (setq magit-delta-delta-args
+        `("--max-line-distance" "0.6"
+                                "--24-bit-color" ,(if xterm-color--support-truecolor "always" "never")
+                                "--color-only"
+                                "--syntax-theme" "none"))
 
-(setq magit-delta-delta-args
-      `("--max-line-distance" "0.6"
-        "--24-bit-color" ,(if xterm-color--support-truecolor "always" "never")
-        "--color-only"
-        "--theme" "none"))
-
-(add-hook 'magit-mode-hook #'magit-delta-mode)
+  (add-hook 'magit-mode-hook #'magit-delta-mode))
 
 ;;** [DISABLED] magit-todos
 ;; (require 'magit-todos)

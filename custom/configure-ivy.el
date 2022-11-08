@@ -1024,7 +1024,7 @@ exit with that candidate, otherwise insert SPACE character as usual."
   (interactive "P")
   (call-interactively (if arg #'counsel-global-mark-ring #'pop-global-mark)))
 
-(global-set-key (kbd "<C-i>") 'pop-global-mark+)
+(global-set-key (kbd "C-M-o") 'pop-global-mark+)
 
 (defun pop-mark+ (&optional arg)
   "With universal arg call `counsel-mark-ring'."
