@@ -2006,3 +2006,62 @@ mosey was first called with prefix arg."
 (define-key Info-mode-map "l" 'forward-char)
 ;;(define-key Info-mode-map (kbd "C-w") 'Info-backward-node)
 (define-key Info-mode-map (kbd "C-w") 'Info-up)
+
+;;** registers
+;;*** dwim registers
+(defun register-dwim (register)
+  "Insert or jump to a register depending on its contents."
+  (interactive (list (register-read-with-preview "DWIM register: ")))
+  (if-let ((content (get-register register)))
+      (typecase content
+        ;; TODO rectangle selection is a cons - handle it somehow
+        ((or string number)
+         (insert-register register))
+        ((or marker cons)
+         (jump-to-register register))
+        (otherwise
+         (user-error "Don't know how to handle register %s of type %s. Content: %s."
+                     (single-key-description register)
+                     (type-of content) content)))
+    (user-error "Register %s is empty." (single-key-description register))))
+
+(defun save-to-register-dwim (register &optional arg)
+  "With no prefix arg and region active call `copy-to-register',
+otherwise forward to `point-to-register'."
+  (interactive (list (register-read-with-preview
+                      (format "Save %s to register: "
+                              (if (region-active-p) "region" "point")))
+                     current-prefix-arg))
+  (cond ((and (not arg) (region-active-p))
+         (copy-to-register register (region-beginning) (region-end))
+         (message "Region copied to register %s."
+                  (single-key-description register)))
+        (t
+         (point-to-register register arg)
+         (message "Point%s stored in register %s."
+                  (if arg " and frame configuration" "")
+                  (single-key-description register)))))
+
+(define-key global-map (kbd "H-`") 'save-to-register-dwim)
+
+;;*** quick registers
+(defvar quick-registers '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?0))
+
+(defmacro quick-registers-init ()
+  (let ((defs
+          (loop for r in quick-registers
+                for str = (string r)
+                for name = (make-symbol
+                            (concat "quick-register-" str))
+                collect `(defun ,name (&optional store)
+                           ,(format "Call `register-dwim' on a register %s.\
+ With universal arg call `save-to-register-dwim' instead." str)
+                           (interactive "P")
+                           (if store
+                               (save-to-register-dwim ,r)
+                             (register-dwim ,r)))
+                collect `(define-key global-map (kbd ,(concat "H-" str))
+                           ',name))))
+    `(progn ,@defs)))
+
+(quick-registers-init)
