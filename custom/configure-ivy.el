@@ -1132,6 +1132,13 @@ exit with that candidate, otherwise insert SPACE character as usual."
   (define-key ivy-minibuffer-map (kbd "C-=") 'ivy-minibuffer-grow)
   (define-key ivy-minibuffer-map (kbd "C--") 'ivy-minibuffer-shrink))
 
+;;** ivy-minibuffer-show-toplevel
+(defun ivy-minibuffer-show-toplevel ()
+  (interactive)
+  (with-ivy-window (show-toplevel)))
+
+(define-key ivy-minibuffer-map (kbd "C-c w") 'ivy-minibuffer-show-toplevel)
+
 
 
 (provide 'configure-ivy)
