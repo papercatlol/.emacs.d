@@ -97,7 +97,8 @@
 (require 'configure-ace-window)
 (require 'configure-evil)
 (require 'configure-org)
-(require 'configure-email)
+(with-eval-after-load 'mu4e
+  (require 'configure-email))
 (require 'configure-git)
 (require 'configure-highlight)
 (require 'configure-isearch)
@@ -176,6 +177,9 @@
       inhibit-startup-message t
       wgrep-auto-save-buffer t
       uniquify-buffer-name-style 'forward
+      ;; prefer horizontally split windows (see `split-window-sensibly')
+      split-width-threshold 80
+      split-height-threshold nil
       ;; ace-window
       aw-scope 'frame
       aw-background (display-graphic-p)
@@ -425,11 +429,12 @@
   (setf
    (alist-get (rx (or (and (? "e") "shell") "vterm" "EQUAKE[") (* any))
               display-buffer-alist nil nil #'equal)
-   '((display-buffer-reuse-window display-buffer-in-side-window)
-     (window-height . 0.2)
-     (side . bottom)
-     (slot . 0)
-     (window-parameters . ((no-other-window . t)))))
+   '((display-buffer-reuse-window display-buffer-pop-up-window)
+     (direction . right)
+     ;;(window-height . 0.2)
+     ;;(side . bottom)
+     ;;(slot . 0)
+     (window-parameters . ((no-other-window . nil)))))
   ;; right side window
   (setf
    (alist-get (rx "*" (or "Faces" "Colors") (* any))
@@ -1999,4 +2004,5 @@ mosey was first called with prefix arg."
 (define-key Info-mode-map "k" 'previous-line)
 (define-key Info-mode-map "h" 'backward-char)
 (define-key Info-mode-map "l" 'forward-char)
-(define-key Info-mode-map (kbd "C-w") 'Info-backward-node)
+;;(define-key Info-mode-map (kbd "C-w") 'Info-backward-node)
+(define-key Info-mode-map (kbd "C-w") 'Info-up)

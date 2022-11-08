@@ -17,7 +17,7 @@
          (monitor (equake--get-monitor))
          (tabs (alist-get monitor equake--tab-list)))
     (if (< (length tabs) 2)
-        (delete-window)
+        (quit-window)
       (equake-prev-tab))
     (kill-buffer buff)))
 
@@ -39,7 +39,7 @@
 (defun equake-pop (&optional new-tab)
   "Pop to equake buffer. With prefix arg open a new equake tab."
   (interactive "P")
-  (if new-tab
+  (if (or new-tab (null (equake-find-buffer)))
       (equake-new-tab)
     (if-let ((buf (or (equake-find-visible-buffer)
                       (equake-find-buffer))))
@@ -51,7 +51,7 @@
                                    dir)))))
         (pop-to-buffer tab)))))
 
-(define-key equake-mode-map (kbd "<f12>") 'delete-window)
+(define-key equake-mode-map (kbd "<f12>") 'quit-window)
 (global-set-key (kbd "<f12>") 'equake-pop)
 
 ;;* equake-new-tab-dwim
