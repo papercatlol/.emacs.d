@@ -613,4 +613,57 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 
 (define-key magit-status-mode-map (kbd "H-s") 'magit-jump-between-staged-unstaged)
 
+;;* jumping to magit-status sections hydra
+(defhydra hydra-magit-jump-to (:color pink)
+  "Jump to"
+  ("q" nil)
+  ("f" #'magit-next-line)
+  ("b" #'magit-section-up)
+  ("j" #'magit-section-forward-sibling "next")
+  ("k" #'magit-section-backward-sibling "prev")
+  ("u" #'magit-jump-to-unstaged "unstaged")
+  ("s" #'magit-jump-to-staged "staged")
+  ("z" #'magit-jump-to-stashes "stashes")
+  ("U" #'magit-jump-to-untracked "untracked")
+  ("P" #'magit-jump-to-unpushed-to-upstream "unpushed")
+  ("F" #'magit-jump-to-unpulled-from-upstream "unpulled")
+  )
+;; Hydra overrides 0-9 as digit arguments, but 0-4 are special in magit.
+(define-key hydra-magit-jump-to/keymap "0" nil)
+(define-key hydra-magit-jump-to/keymap "1" nil)
+(define-key hydra-magit-jump-to/keymap "2" nil)
+(define-key hydra-magit-jump-to/keymap "3" nil)
+(define-key hydra-magit-jump-to/keymap "4" nil)
+
+(define-key magit-status-mode-map (kbd ";") 'hydra-magit-jump-to/body)
+
+;;* magit-status margin
+(magit-margin-set-variable
+ 'magit-log-mode 'magit-log-margin
+ '(t age-abbreviated magit-log-margin-width t 6))
+
+(magit-margin-set-variable
+ 'magit-status-mode 'magit-status-margin
+ '(;; show initially
+   t
+   ;; date style: age, age-abbreviated or time fmt string
+   age-abbreviated
+   ;; function to calculate margin width
+   magit-log-margin-width
+   ;; show author?
+   t
+   ;; author name width
+   6))
+
+;;(defun magit-refs--format-margin-email (commit)
+;;  "Show email instead of author name."
+;;  (save-excursion
+;;    (goto-char (line-beginning-position 0))
+;;    (let ((line (magit-rev-format "%ct%cE" commit)))
+;;      (magit-log-format-margin commit
+;;                               (substring line 10)
+;;                               (substring line 0 10)))))
+;;(advice-add 'magit-refs--format-margin :override #'magit-refs--format-margin-email)
+
+
 (provide 'configure-git)

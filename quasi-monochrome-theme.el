@@ -83,7 +83,8 @@
  ;; mode-line
  '(mode-line ((t (:background "black" :foreground "#c5c9c0" :bold nil
                   :box (:line-width 1 :color "gray70")))))
- '(mode-line-inactive ((t (:background "gray15" :foreground "#41544B"))))
+ '(mode-line-inactive ((t (:background "gray10" :foreground "#41544B"
+			   :overline "gray70"))))
  '(mode-line-buffer-id ((t (:background nil :foreground "white"))))
  '(mode-line-highlight ((t (:foreground "aquamarine3" :box t))))
  '(mode-line-emphasis ((t (:foreground "aquamarine3"))))
@@ -167,6 +168,7 @@
  '(magit-tag ((t (:foreground "salmon"))))
  '(magit-branch-local ((t (:foreground "LightSkyBlue2"))))
  '(magit-branch-remote ((t (:foreground "DarkSeaGreen3"))))
+ '(magit-log-author ((t (:foreground "tomato" :slant normal :width normal :height 140))))
  ;; '(magit-diff-removed-highlight ((t (:background "#663333"
  ;;                                     :foreground "#eecccc"
  ;;                                     :extend t))))
