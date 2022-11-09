@@ -1607,16 +1607,29 @@ else insert the face name as well."
                     (avy-read-char "Char 2: ")))
          (avy-all-windows (if all-frames 'all-frames t))
          ;; HACK prevent avy from flipping `avy-all-windows'
-         (current-prefix-arg nil))
+         (current-prefix-arg nil)
+         ;; HACK prevent avy-with from overriding `avy-action'
+         (avy-default-action avy-action))
     (avy-with avy-goto-char-2-special
-      (avy-jump
-       (regexp-quote (concatenate 'string input-1 input-2))))))
+      ;; TODO Make avy-jump filter out some obvious candidates
+      ;; (current/prev/next line, beginning/end of defun/list, etc).
+      (let ((avy-action (or avy-default-action avy-action)))
+        (avy-jump
+         (regexp-quote (concatenate 'string input-1 input-2)))))))
 
 (setf (alist-get 'avy-goto-char-2 avy-styles-alist) 'at)
 (setf (alist-get 'avy-goto-char-2-special avy-styles-alist) 'at)
 
 (global-set-key (kbd "C-r") 'avy-goto-char-2-special)
 (define-key minibuffer-local-map (kbd "C-r") 'avy-goto-char-2-special)
+
+;;** avy-yank-char-2-special
+(defun avy-yank-char-2-special ()
+  "Like `avy-goto-char-2-special', but bind `avy-action' to `avy-action-yank'."
+  (interactive)
+  (let ((avy-action #'avy-action-yank))
+    (call-interactively #'avy-goto-char-2-special)))
+(global-set-key (kbd "C-R") 'avy-yank-char-2-special)
 
 ;;** avy-goto-symbol-definition-2
 (defun avy-goto-symbol-definition-2 ()

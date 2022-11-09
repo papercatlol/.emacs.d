@@ -18,9 +18,11 @@
 
 ;;* avy
 (defun avy-action-embark (pt)
-  (save-excursion
-   (goto-char pt)
-   (embark-act)))
+  (unwind-protect
+       (save-excursion
+        (goto-char pt)
+        (embark-act))
+    (select-window (cdr (ring-ref avy-ring 0)))))
 
 (setf (alist-get ?  avy-dispatch-alist) #'avy-action-embark)
 

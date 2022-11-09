@@ -135,7 +135,7 @@
  '(swiper-match-face-3 ((t (:inherit swiper-match-face-1))))
  '(swiper-match-face-4 ((t (:inherit swiper-match-face-1))))
  ;; avy
- '(avy-lead-face ((t (:foreground "LimeGreen" :weight normal :box 1))))
+ '(avy-lead-face ((t (:foreground "black" :background "LimeGreen" :weight normal))))
  '(avy-lead-face-0 ((t (:inherit avy-lead-face))))
  '(avy-lead-face-1 ((t (:inherit avy-lead-face))))
  '(avy-lead-face-2 ((t (:inherit avy-lead-face))))
