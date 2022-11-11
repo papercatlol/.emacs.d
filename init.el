@@ -5,6 +5,7 @@
       '((menu-bar-lines 0)
         (tool-bar-lines 0)
         (vertical-scroll-bars)))
+(setq initial-frame-alist default-frame-alist)
 
 ;; packages
 (require 'package)
@@ -97,7 +98,7 @@
 (require 'configure-ace-window)
 (require 'configure-evil)
 (require 'configure-org)
-(with-eval-after-load 'mu4e
+(when (require 'mu4e nil t)
   (require 'configure-email))
 (require 'configure-git)
 (require 'configure-highlight)
@@ -1629,7 +1630,7 @@ else insert the face name as well."
   (interactive)
   (let ((avy-action #'avy-action-yank))
     (call-interactively #'avy-goto-char-2-special)))
-(global-set-key (kbd "C-R") 'avy-yank-char-2-special)
+(global-set-key (kbd "C-S-R") 'avy-yank-char-2-special)
 
 ;;** avy-goto-symbol-definition-2
 (defun avy-goto-symbol-definition-2 ()
