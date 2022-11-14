@@ -709,6 +709,15 @@ Else narrow-to-defun."
 
 (global-set-key (kbd "C-x C-n") 'narrow-dwim)
 
+;;** narrow-indirect
+(defun narrow-indirect-dwim ()
+  (interactive)
+  (call-interactively
+   (if (region-active-p)
+       #'ni-narrow-to-region-indirect-other-window
+     #'ni-narrow-to-defun-indirect-other-window)))
+(define-key ctl-x-4-map (kbd "C-x C-n") 'narrow-indirect-dwim)
+
 ;;** message-truncated
 (defun string-truncate-height (str height)
   "Truncate string to be under HEIGHT lines."
