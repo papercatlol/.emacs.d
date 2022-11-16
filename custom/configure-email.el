@@ -36,6 +36,7 @@
   (define-key mu4e-headers-mode-map "N" nil)
   (define-key mu4e-headers-mode-map "X" 'mu4e-kill-update-mail)
   (define-key mu4e-headers-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
+  (define-key mu4e-headers-mode-map (kbd "/") 'mu4e-headers-search-narrow)
 
   (evil-define-key '(normal) mu4e-view-mode-map
     "[" 'mu4e-view-headers-prev-unread
@@ -46,7 +47,8 @@
     "]" 'mu4e-headers-next-unread
     "q" 'mu4e-headers-query-prev
     "s" 'mu4e-headers-search
-    "S" 'mu4e-headers-search-edit))
+    "S" 'mu4e-headers-search-edit
+    "/" 'mu4e-headers-search-narrow))
 
 ;;* general
 ;; A lot of these are taken from
