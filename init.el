@@ -426,7 +426,7 @@
      (window-height . 0.16)
      (side . bottom)
      (slot . 1)
-     (window-parameters . ((no-other-window . t)))))
+     (window-parameters . ((no-other-window . nil)))))
   (setf
    (alist-get (rx (or (and (? "e") "shell") "vterm" "EQUAKE[") (* any))
               display-buffer-alist nil nil #'equal)
@@ -444,7 +444,7 @@
      (window-width . 0.3)
      (side . right)
      (slot . 0)
-     (window-parameters . ((no-other-window . t)))))
+     (window-parameters . ((no-other-window . nil)))))
   ;; left side window
   (setf
    (alist-get (rx (or "*help" "*info" "*apropos" "*man" "*woman") (* any))
@@ -453,14 +453,14 @@
      (window-width . 0.2)
      (side . left)
      (slot . 0)
-     (window-parameters . ((no-other-window . t)))))
+     (window-parameters . ((no-other-window . nil)))))
   (setf
    (alist-get "\\*Custom.*" display-buffer-alist nil nil #'equal)
    '((display-buffer-in-side-window)
      (window-width . 0.3)
      (side . left)
      (slot . 1)
-     (window-parameters . ((no-other-window . t)))))
+     (window-parameters . ((no-other-window . nil)))))
   (setf
    (alist-get (rx "*compilation" (* any)) display-buffer-alist nil nil #'equal)
    '((display-buffer-reuse-window)
