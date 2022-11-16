@@ -191,9 +191,11 @@
       avy-all-windows t
       avy-style 'pre ;; 'de-bruijn
       avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v ?q ?w ?z ?x ?r
-                     ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\;
+                     ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\; ?-
+                     ?1 ?2 ?3 ?4 ?5
                      ?F ?C ?D ?G ?S ?A ?E ?V ?Q ?W ?Z ?X ?R
-                     ?J ?N ?K ?H ?L ?O ?I ?U ?P)
+                     ?J ?N ?K ?H ?L ?O ?I ?U ?P
+                     ?6 ?7 ?8 ?9 ?0)
       ;;
       comment-padding ""
       view-read-only nil
@@ -1688,7 +1690,50 @@ the cursor to the new position as well."
     (insert text)))
 
 (setf (alist-get ?m avy-dispatch-alist) #'avy-action-donate)
-(setf (alist-get (aref (kbd "C-y") 0) avy-dispatch-alist) #'avy-action-donate)
+
+;;** avy-goto-symbol-in-defun
+(defun avy-goto-symbol-in-defun (&optional full-window)
+  "Jump to a visible symbol in current defun (with prefix arg - current window)."
+  (interactive "P")
+  (let* ((avy-all-windows nil)
+         (bounds (unless full-window (bounds-of-thing-at-point 'defun)))
+         (beg (if bounds (max (window-start) (car bounds)) (window-start)))
+         (end (if bounds (min (window-end) (cdr bounds)) (window-end)))
+         ;; Don't jump to symbol at point.
+         (redundant (append (list (point)
+                                  (1- (point))
+                                  (1+ (point))
+                                  (+ (point) 2)
+                                  (- (point) 2))
+                            (when-let ((b (bounds-of-thing-at-point 'symbol)))
+                              (list (car b) (cdr b))))))
+    (avy-with avy-goto-symbol-in-defun
+      (avy-jump (rx symbol-start any)
+                :beg beg
+                :end end
+                :pred (lambda () (not (member (point) redundant)))))))
+
+(global-set-key (kbd "C-t") 'avy-goto-symbol-in-defun)
+(setf (alist-get 'avy-goto-symbol-in-defun avy-styles-alist) 'pre)
+(setf (alist-get 'avy-goto-symbol-in-defun avy-keys-alist)
+      (append avy-keys))
+
+;;** avy-action-yank-multiple
+;; Somewhat related - repeat action for `avy-goto-char-timer':
+;; https://ag91.github.io/blog/2022/04/20/repeat-with-me-avy-actions-are-awesome/
+(defun avy-action-yank-multiple (pt)
+  "Repeatedly yank sexp."
+  (let ((avy-action #'avy-action-yank-multiple))
+    (avy-action-copy pt)
+    (when-let ((bnd (bounds-of-thing-at-point 'symbol)))
+      (goto-char (cdr bnd)))
+    (when (or (looking-at-p (rx (or symbol-start "[" "(" "{")))
+              (looking-back (rx (or symbol-end "]" ")" "}"))))
+      (insert " "))
+    (yank)
+    (avy-resume)))
+
+(setf (alist-get (aref (kbd "C-y") 0) avy-dispatch-alist) #'avy-action-yank-multiple)
 
 ;;** TODO avy + edebug (avy-action-toggle-breakpoint or smth)
 

@@ -422,16 +422,10 @@ double quote kill sexp at point."
     (evil-change-state lispyville-preferred-state))
 
   (evil-define-key '(normal insert) lispyville-mode-map
-    ;; (kbd "C-t") 'lispy-ace-paren
-    (kbd "C-t") 'evil-avy-goto-symbol-2
-    ;; (kbd "M-t") 'lispy-ace-paren
     (kbd "M-o") 'lispyville-open-round-below-list
     (kbd "M-i") 'lispyville-insert-at-beginning-of-list
     (kbd "M-a") 'lispyville-insert-at-end-of-list*
     (kbd "M-m") 'lispyville-newline-and-parentheses)
-
-  (evil-define-key '(insert) slime-repl-mode-map
-    (kbd "C-t") 'evil-avy-goto-symbol-2)
 
   (evil-define-key 'motion lispyville-mode-map
     "[" #'lispyville-previous-opening
