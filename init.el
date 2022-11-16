@@ -1921,7 +1921,7 @@ mosey was first called with prefix arg."
 (global-unset-key (kbd "C-x m"))
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-:") 'mc/mark-all-like-this-dwim)
+(global-set-key (kbd "C-:") 'mc/mark-all-dwim)
 (global-set-key (kbd "C-x m l") 'mc/edit-lines)
 (global-set-key (kbd "C-x m b") 'mc/edit-beginnings-of-lines)
 (global-set-key (kbd "C-x m e") 'mc/edit-beginnings-of-lines)
@@ -2088,3 +2088,34 @@ otherwise forward to `point-to-register'."
     `(progn ,@defs)))
 
 (quick-registers-init)
+
+;;** mouse events
+;;*** increase/decrease-number-at-mouse (similar to acme)
+(defmacro with-event-point (event &rest body)
+  "Execute BODY with window and point temporarily set to that of
+EVENT."
+  (let ((event-pos (gensym "event-pos")))
+   `(when-let ((,event-pos (event-start ,event)))
+      (with-selected-window (posn-window ,event-pos)
+        (save-excursion
+         (goto-char (posn-point ,event-pos))
+         ,@body)))))
+
+(defun increase-number-at-mouse (e)
+  (interactive "e")
+  (with-event-point e
+    (org-increase-number-at-point)))
+
+(defun decrease-number-at-mouse (e)
+  (interactive "e")
+  (with-event-point e
+    (org-decrease-number-at-point)))
+
+(global-unset-key (kbd "C-<down-mouse-1>"))
+(global-unset-key (kbd "C-<down-mouse-3>"))
+(global-set-key (kbd "C-<mouse-1>") 'increase-number-at-mouse)
+(global-set-key (kbd "C-<mouse-3>") 'decrease-number-at-mouse)
+
+;;*** toggle multiple cursors on click
+(global-unset-key (kbd "C-<down-mouse-2>"))
+(global-set-key (kbd "C-<mouse-2>") 'mc/toggle-cursor-on-click)
