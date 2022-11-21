@@ -179,6 +179,7 @@
       wgrep-auto-save-buffer t
       uniquify-buffer-name-style 'forward
       ;; prefer horizontally split windows (see `split-window-sensibly')
+      window-min-width 60
       split-width-threshold 80
       split-height-threshold nil
       ;; ace-window
@@ -1107,8 +1108,16 @@ current entry."
 ;;* link-hint
 (defvar link-hint-avy-all-windows t)
 (defvar link-hint-avy-all-windows-alt 'all-frames)
-(global-set-key (kbd "C-c C-SPC") 'link-hint-open-link)
-(global-set-key (kbd "C-c o") 'link-hint-open-link)
+
+(defun link-hint-open-link-wrapper ()
+  "Bind some avy variables, then forward to `link-hint-open-link'."
+  ;; TODO custom dispatch alist (e.g. with copy-link)
+  (interactive)
+  (let ((avy-single-candidate-jump nil))
+    (call-interactively #'link-hint-open-link)))
+
+(global-set-key (kbd "C-c C-SPC") 'link-hint-open-link-wrapper)
+;;(global-set-key (kbd "C-c o") 'link-hint-open-link)
 
 ;;** bug-reference-mode
 (with-eval-after-load 'link-hint
@@ -1734,6 +1743,8 @@ the cursor to the new position as well."
     (avy-resume)))
 
 (setf (alist-get (aref (kbd "C-y") 0) avy-dispatch-alist) #'avy-action-yank-multiple)
+;; Default binding is ?n, which I'd rather add to avy-keys.
+(setf (alist-get (aref (kbd "M-w") 0) avy-dispatch-alist) #'avy-action-copy)
 
 ;;** TODO avy + edebug (avy-action-toggle-breakpoint or smth)
 
@@ -1939,7 +1950,7 @@ mosey was first called with prefix arg."
 (global-set-key (kbd "<f13>") 'avy-goto-char-timer)
 (global-set-key (kbd "M-<tab>") 'other-window)
 (global-set-key (kbd "<f15>") 'other-window)
-(global-set-key (kbd "C-t") 'avy-goto-word-2)
+;;(global-set-key (kbd "C-t") 'avy-goto-word-2)
 ;; (global-set-key (kbd "M-t") 'avy-goto-symbol-1)
 
 ;;** hydra-M-g
