@@ -398,9 +398,13 @@ region if there is a region, then move to the previous message."
 
 ;;* custom header-line for `mu4e-headers'
 (defface mu4e-header-line-face
-    ;; TODO inherit background from `header-line' face.
-    '((t (:inherit default :background "gray15")))
+    '((t (:inherit header-line)))
   "Face for mu4e header-line."
+  :group 'mu4e-faces)
+
+(defface mu4e-header-line-updating-face
+    '((t (:inherit mu4e-header-line-face :foreground "green")))
+  "Face for mu4e header-line updating indicator."
   :group 'mu4e-faces)
 
 (defun mu4e~better-header-line ()
@@ -412,13 +416,19 @@ region if there is a region, then move to the previous message."
            ;; HACK divide by 2 because mu4e doubles the results for some reason
            (today-count (/ (plist-get today :count) 2))
            (today-unread (/ (plist-get today :unread) 2))
-           (unread-count (mu4e~headers-count-unread)))
-      (propertize (format "Today: %s/%s   Hits: %s   Unread: %s   Query: %s"
-                          (- today-count today-unread) today-count
-                          mu4e~headers-last-count
-                          unread-count
-                          mu4e~headers-last-query)
-                  'face 'mu4e-header-line-face))))
+           (unread-count (mu4e~headers-count-unread))
+           (update-running-p
+             (and (buffer-live-p mu4e~update-buffer)
+                  (process-live-p (get-buffer-process mu4e~update-buffer)))))
+      (concat
+       (propertize (format "Today: %s/%s   Hits: %s   Unread: %s   Query: %s"
+                           (- today-count today-unread) today-count
+                           mu4e~headers-last-count
+                           unread-count
+                           mu4e~headers-last-query)
+                   'face 'mu4e-header-line-face)
+       (when update-running-p
+         (propertize " Updating..." 'face 'mu4e-header-line-updating-face))))))
 
 (defun mu4e~headers-count-unread ()
   "Return the number of unread messages in the current header view."
