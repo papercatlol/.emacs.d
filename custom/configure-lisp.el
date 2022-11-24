@@ -337,11 +337,19 @@ With negative prefix arg call original `slime-edit-definition'."
       (call-interactively #'slime-edit-definition-other-frame)
     (slime--edit-definition-ivy nil 'frame)))
 
-(defun slime-kill-package-name ()
-  (interactive)
-  (let ((package (slime-pretty-package-name (slime-current-package))))
-    (message package)
-    (kill-new package)))
+(defun slime-kill-package-name (&optional symbol-at-point)
+  "Kill current package name. With prefix arg or if region is
+active, kill fully qualified symbol-at-point/region."
+  (interactive "P")
+  (let* ((symbol (cond (symbol-at-point (slime-symbol-at-point))
+                       ((region-active-p)
+                        (buffer-substring-no-properties
+                         (region-beginning) (region-end)))))
+         (kill (if symbol
+                   (slime-qualify-cl-symbol-name symbol)
+                 (slime-pretty-package-name (slime-current-package)))))
+    (message kill)
+    (kill-new kill)))
 
 (defun slime-repl-set-package--push-package (&rest args)
   ;; TODO: check if this works properly for multiple swank connections
