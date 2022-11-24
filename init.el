@@ -165,6 +165,7 @@
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
       kill-do-not-save-duplicates t
+      kill-ring-max 256
       sentence-end-double-space nil
       apropos-do-all t
       dired-dwim-target t
@@ -217,7 +218,7 @@
       bookmark-set-fringe-mark nil
       ;; mark ring sizes
       mark-ring-max 32
-      global-mark-ring-max 512
+      global-mark-ring-max 256
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
@@ -903,10 +904,12 @@ $0`(yas-escape-text yas-selected-text)`"))
   (when-let* ((expansions (hippie-expand--all))
               ;; MAYBE: use completion-in-region; see `dabbrev-completion' for reference
               (expansion
-               (if (fboundp 'ivy-read)
-                   (ivy-read "Hippie expand: " (mapcar #'car expansions)
-                             :caller 'hippie-expand-completion)
-                 (completing-read "Hippie expand: " (mapcar #'car expansions))))
+               (if (null (cdr expansions))
+                   (caar expansions)
+                 (if (fboundp 'ivy-read)
+                     (ivy-read "Hippie expand: " (mapcar #'car expansions)
+                               :caller 'hippie-expand-completion)
+                   (completing-read "Hippie expand: " (mapcar #'car expansions)))))
               (len (alist-get expansion expansions nil nil #'string=)))
     (he-init-string (- (point) len) (point))
     (he-substitute-string expansion t)))
@@ -2089,7 +2092,7 @@ mosey was first called with prefix arg."
 ;;** registers
 ;;*** dwim registers
 (defun register-dwim (register)
-  "Insert or jump to a register depending on its contents."
+  "Insert, jump or store to a register depending on its contents."
   (interactive (list (register-read-with-preview "DWIM register: ")))
   (if-let ((content (get-register register)))
       (typecase content
@@ -2102,7 +2105,8 @@ mosey was first called with prefix arg."
          (user-error "Don't know how to handle register %s of type %s. Content: %s."
                      (single-key-description register)
                      (type-of content) content)))
-    (user-error "Register %s is empty." (single-key-description register))))
+    ;;(user-error "Register %s is empty." (single-key-description register))
+    (save-to-register-dwim register)))
 
 (defun save-to-register-dwim (register &optional arg)
   "With no prefix arg and region active call `copy-to-register',

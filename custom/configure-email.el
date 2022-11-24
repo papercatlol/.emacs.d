@@ -50,6 +50,9 @@
     "S" 'mu4e-headers-search-edit
     "/" 'mu4e-headers-search-narrow))
 
+(define-key mu4e-headers-mode-map (kbd "<f5>") 'mu4e-headers-rerun-search)
+(define-key mu4e-view-mode-map (kbd "<f5>") 'mu4e-headers-rerun-search)
+
 ;;* general
 ;; A lot of these are taken from
 ;; https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/
