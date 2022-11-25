@@ -1279,6 +1279,9 @@ current entry."
 (define-key dired-mode-map (kbd "M-n") 'dired-display-file-and-next-line)
 (define-key dired-mode-map (kbd "M-p") 'dired-display-file-and-prev-line)
 
+;;* dired-virtual-mode
+(add-to-list 'auto-mode-alist '("[^/]\\.dired$" . dired-virtual-mode))
+
 ;;* xdg-open-file
 ;; https://www.reddit.com/r/emacs/comments/cgbpvl/opening_media_files_straight_from_gnu_emacs_dired/
 (defun xdg-open-file (file)
