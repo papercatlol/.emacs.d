@@ -398,6 +398,7 @@ region if there is a region, then move to the previous message."
         (mu4e~headers-found-handler count)))))
 
 (defvar mu4e-found-func #'mu4e~headers-found-silent-handler)
+(defvar mu4e-alert--found-func-save #'mu4e~headers-found-silent-handler)
 
 ;;* custom header-line for `mu4e-headers'
 (defface mu4e-header-line-face
@@ -412,7 +413,7 @@ region if there is a region, then move to the previous message."
 
 (defun mu4e~better-header-line ()
   (cl-labels ((%find (query)
-                (cl-find query (plist-get mu4e~server-props :queries)
+                (cl-find query (plist-get (mu4e-server-properties) :queries)
                          :key (lambda (q) (plist-get q :query))
                          :test #'string=)))
     (let* ((today (%find "date:today..now"))
@@ -421,14 +422,14 @@ region if there is a region, then move to the previous message."
            (today-unread (/ (plist-get today :unread) 2))
            (unread-count (mu4e~headers-count-unread))
            (update-running-p
-             (and (buffer-live-p mu4e~update-buffer)
-                  (process-live-p (get-buffer-process mu4e~update-buffer)))))
+             (and (buffer-live-p mu4e--update-buffer)
+                  (process-live-p (get-buffer-process mu4e--update-buffer)))))
       (concat
        (propertize (format "Today: %s/%s   Hits: %s   Unread: %s   Query: %s"
                            (- today-count today-unread) today-count
                            mu4e~headers-last-count
                            unread-count
-                           mu4e~headers-last-query)
+                           mu4e--search-last-query)
                    'face 'mu4e-header-line-face)
        (when update-running-p
          (propertize " Updating..." 'face 'mu4e-header-line-updating-face))))))
@@ -448,7 +449,7 @@ region if there is a region, then move to the previous message."
 
 (advice-add 'mu4e~header-line-format :override #'mu4e~better-header-line-format)
 ;; Refresh server props?
-(add-hook 'mu4e-index-updated-hook #'mu4e~start)
+(add-hook 'mu4e-index-updated-hook #'mu4e--start)
 
 ;;* mark-for-read dwim
 (defun mu4e-headers-mark-for-read-dwim (mark-all)
