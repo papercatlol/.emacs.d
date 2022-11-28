@@ -265,6 +265,12 @@
  ;; denote
  '(denote-dired-field-date ((t (:foreground "#354b0f"))))
  '(denote-dired-field-keywords ((t (:inherit bold :foreground "light slate gray"))))
+ ;; gnus
+ '(gnus-header-from ((t (:inherit magit-log-author))))
+ '(gnus-header-subject ((t (:foreground "white"))))
+ '(gnus-header-newsgroups ((t (:foreground "yellow" :slant italic))))
+ '(gnus-header-name ((t (:foreground "grey45"))))
+ '(gnus-header-content ((t (:foreground "light gray" :slant italic))))
  )
 
 (provide-theme 'quasi-monochrome)
