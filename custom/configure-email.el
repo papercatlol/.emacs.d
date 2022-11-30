@@ -36,7 +36,7 @@
   (define-key mu4e-headers-mode-map "N" nil)
   (define-key mu4e-headers-mode-map "X" 'mu4e-kill-update-mail)
   (define-key mu4e-headers-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
-  (define-key mu4e-headers-mode-map (kbd "/") 'mu4e-headers-search-narrow)
+  (define-key mu4e-headers-mode-map (kbd "/") 'mu4e-search-narrow)
 
   (evil-define-key '(normal) mu4e-view-mode-map
     "[" 'mu4e-view-headers-prev-unread
@@ -48,7 +48,7 @@
     "q" 'mu4e-headers-query-prev
     "s" 'mu4e-headers-search
     "S" 'mu4e-headers-search-edit
-    "/" 'mu4e-headers-search-narrow))
+    "/" 'mu4e-search-narrow))
 
 (define-key mu4e-headers-mode-map (kbd "<f5>") 'mu4e-headers-rerun-search)
 (define-key mu4e-view-mode-map (kbd "<f5>") 'mu4e-headers-rerun-search)
@@ -336,8 +336,8 @@ all maildirs under `mu4e-maildir'."
 (define-key mu4e-headers-mode-map (kbd "{") 'mu4e-headers-first-unread)
 
 ;;* search-narrow: set initial filter to `bug-reference' keyword at point
-(defun mu4e-headers-search-narrow+bug-reference (filter)
-  "Like `mu4e-headers-search-narrow', but set initial filter to
+(defun mu4e-search-narrow+bug-reference (filter)
+  "Like `mu4e-search-narrow', but set initial filter to
 `bug-reference' match in current message's subject."
   (interactive
    (list (read-string (mu4e-format "Narrow down to: ")
@@ -349,12 +349,12 @@ all maildirs under `mu4e-maildir'."
                                                 (match-string-no-properties 0 subject))))
                         (format "subject:%s" keyword))
                       'mu4e~headers-search-hist nil t)))
-  (unless mu4e~headers-last-query
+  (unless mu4e--search-last-query
     (mu4e-warn "There's nothing to filter"))
   (mu4e-headers-search
-   (format "(%s) AND (%s)" mu4e~headers-last-query filter)))
+   (format "(%s) AND (%s)" mu4e--search-last-query filter)))
 
-(advice-add 'mu4e-headers-search-narrow :override #'mu4e-headers-search-narrow+bug-reference)
+(advice-add 'mu4e-search-narrow :override #'mu4e-search-narrow+bug-reference)
 
 ;;* mu4e-headers-mark-for-read-backward
 
