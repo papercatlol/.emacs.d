@@ -1752,6 +1752,14 @@ the cursor to the new position as well."
 ;; Default binding is ?n, which I'd rather add to avy-keys.
 (setf (alist-get (aref (kbd "M-w") 0) avy-dispatch-alist) #'avy-action-copy)
 
+;;** invisible overlays fix
+;; TODO merge into avy.el
+(defun avy--visible-p (s)
+  (let ((invisible (member t (get-char-property-and-overlay s 'invisible))))
+    (or (null invisible)
+        (and (listp buffer-invisibility-spec)
+             (null (assoc invisible buffer-invisibility-spec))))))
+
 ;;** TODO avy + edebug (avy-action-toggle-breakpoint or smth)
 
 ;;* embark (trying it out)
