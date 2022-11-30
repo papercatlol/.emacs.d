@@ -115,7 +115,8 @@ already narrowed, widen."
   (interactive)
   (setq magit-buffer-diff-files
         (unless magit-buffer-diff-files
-          (list (or (buffer-file-name) (magit-file-at-point)))))
+          (or (magit-region-values nil t)
+              (list (or (buffer-file-name) (magit-file-at-point))))))
   (magit-refresh)
   (message (if-let (file (car magit-buffer-diff-files))
                (format "Narrow to %s" file)
