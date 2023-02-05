@@ -287,33 +287,35 @@ If there was an active region, insert it into repl."
   (or (run-hook-with-args-until-success 'slime-edit-definition-hooks symbol-name where)
       (let ((xrefs (slime-find-definitions symbol-name)))
         (cl-destructuring-bind (same-loc file-alist) (slime-analyze-xrefs xrefs)
-                               (cond ((null xrefs)
-                                      (error "No known definition for: %s (in %s)" symbol-name (slime-current-package)))
-                                     (same-loc
-                                      (slime-push-definition-stack)
-                                      (slime-pop-to-location (slime-xref.location (car xrefs)) where))
-                                     ;; ((:error "..."))
-                                     ((slime-length= xrefs 1)
-                                      (error "%s" (cl-second (slime-xref.location (car xrefs)))))
-                                     (t
-                                      (let* ((items (mapcar (lambda (xref)
-                                                              (let* ((spec (downcase
-                                                                            (replace-regexp-in-string "[\n ]+" " " (slime-xref.dspec xref))))
-                                                                     (location (slime-xref.location xref))
-                                                                     (file (cl-second (assoc :file (cdr location))))
-                                                                     (line (line-number-at-pos (cl-second (assoc :position (cdr location))))))
-                                                                (and spec file line location (list spec file line location))))
-                                                            xrefs))
-                                             (sorted-items (sort (remove nil items)
-                                                                 (lambda (i1 i2)
-                                                                   (if (string= (cl-second i1) (cl-second i2))
-                                                                       (< (cl-third i1) (cl-third i2))
-                                                                       (string< (cl-second i1) (cl-second i2)))))))
-                                        (ivy-read "Edit definition of: "
-                                                  sorted-items
-                                                  :action (lambda (item)
-                                                            (slime-push-definition-stack)
-                                                            (slime-pop-to-location (cl-fourth item) where))))))))))
+          (cond ((null xrefs)
+                 (error "No known definition for: %s (in %s)" symbol-name (slime-current-package)))
+                (same-loc
+                 (slime-push-definition-stack)
+                 (slime-pop-to-location (slime-xref.location (car xrefs)) where))
+                ;; ((:error "..."))
+                ((slime-length= xrefs 1)
+                 (error "%s" (cl-second (slime-xref.location (car xrefs)))))
+                (t
+                 (let* ((items (mapcar (lambda (xref)
+                                         (let* ((spec (downcase
+                                                       (replace-regexp-in-string "[\n ]+" " " (slime-xref.dspec xref))))
+                                                (location (slime-xref.location xref))
+                                                (file (cl-second (assoc :file location)))
+                                                (position (cl-second (assoc :position location)))
+                                                (line (with-current-buffer (find-file-noselect file)
+                                                        (line-number-at-pos position))))
+                                           (and spec file line location (list spec file line location))))
+                                       xrefs))
+                        (sorted-items (sort (remove nil items)
+                                            (lambda (i1 i2)
+                                              (if (string= (cl-second i1) (cl-second i2))
+                                                  (< (cl-third i1) (cl-third i2))
+                                                (string< (cl-second i1) (cl-second i2)))))))
+                   (ivy-read "Edit definition of: "
+                             sorted-items
+                             :action (lambda (item)
+                                       (slime-push-definition-stack)
+                                       (slime-pop-to-location (cl-fourth item) where))))))))))
 
 (defun slime-edit-definition-ivy (arg)
   "`slime-edit-definition' but use `ivy' to select a candidate.
