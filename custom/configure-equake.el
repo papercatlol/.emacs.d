@@ -183,5 +183,17 @@
 ;; MAYBE try `dirtrack-mode' instead of `shell-dirtrack-mode'
 ;; https://www.masteringemacs.org/article/running-shells-in-emacs-overview
 
+;;* shell-change-dir
+(defun shell-change-dir (dir)
+  "Send 'cd DIR' to the current shell process."
+  (interactive
+   (list (read-directory-name "Change directory: "
+                              default-directory default-directory t)))
+  (when-let ((proc (get-buffer-process (current-buffer))))
+    (comint-send-string proc (format "cd \"%s\"\n" dir))
+    (shell-process-cd dir)))
+
+(define-key shell-mode-map (kbd "C-c C-k") 'comint-send-eof) ; previous binding
+(define-key shell-mode-map (kbd "C-c C-d") 'shell-change-dir)
 
 (provide 'configure-equake)
