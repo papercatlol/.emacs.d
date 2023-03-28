@@ -395,4 +395,6 @@ to ACTION and execute BODY forms."
 (define-key org-mode-map (kbd "C-c L") 'org-toggle-link-display)
 (define-key org-mode-map (kbd "C-c I") 'org-toggle-inline-images)
 
+;;* TODO slime-link (should do slime-xref on a symbol)
+
 (provide 'configure-org)

@@ -132,6 +132,7 @@
              (expand-file-name "git/tern/emacs" user-emacs-directory))
 (autoload 'tern-mode "tern.el" nil t)
 
-(add-hook 'js-mode-hook #'tern-mode)
+;; TODO don't enable for .json files
+;;(add-hook 'js-mode-hook #'tern-mode)
 
 (provide 'configure-js)

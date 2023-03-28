@@ -1654,6 +1654,15 @@ else insert the face name as well."
 (global-set-key (kbd "C-r") 'avy-goto-char-2-special)
 (define-key minibuffer-local-map (kbd "C-r") 'avy-goto-char-2-special)
 
+;;*** evil
+(with-eval-after-load 'evil
+  (evil-define-command evil-avy-goto-char-2-special (&optional count)
+    "Evil motion for `avy-goto-char-2-special'."
+    :repeat abort :type inclusive
+    :jump t :keep-visual t
+    (interactive "<c>")
+    (evil-without-repeat (call-interactively 'avy-goto-char-2-special))))
+
 ;;** avy-yank-char-2-special
 (defun avy-yank-char-2-special ()
   "Like `avy-goto-char-2-special', but bind `avy-action' to `avy-action-yank'."
@@ -1759,7 +1768,8 @@ the cursor to the new position as well."
 ;;** invisible overlays fix
 ;; TODO merge into avy.el
 (defun avy--visible-p (s)
-  (let ((invisible (member t (get-char-property-and-overlay s 'invisible))))
+  (let* ((prop-and-ov (get-char-property-and-overlay s 'invisible))
+         (invisible (or (car prop-and-ov) (cdr prop-and-ov))))
     (or (null invisible)
         (and (listp buffer-invisibility-spec)
              (null (assoc invisible buffer-invisibility-spec))))))
@@ -1903,6 +1913,10 @@ mosey was first called with prefix arg."
 ;;(define-key puni-mode-map (kbd "") 'puni-splice)
 ;;(define-key puni-mode-map (kbd "") 'puni-transpose)
 ;;(define-key puni-mode-map (kbd "") 'puni-wrap-angle)
+
+;;* TODO json-par
+;; Need to configure keybindings to be more lispy-like.
+;; (add-hook ... 'json-par-mode)
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
@@ -2107,6 +2121,8 @@ mosey was first called with prefix arg."
 
 ;;** comint
 (define-key comint-mode-map (kbd "C-c C-x") nil)
+(with-eval-after-load 'sh-script
+  (define-key sh-mode-map (kbd "C-c C-x") nil))
 
 ;;** xref--xref-buffer-mode
 (define-key xref--xref-buffer-mode-map (kbd "M-m") 'xref-show-location-at-point)
