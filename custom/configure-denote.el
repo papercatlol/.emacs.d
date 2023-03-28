@@ -140,7 +140,8 @@ normally. With prefix argument, prompt for file type first."
   ("d" #'denote-directory-dired "Visit denote-directory in Dired")
   ("r" #'denote-dired-rename-file-dwim "Rename"))
 
-(global-set-key (kbd "<f6>") 'hydra-denote/body)
+;;(global-set-key (kbd "<f6>") 'hydra-denote/body)
+(global-set-key (kbd "<f6>") 'denote-dwim)
 
 (defun denote-directory-dired ()
   "Visit `denote-directory' in Dired."
