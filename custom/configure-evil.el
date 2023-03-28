@@ -500,15 +500,19 @@ double quote kill sexp at point."
 ;;** `leader'
 (defvar leader-map (make-sparse-keymap))
 
-(define-key evil-normal-state-map (kbd "SPC") leader-map)
-(define-key evil-motion-state-map (kbd "SPC") leader-map)
+;;(define-key evil-normal-state-map (kbd "SPC") leader-map)
+;;(define-key evil-motion-state-map (kbd "SPC") leader-map)
+(define-key evil-normal-state-map (kbd "SPC") 'avy-goto-char-2-special)
+(define-key evil-motion-state-map (kbd "SPC") 'avy-goto-char-2-special)
 (define-key evil-normal-state-map (kbd "S-SPC") 'evil-avy-goto-char-timer)
 (define-key evil-motion-state-map (kbd "S-SPC") 'evil-avy-goto-char-timer)
 (define-key evil-motion-state-map (kbd "C-S-SPC") 'avy-resume)
 
 (with-eval-after-load 'cus-edit (define-key custom-mode-map (kbd "SPC") leader-map))
 (with-eval-after-load 'markdown-mode (define-key markdown-view-mode-map (kbd "SPC") leader-map))
-(with-eval-after-load 'simple (define-key special-mode-map (kbd "SPC") leader-map))
+(with-eval-after-load 'simple
+  ;;(define-key special-mode-map (kbd "SPC") leader-map)
+  (define-key special-mode-map (kbd "SPC") 'avy-goto-char-2-special))
 (with-eval-after-load 'tabulated-list (define-key tabulated-list-mode-map (kbd "SPC") leader-map))
 (define-key splash-screen-keymap (kbd "SPC") leader-map)
 
