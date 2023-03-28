@@ -181,7 +181,7 @@
 
 ;;* getting mail
 (setq mu4e-get-mail-command "offlineimap")
-(setq mu4e-update-interval 120)
+(setq mu4e-update-interval 180)
 (setq mu4e-hide-index-messages t)
 
 ;;* mu4e-context
@@ -431,8 +431,10 @@ region if there is a region, then move to the previous message."
                            unread-count
                            mu4e--search-last-query)
                    'face 'mu4e-header-line-face)
-       (when update-running-p
-         (propertize " Updating..." 'face 'mu4e-header-line-updating-face))))))
+       (cond (update-running-p
+              (propertize " Updating..." 'face 'mu4e-header-line-updating-face))
+             ((null mu4e-update-minor-mode)
+              (propertize " Updating off" 'face 'mu4e-warning-face)))))))
 
 (defun mu4e~headers-count-unread ()
   "Return the number of unread messages in the current header view."
@@ -469,6 +471,12 @@ region if there is a region, then move to the previous message."
 (with-eval-after-load 'evil
   (evil-define-key '(normal) mu4e-headers-mode-map
     "!" 'mu4e-headers-mark-for-read-dwim))
+
+;;* bookmarks
+(add-to-list 'mu4e-bookmarks
+             '(:name "Messages addressed to me"
+               :query "(maildir:\"/Franz/INBOX\") AND (t:ivanl)" :key ?b)
+             )
 
 
 (provide 'configure-email)
