@@ -1885,6 +1885,21 @@ mosey was first called with prefix arg."
 (with-eval-after-load 'lispy
   (global-set-key (kbd "C-e") 'lispy-move-end-of-line))
 
+;;* puni (soft deletion/paredit-like commands for non-lisp buffers)
+(add-hook 'prog-mode-hook #'puni-mode)
+(define-key puni-mode-map (kbd "C-h") 'puni-backward-delete-char)
+(define-key puni-mode-map (kbd "M-r") 'puni-raise)
+(define-key puni-mode-map (kbd "M-9") 'puni-wrap-round)
+(define-key puni-mode-map (kbd "M-?") 'puni-convolute)
+(define-key puni-mode-map (kbd "C-M->") 'puni-slurp-forward)
+(define-key puni-mode-map (kbd "C-M-<") 'puni-barf-forward)
+(define-key puni-mode-map (kbd "C-c s") 'puni-split)
+;;(define-key puni-mode-map (kbd "") 'puni-slurp-backward)
+;;(define-key puni-mode-map (kbd "") 'puni-barf-backward)
+;;(define-key puni-mode-map (kbd "") 'puni-splice)
+;;(define-key puni-mode-map (kbd "") 'puni-transpose)
+;;(define-key puni-mode-map (kbd "") 'puni-wrap-angle)
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -2070,6 +2085,7 @@ mosey was first called with prefix arg."
 
 ;;** C-h as Backspace
 (global-set-key (kbd "C-x h") 'help-command)
+(define-key text-mode-map (kbd "C-h") 'backward-delete-char)
 (define-key minibuffer-local-map (kbd "C-h") 'backward-delete-char)
 
 ;;** C-digit

@@ -527,7 +527,8 @@ double quote kill sexp at point."
 (define-key leader-map "/" 'rg-menu)
 
 ;;** C-h as Backspace
-(define-key evil-insert-state-map (kbd "C-h") 'backward-delete-char)
+;;(define-key evil-insert-state-map (kbd "C-h") 'backward-delete-char)
+;;(define-key evil-insert-state-map (kbd "C-h") nil)
 
 ;; `evil-mc'
 ;; (with-eval-after-load 'evil-mc
