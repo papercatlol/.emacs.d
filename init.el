@@ -134,6 +134,10 @@
 (with-eval-after-load 'sgml-mode
   (require 'configure-html))
 
+;;** clojure
+(with-eval-after-load 'clojure-mode
+  (require 'configure-clojure))
+
 ;;* ./local-elisp - private/work configuration
 (add-to-list 'load-path (expand-file-name "local-elisp" user-emacs-directory))
 (require 'local-elisp-init)
