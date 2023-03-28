@@ -103,6 +103,10 @@
 
 (define-key evil-normal-state-map (kbd "g V") 'cycle-region-preview)
 
+;;* evil-matchit
+(when (require 'evil-matchit nil t)
+  (global-evil-matchit-mode 1))
+
 ;;* `DEFUNS'
 ;; -----------------------------------------------------------------------------
 (defun end-of-defun-spammable ()
