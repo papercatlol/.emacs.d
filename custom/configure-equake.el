@@ -196,4 +196,11 @@
 (define-key shell-mode-map (kbd "C-c C-k") 'comint-send-eof) ; previous binding
 (define-key shell-mode-map (kbd "C-c C-d") 'shell-change-dir)
 
+;;* coterm (terminal emulation for comint)
+(coterm-mode)
+
+;;   ;; Optional: bind `coterm-char-mode-cycle' to C-; in comint
+;;   (with-eval-after-load 'comint
+;;     (define-key comint-mode-map (kbd "C-;") #'coterm-char-mode-cycle))
+
 (provide 'configure-equake)
