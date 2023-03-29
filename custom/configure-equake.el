@@ -190,11 +190,29 @@
    (list (read-directory-name "Change directory: "
                               default-directory default-directory t)))
   (when-let ((proc (get-buffer-process (current-buffer))))
-    (comint-send-string proc (format "cd \"%s\"\n" dir))
+    (comint-send-string proc (format "cd \"%s\"\n" (expand-file-name dir)))
     (shell-process-cd dir)))
 
 (define-key shell-mode-map (kbd "C-c C-k") 'comint-send-eof) ; previous binding
 (define-key shell-mode-map (kbd "C-c C-d") 'shell-change-dir)
+
+;;* dired-shell-cd
+(defun dired-shell-cd ()
+  (interactive)
+  (let ((shell-buffer
+          (loop for window in (window-list)
+                for buf = (window-buffer window)
+                when (eq 'shell-mode
+                         (buffer-local-value 'major-mode buf))
+                  return buf))
+        (dir default-directory))
+    (unless shell-buffer
+      (user-error "No shell buffer in current window."))
+    (with-current-buffer shell-buffer
+      (shell-change-dir dir))))
+
+(define-key dired-mode-map (kbd "C-c C-d") 'dired-shell-cd)
+
 
 ;;* coterm (terminal emulation for comint)
 (coterm-mode)
