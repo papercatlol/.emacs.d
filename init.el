@@ -1918,6 +1918,53 @@ mosey was first called with prefix arg."
 ;; Need to configure keybindings to be more lispy-like.
 ;; (add-hook ... 'json-par-mode)
 
+;;* favourite buffers list
+(defvar favourite-buffers-list (make-list 5 nil))
+(add-to-list 'savehist-additional-variables 'favourite-buffers-list)
+
+(defun switch-to-favourite-buffer (n right override)
+  (labels ((%set-favourite-buffer ()
+             (setf (nth n favourite-buffers-list) (current-buffer))
+             (message "Favourite buffer %s set to %s."
+                      (1+ n) (buffer-name (current-buffer)))))
+    (if override
+        (%set-favourite-buffer)
+      (if-let ((buf (nth n favourite-buffers-list)))
+          ;; HACK I couldn't figure out how to display the buffer in the
+          ;; left/right window. Also need to ignore side-windows somehow.
+          (if (eq buf (current-buffer))
+              (previous-buffer)
+            (ignore-error 'user-error (if right
+                                          (windmove-right)
+                                        (windmove-left)))
+            (switch-to-buffer buf))
+        (%set-favourite-buffer)))))
+
+(defun switch-to-favourite-buffer-1 (override)
+  (interactive "P")
+  (switch-to-favourite-buffer 0 nil override))
+(global-set-key (kbd "M-1") 'switch-to-favourite-buffer-1)
+
+(defun switch-to-favourite-buffer-2 (override)
+  (interactive "P")
+  (switch-to-favourite-buffer 1 nil override))
+(global-set-key (kbd "M-2") 'switch-to-favourite-buffer-2)
+
+(defun switch-to-favourite-buffer-3 (override)
+  (interactive "P")
+  (switch-to-favourite-buffer 2 nil override))
+(global-set-key (kbd "M-3") 'switch-to-favourite-buffer-3)
+
+(defun switch-to-favourite-buffer-4 (override)
+  (interactive "P")
+  (switch-to-favourite-buffer 3 t override))
+(global-set-key (kbd "M-4") 'switch-to-favourite-buffer-4)
+
+(defun switch-to-favourite-buffer-5 (override)
+  (interactive "P")
+  (switch-to-favourite-buffer 4 t override))
+(global-set-key (kbd "M-5") 'switch-to-favourite-buffer-5)
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -2103,8 +2150,10 @@ mosey was first called with prefix arg."
 
 ;;** C-h as Backspace
 (global-set-key (kbd "C-x h") 'help-command)
-(define-key text-mode-map (kbd "C-h") 'backward-delete-char)
-(define-key minibuffer-local-map (kbd "C-h") 'backward-delete-char)
+(global-set-key (kbd "C-h") 'backward-delete-char)
+;;(define-key text-mode-map (kbd "C-h") 'backward-delete-char)
+;;(define-key comint-mode-map (kbd "C-h") 'backward-delete-char)
+;;(define-key minibuffer-local-map (kbd "C-h") 'backward-delete-char)
 
 ;;** C-digit
 (global-set-key (kbd "C-0") 'delete-window)
@@ -2226,3 +2275,7 @@ EVENT."
 ;;*** toggle multiple cursors on click
 (global-unset-key (kbd "C-<down-mouse-2>"))
 (global-set-key (kbd "C-<mouse-2>") 'mc/toggle-cursor-on-click)
+
+;;** archive mode
+(define-key archive-mode-map (kbd "j") 'archive-next-line)
+(define-key archive-mode-map (kbd "k") 'archive-previous-line)
