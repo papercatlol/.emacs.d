@@ -1965,6 +1965,14 @@ mosey was first called with prefix arg."
   (switch-to-favourite-buffer 4 t override))
 (global-set-key (kbd "M-5") 'switch-to-favourite-buffer-5)
 
+;;* man
+(global-set-key (kbd "H-m") 'man)
+
+;; Easier navigation between args. MAYBE setup imenu as well?
+(defun man-mode-setup-outline ()
+  (setq-local outline-regexp "^\s+-"))
+(add-hook 'Man-mode-hook 'man-mode-setup-outline)
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
