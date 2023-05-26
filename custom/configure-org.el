@@ -49,6 +49,26 @@
   (force-mode-line-update))
 (add-hook 'org-clock-out-hook #'org-clock-out-update-mode-line)
 
+;;* add timestamps when closing tasks
+(setq org-log-done 'time)
+
+;;* refiling
+(setq org-refile-use-outline-path t)
+(setq org-outline-path-complete-in-steps nil)
+
+(defun org-buffer-list ()
+  "Get all open org-mode buffers."
+  (loop for buf in (buffer-list)
+        when (compat--provided-mode-derived-p
+              (buffer-local-value 'major-mode buf) 'org-mode)
+          collect buf))
+
+(setq org-refile-targets
+      '((nil :maxlevel . 3)             ; current buffer headlies
+        (org-agenda-files :maxlevel . 2)
+        (org-buffer-list :maxlevel . 3)))
+
+
 ;;* org dumb task tracker
 (defvar odtt:task-file "~/work/tasks.org")
 
