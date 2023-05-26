@@ -15,12 +15,13 @@
            (docstring (format "A generated face for hl-mode: %s on %s" fg-string bg-string))
            (attrs (append (and fg (list :foreground fg))
                           (and bg (list :background bg)))))
-      `(unless (facep ',facename)
-         (push ,facename-string hi-lock-face-defaults)
-         (defface ,facename
-           '((t (:foreground ,fg :background ,bg :weight bold)))
-           ,docstring
-           :group ',group)))))
+      `(progn
+         (unless (facep ',facename)
+           (defface ,facename
+               '((t (:foreground ,fg :background ,bg :weight bold)))
+             ,docstring
+             :group ',group))
+         (pushnew ,facename-string hi-lock-face-defaults :test #'equal)))))
 
 (setq hi-lock-face-defaults nil)
 
@@ -42,12 +43,29 @@
   "Highlight regexp using active region or symbol-at-point as an argument.
    With prefix arg select color interactively."
   (interactive)
-  (if (region-active-p)
-      (let* ((hi-lock-auto-select-face t)
-             (face (highlight--read-face-name)))
+  (when-let ((regexp
+              (or (and (region-active-p)
+                       (regexp-quote
+                        (buffer-substring-no-properties (region-beginning)
+                                                        (region-end))))
+                  (when-let ((sym (thing-at-point 'symbol t)))
+                    (format "\\_<%s\\_>" (regexp-quote sym)))
+                  (regexp-quote (thing-at-point 'sexp t))))
+             (hi-lock-auto-select-face t))
+    (if-let ((current-face
+              (unquote-safe
+               (second (third
+                        (or (assoc regexp hi-lock-interactive-patterns)
+                            (assoc regexp hi-lock-interactive-lighters)))))))
+        (let ((next-face (highlight--read-face-name)))
+          (unhighlight-regexp regexp)
+          (setf hi-lock--unused-faces
+                (cl-remove (symbol-name current-face)
+                           hi-lock--unused-faces :test #'equal))
+          (highlight-regexp regexp next-face))
+      (let ((face (highlight--read-face-name)))
         (or (facep face) (setq face 'hl-white-red))
-        (highlight-regexp (regexp-quote (buffer-substring (mark) (point))) face))
-    (highlight-symbol-at-point)))
+        (highlight-regexp regexp face)))))
 
 (defun unhighlight-region-or-symbol (arg)
   "Unhighlight regexp using active region or symbol-at-point as an argument.
