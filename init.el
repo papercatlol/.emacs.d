@@ -326,6 +326,13 @@
                 mode))
           minor-mode-alist))
 
+(defun vc-mode-line-with-glyph ()
+  (if vc-mode
+      (replace-regexp-in-string (rx (1+ alnum) ":")
+                                (concat (char-to-string #xe0a0) ":")
+                                vc-mode)
+    ""))
+
 (require 'org-clock)
 (setq-default mode-line-format
               (list "%e"
@@ -339,7 +346,7 @@
                     ":%l %p "
                     '(:eval (string-trim (or evil-mode-line-tag "")))
                     '(:eval (when slime-mode (concat " " (slime-current-package))))
-                    '(vc-mode vc-mode)
+                    '(vc-mode (:eval (vc-mode-line-with-glyph)))
                     " ["
                     '(:eval mode-name)
                     "]"
