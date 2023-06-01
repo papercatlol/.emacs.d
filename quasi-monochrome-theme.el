@@ -122,7 +122,7 @@
  '(popup-menu-summary-face ((t (:inherit popup-menu-face :weight normal))))
  '(popup-tip-face ((t (:inherit font-lock-comment-face :weight normal))))
  '(error ((t (:foreground "firebrick" :weight bold))))
- '(hl-line ((t (:background "gray10"))))
+ '(hl-line ((t (:background "#2c2c3c"))))
  '(ivy-current-match ((t (:inherit region
                           :background "SteelBlue4"
                           :foreground "white"))))
@@ -168,7 +168,7 @@
  '(magit-tag ((t (:foreground "salmon"))))
  '(magit-branch-local ((t (:foreground "LightSkyBlue2"))))
  '(magit-branch-remote ((t (:foreground "DarkSeaGreen3"))))
- '(magit-log-author ((t (:foreground "tomato" :slant normal :width normal :height 140))))
+ '(magit-log-author ((t (:foreground "tomato" :slant normal :width normal))))
  ;; '(magit-diff-removed-highlight ((t (:background "#663333"
  ;;                                     :foreground "#eecccc"
  ;;                                     :extend t))))
@@ -182,8 +182,9 @@
  '(org-level-4 ((t (:inherit org-default))))
  '(org-date ((t (:inherit font-lock-string-face :weight normal))))
  '(org-tag ((t (:inherit mode-line-emphasis))))
- '(org-todo ((t (:foreground "#833333" :weight bold))))
- '(org-done ((t (:foreground "#44cf44" ;;"#338333"
+ '(org-todo ((t ;;(:foreground "#833333" :weight bold)
+              (:foreground "#ee3039" :weight bold))))
+ '(org-done ((t (:foreground "#55df54" ;;"#44cf44" ;;"#338333"
                  :weight bold))))
  '(org-block-begin-line ((t (:inherit default :foreground "grey50"
                              :underline t :extend t))))
@@ -234,7 +235,7 @@
  '(mu4e-header-value-face ((t (:inherit font-lock-type-face))))
  '(mu4e-unread-face ((t (:inherit font-lock-keyword-face :weight normal))))
  '(mu4e-header-highlight-face ((t (:inherit hl-line :extend t
-                                   :underline t :weight normal))))
+                                   :underline nil :weight normal))))
  ;; js2-mode
  '(js2-function-param ((t (:inherit default))))
  '(js2-jsdoc-value ((t (:inherit js2-jsdoc-tag))))
@@ -271,6 +272,14 @@
  '(gnus-header-newsgroups ((t (:foreground "yellow" :slant italic))))
  '(gnus-header-name ((t (:foreground "grey45"))))
  '(gnus-header-content ((t (:foreground "light gray" :slant italic))))
+ ;; ein
+ '(ein:codecell-input-area-face ((t (:inherit default))))
+ '(ein:codecell-input-prompt-face ((t (:inherit cursor))))
+ ;; slime
+ '(sldb-restartable-frame-line-face ((t (:foreground "lime green"))))
+ '(sldb-restartable-frame-line-face ((t (:inherit bold :foreground "light slate gray"))))
+ '(sldb-restartable-frame-line-face ((t (:inherit bold :foreground "gray60"))))
+ ;;'(sldb-restartable-frame-line-face ((t (:inherit 'default))))
  )
 
 (provide-theme 'quasi-monochrome)

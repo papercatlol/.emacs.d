@@ -82,7 +82,8 @@
       '(("GERRIT" . "#ee7b00"
          ;;"dark orange"
          )
-        ("CURRENT" . "#eec600"
+        ("CURRENT" . ;;"#eec600"
+         "#fff600"
          ;; "gold"
          )
         ("WAITING" . "#ee7b00"
