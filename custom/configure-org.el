@@ -321,9 +321,7 @@ to ACTION and execute BODY forms."
       (cond ((and (slime-connected-p) (string= lang "lisp"))
              (slime--repl-insert-string expanded-block))
             ((string= lang "shell")
-             (equake-pop)
-             (goto-char (point-max))
-             (insert expanded-block)))
+             (copy-to-equake expanded-block)))
     (call-interactively #'org-evaluate-time-range)))
 
 (define-key org-mode-map (kbd "C-c C-y") 'org-special-ctrl-c-ctrl-y)

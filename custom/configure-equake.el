@@ -1,5 +1,7 @@
 (require 'equake)
 
+;;* kill frames instead of hiding (otherwise they lose floating in i3wm)
+(setq equake-use-frame-hide nil)
 
 ;;* update modeline when default-directory changes
 (defun equake-default-directory-watcher (symbol new-value operation buf)
@@ -154,7 +156,7 @@
 
 (defun equake-shell-bookmark-jump (bmk-record)
   (let ((default-directory (bookmark-get-filename bmk-record)))
-    (equake-pop)))
+    (equake-pop t)))
 
 (defun equake-enable-bookmarks ()
   (setq-local bookmark-make-record-function #'bookmark-make-record-equake-shell))
@@ -220,5 +222,19 @@
 ;;   ;; Optional: bind `coterm-char-mode-cycle' to C-; in comint
 ;;   (with-eval-after-load 'comint
 ;;     (define-key comint-mode-map (kbd "C-;") #'coterm-char-mode-cycle))
+
+;;* copy-to-equake
+(defun copy-to-equake (text)
+  (interactive (list (when-let ((bounds (if (region-active-p)
+                                            (region-bounds)
+                                          (bounds-of-thing-at-point 'defun))))
+                       (buffer-substring-no-properties
+                        (car bounds) (cdr bounds)))))
+  (equake-pop)
+  (goto-char (point-max))
+  (insert text))
+
+(with-eval-after-load 'sh-script
+  (define-key sh-mode-map (kbd "C-c C-y") 'copy-to-equake))
 
 (provide 'configure-equake)
