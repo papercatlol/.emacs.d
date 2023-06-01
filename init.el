@@ -215,7 +215,7 @@
       use-dialog-box nil
       comint-buffer-maximum-size 8192
       ;; fringe-mode '((4 . 4))
-      fringe-mode '((8 . 0))
+      fringe-mode '(8 . 0)
       read-process-output-max (* 1024 1024)
       ;; this sometimes bugs out hydra's if set to T
       switch-to-buffer-preserve-window-point nil
@@ -382,7 +382,7 @@
       minibuffer-follows-selected-frame nil)
 (minibuffer-depth-indicate-mode 1)
 
-(global-set-key (kbd "H-SPC") 'switch-to-minibuffer)
+;;(global-set-key (kbd "H-SPC") 'switch-to-minibuffer)
 
 ;;* pdf-tools
 ;;(pdf-tools-install)
@@ -443,7 +443,7 @@
      (slot . 1)
      (window-parameters . ((no-other-window . nil)))))
   (setf
-   (alist-get (rx (or (and (? "e") "shell") "vterm" "EQUAKE[") (* any))
+   (alist-get (rx (or (and (? "e") "shell") "vterm" "EQUAKE[" "*slime-repl") (* any))
               display-buffer-alist nil nil #'equal)
    '((display-buffer-reuse-window display-buffer-pop-up-window)
      (direction . right)
@@ -1082,7 +1082,8 @@ current entry."
      (outline-back-to-heading)
      (bicycle-cycle-local))))
 
-(dolist (map (list prog-mode-map emacs-lisp-mode-map lisp-mode-map))
+(dolist (map (list prog-mode-map emacs-lisp-mode-map
+                   lisp-mode-map markdown-mode-map))
   (define-key map (kbd "C-TAB") 'bicycle-cycle*)
   (define-key map (kbd "C-<tab>") 'bicycle-cycle*)
   (define-key map (kbd "C-M-i") 'bicycle-cycle*))
@@ -1313,7 +1314,7 @@ current entry."
 ;;* shrink-whitespace
 (global-set-key (kbd "C-c SPC") 'shrink-whitespace)
 (global-set-key (kbd "C-c S-SPC") 'grow-whitespace-around)
-(global-set-key (kbd "M-\\")  'shrink-whitespace)
+(global-set-key (kbd "C-M-\\")  'shrink-whitespace)
 
 ;;* string-edit
 (require 'string-edit)
@@ -1555,6 +1556,8 @@ windows)."
     (buffer-substring (point) (line-end-position)))))
 
 (define-key prog-mode-map (kbd "C-c w") 'show-toplevel)
+(define-key markdown-mode-map (kbd "C-c w") 'show-toplevel)
+(define-key outline-mode-map (kbd "C-c w") 'show-toplevel)
 
 ;;* face-attributes-pretty-print
 (defun face-attributes-pretty-print (face)
@@ -1625,6 +1628,8 @@ else insert the face name as well."
              ("C-e" "else")
              ;; RET = no char. Useful when you want to search for 1 char only.
              ("RET")
+             ("SPC")
+             ;; TODO ("SPC" "\b")
              )
         collect (cons (string-to-char (kbd key))
                       (listify-key-sequence translation))))
@@ -1801,6 +1806,8 @@ the cursor to the new position as well."
 ;; f - filtering, F - format (# columns)
 (global-set-key (kbd "H-p") 'proced)
 (define-key ctl-x-map (kbd "P") 'proced)
+
+(add-hook 'proced-mode-hook 'hl-line-mode)
 
 (with-eval-after-load 'proced
   (define-key proced-mode-map (kbd "j") 'next-line)
@@ -2055,8 +2062,9 @@ mosey was first called with prefix arg."
 
 (global-set-key (kbd "C-S-SPC") 'avy-goto-char-timer)
 (global-set-key (kbd "M-SPC") 'avy-goto-char-timer)
+(global-set-key (kbd "H-SPC") 'avy-goto-char-2-special)
 (global-set-key (kbd "C-x C-SPC") 'avy-goto-char-timer)
-(global-set-key (kbd "<f13>") 'avy-goto-char-timer)
+(global-set-key (kbd "<f13>") 'avy-goto-char-2-special)
 (global-set-key (kbd "M-<tab>") 'other-window)
 (global-set-key (kbd "<f15>") 'other-window)
 ;;(global-set-key (kbd "C-t") 'avy-goto-word-2)
@@ -2201,6 +2209,8 @@ mosey was first called with prefix arg."
 (define-key Info-mode-map "l" 'forward-char)
 ;;(define-key Info-mode-map (kbd "C-w") 'Info-backward-node)
 (define-key Info-mode-map (kbd "C-w") 'Info-up)
+(define-key Info-mode-map (kbd "<mouse-8>") 'Info-history-back)
+(define-key Info-mode-map (kbd "<mouse-9>") 'Info-history-forward)
 
 ;;** registers
 ;;*** dwim registers
