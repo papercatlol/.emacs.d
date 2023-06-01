@@ -478,5 +478,32 @@ region if there is a region, then move to the previous message."
                :query "(maildir:\"/Franz/INBOX\") AND (t:ivanl)" :key ?b)
              )
 
+;;* fix 'buffer has a running process' error message
+(defun mu4e--update-sentinel-func-fixed (proc _msg)
+  "Sentinel function for the update process PROC."
+  (when mu4e--progress-reporter
+    (progress-reporter-done mu4e--progress-reporter)
+    (setq mu4e--progress-reporter nil))
+  (unless mu4e-hide-index-messages
+    (message nil))
+  (if (or (not (eq (process-status proc) 'exit))
+          (/= (process-exit-status proc) 0))
+      (progn
+        (when mu4e-index-update-error-warning
+          (mu4e-message "Update process returned with non-zero exit code")
+          (sit-for 5))
+        (when mu4e-index-update-error-continue
+          (mu4e-update-index)))
+    (mu4e-update-index))
+  (when (buffer-live-p mu4e--update-buffer)
+    (unless (eq mu4e-split-view 'single-window)
+      (mapc #'delete-window (get-buffer-window-list mu4e--update-buffer)))
+    (when-let ((proc (get-buffer-process mu4e--update-buffer)))
+      (set-process-query-on-exit-flag proc nil)
+      (kill-process proc t))
+    (kill-buffer mu4e--update-buffer)))
+
+(advice-add 'mu4e--update-sentinel-func :override 'mu4e--update-sentinel-func-fixed)
+
 
 (provide 'configure-email)
