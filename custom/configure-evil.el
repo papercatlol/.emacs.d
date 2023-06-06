@@ -614,7 +614,19 @@ double quote kill sexp at point."
 ;; TODO: global markers, persistent markers
 (global-set-key (kbd "C-x C-'") 'counsel-evil-marks)
 
-;;** evil-multiedit
+;;** S-right-mouse = @q at point
+(defun evil-execute-macro-q-at-mouse (e)
+  "Execute macro from register 'q' at mouse pos."
+  (interactive "e")
+  (with-event-point e
+    (if-let ((macro (evil-get-register (string-to-char "q") t)))
+        (evil-execute-macro 1 macro)
+      (error "No macro in register q."))))
+
+(global-unset-key (kbd "S-<down-mouse-1>"))
+(global-set-key (kbd "S-<mouse-1>") 'evil-execute-macro-q-at-mouse)
+
+;;* evil-multiedit
 ;; TODO: remove iedit config in init.el, since evil-multiedit seems superior
 ;; https://github.com/hlissner/evil-multiedit#usage
 ;; Highlights all matches of the selection in the buffer.
