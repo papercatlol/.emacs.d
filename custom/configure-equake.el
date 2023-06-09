@@ -38,7 +38,7 @@
 ;;* equake-pop
 (setq equake-default-shell 'shell)
 
-(defun equake-pop (&optional new-tab)
+(defun equake-pop (&optional new-tab initial-input)
   "Pop to equake buffer. With prefix arg open a new equake tab."
   (interactive "P")
   (if (or new-tab (null (equake-find-buffer)))
@@ -51,10 +51,24 @@
                         (lambda (buf)
                           (string= (buffer-local-value 'default-directory buf)
                                    dir)))))
-        (pop-to-buffer tab)))))
+        (pop-to-buffer tab))))
+  (when initial-input
+    (goto-char (point-max))
+    (insert initial-input)))
+
+(defun equake-pop-and-yank (&optional new-tab)
+  "Pop to equake buffer and yank active region or current line.
+With prefix arg open a new equake tab."
+  (interactive "P")
+  (equake-pop new-tab (or (thing-at-point 'region)
+                          ;; No (thing-at-point 'line) as it grabs newline.
+                          (buffer-substring-no-properties
+                           (line-beginning-position)
+                           (line-end-position)))))
 
 (define-key equake-mode-map (kbd "<f12>") 'quit-window)
 (global-set-key (kbd "<f12>") 'equake-pop)
+(global-set-key (kbd "S-<f12>") 'equake-pop-and-yank)
 
 ;;* equake-new-tab-dwim
 (defun equake-new-tab-dwim (&optional shell)
