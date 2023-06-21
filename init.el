@@ -1982,6 +1982,67 @@ mosey was first called with prefix arg."
 ;;* man
 (global-set-key (kbd "H-m") 'man)
 
+;;* counsel-project
+;; TODO counsel-project with prettier project list and ivy actions for
+;; remove/grep/magit/find-dir/etc.
+(global-set-key (kbd "H-p") 'counsel-project)
+(define-key project-prefix-map "A" 'project-remember-projects-under)
+
+(defun counsel-project ()
+  (interactive)
+  (project--ensure-read-project-list)
+  (ivy-read "Project: " project--list
+            :history 'counsel-project-history
+            :keymap counsel-project-map
+            :caller 'counsel-project
+            :action 'counsel-project--magit-action))
+
+(defun counsel-project--rg-action (project-root)
+  (let ((default-directory (car-safe project-root)))
+    (call-interactively #'counsel-rg-dwim)))
+
+(defun counsel-project--dired-action (project-root)
+  (let ((default-directory (car-safe project-root)))
+    (call-interactively #'dired-jump)))
+
+(defun counsel-project--magit-action (project-root)
+  (let ((default-directory (car-safe project-root)))
+    (call-interactively #'magit-project-status)))
+
+(defun counsel-project--find-file-action (project-root)
+  (let ((default-directory (car-safe project-root)))
+    (call-interactively #'counsel-files)))
+
+(defun counsel-project--find-dir-action (project-root)
+  (let ((default-directory (car-safe project-root)))
+    (call-interactively #'project-find-dir)))
+
+(defun counsel-project--add-project-action (project-root)
+  (when-let* ((dir (read-directory-name "Remember project: "))
+              (pr (project--find-in-directory dir)))
+    (project-remember-project pr)))
+
+(defun counsel-project--forget-project-action (project-root)
+  (project-forget-project (car-safe project-root)))
+
+(ivy-set-actions
+ 'counsel-project
+ '(("d" counsel-project--find-dir-action "find dir")
+   ("/" counsel-project--rg-action "ripgrep")
+   ("r" counsel-project--rg-action "ripgrep")
+   ("j" counsel-project--dired-action "dired")
+   ("f" counsel-project--find-file-action "find file")
+   ("a" counsel-project--add-project-action "add project")
+   ("D" counsel-project--forget-project-action "forget project")
+   ("F" counsel-project--forget-project-action "forget project")))
+
+(defvar counsel-project-history nil)
+
+(defvar counsel-project-map
+  (let ((m (make-sparse-keymap)))
+    (set-keymap-parent m ivy-minibuffer-map)
+    m))
+
 ;; Easier navigation between args. MAYBE setup imenu as well?
 (defun man-mode-setup-outline ()
   (setq-local outline-regexp "^\s+-"))
