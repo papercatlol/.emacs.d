@@ -267,7 +267,9 @@
 
 ;;** backups & tmp files
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups"))))
+(require 'vc-backup nil t)              ; backup files as a vc backend
 (setq version-control t)
+(setq kept-new-versions 4)
 (setq delete-old-versions 'please-dont)
 (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
 (setq lock-file-name-transforms '((".*" "~/.emacs.d/lock-files/" t)))
