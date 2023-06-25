@@ -2050,6 +2050,15 @@ mosey was first called with prefix arg."
   (setq-local outline-regexp "^\s+-"))
 (add-hook 'Man-mode-hook 'man-mode-setup-outline)
 
+;;* journalctl-mode
+(with-eval-after-load 'journalctl-mode
+  (define-key journalctl-mode-map (kbd "j") 'next-line)
+  (define-key journalctl-mode-map (kbd "k") 'previous-line)
+  (define-key journalctl-mode-map (kbd "w") 'forward-word)
+  (define-key journalctl-mode-map (kbd "b") 'backward-word)
+  (define-key journalctl-mode-map (kbd "/") 'isearch-forward-regexp)
+  (define-key journalctl-mode-map (kbd "C-v") nil))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
