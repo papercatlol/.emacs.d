@@ -178,6 +178,7 @@
       load-prefer-newer t
       ediff-window-setup-function 'ediff-setup-windows-plain
       frame-title-format "%b"
+      frame-inhibit-implied-resize t
       expand-region-fast-keys-enabled nil
       er--show-expansion-message t
       inhibit-startup-message t
@@ -197,11 +198,12 @@
       avy-all-windows t
       avy-style 'pre ;; 'de-bruijn
       avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v ?q ?w ?z ?x ?r
-                     ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\; ?-
+                     ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\; ?- ?\(
                      ?1 ?2 ?3 ?4 ?5
                      ?F ?C ?D ?G ?S ?A ?E ?V ?Q ?W ?Z ?X ?R
                      ?J ?N ?K ?H ?L ?O ?I ?U ?P
-                     ?6 ?7 ?8 ?9 ?0)
+                     ;;?6 ?7 ?8 ?9 ?0
+                     )
       ;;
       comment-padding ""
       view-read-only nil
@@ -688,6 +690,7 @@ if there is a sole window."
 (global-set-key (kbd "<C-i>") 'completion-at-point)
 (global-set-key (kbd "TAB") 'indent-for-tab-command)
 
+(global-set-key (kbd "C-c <C-i>") 'completion-at-point-elisp)
 ;;** with-minor-mode-overriding - locally override minor mode keymap
 (cl-defmacro with-minor-mode-map-overriding ((new-map minor-mode) &body body)
   "Create a keymap locally overriding MINOR-MODE keymap and bind it to NEW-MAP inside BODY"
@@ -790,7 +793,14 @@ Else narrow-to-defun."
 (require 'dired-quick-sort)
 (dired-quick-sort-setup)
 
-(setq dired-listing-switches "-laGh1v")
+(setq dired-listing-switches
+  (combine-and-quote-strings '("-l"
+                               "-v"
+                               ;;"-g" ; skip owner
+                               "--no-group"
+                               "--human-readable"
+                               ;;"--time-style=+%Y-%m-%d"
+                               "--almost-all")))
 
 ;;** dired-rsync
 ;; TODO: move dired stuff to a separate file
@@ -1487,6 +1497,7 @@ enable `hydra-flyspell'."
 (require 'dumb-jump)
 
 (setq dumb-jump-prefer-searcher 'rg)
+(setq xref-search-program 'ripgrep)
 
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
@@ -1806,7 +1817,6 @@ the cursor to the new position as well."
 
 ;;* proced
 ;; f - filtering, F - format (# columns)
-(global-set-key (kbd "H-p") 'proced)
 (define-key ctl-x-map (kbd "P") 'proced)
 
 (add-hook 'proced-mode-hook 'hl-line-mode)
