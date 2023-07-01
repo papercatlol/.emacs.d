@@ -187,6 +187,8 @@
       inhibit-startup-message t
       wgrep-auto-save-buffer t
       uniquify-buffer-name-style 'forward
+      ;; vc
+      vc-follow-symlinks t
       ;; prefer horizontally split windows (see `split-window-sensibly')
       window-min-width 60
       split-width-threshold 80
@@ -2250,6 +2252,7 @@ mosey was first called with prefix arg."
   ("M" #'mu4e-compose-new "mu4e compose")
   ("M-m" #'memory-report "Memory report")
   ("o" #'helpful-symbol "Describe symbol")
+  ("O" #'org-web-tools-read-url-as-org "Read url in org")
   ("p" #'counsel-package "counsel-package")
   ("P" #'list-processes "list-processes")
   ("q" nil "quit")

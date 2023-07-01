@@ -43,9 +43,11 @@
   (define-key mu4e-headers-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
   (define-key mu4e-headers-mode-map (kbd "/") 'mu4e-search-narrow)
 
+  (evil-set-initial-state 'mu4e-view-mode 'normal)
   (evil-define-key '(normal) mu4e-view-mode-map
     "[" 'mu4e-view-headers-prev-unread
-    "]" 'mu4e-view-headers-next-unread)
+    "]" 'mu4e-view-headers-next-unread
+    "q" 'mu4e-view-quit)
 
   (evil-define-key '(normal) mu4e-headers-mode-map
     "[" 'mu4e-headers-prev-unread
