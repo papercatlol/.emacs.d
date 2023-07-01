@@ -414,7 +414,7 @@ If the input is empty, insert active region or symbol-at-point."
 
 ;; TODO: ivy-occur for this
 ;; MAYBE: show active frames as well as buffers
-(defun counsel-buffers (&optional initial-input)
+(defun counsel-buffers (&optional initial-input predicate)
   "Switch to buffer, recently opened file, bookmark or ivy-view.
 If ivy is exited and result has {} prefix, create a new ivy-view.
 Use `counsel-buffer-cycle-action' while in ivy minibuffer to change where
@@ -431,7 +431,8 @@ buffer will be opened(current window, other window, other frame)."
               :history 'counsel-buffers-history
               :action (lambda (cand) (funcall counsel-buffers-current-action cand))
               :caller 'counsel-buffers
-              :keymap counsel-buffers-map)))
+              :keymap counsel-buffers-map
+              :predicate predicate)))
 
 (defun counsel-buffers-other-window (&optional initial-input)
   "Same as `counsel-buffers', but open buffer in other window by default."
@@ -549,6 +550,49 @@ buffer will be opened(current window, other window, other frame)."
   (ivy--done (buffer-name (startup--get-buffer-create-scratch))))
 
 (define-key counsel-buffers-map (kbd "C-s") 'counsel-buffers-scratch)
+
+;;** filter for *-buffers
+(defun counsel-buffers-toggle-*-filter ()
+  "Toggle filtering for *-buffers."
+  (interactive)
+  (save-excursion
+   (beginning-of-line)
+   (if (looking-at (rx "^*" (* space)))
+       (delete-region (match-beginning 0) (match-end 0))
+     (insert "^* "))))
+
+(define-key counsel-buffers-map (kbd "C-8") 'counsel-buffers-toggle-*-filter)
+(define-key counsel-buffers-map (kbd "C-c C-8") 'counsel-buffers-toggle-*-filter)
+
+;;** filter for repls
+(defvar ivy-use-predicate nil)
+
+(defun ivy-toggle-predicate ()
+  (interactive)
+  (cond ((ivy-state-predicate ivy-last)
+         (setq ivy-use-predicate (ivy-state-predicate ivy-last))
+         (setf (ivy-state-predicate ivy-last) nil))
+        ((bound-and-true-p ivy-use-predicate)
+         (setf (ivy-state-predicate ivy-last) ivy-use-predicate)))
+  ;; invalidate cache
+  (setq ivy--old-cands nil))
+
+(defun ivy--predicate-repl-buffers (c)
+  (string-match-p (rx bol "*" (* any)
+                      (or (and "repl" word-end)
+                          "ielm" "shell" "equake" "compilation"
+                          "inferior-"))
+                  c))
+
+(defun counsel-buffers-filter-repls ()
+  (interactive)
+  (let ((ivy-use-predicate 'ivy--predicate-repl-buffers))
+    (ivy-toggle-predicate)
+    ;; HACK Rerun current `counsel-buffers' session.
+    (ivy-quit-and-run
+     (counsel-buffers ivy-text (ivy-state-predicate ivy-last)))))
+
+(define-key counsel-buffers-map (kbd "C-z") 'counsel-buffers-filter-repls)
 
 ;;* ivy-special
 (cl-defmacro ivy-special (special-form &rest else)
@@ -1116,6 +1160,11 @@ exit with that candidate, otherwise insert SPACE character as usual."
 
 (define-key ivy-minibuffer-map (kbd "C-c g") 'ivy-restrict-to-matches)
 
+;;** toggles
+(define-key ivy-minibuffer-map (kbd "C-c M-r") 'ivy-toggle-regexp-quote)
+(define-key ivy-minibuffer-map (kbd "C-c M-m") 'ivy-toggle-marks)
+
+;;** ivy-avy
 (when (require 'ivy-avy nil t)
   (define-key ivy-minibuffer-map (kbd "C-t") 'ivy-avy)
   (define-key ivy-minibuffer-map (kbd "S-SPC") 'ivy-avy))
