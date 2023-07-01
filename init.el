@@ -809,6 +809,10 @@ Else narrow-to-defun."
 ;; TODO: move dired stuff to a separate file
 (require 'dired-rsync)
 
+(setq dired-rsync-passphrase-stall-regex
+      (rx (or "Enter passphrase for key"
+              "'s password:")))
+
 (define-key dired-mode-map (kbd "r") 'dired-rsync)
 
 ;; show rsync progress in modeline
