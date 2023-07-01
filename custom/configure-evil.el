@@ -28,6 +28,7 @@
 (evil-set-initial-state 'slime-popup-buffer-mode  'emacs)
 (evil-set-initial-state 'edebug-mode 'emacs)
 (evil-set-initial-state 'Info-mode 'emacs)
+(evil-set-initial-state 'journalctl-mode 'emacs)
 (evil-set-initial-state 'ibuffer-mode 'normal)
 (evil-set-initial-state 'snippet-mode 'insert)
 
@@ -635,6 +636,9 @@ double quote kill sexp at point."
 
 (global-unset-key (kbd "S-<down-mouse-1>"))
 (global-set-key (kbd "S-<mouse-1>") 'evil-execute-macro-q-at-mouse)
+
+;;** gr = xref-find-references
+(evil-define-key '(normal) global-map "gr" 'xref-find-references)
 
 ;;* evil-multiedit
 ;; TODO: remove iedit config in init.el, since evil-multiedit seems superior

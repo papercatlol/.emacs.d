@@ -109,7 +109,8 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'cl-destructuring-bind 'destructuring-bind)
     (put 'if 'common-lisp-indent-function 2)
     (put 'if-let 'common-lisp-indent-function 2)
-    (put 'if-let* 'common-lisp-indent-function 2)))
+    (put 'if-let* 'common-lisp-indent-function 2)
+    (%copy-indent '-let 'let)))
 
 ;;** documentation
 (defvar *elisp-documentation-last-symbol* nil

@@ -156,6 +156,13 @@ already narrowed, widen."
 
 (add-hook 'ediff-keymap-setup-hook 'configure-ediff-keybindings)
 
+;;** ediff-mult
+(defun configure-ediff-mult-keybindings ()
+  (local-set-key (kbd "j") 'ediff-next-meta-item)
+  (local-set-key (kbd "k") 'ediff-previous-meta-item))
+
+(add-hook 'ediff-meta-buffer-keymap-setup-hook 'configure-ediff-mult-keybindings)
+
 ;;** ediff-region-and-kill-ring
 (defun ediff-region-and-kill-ring (&optional beg end)
   "If region is active: ediff current region and last string in
@@ -163,7 +170,7 @@ kill ring. Otherwise ediff last and second-to last strings. With
 prefix arg choose string(s) from kill ring interactively."
   (interactive
    (when (region-active-p)
-       (list (region-beginning) (region-end))))
+     (list (region-beginning) (region-end))))
   (unless (require 'ediff nil t)
     (error "Can't load ediff.el."))
   (let ((string-A nil)

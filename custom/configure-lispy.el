@@ -172,7 +172,8 @@ ARG can extend the bounds to the current defun."
 (lispy-define-key lispy-mode-map (kbd "s") 'lispy-goto-symbol-in-line)
 (lispy-define-key lispy-mode-map (kbd "S") 'lispy-ace-symbol-replace)
 (define-key lispy-mode-map (kbd "M-s") 'lispy-goto-symbol-in-line)
-(define-key lispy-mode-map (kbd "C-c s") 'lispy-splice)
+(define-key lispy-mode-map (kbd "C-c s") 'lispy-split)
+(define-key lispy-mode-map (kbd "C-c /") 'lispy-splice)
 
 ;;** W is a matching command to B = `special-lispy-ediff-regions'
 ;; MAYBE map to some ace-jump version of `w' instead
@@ -300,6 +301,7 @@ inside of that list."
 (defun lispy-disable-whitespace-cleanup ()
   (setq-local lispy-ignore-whitespace t))
 (add-hook 'slime-repl-mode-hook #'lispy-disable-whitespace-cleanup)
+(add-hook 'cider-repl-mode-hook #'lispy-disable-whitespace-cleanup)
 
 ;;*** also don't indent
 (add-to-list 'lispy-no-indent-modes 'slime-repl-mode)
@@ -435,5 +437,8 @@ positive and after if negative."
 (define-key slime-mode-map (kbd "C-c x") 'hydra-lispy-x/body)
 (define-key slime-repl-mode-map (kbd "C-c x") 'hydra-lispy-x/body)
 (define-key slime-mode-map (kbd "M-s") 'avy-goto-symbol-in-line)
+
+
+
 
 (provide 'configure-lispy)

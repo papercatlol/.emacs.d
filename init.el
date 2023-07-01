@@ -2347,6 +2347,8 @@ otherwise forward to `point-to-register'."
                   (single-key-description register)))))
 
 (define-key global-map (kbd "H-`") 'save-to-register-dwim)
+(define-key global-map (kbd "H--") 'counsel-register)
+(add-to-list 'savehist-additional-variables 'register-alist)
 
 ;;*** quick registers
 (defvar quick-registers '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?0))

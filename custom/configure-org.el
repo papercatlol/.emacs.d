@@ -413,6 +413,8 @@ to ACTION and execute BODY forms."
 (define-key org-mode-map (kbd "C-c l") 'org-down-element)
 (define-key org-mode-map (kbd "C-c L") 'org-toggle-link-display)
 (define-key org-mode-map (kbd "C-c I") 'org-toggle-inline-images)
+(define-key org-mode-map (kbd "C-c C-s") 'counsel-imenu-dwim)
+(define-key org-mode-map (kbd "C-c s") 'org-schedule)
 
 ;;* TODO slime-link (should do slime-xref on a symbol)
 
