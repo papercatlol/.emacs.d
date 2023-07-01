@@ -4,19 +4,15 @@
 ;; https://hobo.house/2017/07/17/using-offlineimap-with-the-gmail-imap-api/
 ;; http://cachestocaches.com/2017/3/complete-guide-email-emacs-using-mu-and-/
 
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
-
 ;; 1 char is plenty for marks. Need to set this before loading `mu4e' because
 ;; other variables are calculated from it.
 (defconst mu4e~mark-fringe-len 1)
 
-(require 'mu4e)
-
 ;;* evil bindings. Some don't work though...
 ;; TODO get rid of `evil-collection'
 (with-eval-after-load 'evil
-  (require 'evil-collection)
-  (evil-collection-mu4e-setup)
+  ;;(require 'evil-collection)
+  ;;(evil-collection-mu4e-setup)
   (define-key mu4e-view-mode-map "h" 'backward-char)
   (define-key mu4e-view-mode-map "j" 'next-line)
   (define-key mu4e-view-mode-map "k" 'previous-line)
@@ -27,7 +23,16 @@
   (define-key mu4e-view-mode-map "v" 'evil-visual-char-or-expand-region)
   (define-key mu4e-view-mode-map (kbd "C-c v") 'mu4e-view-verify-msg-popup)
   (define-key mu4e-view-mode-map (kbd "C-=") 'mu4e-headers-split-view-grow)
+  (define-key mu4e-view-mode-map (kbd "C-j") 'mu4e-view-headers-next)
+  (define-key mu4e-view-mode-map (kbd "C-k") 'mu4e-view-headers-prev)
+  (define-key mu4e-headers-mode-map (kbd "C-j") 'mu4e-headers-next)
+  (define-key mu4e-headers-mode-map (kbd "C-k") 'mu4e-headers-prev)
   (define-key mu4e-headers-mode-map "h" 'backward-char)
+  (define-key mu4e-headers-mode-map "j" 'next-line)
+  (define-key mu4e-headers-mode-map "J" 'mu4e~headers-jump-to-maildir)
+  (define-key mu4e-search-minor-mode-map "j" 'next-line)
+  (define-key mu4e-headers-mode-map "k" 'previous-line)
+  (define-key mu4e-headers-mode-map "q" 'mu4e-headers-query-prev)
   (define-key mu4e-headers-mode-map "s" 'mu4e-headers-search)
   (define-key mu4e-headers-mode-map "S" 'mu4e-headers-search-edit)
   (define-key mu4e-headers-mode-map "H" 'mu4e-headers-query-prev)
@@ -169,7 +174,7 @@
 (setq mu4e-compose-in-new-frame t)
 
 ;;* org-mu4e
-(require 'org-mu4e)
+(require 'org-mu4e nil t)
 
 ;; convert org mode to HTML automatically
 (setq org-mu4e-convert-to-html t)
@@ -418,8 +423,8 @@ region if there is a region, then move to the previous message."
                          :test #'string=)))
     (let* ((today (%find "date:today..now"))
            ;; HACK divide by 2 because mu4e doubles the results for some reason
-           (today-count (/ (plist-get today :count) 2))
-           (today-unread (/ (plist-get today :unread) 2))
+           (today-count (if today (/ (plist-get today :count) 2) 0))
+           (today-unread (if today (/ (plist-get today :unread) 2) 0))
            (unread-count (mu4e~headers-count-unread))
            (update-running-p
              (and (buffer-live-p mu4e--update-buffer)

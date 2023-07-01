@@ -98,8 +98,11 @@
 (require 'configure-ace-window)
 (require 'configure-evil)
 (require 'configure-org)
+
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
 (when (require 'mu4e nil t)
   (require 'configure-email))
+
 (require 'configure-git)
 (require 'configure-highlight)
 (require 'configure-isearch)
@@ -109,7 +112,7 @@
 (require 'configure-w3m)
 
 ;;* language-specific configs
-;; TODO non-lisp configs when an a specific mode is enabled for the first time
+;; TODO non-lisp configs when a specific mode is enabled for the first time
 ;;** lisp (CL + Elisp)
 (require 'configure-lisp)
 
