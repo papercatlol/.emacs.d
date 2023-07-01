@@ -693,7 +693,16 @@ if there is a sole window."
 (global-set-key (kbd "<C-i>") 'completion-at-point)
 (global-set-key (kbd "TAB") 'indent-for-tab-command)
 
+;; trigger elisp completion in any mode
+(defun completion-at-point-elisp ()
+  "Perform completion of an elisp symbol at point."
+  (interactive)
+  (let ((completion-at-point-functions
+          '(elisp-completion-at-point t)))
+    (call-interactively #'completion-at-point)))
+
 (global-set-key (kbd "C-c <C-i>") 'completion-at-point-elisp)
+
 ;;** with-minor-mode-overriding - locally override minor mode keymap
 (cl-defmacro with-minor-mode-map-overriding ((new-map minor-mode) &body body)
   "Create a keymap locally overriding MINOR-MODE keymap and bind it to NEW-MAP inside BODY"
