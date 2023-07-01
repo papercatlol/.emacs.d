@@ -289,7 +289,9 @@ inside of that list."
                       slime-repl-input-start-mark
                     (save-excursion (slime-repl-find-prompt t)
                                     (point)))))
-        (narrow-to-region slime-repl-input-start-mark (point-max)))
+        (narrow-to-region slime-repl-input-start-mark (point-max))
+        ;;(slime-repl-narrow-to-prompt)
+        )
       (apply fn args)))
   (apply fn args))
 

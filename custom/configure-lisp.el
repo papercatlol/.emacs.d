@@ -1013,6 +1013,14 @@ TODO: With prefix arg untrace all."
 ;; (define-key slime-xref-mode-map (kbd "C-c A") 'slime-xref-toggle-trace-all)
 (define-key slime-xref-mode-map (kbd "C-c T") 'slime-xref-toggle-trace-all)
 
+
+;;** disable slime-autodoc-space in slime-xref buffer
+(defun slime-autodoc--unbind-space ()
+  (with-minor-mode-map-overriding (map slime-autodoc-mode)
+    (define-key map (kbd "SPC") nil)))
+
+(add-hook 'slime-xref-mode-hook 'slime-autodoc--unbind-space)
+
 ;;* avy-actions
 (defun avy-action-copy-to-repl (pt)
   (when (number-or-marker-p pt)
@@ -1159,6 +1167,16 @@ If there was an active region, insert it into repl."
                   (line-end-position))))))
     (narrow-to-region start end)))
 
+;;* TODO slime-inspector-copy-down-to-repl-other-window
+;; The problem is that the slime-eval-async is async and save-selected-window
+;; can't handle that. Need to pass a different callback probably
+(defun slime-inspector-copy-down-to-repl-other-window ()
+  (interactive)
+  (save-selected-window
+   (call-interactively #'slime-inspector-copy-down-to-repl)))
+
+(define-key slime-inspector-mode-map (kbd "m") 'slime-inspector-copy-down-to-repl-other-window)
+
 ;;* KEYS
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation-minibuffer)
@@ -1187,6 +1205,10 @@ If there was an active region, insert it into repl."
 (define-key slime-inspector-mode-map (kbd "C-h") 'slime-inspector-pop)
 (define-key slime-inspector-mode-map (kbd "C-w") 'slime-inspector-pop)
 (define-key slime-inspector-mode-map (kbd "<mouse-8>") 'slime-inspector-pop)
+;;(define-key slime-inspector-mode-map (kbd "w") 'slime-inspector-next-inspectable-object)
+(define-key slime-inspector-mode-map (kbd "w") 'forward-word)
+;;(define-key slime-inspector-mode-map (kbd "b") 'slime-inspector-previous-inspectable-object)
+(define-key slime-inspector-mode-map (kbd "b") 'backward-word)
 (define-key slime-mode-map (kbd "C-c p") 'slime-pprint-eval-last-expression)
 (define-key slime-mode-map (kbd "C-c <C-i>") 'slime-complete-symbol-global)
 (define-key slime-minibuffer-map (kbd "C-c <C-i>") 'slime-complete-symbol-global)
