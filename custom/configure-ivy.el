@@ -262,12 +262,12 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
   (interactive
    (list nil (when (= 16 (prefix-numeric-value current-prefix-arg))
                (read-directory-name "From directory: "))))
-  (let ((default-directory (expand-file-name (if (= 4 (prefix-numeric-value current-prefix-arg))
-                                                 (or initial-directory
-                                                     ;; (vc-root-dir) emacs 25+?
-                                                     (locate-dominating-file default-directory ".git")
-                                                     default-directory)
-                                               default-directory))))
+  (let ((default-directory (expand-file-name (or initial-directory
+                                                 (if (= 4 (prefix-numeric-value current-prefix-arg))
+                                                     (or ;; (vc-root-dir) emacs 25+?
+                                                      (locate-dominating-file default-directory ".git")
+                                                      default-directory)
+                                                   default-directory)))))
     (if (and (counsel--git-root) (plusp (prefix-numeric-value current-prefix-arg)))
         (counsel-git initial-input)
       (counsel-fd counsel-files-base-cmd
@@ -316,7 +316,10 @@ With double prefix arg prompt for INITIAL-DIRECTORY."
 otherwise call `counsel-grep-or-swiper'. With double prefix arg call `ivy-resume'."
   (interactive)
   (if (= 16 (prefix-numeric-value current-prefix-arg))
-      (call-interactively #'ivy-resume)
+      (let ((initial-input (or (thing-at-point 'region)
+                               (thing-at-point 'symbol))))
+        (with-selected-window (aw-select " Ace - Swiper in Window")
+          (swiper initial-input)))
     (setq isearch-forward t)            ; evil search direction
     (swiper
      (cond (current-prefix-arg nil)
@@ -574,6 +577,7 @@ otherwise eval ELSE and stay."
 (def-ivy-special counsel-buffers-map "C-a" windmove-left move-beginning-of-line)
 (def-ivy-special counsel-buffers-map "C-d" windmove-right delete-char)
 (def-ivy-special counsel-buffers-map "<C-i>" (funcall counsel-buffers-current-action user-init-file) hippie-expand)
+(def-ivy-special counsel-buffers-map "C-f" (counsel-files nil user-emacs-directory) ivy-forward-char)
 
 ;;* ivy-switch-caller
 ;; When calling an ivy command from an active ivy minibuffer, sometimes it
@@ -583,11 +587,11 @@ otherwise eval ELSE and stay."
   (let ((text ivy-text)
         (caller (ivy-state-caller ivy-last)))
     (ivy-quit-and-run
-      (setq unread-command-events (listify-key-sequence text))
-      ;; Otherwise you'll end up with something like this: ^^^foo
-      (let ((ivy-initial-inputs-alist nil))
-        ;; or call-interactively?
-        (funcall command)))))
+     (setq unread-command-events (listify-key-sequence text))
+     ;; Otherwise you'll end up with something like this: ^^^foo
+     (let ((ivy-initial-inputs-alist nil))
+       ;; or call-interactively?
+       (funcall command)))))
 
 (defun ivy-switch-caller--intern (caller)
   (and caller (intern (concat "isc/" (symbol-name caller)))))
@@ -1039,6 +1043,7 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (global-set-key (kbd "C-x 4 b") 'counsel-buffers-other-window)
 (global-set-key (kbd "C-x 5 b") 'counsel-buffers-other-frame)
 (global-set-key (kbd "C-M-s") 'swiper-all)
+(define-key swiper-all-map (kbd "C-l") 'swiper-recenter-top-bottom)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
 (global-set-key (kbd "C-x f") 'counsel-files)
 (global-set-key (kbd "C-x d") 'counsel-dirs)
