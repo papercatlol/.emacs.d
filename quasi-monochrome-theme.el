@@ -25,15 +25,26 @@
 
 (custom-theme-set-faces
  'quasi-monochrome
- '(default ((t (:family "Iosevka Custom Terminus"
-                ;;:width normal
-                :width expanded
-                :weight light
-                ;;:weight normal
+ ;;'(default ((t (:family "Iosevka Custom Terminus"
+ ;;               ;;:width normal
+ ;;               :width expanded
+ ;;               :weight light
+ ;;               ;;:weight normal
+ ;;               :background "black"
+ ;;               :foreground "light gray"
+ ;;               :height 110
+ ;;               :inverse-video nil))))
+ '(default ((t (:font "-ADBO-Source Code Pro-normal-normal-normal-*-23-*-*-*-m-0-iso10646-1"
                 :background "black"
-                :foreground "light gray"
-                :height 110
-                :inverse-video nil))))
+                :foreground "light gray"))))
+ ;;'(default ((t (:inherit nil :stipple nil
+ ;;               :background "black" :foreground "light gray"
+ ;;               :inverse-video nil
+ ;;               :box nil :strike-through nil :overline nil :underline nil
+ ;;               :slant normal :weight normal
+ ;;               :height 140 :width normal
+ ;;               :foundry "xos4"
+ ;;               :family "xos4 Terminus"))))
  ;; fixed & ariable-pitch fonts
  ;;'(variable-pitch ((t (:family "Fira Code" :height 110))))
  ;;'(variable-pitch ((t (:family "Hack" :height 110))))
@@ -236,6 +247,7 @@
  '(mu4e-unread-face ((t (:inherit font-lock-keyword-face :weight normal))))
  '(mu4e-header-highlight-face ((t (:inherit hl-line :extend t
                                    :underline nil :weight normal))))
+ '(mu4e-related-face ((t (:inherit mu4e-header-face :slant italic))))
  ;; js2-mode
  '(js2-function-param ((t (:inherit default))))
  '(js2-jsdoc-value ((t (:inherit js2-jsdoc-tag))))
