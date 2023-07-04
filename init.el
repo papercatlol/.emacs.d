@@ -2087,6 +2087,45 @@ mosey was first called with prefix arg."
   (define-key journalctl-mode-map (kbd "/") 'isearch-forward-regexp)
   (define-key journalctl-mode-map (kbd "C-v") nil))
 
+;;* newline-and-todo
+(defvar todo-keywords-alist
+  '((?t . "TODO")
+    (?m . "MAYBE")
+    (?f . "FIXME")
+    (?k . "KLUDGE")
+    (?n . "NOTE")
+    (?t . "TEMP")
+    (?b . "BUG"))
+  "Alist CHAR -> KEYWORD for fast keyword selection in `newline-and-todo'.")
+
+(defun newline-and-todo ()
+  "Insert a todo comment after newline. When called again
+immediately, prompt for a todo keyword to use."
+  (interactive)
+  (if (and (eq last-command 'newline-and-todo)
+           (looking-back (rx-to-string
+                          `(and (or ,@(mapcar #'cdr todo-keywords-alist))
+                                ":" (* space)))))
+      (when-let* ((prompt (format "Keyword[%s]:"
+                                  (concat (mapcar #'car todo-keywords-alist))))
+                  (keyword (loop for ch = (read-char prompt)
+                                 when (assoc ch todo-keywords-alist)
+                                   return (cdr it))))
+        (delete-region (match-beginning 0) (match-end 0))
+        (insert (concat keyword ": ")))
+    (unless (and (looking-back (rx bol (* space)))
+                 (looking-at-p (rx (* space) eol)))
+      (end-of-line)
+      (newline-and-indent))
+    (comment-dwim nil)
+    (unless (looking-back " ")
+      (insert " "))
+    (insert "TODO: ")
+    (when (fboundp 'evil-insert-state)
+      (evil-insert-state))))
+
+(global-set-key (kbd "H-t") 'newline-and-todo)
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
