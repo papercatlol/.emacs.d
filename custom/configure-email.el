@@ -67,7 +67,8 @@
       mu4e-headers-auto-update t
       mu4e-compose-signature-auto-include nil
       mu4e-compose-format-flowed t
-      mu4e-headers-show-threads nil)
+      mu4e-headers-show-threads nil
+      mu4e-modeline-support nil)
 (setq mu4e-confirm-quit nil)
 
 ;;* columns in *mu4e-headers* view
@@ -78,6 +79,10 @@
         (:subject)
         ;;(:mailing-list . 10)
         ))
+
+;;* vertical layout
+(setq mu4e-split-view 'vertical)
+(setq mu4e-headers-visible-columns 95)
 
 ;;* fancy chars
 (setq mu4e-use-fancy-chars t)
@@ -393,14 +398,10 @@ region if there is a region, then move to the previous message."
 (add-hook 'mu4e-compose-mode-hook #'flyspell-mode)
 
 ;;* wrapper around `mu4e-found-func'
-(defvar-local mu4e~headers-last-count 0
-  "The number of results returned by most recent query.")
-
 (defun mu4e~headers-found-silent-handler (count)
   "Cache COUNT and suppress messages."
   (when (buffer-live-p (mu4e-get-headers-buffer))
     (with-current-buffer (mu4e-get-headers-buffer)
-      (setq mu4e~headers-last-count count)
       (let ((inhibit-message t))
         (mu4e~headers-found-handler count)))))
 
@@ -419,29 +420,45 @@ region if there is a region, then move to the previous message."
   :group 'mu4e-faces)
 
 (defun mu4e~better-header-line ()
-  (cl-labels ((%find (query)
-                (cl-find query (plist-get (mu4e-server-properties) :queries)
-                         :key (lambda (q) (plist-get q :query))
-                         :test #'string=)))
-    (let* ((today (%find "date:today..now"))
-           ;; HACK divide by 2 because mu4e doubles the results for some reason
-           (today-count (if today (/ (plist-get today :count) 2) 0))
-           (today-unread (if today (/ (plist-get today :unread) 2) 0))
-           (unread-count (mu4e~headers-count-unread))
-           (update-running-p
-             (and (buffer-live-p mu4e--update-buffer)
-                  (process-live-p (get-buffer-process mu4e--update-buffer)))))
-      (concat
-       (propertize (format "Today: %s/%s   Hits: %s   Unread: %s   Query: %s"
-                           (- today-count today-unread) today-count
-                           mu4e~headers-last-count
-                           unread-count
-                           mu4e--search-last-query)
-                   'face 'mu4e-header-line-face)
-       (cond (update-running-p
-              (propertize " Updating..." 'face 'mu4e-header-line-updating-face))
-             ((null mu4e-update-minor-mode)
-              (propertize " Updating off" 'face 'mu4e-warning-face)))))))
+  (let* ((last-query-item (loop for item in (mu4e-query-items)
+                                when (equal mu4e--search-last-query (getf item :query))
+                                  return item))
+         (total-hits (getf last-query-item :count))
+         (unread-count (mu4e~headers-count-unread))
+         (update-running-p
+           (and (buffer-live-p mu4e--update-buffer)
+                (process-live-p (get-buffer-process mu4e--update-buffer))))
+         (today-total 0)
+         (today-unread 0))
+    ;; Count today's unread/total. Will only count messages that are "visible"
+    ;; in the *mu4e-headers* buffer.
+    (save-excursion
+     (goto-char (point-min))
+     (let ((today-decoded (decode-time (current-time)))
+           (today-midnight nil))
+       ;; Is there a better way to construct this?
+       (setf (decoded-time-hour today-decoded) 0)
+       (setf (decoded-time-minute today-decoded) 0)
+       (setf (decoded-time-second today-decoded) 0)
+       (setq today-midnight (encode-time today-decoded))
+
+       (loop for date = (mu4e-field-at-point :date)
+             while (time-less-p today-midnight date)
+             do (progn (incf today-total)
+                       (when (member 'unread (mu4e-field-at-point :flags))
+                         (incf today-unread))
+                       (forward-line)))))
+    (concat
+     (propertize (format "Today: %s/%s   Hits: %s   Unread: %s   Query: %s"
+                         today-unread today-total
+                         total-hits
+                         unread-count
+                         mu4e--search-last-query)
+                 'face 'mu4e-header-line-face)
+     (cond (update-running-p
+            (propertize " Updating..." 'face 'mu4e-header-line-updating-face))
+           ((null mu4e-update-minor-mode)
+            (propertize " Updating off" 'face 'mu4e-warning-face))))))
 
 (defun mu4e~headers-count-unread ()
   "Return the number of unread messages in the current header view."
