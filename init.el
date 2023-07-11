@@ -2126,6 +2126,16 @@ immediately, prompt for a todo keyword to use."
 
 (global-set-key (kbd "H-t") 'newline-and-todo)
 
+;;* insert-pair-map
+;; https://dd.reddit.com/r/emacs/comments/14r48b8/weekly_tips_tricks_c_thread/jrd49gw/
+(defvar insert-pair-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map [t] #'insert-pair)
+    map))
+
+(global-set-key (kbd "C-M-(") insert-pair-map)
+
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
