@@ -126,9 +126,9 @@ from git root."
   (interactive "p")
   ;; there must be a better way
   (let ((new-dir (cl-loop for i from n downto 0
-                       for dir = default-directory
-                       then (file-name-directory (directory-file-name dir))
-                       finally (return dir))))
+                          for dir = (ivy-state-directory ivy-last)
+                          then (file-name-directory (directory-file-name dir))
+                          finally (return dir))))
     (counsel-rg-change-dir new-dir)))
 
 (defun counsel-rg-toggle-root-dir ()
@@ -143,6 +143,7 @@ from git root."
 
 (dolist (map (list counsel-ag-map counsel-find-file-map))
   (define-key map (kbd "C-c DEL") 'counsel-rg-up-dir)
+  (define-key map (kbd "C-c C-w") 'counsel-rg-up-dir)
   (define-key map (kbd "C-c C-d") 'counsel-rg-change-dir)
   (define-key map (kbd "C-c C-p") 'counsel-rg-toggle-root-dir))
 
