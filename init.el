@@ -926,7 +926,8 @@ $0`(yas-escape-text yas-selected-text)`"))
         (hippie-expand-function (or hippie-expand-function 'hippie-expand))
         (he-need-paredit-fix? nil)
         (expansions nil))
-    (flet ((ding))   ; avoid the (ding) when hippie-expand exhausts its options.
+    (cl-flet ((ding (&rest _)
+                nil))   ; avoid the (ding) when hippie-expand exhausts its options.
       (while (progn
                (funcall hippie-expand-function nil)
                (setq last-command 'hippie-expand--all)
@@ -2314,6 +2315,11 @@ immediately, prompt for a todo keyword to use."
 (define-key dired-mode-map (kbd "C-f") 'forward-char)
 (define-key dired-mode-map (kbd "C-k") 'dired-do-kill-lines)
 
+(define-key dired-mode-map (kbd "j") 'dired-next-line)
+(define-key dired-mode-map (kbd "k") 'dired-previous-line)
+(define-key dired-mode-map (kbd "M-j") nil)
+(define-key dired-mode-map (kbd "M-k") nil)
+
 ;;** revert-buffer
 (global-set-key (kbd "<f5>") 'revert-buffer)
 
@@ -2326,7 +2332,7 @@ immediately, prompt for a todo keyword to use."
   ("b" #'counsel-descbinds "counsel-descbinds")
   ("c" #'counsel-colors-emacs "counsel-colors-emacs")
   ("C" #'rainbow-mode "rainbow-mode")
-  ("d" #'describe-text-properties "describe-text-properties")
+  ("d" #'describe-char "describe-char")
   ("D" #'shortdoc-display-group "shortdoc-display-group")
   ("e" #'toggle-debug-on-error "toggle-debug-on-error")
   ("E" #'ediff-buffers "ediff buffers")
