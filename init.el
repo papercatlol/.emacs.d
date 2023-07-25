@@ -2088,6 +2088,49 @@ mosey was first called with prefix arg."
   (define-key journalctl-mode-map (kbd "/") 'isearch-forward-regexp)
   (define-key journalctl-mode-map (kbd "C-v") nil))
 
+;;* artist-mode
+(pretty-hydra-define hydra-artist (:hint nil :color pink)
+  ("Draw"
+   (("n" (artist-select-operation "Pen") "Pen")
+    ("N" (artist-select-operation "Pen Line") "Pen Line")
+    ("l" (artist-select-operation "line") "line")
+    ("s" (artist-select-operation "straight line") "straight line")
+    ("r" (artist-select-operation "rectangle") "rectangle")
+    ;;("S" (artist-select-operation "square") "square")
+    ("e" (artist-select-operation "poly-line") "poly-line")
+    ("E" (artist-select-operation "straight poly-line") "straight poly-line")
+    ("o" (artist-select-operation "ellipse") "ellipse")
+    ;;("o" (artist-select-operation "circle") "circle")
+    ("t" (artist-select-operation "text see-thru") "text see-thru")
+    ("T" (artist-select-operation "text-overwrite") "text-overwrite")
+    ("c" (artist-select-operation "spray-can") "spray-can"))
+   "Erase/Cut/Copy/Paste"
+   (;;("e" (artist-select-operation "erase char") "erase char")
+    ;;("E" (artist-select-operation "erase rectangle") "erase rectangle")
+    ("v" (artist-select-operation "vaporize line") "vaporize line")
+    ("V" (artist-select-operation "vaporize lines") "vaporize lines")
+    ("x" (artist-select-operation "cut rectangle") "cut rectangle")
+    ;;("X" (artist-select-operation "cut square") "cut square")
+    ("y" (artist-select-operation "copy rectangle") "copy rectangle")
+    ;;("Y" (artist-select-operation "copy square") "copy square")
+    ("C-y" (artist-select-operation "paste") "paste")
+    ("f" (artist-select-operation "flood-fill") "flood-fill"))
+   "Settings/Toggles"
+   (("F" #'artist-select-fill-char "Select fill char")
+    ("1" #'artist-toggle-first-arrow "Toggle first arrow")
+    ("2" #'artist-toggle-second-arrow "Toggle second arrow"))
+   "Misc"
+   (("q" nil "quit hydra" :color blue)
+    ("C-q" #'artist-mode-off "quit artist" :color blue)
+    ("C-z" #'undo "undo")))
+  )
+(with-eval-after-load 'artist
+  (define-key artist-mode-map (kbd "C-c C-c") 'hydra-artist/body))
+(add-hook 'artist-mode-hook 'hydra-artist/body)
+
+(with-eval-after-load 'evil
+  (add-hook 'artist-mode-hook 'evil-emacs-state))
+
 ;;* newline-and-todo
 (defvar todo-keywords-alist
   '((?t . "TODO")
