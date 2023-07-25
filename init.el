@@ -1672,11 +1672,11 @@ else insert the face name as well."
         (cdr translation)
       (list char))))
 
-(defun avy-goto-char-2-special (&optional all-frames)
+(defun avy-goto-char-2-special (&optional all-frames input-1)
   "Like `avy-goto-char-2', but translate some keys. See
 `avy-key-translations'."
   (interactive "P")
-  (let* ((input-1 (avy-read-char "Char 1: "))
+  (let* ((input-1 (or input-1 (avy-read-char "Char 1: ")))
          (input-2 (unless (cl-second input-1)
                     (avy-read-char "Char 2: ")))
          (avy-all-windows (if all-frames 'all-frames t))
@@ -1706,13 +1706,14 @@ else insert the face name as well."
     (interactive "<c>")
     (evil-without-repeat (call-interactively 'avy-goto-char-2-special))))
 
-;;** avy-yank-char-2-special
-(defun avy-yank-char-2-special ()
-  "Like `avy-goto-char-2-special', but bind `avy-action' to `avy-action-yank'."
-  (interactive)
+;;** avy-yank-sexp-1
+(defun avy-yank-sexp-1 (&optional all-frames)
+  "Yank a sexp to current position."
+  (interactive "P")
   (let ((avy-action #'avy-action-yank))
-    (call-interactively #'avy-goto-char-2-special)))
-(global-set-key (kbd "C-S-R") 'avy-yank-char-2-special)
+    (avy-goto-char-2-special all-frames (list (string-to-char "(")))))
+(global-set-key (kbd "C-S-R") 'avy-yank-sexp-1)
+(global-set-key (kbd "C-M-y") 'avy-yank-sexp-1)
 
 ;;** avy-goto-symbol-definition-2
 (defun avy-goto-symbol-definition-2 ()
@@ -1785,7 +1786,7 @@ the cursor to the new position as well."
                 :pred (lambda () (not (member (point) redundant)))))))
 
 (global-set-key (kbd "C-t") 'avy-goto-symbol-in-defun)
-(setf (alist-get 'avy-goto-symbol-in-defun avy-styles-alist) 'pre)
+(setf (alist-get 'avy-goto-symbol-in-defun avy-styles-alist) 'at)
 (setf (alist-get 'avy-goto-symbol-in-defun avy-keys-alist)
       (append avy-keys))
 
