@@ -2439,7 +2439,8 @@ otherwise forward to `point-to-register'."
                               (if (region-active-p) "region" "point")))
                      current-prefix-arg))
   (cond ((and (not arg) (region-active-p))
-         (copy-to-register register (region-beginning) (region-end))
+         (copy-to-register register (region-beginning) (region-end)
+                           nil t)
          (message "Region copied to register %s."
                   (single-key-description register)))
         (t
@@ -2450,29 +2451,78 @@ otherwise forward to `point-to-register'."
 
 (define-key global-map (kbd "H-`") 'save-to-register-dwim)
 (define-key global-map (kbd "H--") 'counsel-register)
-(add-to-list 'savehist-additional-variables 'register-alist)
+
+;;** persistent registers
+(defvar register-alist-printable nil)
+
+(defun savehist-fix-register-alist ()
+  "Replace unprintable values in `register-alist' before saving."
+  (setq register-alist-printable
+        (loop for (register . val) in register-alist
+              ;; See `register-val-jump-to'.
+              when
+              (cond
+                ((frame-configuration-p (car-safe val))
+                 ;; TODO
+                 nil)
+                ((window-configuration-p (car-safe val))
+                 ;; TODO
+                 nil)
+                ((markerp val)
+                 ;; See `register-swap-out'.
+                 (cons register (list 'file-query
+                                      (buffer-file-name (marker-buffer val))
+                                      (marker-position val))))
+                ((or (eq (car-safe val) 'file)
+                     (eq (car-safe val) 'file-query)
+                     (stringp val))
+                 (cons register val)))
+              collect it)))
+
+(savehist-fix-register-alist)
+
+(loop for (register . val) in register-alist
+      collect (cons register (type-of val)))
+
+(add-hook 'savehist-save-hook 'savehist-fix-register-alist)
+(add-to-list 'savehist-additional-variables 'register-alist-printable)
+
+(eval-after-load savehist-file
+  (when (and register-alist-printable (null register-alist))
+    (setq register-alist register-alist-printable)))
 
 ;;*** quick registers
-(defvar quick-registers '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?0))
-
-(defmacro quick-registers-init ()
-  (let ((defs
-          (loop for r in quick-registers
-                for str = (string r)
-                for name = (make-symbol
-                            (concat "quick-register-" str))
-                collect `(defun ,name (&optional store)
-                           ,(format "Call `register-dwim' on a register %s.\
+(defmacro define-quick-key-register (map key register)
+  (let* ((str (string register))
+         (name (make-symbol
+                (concat "quick-register-" str))))
+    `(progn
+       (defun ,name (&optional store)
+         ,(format "Call `register-dwim' on a register %s.\
  With universal arg call `save-to-register-dwim' instead." str)
-                           (interactive "P")
-                           (if store
-                               (save-to-register-dwim ,r)
-                             (register-dwim ,r)))
-                collect `(define-key global-map (kbd ,(concat "H-" str))
-                           ',name))))
-    `(progn ,@defs)))
+         (interactive "P")
+         (if store
+             (save-to-register-dwim ,register)
+           (register-dwim ,register)))
+       (define-key ,map ,key ',name))))
 
-(quick-registers-init)
+;; H-0..9
+(define-quick-key-register global-map (kbd "H-0") ?0)
+(define-quick-key-register global-map (kbd "H-1") ?1)
+(define-quick-key-register global-map (kbd "H-2") ?2)
+(define-quick-key-register global-map (kbd "H-3") ?3)
+(define-quick-key-register global-map (kbd "H-4") ?4)
+(define-quick-key-register global-map (kbd "H-5") ?5)
+(define-quick-key-register global-map (kbd "H-6") ?6)
+(define-quick-key-register global-map (kbd "H-7") ?7)
+(define-quick-key-register global-map (kbd "H-8") ?8)
+(define-quick-key-register global-map (kbd "H-9") ?9)
+;; C-H-a..z
+(loop for register from ?a to ?z
+      for key-hyper = (kbd (concat "C-H-" (string register)))
+      do (eval `(define-quick-key-register global-map ,key-hyper ,register))
+      for key-super = (kbd (concat "s-" (string register)))
+      do (eval `(define-quick-key-register global-map ,key-super ,register)))
 
 ;;** mouse events
 ;;*** increase/decrease-number-at-mouse (similar to acme)
@@ -2480,11 +2530,11 @@ otherwise forward to `point-to-register'."
   "Execute BODY with window and point temporarily set to that of
 EVENT."
   (let ((event-pos (gensym "event-pos")))
-   `(when-let ((,event-pos (event-start ,event)))
-      (with-selected-window (posn-window ,event-pos)
-        (save-excursion
-         (goto-char (posn-point ,event-pos))
-         ,@body)))))
+    `(when-let ((,event-pos (event-start ,event)))
+       (with-selected-window (posn-window ,event-pos)
+         (save-excursion
+          (goto-char (posn-point ,event-pos))
+          ,@body)))))
 
 (defun increase-number-at-mouse (e)
   (interactive "e")
