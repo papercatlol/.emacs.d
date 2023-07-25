@@ -31,6 +31,10 @@
 (add-hook 'magit-refs-mode-hook #'magit-status-set-wide-fringe)
 (add-hook 'magit-revision-sections-hook #'magit-status-set-wide-fringe)
 
+;;* allow magit-commit to create windows
+;; TODO do the same for `magit-log-select-setup-buffer'.
+(setq magit-commit-diff-inhibit-same-window t)
+
 ;;* j/k movement
 (defun magit-forward-dwim ()
   (interactive)
@@ -131,6 +135,7 @@ already narrowed, widen."
 ;;* ediff
 (setq ediff-split-window-function 'split-window-horizontally)
 (setq-default ediff-ignore-similar-regions t)
+(setq-default ediff-highlight-all-diffs nil)
 
 (defun ediff-scroll-down ()
   (interactive)
@@ -232,6 +237,7 @@ and kill tmp buffers on call and reset the
 (global-set-key (kbd "H-e") 'ediff-region-and-kill-ring)
 
 
+;;* keybindings
 ;; MAYBE: add hydra
 (global-set-key (kbd "C-x G") 'magit-file-dispatch)
 
@@ -258,7 +264,7 @@ and kill tmp buffers on call and reset the
   (define-key m (kbd "C-x C-n") 'magit-diff-narrow-to-file)
   (define-key m "H" 'magit-section-up))
 
-;;** header-line for files in other revisions
+;;* header-line for files in other revisions
 (defun magit--set-header-line (&rest args)
   (when magit-buffer-revision
     (setq header-line-format
@@ -266,20 +272,20 @@ and kill tmp buffers on call and reset the
 (advice-add 'magit-find-file--internal :after #'magit--set-header-line)
 (advice-add 'magit-diff-visit-file--internal :after #'magit--set-header-line)
 
-;;** magit-blame-dwim
+;;* magit-blame-dwim
 (defun magit-blame-dwim ()
   (interactive)
   (if magit-blame-mode
       (magit-blame-mode -1)
     (call-interactively #'magit-blame-addition)))
 
-;;** magit-list-repositories
+;;* magit-list-repositories
 (setq magit-repository-directories
       '(("~/.emacs.d/" . 2)
         ("~/clones/" . 2)
         ("~/aur/" . 1)))
 
-;;** magit-delta
+;;* magit-delta
 (when (and (require 'magit-delta nil t)
            (executable-find magit-delta-delta-executable))
   (setq magit-delta-delta-args
