@@ -498,6 +498,8 @@ buffer will be opened(current window, other window, other frame)."
               (ivy-new-view item))
              ((file-exists-p item)
               (visit-file item where))
+             ((ffap-url-p item)
+              (eww-browse-url item))
              (t (visit-buffer item where))))))
 
 (defun counsel-buffers-action-other-window (item)
@@ -1002,6 +1004,7 @@ exit with that candidate, otherwise insert SPACE character as usual."
  '(("a" face-attributes-pretty-print "pp face attributes")))
 
 ;;* counsel-global-mark-ring
+;; MAYBE look at `dogears.el' https://github.com/alphapapa/dogears.el
 (defun counsel-global-mark-ring ()
   "Browse `global-mark-ring' interactively."
   (interactive)

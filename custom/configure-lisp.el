@@ -110,7 +110,8 @@ when cursor is directly inside the in-package form."
     (put 'if 'common-lisp-indent-function 2)
     (put 'if-let 'common-lisp-indent-function 2)
     (put 'if-let* 'common-lisp-indent-function 2)
-    (%copy-indent '-let 'let)))
+    (%copy-indent '-let 'let)
+    (put 'pretty-hydra-define 'common-lisp-indent-function 2)))
 
 ;;** documentation
 (defvar *elisp-documentation-last-symbol* nil
@@ -1297,6 +1298,9 @@ If there was an active region, insert it into repl."
 (define-key emacs-lisp-mode-map (kbd "C-c C-c") 'compile-defun)
 (define-key emacs-lisp-mode-map (kbd "C-c <return>") 'macrostep-expand)
 (define-key emacs-lisp-mode-map (kbd "C-c RET") 'macrostep-expand)
+
+;;** Global `lisp-mode' mapping
+(define-key global-map (kbd "C-c C-l") 'lisp-mode)
 
 ;;* lispy
 (require 'configure-lispy)

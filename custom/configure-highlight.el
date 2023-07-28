@@ -75,7 +75,9 @@
         ((region-active-p)
          (unhighlight-regexp (regexp-quote (buffer-substring (mark) (point)))))
         (t (unhighlight-regexp (hi-lock-regexp-okay
-                                (find-tag-default-as-symbol-regexp))))))
+                                ;;(find-tag-default-as-symbol-regexp)
+                                (when-let ((sym (thing-at-point 'symbol t)))
+                                  (format "\\_<%s\\_>" (regexp-quote sym))))))))
 
 (defun highlight-lines-matching-regexp-autocolor (arg)
   "Same as `highlight-lines-matching-regexp' but with automatic color selection.

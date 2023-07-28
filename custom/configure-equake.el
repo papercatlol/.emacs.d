@@ -232,10 +232,18 @@ With prefix arg open a new equake tab."
 
 ;;* coterm (terminal emulation for comint)
 (coterm-mode)
+(add-hook 'coterm-mode-hook 'coterm-auto-char-mode)
 
-;;   ;; Optional: bind `coterm-char-mode-cycle' to C-; in comint
-;;   (with-eval-after-load 'comint
-;;     (define-key comint-mode-map (kbd "C-;") #'coterm-char-mode-cycle))
+(with-eval-after-load 'comint
+  (defun coterm-char-mode-cycle-and-echo ()
+    (interactive)
+    (coterm-char-mode-cycle)
+    (message "Coterm: %s."
+             (cond (coterm-auto-char-mode 'coterm-auto-char-mode)
+                   (coterm-char-mode 'coterm-char-mode)
+                   (t "default mode"))))
+
+  (define-key comint-mode-map (kbd "<f11>") 'coterm-char-mode-cycle-and-echo))
 
 ;;* copy-to-equake
 (defun copy-to-equake (text)

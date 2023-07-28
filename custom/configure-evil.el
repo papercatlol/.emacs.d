@@ -29,6 +29,7 @@
 (evil-set-initial-state 'edebug-mode 'emacs)
 (evil-set-initial-state 'Info-mode 'emacs)
 (evil-set-initial-state 'journalctl-mode 'emacs)
+(evil-set-initial-state 'dired-mode 'emacs)
 (evil-set-initial-state 'ibuffer-mode 'normal)
 (evil-set-initial-state 'snippet-mode 'insert)
 
@@ -639,6 +640,12 @@ double quote kill sexp at point."
 
 ;;** gr = xref-find-references
 (evil-define-key '(normal) global-map "gr" 'xref-find-references)
+
+;;** H-n/H-SPC globally = evil-search-next
+(global-set-key (kbd "H-n") 'evil-search-next)
+(global-set-key (kbd "H-N") 'evil-search-previous)
+(global-set-key (kbd "H-SPC") 'evil-search-next)
+(global-set-key (kbd "H-S-SPC") 'evil-search-previous)
 
 ;;* evil-multiedit
 ;; TODO: remove iedit config in init.el, since evil-multiedit seems superior

@@ -234,6 +234,7 @@ to ACTION and execute BODY forms."
 (define-key counsel-goto-task-map (kbd "C-c C-x C-o") 'org-clock-out)
 (define-key counsel-goto-task-map (kbd "C-c C-x C-i") 'odtt:ivy-action-clock-in)
 (define-key counsel-goto-task-map (kbd "M-.") 'odtt:ivy-goto-task)
+(define-key counsel-goto-task-map (kbd "<f7>") 'odtt:ivy-goto-task)
 
 (global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
 (global-set-key (kbd "<f7>") 'org-dumb-time-tracker)
@@ -241,7 +242,7 @@ to ACTION and execute BODY forms."
 ;;** org-dumb-time-tracker interactive command alias
 (defun org-dumb-time-tracker ()
   (interactive)
-  (call-interactively  #'counsel-goto-task))
+  (call-interactively #'counsel-goto-task))
 
 ;;* capture templates & denote
 ;;(require 'configure-org-roam)

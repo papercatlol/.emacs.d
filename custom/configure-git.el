@@ -296,7 +296,7 @@ and kill tmp buffers on call and reset the
 
   (add-hook 'magit-mode-hook #'magit-delta-mode))
 
-;;** [DISABLED] magit-todos
+;;* [DISABLED] magit-todos
 ;; (require 'magit-todos)
 
 ;; (magit-todos-mode t)

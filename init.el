@@ -2358,7 +2358,7 @@ immediately, prompt for a todo keyword to use."
   ("r" #'rename-file-and-buffer "rename-file-and-buffer")
   ("s" #'string-edit-at-point "string-edit-at-point")
   ("t" #'tldr "TLDR")
-  ("T" #'explain-pause-top "Explain pause top")
+  ("T" #'orgtbl-mode "org table minor mode")
   ("v" #'counsel-describe-variable "Describe variable")
   ("w" #'whitespace-mode "whitespace-mode")
   ("W" #'delete-trailing-whitespace "delete-trailing-whitespace")
