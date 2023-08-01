@@ -395,8 +395,31 @@ start revision."
   (message "Revision set to %s" start-rev)
   (git-gutter))
 
+;;* magit-find-current-file-other-window
+(defun magit-find-current-file-other-window (rev file)
+  "Like `magit-find-file-other-window', but use current file
+instead of prompting. With prefix arg behave the same way as the
+original command."
+  (interactive
+   ;; Adapted from `magit-find-file-read-args'.
+   (let ((prompt "Find file in other window")
+         (pseudo-revs '("{worktree}" "{index}")))
+     (if-let ((rev (magit-completing-read "Find file from revision"
+                                          (append pseudo-revs
+                                                  (magit-list-refnames nil t))
+                                          nil nil nil 'magit-revision-history
+                                          (or (magit-branch-or-commit-at-point)
+                                              (magit-get-current-branch)))))
+         (list rev (if (or current-prefix-arg (not (buffer-file-name)))
+                       (magit-read-file-from-rev (if (member rev pseudo-revs)
+                                                     "HEAD"
+                                                   rev)
+                                                 prompt)
+                     (buffer-file-name)))
+       (user-error "Nothing selected"))))
+  (magit-find-file--internal rev file #'switch-to-buffer-other-window))
+
 ;;* git hydra
-;; TODO: a function to stage current hunk or region
 ;; TODO: look at smerge hydra here:
 ;; https://github.com/angrybacon/dotemacs/blob/master/dotemacs.org#hydra-git
 (defhydra hydra-git (:hint nil :color pink)
@@ -435,7 +458,7 @@ start revision."
   ("e" #'magit-ediff :exit t)
   ("SPC" #'magit-diff-buffer-file-no-select)
 
-  ("f" #'magit-find-file-other-window :exit t)
+  ("f" #'magit-find-current-file-other-window :exit t)
   ("p" #'magit-blob-previous)
   ("n" #'magit-blob-next)
   ("C-j" #'magit-blob-visit-file)
