@@ -2421,7 +2421,7 @@ immediately, prompt for a todo keyword to use."
       (typecase content
         ;; TODO rectangle selection is a cons - handle it somehow
         ((or string number)
-         (insert-register register))
+         (insert-register register t))
         ((or marker cons)
          (jump-to-register register))
         (otherwise
@@ -2452,7 +2452,7 @@ otherwise forward to `point-to-register'."
 (define-key global-map (kbd "H-`") 'save-to-register-dwim)
 (define-key global-map (kbd "H--") 'counsel-register)
 
-;;** persistent registers
+;;*** persistent registers
 (defvar register-alist-printable nil)
 
 (defun savehist-fix-register-alist ()
@@ -2523,6 +2523,39 @@ otherwise forward to `point-to-register'."
       do (eval `(define-quick-key-register global-map ,key-hyper ,register))
       for key-super = (kbd (concat "s-" (string register)))
       do (eval `(define-quick-key-register global-map ,key-super ,register)))
+
+;;*** jump-to-next-register
+(defvar last-visited-register nil)
+
+(defun jump-to-next-register (&optional clear-last-visited)
+  "Jumps to next register that contains a buffer position.
+With prefix arg clear `last-visited-register' instead."
+  (interactive "P")
+  (if clear-last-visited
+      (if (null last-visited-register)
+          (message "last-visited-register is nil")
+        (setf (alist-get last-visited-register register-alist nil 'remove)
+              nil)
+        (message "Cleared register %s" (char-to-string last-visited-register))
+        ;; MAYBE set `last-visited-register' to the one before last.
+        (setq last-visited-register nil))
+    (let* ((found (null last-visited-register))
+           (register
+             (loop for (register . val) in register-alist
+                   do (cond ((eq register last-visited-register)
+                             (setq found t))
+                            ((and found
+                                  (or (markerp val)
+                                      (eq (car-safe val) 'file-query)))
+                             (setq last-visited-register register)
+                             (return register))))))
+      (if register
+          (progn (message "Register %s" (char-to-string register))
+                 (jump-to-register register))
+        (setq last-visited-register nil)
+        (jump-to-next-register)))))
+
+(global-set-key (kbd "<f16>") 'jump-to-next-register)
 
 ;;** mouse events
 ;;*** increase/decrease-number-at-mouse (similar to acme)
