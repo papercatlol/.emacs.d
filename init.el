@@ -1131,6 +1131,7 @@ current entry."
 ;;* hideshow (mainly for json files)
 (setf (alist-get 'js-mode hs-special-modes-alist)
       '("{" "}" "/[*/]" nil))
+
 (define-key hs-minor-mode-map (kbd "C-<tab>") 'hs-toggle-hiding)
 ;;* tramp
 (setq-default tramp-verbose 5)
@@ -1204,11 +1205,7 @@ current entry."
 
 ;;* page-break-lines
 (when (fboundp 'page-break-lines-mode)
-  (add-hook 'prog-mode-hook 'page-break-lines-mode)
-  (add-hook 'help-mode-hook 'page-break-lines-mode)
-  (add-hook 'compilation-mode-hook 'page-break-lines-mode)
-  (add-hook 'man-mode-hook 'page-break-lines-mode)
-  )
+  (global-page-break-lines-mode))
 
 ;;* rename-buffer
 (defun rename-buffer-dwim (newname &optional unique)
@@ -1994,22 +1991,22 @@ mosey was first called with prefix arg."
 (defun switch-to-favourite-buffer-2 (override)
   (interactive "P")
   (switch-to-favourite-buffer 1 nil override))
-(global-set-key (kbd "M-2") 'switch-to-favourite-buffer-2)
+;;(global-set-key (kbd "M-2") 'switch-to-favourite-buffer-2)
 
 (defun switch-to-favourite-buffer-3 (override)
   (interactive "P")
-  (switch-to-favourite-buffer 2 nil override))
-(global-set-key (kbd "M-3") 'switch-to-favourite-buffer-3)
+  (switch-to-favourite-buffer 2 t override))
+;;(global-set-key (kbd "M-3") 'switch-to-favourite-buffer-3)
 
 (defun switch-to-favourite-buffer-4 (override)
   (interactive "P")
   (switch-to-favourite-buffer 3 t override))
-(global-set-key (kbd "M-4") 'switch-to-favourite-buffer-4)
+;;(global-set-key (kbd "M-4") 'switch-to-favourite-buffer-4)
 
 (defun switch-to-favourite-buffer-5 (override)
   (interactive "P")
   (switch-to-favourite-buffer 4 t override))
-(global-set-key (kbd "M-5") 'switch-to-favourite-buffer-5)
+;;(global-set-key (kbd "M-5") 'switch-to-favourite-buffer-5)
 
 ;;* man
 (global-set-key (kbd "H-m") 'man)
@@ -2246,6 +2243,8 @@ immediately, prompt for a todo keyword to use."
 (global-set-key (kbd "M-p") 'previous-error)
 (define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
 (define-key grep-mode-map (kbd "C-x C-j") 'compilation-to-dired)
+(define-key grep-mode-map (kbd "m") 'compilation-display-error)
+(define-key grep-mode-map (kbd "M-m") 'compilation-display-error)
 (define-key compilation-mode-map (kbd "C-x C-j") 'compilation-to-dired)
 (define-key ctl-x-4-map (kbd "j") 'dired-jump-other-window)
 (define-key ctl-x-5-map (kbd "j") 'dired-jump-other-frame)

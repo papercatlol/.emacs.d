@@ -692,6 +692,9 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
    ;; author name width
    6))
 
+;;* changelog
+(define-key git-commit-mode-map (kbd "C-c C-y") 'magit-generate-changelog)
+
 ;;(defun magit-refs--format-margin-email (commit)
 ;;  "Show email instead of author name."
 ;;  (save-excursion
