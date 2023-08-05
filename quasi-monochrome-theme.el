@@ -37,6 +37,13 @@
  '(default ((t (:font "-ADBO-Source Code Pro-normal-normal-normal-*-23-*-*-*-m-0-iso10646-1"
                 :background "black"
                 :foreground "light gray"))))
+ ;;'(default ((t (:family "Monoid"
+ ;;               :height 100
+ ;;               :background "black"
+ ;;               :foreground "light gray"))))
+ ;;'(default ((t (:font "-fsdf-PragmataPro-normal-normal-normal-*-23-*-*-*-m-0-iso10646-1"
+ ;;               :background "black"
+ ;;               :foreground "light gray"))))
  ;;'(default ((t (:inherit nil :stipple nil
  ;;               :background "black" :foreground "light gray"
  ;;               :inverse-video nil
@@ -167,7 +174,7 @@
                           ;; :box t
                           :underline t
                           ))))
- '(magit-diff-hunk-heading-highlight ((t (:foreground "grey70" :background "grey35"
+ '(magit-diff-hunk-heading-highlight ((t (:foreground "grey80" :background "DarkOrange3"
                                           :weight bold))))
  '(magit-diff-context-highlight ((t (:foreground "grey70" :background "grey20"
                                      :weight semi-bold
@@ -176,7 +183,8 @@
  '(magit-section-heading ((t (:foreground "#43666b" :underline t :weight bold))))
  '(magit-filename ((t (:weight normal :inherit font-lock-string-face))))
  '(magit-diff-file-heading ((t (:extend t :weight bold
-                                :inherit font-lock-string-face))))
+                                :inherit font-lock-keyword-face
+                                :weight normal))))
  '(magit-tag ((t (:foreground "salmon"))))
  '(magit-branch-local ((t (:foreground "LightSkyBlue2"))))
  '(magit-branch-remote ((t (:foreground "DarkSeaGreen3"))))
