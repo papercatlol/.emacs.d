@@ -890,6 +890,18 @@ Else narrow-to-defun."
 # --
 $0`(yas-escape-text yas-selected-text)`"))
 
+;;** utils
+(defvar-local yas--need-closing-paren-p nil)
+
+(defun $op ()
+  (if (looking-back "(")
+      (setq yas--need-closing-paren-p nil)
+    (setq yas--need-closing-paren-p t)
+    "("))
+
+(defun $cp ()
+  (when yas--need-closing-paren-p ")"))
+
 ;;* hippie-expand
 (require 'hippie-exp)
 
