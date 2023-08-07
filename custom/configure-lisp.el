@@ -344,6 +344,7 @@ With negative prefix arg call original `slime-edit-definition'."
       (call-interactively #'slime-edit-definition-other-frame)
     (slime--edit-definition-ivy nil 'frame)))
 
+;;** package-related stuff
 (defun slime-kill-package-name (&optional symbol-at-point)
   "Kill current package name. With prefix arg or if region is
 active, kill fully qualified symbol-at-point/region."
@@ -354,10 +355,94 @@ active, kill fully qualified symbol-at-point/region."
                          (region-beginning) (region-end)))))
          (kill (if symbol
                    (slime-qualify-cl-symbol-name symbol)
-                 (slime-pretty-package-name (slime-current-package)))))
+                 (slime-pretty-package-name (or (slime-current-package)
+                                                (error "No current package."))))))
     (message kill)
     (kill-new kill)))
 
+(defun slime-qualify-cl-symbol-name-from-lisp (symbol-or-name)
+  "Qualify SYMBOL-OR-NAME by asking lisp.
+`slime-qualify-cl-symbol-name' will just take current package."
+  (unless symbol-or-name (error "SYMBOL-OR-NAME is nil."))
+  (let ((name (if (symbolp symbol-or-name)
+                  (symbol-name symbol-or-name)
+                symbol-or-name)))
+    (destructuring-bind (package status)
+        (slime-eval
+         `(cl:multiple-value-bind (symbol status)
+              (cl:find-symbol ,name)
+            (cl:when symbol
+              (cl:list
+               (cl:package-name
+                (cl:find-package (cl:symbol-package symbol)))
+               status))))
+      (concat (or package "")
+              (case status
+                ((:inherited :internal) ":")
+                (:external "::")
+                (otherwise ""))
+              name))))
+
+(advice-add 'slime-qualify-cl-symbol-name :override
+            #'slime-qualify-cl-symbol-name-from-lisp)
+
+;;*** nicknames
+(defun slime-get-package-name-and-nicknames (symbol-or-name)
+  (unless symbol-or-name (error "SYMBOL-OR-NAME is nil."))
+  (let ((name (if (symbolp symbol-or-name)
+                  (symbol-name symbol-or-name)
+                symbol-or-name)))
+    (slime-eval
+     `(cl:let ((package (cl:find-package ,name)))
+        (cl:when package
+          (cl:cons (cl:package-name package)
+                   (cl:package-nicknames package)))))))
+
+(defun slime-get-qualified-symbol-variants (symbol-or-name)
+  "E.g. member => '(common-lisp:member cl:member lisp:member)."
+  (unless symbol-or-name (error "SYMBOL-OR-NAME is nil."))
+  (let* ((symbol-name (if (symbolp symbol-or-name)
+                          (symbol-name symbol-or-name)
+                        symbol-or-name))
+         (name (slime-cl-symbol-name symbol-name))
+         (package (slime-cl-symbol-package symbol-name))
+         (current-package (slime-current-package)))
+    (slime-eval
+     `(cl:multiple-value-bind (symbol status)
+          (cl:find-symbol ,name ,@(when package (list package)))
+        (cl:let ((package (cl:and symbol (cl:symbol-package symbol))))
+          (cl:when package
+            (cl:sort
+             (cl:append
+              ;; unqualified symbol if visible from current package
+              (cl:and (cl:find-symbol ,name ,@(when current-package
+                                                (list current-package)))
+                      (cl:list ,name))
+              (cl:loop :for p :in (cl:cons (cl:package-name package)
+                                           (cl:package-nicknames package))
+                 :collect (cl:format nil "~a~a~a"
+                                     p
+                                     (cl:if (cl:eq :internal status)
+                                         "::" ":")
+                                     (cl:symbol-name symbol))))
+             #'cl:< :key #'cl:length)))))))
+
+(defun slime-cycle-qualified-symbol (beg end)
+  "Cycle between package nicknames of a symbol at point."
+  (interactive (or (and (region-active-p)
+                        (list (region-beginning)) (region-end))
+                   (when-let ((bounds (bounds-of-thing-at-point 'symbol)))
+                     (list (car bounds) (cdr bounds)))))
+  (when-let* ((name (buffer-substring-no-properties beg end))
+              (variants (slime-get-qualified-symbol-variants name))
+              (next (or (second (cl-member name variants :test #'equal))
+                        (car variants))))
+    (delete-region beg end)
+    (insert next)))
+(define-key slime-editing-map (kbd "H-u") 'slime-cycle-qualified-symbol)
+(define-key slime-editing-map (kbd "C-c C-x C-u") 'slime-cycle-qualified-symbol)
+
+;;*** repl set package hack
 (defun slime-repl-set-package--push-package (&rest args)
   ;; TODO: check if this works properly for multiple swank connections
   (let ((package (slime-lisp-package)))
@@ -365,13 +450,7 @@ active, kill fully qualified symbol-at-point/region."
     (cl-pushnew package slime-read-package-name-history)))
 (advice-add 'slime-repl-set-package :after #'slime-repl-set-package--push-package)
 
-;;(ivy-enable-calling-for-func #'slime-edit-definition-ivy)
-
-;;** completion
-;; (defvar *slime-internal-symbols* nil)
-;; (defvar *slime-external-symbols* nil)
-
-;;*** WIP completion for package names
+;;*** slime-all-packages
 ;; TODO: use swank:shortest-package-nickname for nicknames
 (defvar *slime-all-packages* nil)
 
@@ -404,6 +483,10 @@ active, kill fully qualified symbol-at-point/region."
     (list beg end (completion-table-dynamic #'slime-package-name)
           :exclusive 'no
           :exit-function #'slime-complete-package-name-exit-func)))
+
+;;** completion
+;; (defvar *slime-internal-symbols* nil)
+;; (defvar *slime-external-symbols* nil)
 
 ;;*** keyword args
 (defun slime-operator-keyword-args (&optional prefix)
@@ -480,7 +563,11 @@ active, kill fully qualified symbol-at-point/region."
      "CL-USER"))
   *slime-all-symbols*)
 
-(add-hook 'slime-connected-hook #'slime-refresh-all-symbols)
+(defun slime-maybe-refresh-all-symbols ()
+  (unless *slime-all-symbols*
+    (slime-refresh-all-symbols)))
+
+(add-hook 'slime-connected-hook #'slime-maybe-refresh-all-symbols)
 
 (defvar slime-refresh-all-symbols-timer
   (run-with-idle-timer 30 t #'slime-refresh-all-symbols))
