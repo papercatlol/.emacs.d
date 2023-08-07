@@ -391,7 +391,7 @@ active, kill fully qualified symbol-at-point/region."
   (unless symbol-or-name (error "SYMBOL-OR-NAME is nil."))
   (let ((name (if (symbolp symbol-or-name)
                   (symbol-name symbol-or-name)
-                symbol-or-name)))
+                (string-trim-right symbol-or-name ":"))))
     (slime-eval
      `(cl:let ((package (cl:find-package ,name)))
         (cl:when package
@@ -441,6 +441,14 @@ active, kill fully qualified symbol-at-point/region."
     (insert next)))
 (define-key slime-editing-map (kbd "H-u") 'slime-cycle-qualified-symbol)
 (define-key slime-editing-map (kbd "C-c C-x C-u") 'slime-cycle-qualified-symbol)
+
+;;*** slime-edit-package-definition
+(defun slime-edit-package-definition (name &optional where)
+  ;; TODO handle `where'
+  (when-let ((name (car (slime-get-package-name-and-nicknames name))))
+    (or (ignore-errors (slime-goto-package-source-definition name))
+        (counsel-rg (format "defpackage.+%s" name)))))
+(add-hook 'slime-edit-definition-hooks 'slime-edit-package-definition)
 
 ;;*** repl set package hack
 (defun slime-repl-set-package--push-package (&rest args)
@@ -1001,6 +1009,7 @@ Also always use `kill-region' instead of `delete-region'."
 ;;** slime-edit-definition support for asdf components
 (defun slime-edit-asdf-component (name &optional where)
   ;; (or current-prefix-arg (not (equal (slime-symbol-at-point) name)))
+  (setq name (string-trim-right name ":"))
   (if current-prefix-arg
       nil
       (when-let* ((pathname
@@ -1008,8 +1017,12 @@ Also always use `kill-region' instead of `delete-region'."
                     `(cl:when (cl:find-package :asdf) ; TODO: a better way to check; featurep ?
                        (cl:let* ((symbol
                                    (swank::find-definitions-find-symbol-or-package ,name))
+                                 (package (swank::guess-package ,name))
                                  (component
-                                   (asdf/find-component:find-component nil symbol)))
+                                   (cl:or (asdf/find-component:find-component nil symbol)
+                                       (cl:when package
+                                         (asdf/find-component:find-component
+                                          nil (cl:package-name package))))))
                          (cl:and component
                                  (cl:namestring
                                   (cl:or (cl:slot-value component
