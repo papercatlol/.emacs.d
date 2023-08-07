@@ -2177,6 +2177,27 @@ immediately, prompt for a todo keyword to use."
 
 (global-set-key (kbd "C-M-(") insert-pair-map)
 
+;;* prx macro (rx to PCRE with additional syntax)
+;; stolen from Howard Abrams
+;; https://www.youtube.com/watch?v=9xLeqwl_7n0
+;; https://howardism.org/Technical/Emacs/eshell-why.html
+;; https://github.com/howardabrams/hamacs/blob/main/ha-eshell.org#regular-expressions
+;; MAYBE `rx-define' some more stuff.
+(defmacro prx (&rest expressions)
+  "Convert the rx-compatible regular EXPRESSIONS to PCRE.
+  Most shell applications accept Perl Compatible Regular Expressions."
+  `(rx-let ((integer (1+ digit))
+            (float (seq integer "." integer))
+            (b256 (seq (optional (or "1" "2"))
+                       (regexp "[0-9]\\{1,2\\}")))
+            (ipaddr (seq b256 "." b256 "." b256 "." b256))
+            (time (seq digit (optional digit) ":" (= 2 digit) (optional ":" (= 2 digit))))
+            (email (seq (1+ (regexp "[^,< ]")) "@" (1+ (seq (1+ (any alnum "-"))) ".") (1+ alnum)))
+            (date (seq (= 2 digit) (or "/" "-") (= 2 digit) (or "/" "-") (= 4 digit)))
+            (ymd (seq (= 4 digit) (or "/" "-") (= 2 digit) (or "/" "-") (= 2 digit)))
+            (uuid (seq (= 8 hex) "-" (= 3 (seq (= 4 hex) "-")) (= 12 hex)))
+            (guid (seq uuid)))
+     (rxt-elisp-to-pcre (rx ,@expressions))))
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
