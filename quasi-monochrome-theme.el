@@ -5,6 +5,11 @@
 (defface underlined
     '((t (:underline (:color "purple"))))
   "Base face for underlined text(e.g. for isearch, grep etc).")
+
+(defface style-warning-face
+    '((t (:underline (:color "firebrick" :style wave))))
+  "Base face for highlighting style warnings (e.g. trailing whitespaces).")
+
 ;; ediff
 (defface ediff-diff-base
   '((t (:inherit default)))
@@ -70,7 +75,9 @@
  '(bold ((t (:inherit (default) :weight semi-bold))))
  '(eldoc-highlight-function-argument ((t (:inherit default :weight bold))))
  '(escape-glyph ((t (:foreground "light gray"))))
- '(font-lock-builtin-face ((t (:foreground "light gray"))))
+ '(font-lock-builtin-face ((t (:foreground "#9090a0"
+                                           ;; #d3d3d3
+                                           ))))
  '(font-lock-comment-delimiter-face ((t (:inherit (font-lock-comment-face)))))
  '(font-lock-comment-face ((t (:background "gray20" :foreground "gray60" :extend t))))
  '(hl-todo ((t (:inherit font-lock-comment-face :weight extrabold :foreground "#cc9393"))))
@@ -122,7 +129,7 @@
  '(secondary-selection ((t (:inherit (region) :background "gray20"))))
  '(shadow ((t (:foreground "gray60"))))
  '(tooltip ((t (:inherit (variable-pitch) :foreground "black" :background "lightyellow"))))
- '(trailing-whitespace ((t (:underline (:color "firebrick" :style wave)))))
+ '(trailing-whitespace ((t (:inherit style-warning-face))))
  '(whitespace-tab ((t (:inherit trailing-whitespace))))
  '(show-paren-match ((t (:foreground "white" :background "black"
                          :weight ultrabold))))

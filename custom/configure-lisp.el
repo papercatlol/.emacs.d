@@ -839,6 +839,21 @@ otherwise insert a saved presentation."
 (setq common-lisp-indent-if*-keyword
       (rx (? ":") (or "else" "elseif" "then" "thenret")))
 
+;;** if* syntax highlighting
+(font-lock-add-keywords
+ 'lisp-mode
+ (list
+  ;; if*
+  `(,(rx symbol-start (? ":") "then" symbol-end) 0 'font-lock-builtin-face)
+  `(,(rx symbol-start (? ":") "thenret" symbol-end) 0 'font-lock-builtin-face)
+  `(,(rx symbol-start (? ":") "else" symbol-end) 0 'font-lock-builtin-face)
+  `(,(rx symbol-start (? ":") "elseif" symbol-end) 0 'font-lock-builtin-face)
+  ;; highlight keywords with colons as errors because code style
+  `(,(rx symbol-start ":then" symbol-end) 0 'style-warning-face prepend)
+  `(,(rx symbol-start ":thenret" symbol-end) 0 'style-warning-face prepend)
+  `(,(rx symbol-start ":else" symbol-end) 0 'style-warning-face prepend)
+  `(,(rx symbol-start ":elseif" symbol-end) 0 'style-warning-face prepend)))
+
 ;;* Code refactoring utils
 ;;** `lisp-toggle-*-form'
 (defvar lisp-keywords-with-*-variant nil
