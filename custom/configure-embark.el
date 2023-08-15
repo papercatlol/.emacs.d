@@ -24,7 +24,7 @@
         (embark-act))
     (select-window (cdr (ring-ref avy-ring 0)))))
 
-(setf (alist-get ?  avy-dispatch-alist) #'avy-action-embark)
+(setf (alist-get ?& avy-dispatch-alist) #'avy-action-embark)
 
 ;;* fix 'callable' keymaps
 ;; Embark has this weird hack where it fsets keymaps as functions, which breaks

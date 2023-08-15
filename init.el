@@ -202,11 +202,12 @@
       ;; i3wm tabbed layout.
       avy-all-windows t
       avy-style 'pre ;; 'de-bruijn
-      avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v ?q ?w ?z ?x ?r
+      avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v ?q ?w ?z ?x ?r ?b
                      ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\; ?- ?\(
                      ?1 ?2 ?3 ?4 ?5
                      ?F ?C ?D ?G ?S ?A ?E ?V ?Q ?W ?Z ?X ?R
-                     ?J ?N ?K ?H ?L ?O ?I ?U ?P
+                     ?J ?N ?K ?H ?L ?O ?I ?U ?P ?B ?M ?T ?\[ ?\]
+                     ?/ ?? 32
                      ;;?6 ?7 ?8 ?9 ?0
                      )
       ;;
@@ -1078,6 +1079,7 @@ otherwise activate iedit-mode."
     (iedit-mode)))
 
 (global-set-key (kbd "C-;") 'iedit-mode*)
+(define-key iedit-mode-keymap (kbd "C-h") nil)
 
 ;;* outline-mode, bicycle-mode
 (require 'bicycle)
@@ -1701,8 +1703,8 @@ else insert the face name as well."
         (avy-jump
          (regexp-quote (concatenate 'string input-1 input-2)))))))
 
-(setf (alist-get 'avy-goto-char-2 avy-styles-alist) 'at)
-(setf (alist-get 'avy-goto-char-2-special avy-styles-alist) 'at)
+(setf (alist-get 'avy-goto-char-2 avy-styles-alist) 'pre)
+(setf (alist-get 'avy-goto-char-2-special avy-styles-alist) 'pre)
 
 (global-set-key (kbd "C-r") 'avy-goto-char-2-special)
 (define-key minibuffer-local-map (kbd "C-r") 'avy-goto-char-2-special)
