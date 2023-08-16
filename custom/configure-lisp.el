@@ -16,7 +16,7 @@
                        slime-fancy-inspector
                        slime-fancy-trace
                        ;; slime-fuzzy
-                       ;; slime-mdot-fu
+                       slime-mdot-fu
                        slime-macrostep
                        slime-presentations
                        slime-package-fu
@@ -33,6 +33,10 @@
                        inferior-slime
                        ;; slime-mrepl
                        ))
+;;** allegro hacks
+(when (require 'slime-allegro-hacks nil t)
+  (push 'slime-allegro-hacks slime-contribs))
+
 (slime-setup slime-contribs)
 
 ;;* uiop support for slime-package-fu
@@ -406,7 +410,8 @@ active, kill fully qualified symbol-at-point/region."
                         symbol-or-name))
          (name (slime-cl-symbol-name symbol-name))
          (package (slime-cl-symbol-package symbol-name))
-         (current-package (slime-current-package)))
+         (current-package (string-trim-left (slime-current-package)
+                                            (rx (or ":" "#")))))
     (slime-eval
      `(cl:multiple-value-bind (symbol status)
           (cl:find-symbol ,name ,@(when package (list package)))
