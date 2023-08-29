@@ -42,6 +42,9 @@
  '(default ((t (:font "-ADBO-Source Code Pro-normal-normal-normal-*-23-*-*-*-m-0-iso10646-1"
                 :background "black"
                 :foreground "light gray"))))
+ ;;'(default ((t (:font "-ADBO-SourceCodeVF-light-normal-normal-*-27-*-*-*-m-0-iso10646-1"
+ ;;               :background "black"
+ ;;               :foreground "light gray"))))
  ;;'(default ((t (:family "Monoid"
  ;;               :height 100
  ;;               :background "black"

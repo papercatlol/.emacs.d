@@ -1079,7 +1079,8 @@ otherwise activate iedit-mode."
     (iedit-mode)))
 
 (global-set-key (kbd "C-;") 'iedit-mode*)
-(define-key iedit-mode-keymap (kbd "C-h") nil)
+(with-eval-after-load 'iedit
+  (define-key iedit-mode-keymap (kbd "C-h") nil))
 
 ;;* outline-mode, bicycle-mode
 (require 'bicycle)
@@ -2031,14 +2032,14 @@ mosey was first called with prefix arg."
 (global-set-key (kbd "H-p") 'counsel-project)
 (define-key project-prefix-map "A" 'project-remember-projects-under)
 
-(defun counsel-project ()
+(cl-defun counsel-project (&key (action 'counsel-project--magit-action actionp))
   (interactive)
   (project--ensure-read-project-list)
   (ivy-read "Project: " project--list
             :history 'counsel-project-history
             :keymap counsel-project-map
             :caller 'counsel-project
-            :action 'counsel-project--magit-action))
+            :action action))
 
 (defun counsel-project--rg-action (project-root)
   (let ((default-directory (car-safe project-root)))
@@ -2337,6 +2338,7 @@ immediately, prompt for a todo keyword to use."
 ;;** dired
 (global-set-key (kbd "C-x C-d") 'dired)
 (define-key dired-mode-map (kbd "<backspace>") 'diredp-up-directory)
+(define-key dired-mode-map (kbd "SPC") 'avy-goto-char-2-special)
 (define-key dired-mode-map (kbd "C-h") 'dired-up-directory)
 (define-key dired-mode-map (kbd "C-w") 'dired-up-directory)
 (define-key dired-mode-map (kbd "C-t") 'avy-goto-word-or-subword-1)
