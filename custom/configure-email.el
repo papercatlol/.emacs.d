@@ -419,7 +419,14 @@ region if there is a region, then move to the previous message."
   "Face for mu4e header-line updating indicator."
   :group 'mu4e-faces)
 
+(defface mu4e-header-line-next-update-face
+    '((t (:inherit mu4e-header-line-face :foreground "ForestGreen")))
+  "Face for mu4e header-line next update indicator."
+  :group 'mu4e-faces)
+
 (defun mu4e~better-header-line ()
+  (unless (eq major-mode 'mu4e-headers-mode)
+    (user-error "Not in *mu4e-headers* buffer."))
   (let* ((last-query-item (loop for item in (mu4e-query-items)
                                 when (equal mu4e--search-last-query (getf item :query))
                                   return item))
@@ -442,8 +449,8 @@ region if there is a region, then move to the previous message."
        (setf (decoded-time-second today-decoded) 0)
        (setq today-midnight (encode-time today-decoded))
 
-       (loop for date = (mu4e-field-at-point :date)
-             while (time-less-p today-midnight date)
+       (loop for date = (ignore-errors (mu4e-field-at-point :date))
+             while (and date (time-less-p today-midnight date))
              do (progn (incf today-total)
                        (when (member 'unread (mu4e-field-at-point :flags))
                          (incf today-unread))
@@ -458,7 +465,12 @@ region if there is a region, then move to the previous message."
      (cond (update-running-p
             (propertize " Updating..." 'face 'mu4e-header-line-updating-face))
            ((null mu4e-update-minor-mode)
-            (propertize " Updating off" 'face 'mu4e-warning-face))))))
+            (propertize " Updating off" 'face 'mu4e-warning-face))
+           (t (propertize
+               (format-time-string " Next update in %M:%S"
+                                   (time-subtract (timer--time mu4e--update-timer)
+                                                  (current-time)))
+               'face 'mu4e-header-line-next-update-face))))))
 
 (defun mu4e~headers-count-unread ()
   "Return the number of unread messages in the current header view."
