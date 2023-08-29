@@ -235,6 +235,15 @@
 	        		       ("/Papercatlol/Starred"   . ?r)
 	        		       ("/Papercatlol/drafts"    . ?d)
 	        		       ))
+            (mu4e-bookmarks .
+             ((:name "Messages addressed to me"
+                :query "(maildir:\"/Papercatlol/INBOX\") AND (papercatlol@gmail.com)"
+                :key ?b)
+               (:name "Unread messages" :query "flag:unread AND NOT flag:trashed"
+                :key ?u)
+               (:name "Today's messages" :query "date:today..now" :key ?t)
+               (:name "Last 7 days" :query "date:7d..now" :hide-unread t :key ?w)
+               (:name "Messages with images" :query "mime:image/*" :key ?p)))
             ))))
 
 ;;* HACK to allow keys other than ?o to designate "other" in `mu4e-maildir-shortcuts'
@@ -507,12 +516,6 @@ region if there is a region, then move to the previous message."
 (with-eval-after-load 'evil
   (evil-define-key '(normal) mu4e-headers-mode-map
     "!" 'mu4e-headers-mark-for-read-dwim))
-
-;;* bookmarks
-(add-to-list 'mu4e-bookmarks
-             '(:name "Messages addressed to me"
-               :query "(maildir:\"/Franz/INBOX\") AND (t:ivanl)" :key ?b)
-             )
 
 ;;* fix 'buffer has a running process' error message
 (defun mu4e--update-sentinel-func-fixed (proc _msg)
