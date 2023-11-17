@@ -692,9 +692,6 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
    ;; author name width
    6))
 
-;;* changelog
-(define-key git-commit-mode-map (kbd "C-c C-y") 'magit-generate-changelog)
-
 ;;(defun magit-refs--format-margin-email (commit)
 ;;  "Show email instead of author name."
 ;;  (save-excursion
@@ -704,6 +701,12 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 ;;                               (substring line 10)
 ;;                               (substring line 0 10)))))
 ;;(advice-add 'magit-refs--format-margin :override #'magit-refs--format-margin-email)
+
+;;* changelog
+(define-key git-commit-mode-map (kbd "C-c C-y") 'magit-generate-changelog)
+
+;;* orgtbl-mode when editing commit messages
+(add-hook 'git-commit-mode-hook 'orgtbl-mode)
 
 
 (provide 'configure-git)
