@@ -1181,6 +1181,64 @@ current entry."
 (global-set-key (kbd "C-c C-SPC") 'link-hint-open-link-wrapper)
 ;;(global-set-key (kbd "C-c o") 'link-hint-open-link)
 
+;;** comint-osc-button
+;; Support `ls --hyperlink=always`
+;;(defun link-hint--next-comint-osc-button (bound)
+;;  "Find the next button.
+;;Only search the range between just after the point and BOUND."
+;;  ;; MAYBE look for 'category 'comint-osc-hyperlink-button.
+;;  (link-hint--next-property 'browse-url-data (point-max)))
+
+;;(defun link-hint--comint-osc-button-open (&rest args)
+;;  (browse-url-button-open))
+
+;;(link-hint-define-type 'comint-osc-button
+;;                       :next #'link-hint--next-comint-osc-button
+;;                       :at-point-p #'link-hint--button-at-point-p
+;;                       :vars '(comint-mode shell-mode) ; any mode derived from `comint-mode'
+;;                       :open #'link-hint--comint-osc-button-open
+;;                       :copy #'kill-new)
+
+;;(pushnew 'link-hint-comint-osc-button link-hint-types)
+
+;;** file-link hacks
+(setq link-hint-maybe-file-regexp (rx (or
+                                       (and
+                                        (or bol blank)
+                                        (? (or "~" (and alpha ":")))
+                                        (or (and "/" (1+ not-newline))
+                                            ;; Match 'file.ext' or 'file/'. Only
+                                            ;; match filenames w/o whitespace
+                                            ;; since ffap doesn't handle them
+                                            ;; anyway. TODO support 'a b.txt'
+                                            ;; with explicit single
+                                            ;; quotes (e.g. ls output).
+                                            (and (1+ (not (syntax whitespace)))
+                                                 (or (and "." (repeat 1 5 alnum))
+                                                     "/"))
+                                            ))
+                                       ;; scuffed ls -l output matching
+                                       (and bol (or "-" alpha) (1+ any) ; perm
+                                            (1+ num) (1+ blank) ; month
+                                            (1+ num) (1+ blank) ; year
+                                            (1+ not-newline)))))
+
+;; disable link-hint's file-link in dired
+(pushnew 'dired-mode (get 'link-hint-file-link :not-vars))
+
+(cl-defun link-hint--find-file-link--override (start end)
+  "Return the end pos of the next filename between START and END.
+Overrides `link-hint--find-file-link' since I ran into issues with that function
+and it's faster to rewrite it."
+  (while (re-search-forward link-hint-maybe-file-regexp end t)
+    (when (ffap-file-at-point)
+      (return-from link-hint--find-file-link--override
+        ;;(- (point) (length filename)) ; inf loop
+        (point))))
+  nil)
+
+(advice-add 'link-hint--find-file-link :override #'link-hint--find-file-link--override)
+
 ;;** bug-reference-mode
 (with-eval-after-load 'link-hint
   (defun bug-reference--find-overlay (overlays)
