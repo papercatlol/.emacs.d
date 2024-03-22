@@ -59,6 +59,8 @@ confirmation if this is there is only one tab open."
 ;;* history
 (define-key w3m-mode-map (kbd "H") 'w3m-view-previous-page)
 (define-key w3m-mode-map (kbd "q") 'w3m-view-previous-page)
+(define-key w3m-mode-map (kbd "<mouse-8>") 'w3m-view-previous-page)
+(define-key w3m-mode-map (kbd "<mouse-9>") 'w3m-view-next-page)
 (define-key w3m-mode-map (kbd "L") 'w3m-view-next-page)
 (define-key w3m-mode-map (kbd "C-c h") 'w3m-history)
 

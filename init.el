@@ -279,8 +279,10 @@
 (setq version-control t)
 (setq kept-new-versions 4)
 (setq delete-old-versions 'please-dont)
-(setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
-(setq lock-file-name-transforms '((".*" "~/.emacs.d/lock-files/" t)))
+(setq auto-save-file-name-transforms
+      `((".*" ,(concat user-emacs-directory "auto-save-list/") t)))
+(setq lock-file-name-transforms
+      `((".*" ,(concat user-emacs-directory "lock-files/") t)))
 
 ;;** desktop (save buffers & window configuration)
 ;;(add-hook 'after-init-hook #'desktop-read)
@@ -2272,6 +2274,9 @@ immediately, prompt for a todo keyword to use."
             (guid (seq uuid)))
      (rxt-elisp-to-pcre (rx ,@expressions))))
 
+;;* epg
+;; Prompt for password in the minibuffer instead of GUI.
+(setq epg-pinentry-mode 'loopback)
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -2363,10 +2368,12 @@ immediately, prompt for a todo keyword to use."
   ("n" next-error)
   ("M-n" next-error)
   ("j" next-error)
+  ("C-j" compilation-next-error)
   ("M-j" next-error)
   ("p" previous-error)
   ("M-p" previous-error)
   ("k" previous-error)
+  ("C-k" compilation-previous-error)
   ("M-k" previous-error)
   ("g" avy-goto-line :exit t)
   ("M-g" avy-goto-line :exit t)
@@ -2456,6 +2463,7 @@ immediately, prompt for a todo keyword to use."
   ("v" #'counsel-describe-variable "Describe variable")
   ("w" #'whitespace-mode "whitespace-mode")
   ("W" #'delete-trailing-whitespace "delete-trailing-whitespace")
+  ("y" #'elfeed-tube-fetch "elfeed-tube-fetch")
   ("<tab>" #'untabify "untabify")
   ("C-o" #'xdg-open-file "open file external")
   )
@@ -2685,3 +2693,17 @@ EVENT."
 ;;** archive mode
 (define-key archive-mode-map (kbd "j") 'archive-next-line)
 (define-key archive-mode-map (kbd "k") 'archive-previous-line)
+
+;;** profiler
+(with-eval-after-load 'profiler
+ (define-key profiler-report-mode-map (kbd "C-j") 'profiler-report-find-entry)
+ ;; TODO m = other window
+ (define-key profiler-report-mode-map (kbd "m") 'xref-find-definitions-other-window)
+ (define-key profiler-report-mode-map (kbd "o") 'xref-find-definitions-other-window)
+ (define-key profiler-report-mode-map (kbd "j") 'profiler-report-next-entry)
+ (define-key profiler-report-mode-map (kbd "k") 'profiler-report-previous-entry))
+
+;;* toggles
+(define-key ctl-x-map (kbd "x w") 'toggle-word-wrap)
+(define-key ctl-x-map (kbd "x s") 'toggle-scroll-bar)
+(define-key ctl-x-map (kbd "x m") 'toggle-enable-multibyte-characters)

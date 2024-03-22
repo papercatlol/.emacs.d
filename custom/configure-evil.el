@@ -32,6 +32,7 @@
 (evil-set-initial-state 'dired-mode 'emacs)
 (evil-set-initial-state 'ibuffer-mode 'normal)
 (evil-set-initial-state 'snippet-mode 'insert)
+(evil-set-initial-state 'profiler-report-mode 'emacs)
 
 
 ;;* `LISPYVILLE'
@@ -591,6 +592,7 @@ double quote kill sexp at point."
 (define-key evil-visual-state-map (kbd "C-c i") 'edit-indirect-region)
 (define-key evil-normal-state-map (kbd "C-n") 'counsel-buffers-other-frame)
 (define-key evil-motion-state-map (kbd "C-v") nil)
+(define-key evil-motion-state-map (kbd "C-d") nil)
 
 ;;** evil keymaps bullshit
 (dolist (map (list helpful-mode-map help-mode-map
