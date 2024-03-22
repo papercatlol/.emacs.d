@@ -180,8 +180,10 @@ With prefix arg open a new equake tab."
 ;;* HACK make shell understand ..+ aliases
 (defun shell-directory-tracker-handle-up-dir-alias (old-fn str)
   "A hack to make shell understand ..+ aliases."
-  (if (string-match (rx bol (group "." (1+ ".")) (* blank) eol) str)
-      (shell-process-cd (match-string-no-properties 1 str))
+  (if (string-match (rx bol (* blank) (group "." (1+ ".")) (* blank) eol) str)
+      (let* ((match (match-string-no-properties 1 str))
+             (cmd (concat ".." (string-replace "." "/.." (subseq match 2)))))
+        (shell-process-cd cmd))
     (funcall old-fn str)))
 
 (advice-add 'shell-directory-tracker :around
@@ -190,7 +192,9 @@ With prefix arg open a new equake tab."
 ;;* compilation-shell-minor-mode
 (add-hook 'shell-mode-hook #'compilation-shell-minor-mode)
 (define-key compilation-shell-minor-mode-map (kbd "C-c j") 'compilation-next-error)
+(define-key compilation-shell-minor-mode-map (kbd "C-c C-j") 'compilation-next-error)
 (define-key compilation-shell-minor-mode-map (kbd "C-c k") 'compilation-previous-error)
+(define-key compilation-shell-minor-mode-map (kbd "C-c C-k") 'compilation-previous-error)
 (define-key compilation-shell-minor-mode-map (kbd "M-<return>") nil)
 (define-key compilation-shell-minor-mode-map (kbd "M-RET") nil)
 (define-key compilation-shell-minor-mode-map (kbd "C-c C-m") 'compile-goto-error)
