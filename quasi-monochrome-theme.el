@@ -103,7 +103,7 @@
  '(lazy-highlight ((t (:inherit match))))
  ;; '(lazy-highlight ((t (:background "firebrick" :foreground "white" :weight normal))))
  '(isearch-fail ((t (:background "red4"))))
- '(link ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
+ '(link ((t (:underline (:color foreground-color :style line)))))
  '(link-visited ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
  '(minibuffer-prompt ((t (:weight normal :foreground "light gray"))))
  '(completions-annotations ((t (:inherit font-lock-string-face))))
@@ -250,6 +250,7 @@
  ;; equake
  '(equake-shell-type-shell ((t (:foreground "white"))))
  '(sh-heredoc ((t (:inherit font-lock-string-face))))
+ '(comint-highlight-input ((t (:weight bold :box "green4"))))
  ;; loccur
  '(loccur-face ((t (:inherit match :underline (:color "DarkViolet")))))
  ;; which-key
