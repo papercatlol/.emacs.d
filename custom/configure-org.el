@@ -21,6 +21,7 @@
       org-edit-src-content-indentation 0
       org-edit-src-persistent-message nil
       org-src-window-setup 'current-window
+      org-archive-reversed-order t
       )
 
 
@@ -70,7 +71,7 @@
 
 
 ;;* org dumb task tracker
-(defvar odtt:task-file "~/work/tasks.org")
+(defvar odtt:task-file "~/org/tasks.org")
 
 (defvar odtt:current-files nil)
 
@@ -79,16 +80,9 @@
 
 ;;** org todo keyword faces
 (setq org-todo-keyword-faces
-      '(("GERRIT" . "#ee7b00"
-         ;;"dark orange"
-         )
-        ("CURRENT" . ;;"#eec600"
-         "#fff600"
-         ;; "gold"
-         )
-        ("WAITING" . "#ee7b00"
-         ;;"dark orange"
-         )))
+      '(("GERRIT" . "#ee7b00")
+        ("CURRENT" . "purple")
+        ("WAITING" . "#ee7b00")))
 
 ;;** counsel-goto-task
 (cl-defun counsel-goto-task (&optional (files (list odtt:task-file)))
@@ -104,6 +98,25 @@
               :caller 'counsel-goto-task
               ;; :dynamic-collection nil
               )))
+
+(defun counsel-goto-task--insert (task)
+  (insert
+   (let ((text (car task)))
+     (if (string-match
+          (rx "*" (* space)
+              (or "TODO" "DONE" "GERRIT" "WAITING"
+                  "CURRENT" "SPR")
+              (* space)
+              (group (+? any))
+              (* space)
+              (? ":" (+ (any alnum ":_")) ":")
+              eol)
+          text)
+         (match-string-no-properties 1 text)
+       text))))
+
+(ivy-add-actions 'counsel-goto-task
+                 '(("M-a" counsel-goto-task--insert "Insert task description")))
 
 ;;** utils
 (cl-defun odtt:collect-todos (&optional (files (list odtt:task-file)))
@@ -123,13 +136,13 @@
                      (widen)
                      (goto-char (point-min))
                      (cl-loop for match = (re-search-forward org-todo-line-regexp nil t)
-                           while match
-                           for beg = (match-beginning 0)
-                           for end = (line-end-position)
-                           for clocking? = (and current-task-pos (= beg current-task-pos) '(t))
-                           collect (list* (buffer-substring beg end)
-                                          (move-marker (make-marker) beg)
-                                          clocking?)))))))))
+                              while match
+                              for beg = (match-beginning 0)
+                              for end = (line-end-position)
+                              for clocking? = (and current-task-pos (= beg current-task-pos) '(t))
+                              collect (list* (buffer-substring beg end)
+                                             (move-marker (make-marker) beg)
+                                             clocking?)))))))))
     (mapcan #'%collect files)))
 
 (defun odtt:ivy-refresh ()
@@ -406,6 +419,20 @@ to ACTION and execute BODY forms."
 ;; `org-time-stamp-inactive' = [2022-07-19 Tue]
 (define-key ctl-x-map (kbd "T") 'org-time-stamp-inactive)
 
+;;* orgtbl-mode
+(define-key orgtbl-mode-map (kbd "C-c SPC") 'nil)
+
+;;* right align tags (Nicolas Rougier)
+;; https://www.reddit.com/r/emacs/comments/185e4k1/orgmode_tag_right_alignment/?share_id=epIzc-9qF-duOW7o6k7lX
+(add-to-list 'font-lock-extra-managed-props 'display)
+(font-lock-add-keywords
+ 'org-mode
+ `(("^.*?\\( \\)\\(:[[:alnum:]_@#%:]+:\\)$"
+    (1 `(face nil
+              display (space :align-to (- right ,(length (match-string 2)) 3)))
+       prepend)))
+ t)
+
 ;; random keybindings
 (define-key org-mode-map (kbd "C-c C-8") 'org-ctrl-c-star)
 (define-key org-mode-map (kbd "C-c SPC") nil)
@@ -416,6 +443,7 @@ to ACTION and execute BODY forms."
 (define-key org-mode-map (kbd "C-c I") 'org-toggle-inline-images)
 (define-key org-mode-map (kbd "C-c C-s") 'counsel-imenu-dwim)
 (define-key org-mode-map (kbd "C-c s") 'org-schedule)
+(define-key org-mode-map (kbd "C-c C-4") 'org-archive-subtree)
 
 ;;* TODO slime-link (should do slime-xref on a symbol)
 
