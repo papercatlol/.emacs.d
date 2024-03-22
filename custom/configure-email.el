@@ -47,7 +47,8 @@
   (evil-define-key '(normal) mu4e-view-mode-map
     "[" 'mu4e-view-headers-prev-unread
     "]" 'mu4e-view-headers-next-unread
-    "q" 'mu4e-view-quit)
+    "q" 'mu4e-view-quit
+    "R" 'mu4e-compose-reply)
 
   (evil-define-key '(normal) mu4e-headers-mode-map
     "[" 'mu4e-headers-prev-unread
@@ -543,6 +544,32 @@ region if there is a region, then move to the previous message."
     (kill-buffer mu4e--update-buffer)))
 
 (advice-add 'mu4e--update-sentinel-func :override 'mu4e--update-sentinel-func-fixed)
+
+
+;;* hiding citations
+;; see info [[info:gnus#Article Hiding][gnus#Article Hiding]]
+(define-key mu4e-view-mode-map (kbd "C-c m") 'mu4e-view-massage)
+
+(setq gnus-treat-hide-citation t)
+(setq gnus-cited-lines-visible 5)
+(setq gnus-cited-closed-text-button-line-format
+      "%(%{[+]%}%)\n"
+      ;; BUG? this doesn't seem to work (lexical binding?)
+      ;;"%(%{[+]%}%) %n lines hidden.\n"
+      )
+;; `gnus-treat-hide-citation-maybe' doesn't seem to work in mu4e?
+;;(setq gnus-cite-hide-percentage 50)
+;;(setq gnus-cite-hide-absolute 5)
+
+;;** Remove [+] button appearing in the citation after `mu4e-compose-reply'.
+(defun mu4e--disable-hide-citation ()
+  (setq gnus-treat-hide-citation nil))
+
+(defun mu4e--enable-hide-citation ()
+  (setq gnus-treat-hide-citation t))
+
+(add-hook 'mu4e-compose-pre-hook 'mu4e--disable-hide-citation)
+(add-hook 'mu4e-compose-mode-hook 'mu4e--enable-hide-citation)
 
 
 (provide 'configure-email)
