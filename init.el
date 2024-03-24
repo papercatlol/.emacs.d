@@ -2277,6 +2277,13 @@ immediately, prompt for a todo keyword to use."
 ;;* epg
 ;; Prompt for password in the minibuffer instead of GUI.
 (setq epg-pinentry-mode 'loopback)
+
+;;* fast-reading mode (rsvp) spray.el
+(with-eval-after-load 'spray
+  (when (fboundp 'evil-mode)
+    (evil-set-initial-state 'spray-mode 'emacs))
+  (setq spray-wpm 500))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -2457,6 +2464,7 @@ immediately, prompt for a todo keyword to use."
   ("P" #'list-processes "list-processes")
   ("q" nil "quit")
   ("r" #'rename-file-and-buffer "rename-file-and-buffer")
+  ("R" #'spray-mode "spray-mode (rsvp)")
   ("s" #'string-edit-at-point "string-edit-at-point")
   ("t" #'tldr "TLDR")
   ("T" #'orgtbl-mode "org table minor mode")
