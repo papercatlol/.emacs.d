@@ -2159,7 +2159,19 @@ mosey was first called with prefix arg."
   (define-key journalctl-mode-map (kbd "w") 'forward-word)
   (define-key journalctl-mode-map (kbd "b") 'backward-word)
   (define-key journalctl-mode-map (kbd "/") 'isearch-forward-regexp)
-  (define-key journalctl-mode-map (kbd "C-v") nil))
+  (define-key journalctl-mode-map (kbd "C-v") nil)
+
+  (transient-append-suffix 'journalctl-transient "c f"
+    '(journalctl-transient:--priority))
+
+  (defun journalctl-edit-args ()
+    "Edit journalctl arglist and refresh output."
+    (interactive)
+    (setq journalctl-current-opts
+          (read--expression "Args: " (prin1-to-string journalctl-current-opts)))
+    (journalctl--run journalctl-current-opts journalctl-current-chunk))
+
+  (define-key journalctl-mode-map (kbd "<f5>") 'journalctl-edit-args))
 
 ;;* artist-mode
 (pretty-hydra-define hydra-artist (:hint nil :color pink)

@@ -116,6 +116,7 @@ when cursor is directly inside the in-package form."
     (put 'if-let* 'common-lisp-indent-function 2)
     (%copy-indent '-let 'let)
     (%copy-indent 'rx-let 'let)
+    (%copy-indent 'transient-append-suffix 'defun)
     (put 'pretty-hydra-define 'common-lisp-indent-function 2)))
 
 ;;** documentation
