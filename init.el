@@ -394,6 +394,14 @@
       minibuffer-follows-selected-frame nil)
 (minibuffer-depth-indicate-mode 1)
 
+;; Set cursor style to bar in minibuffer.
+(defun minibuffer-set-cursor-type ()
+  (setq-local cursor-type
+              (or (bound-and-true-p evil-insert-state-cursor)
+                  '(bar 2))))
+
+(add-hook 'minibuffer-setup-hook #'minibuffer-set-cursor-type)
+
 ;;(global-set-key (kbd "H-SPC") 'switch-to-minibuffer)
 
 ;;* pdf-tools

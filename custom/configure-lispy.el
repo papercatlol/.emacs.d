@@ -26,6 +26,7 @@
 (add-hook 'slime-repl-mode-hook #'lispy-mode)
 (add-hook 'sly-repl-mode-hook #'lispy-mode)
 (add-hook 'string-edit-regexp-mode-hook #'lispy-mode)
+(add-hook 'eval-expression-minibuffer-setup-hook #'lispy-mode)
 
 (defun eval-expression-enable-lispy ()
   (when (or (eq this-command 'eval-expression)
