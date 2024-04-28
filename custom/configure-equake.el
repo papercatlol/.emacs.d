@@ -263,4 +263,13 @@ With prefix arg open a new equake tab."
 (with-eval-after-load 'sh-script
   (define-key sh-mode-map (kbd "C-c C-y") 'copy-to-equake))
 
+;;* capf-autosuggest
+(add-hook 'comint-mode-hook #'capf-autosuggest-mode)
+
+(with-eval-after-load 'capf-autosuggest
+  (setq capf-autosuggest-dwim-next-line nil)
+
+  (capf-autosuggest-define-partial-accept-cmd capf-autosuggest-lispy-move-end-of-line lispy-move-end-of-line)
+  (define-key capf-autosuggest-active-mode-map (kbd "C-e") 'capf-autosuggest-lispy-move-end-of-line))
+
 (provide 'configure-equake)
