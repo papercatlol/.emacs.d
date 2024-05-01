@@ -841,6 +841,17 @@ Else narrow-to-defun."
 
 (define-key dired-mode-map (kbd "r") 'dired-rsync)
 
+;;** dired-copy-image
+(defun dired-copy-image (pathname)
+  "Copy image at point to clipboard using `xclip'.
+ TODO support other mime types. See `file -b --mime-type`."
+  (interactive (list (dired-get-file-for-visit)))
+  (when (shell-command
+         (format "nohup xclip -selection clipboard -target image/png -loops 1 -i \"%s\" >/dev/null 2>&1" pathname))
+    (message "Copied image: %s." pathname)))
+
+(define-key dired-mode-map (kbd "I") 'dired-copy-image)
+
 ;; show rsync progress in modeline
 (with-eval-after-load 'dired+
   (defun diredp-rsync-in-mode-name ()
