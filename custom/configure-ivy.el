@@ -549,7 +549,7 @@ buffer will be opened(current window, other window, other frame)."
 ;;** switch to scratch
 (defun counsel-buffers-scratch ()
   (interactive)
-  (ivy--done (buffer-name (startup--get-buffer-create-scratch))))
+  (ivy--done (buffer-name (get-scratch-buffer-create))))
 
 (define-key counsel-buffers-map (kbd "C-s") 'counsel-buffers-scratch)
 

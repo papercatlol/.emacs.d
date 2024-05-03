@@ -203,7 +203,7 @@
       avy-all-windows t
       avy-style 'pre ;; 'de-bruijn
       avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v ?q ?w ?z ?x ?r ?b
-                     ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\; ?- ?\(
+                     ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\( ?- ?\;
                      ?1 ?2 ?3 ?4 ?5
                      ?F ?C ?D ?G ?S ?A ?E ?V ?Q ?W ?Z ?X ?R
                      ?J ?N ?K ?H ?L ?O ?I ?U ?P ?B ?M ?T ?\[ ?\]
@@ -231,6 +231,7 @@
       ;; mark ring sizes
       mark-ring-max 32
       global-mark-ring-max 256
+      vc-follow-symlinks t
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
@@ -730,6 +731,9 @@ if there is a sole window."
        ,@body)))
 
 ;;** narrowing
+;; TODO narrowing+indirect clone. See `narrow-indirect' for reference.
+;; E.g.: "C-4 C-n" = narrow-indirect-dwim
+;;       "C-4 C-4 ." = find-xref-narrow-indirect
 (setq narrow-to-defun-include-comments t)
 (put 'narrow-to-page 'disabled nil)
 
@@ -1306,6 +1310,8 @@ and it's faster to rewrite it."
 (setq helm-make-completion-method 'ivy)
 (setq helm-make-cache-targets t)
 
+(define-key compilation-mode-map (kbd "C-c RET") 'helm-make)
+
 ;;* scrolling
 (require 'smooth-scroll)
 
@@ -1753,11 +1759,14 @@ else insert the face name as well."
         (cdr translation)
       (list char))))
 
-(defun avy-goto-char-2-special (&optional all-frames input-1)
+(cl-defun avy-goto-char-2-special (&optional all-frames
+                                     (input-1 nil skip-input-1))
   "Like `avy-goto-char-2', but translate some keys. See
 `avy-key-translations'."
   (interactive "P")
-  (let* ((input-1 (or input-1 (avy-read-char "Char 1: ")))
+  (let* ((input-1 (if skip-input-1
+                      input-1
+                    (avy-read-char "Char 1: ")))
          (input-2 (unless (cl-second input-1)
                     (avy-read-char "Char 2: ")))
          (avy-all-windows (if all-frames 'all-frames t))
@@ -1867,9 +1876,7 @@ the cursor to the new position as well."
                 :pred (lambda () (not (member (point) redundant)))))))
 
 (global-set-key (kbd "C-t") 'avy-goto-symbol-in-defun)
-(setf (alist-get 'avy-goto-symbol-in-defun avy-styles-alist) 'at)
-(setf (alist-get 'avy-goto-symbol-in-defun avy-keys-alist)
-      (append avy-keys))
+(setf (alist-get 'avy-goto-symbol-in-defun avy-styles-alist) 'pre)
 
 ;;** avy-action-yank-multiple
 ;; Somewhat related - repeat action for `avy-goto-char-timer':
@@ -2383,7 +2390,7 @@ immediately, prompt for a todo keyword to use."
 (global-set-key (kbd "M-SPC") 'avy-goto-char-timer)
 (global-set-key (kbd "H-SPC") 'avy-goto-char-2-special)
 (global-set-key (kbd "C-x C-SPC") 'avy-goto-char-timer)
-(global-set-key (kbd "<f13>") 'avy-goto-char-2-special)
+(global-set-key (kbd "<f13>") 'avy-goto-char-timer)
 (global-set-key (kbd "M-<tab>") 'other-window)
 (global-set-key (kbd "<f15>") 'other-window)
 ;;(global-set-key (kbd "C-t") 'avy-goto-word-2)
@@ -2442,6 +2449,8 @@ immediately, prompt for a todo keyword to use."
 (define-key dired-mode-map (kbd "L") 'dired-do-symlink)
 (define-key dired-mode-map (kbd "C-f") 'forward-char)
 (define-key dired-mode-map (kbd "C-k") 'dired-do-kill-lines)
+(define-key dired-mode-map (kbd "C-c C-l") 'dired-do-load)
+(define-key dired-mode-map (kbd "C-c C-b") 'dired-do-byte-compile)
 
 (define-key dired-mode-map (kbd "j") 'dired-next-line)
 (define-key dired-mode-map (kbd "k") 'dired-previous-line)

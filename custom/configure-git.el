@@ -497,6 +497,7 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 
 (define-key dired-mode-map (kbd ")") 'dired-git-info-mode)
 (define-key dired-mode-map (kbd "C-x g") 'magit-status)
+(define-key dired-mode-map (kbd "C-x G") 'magit-dispatch)
 
 ;;* slime
 (with-eval-after-load 'slime-repl
