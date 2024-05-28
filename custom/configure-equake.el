@@ -264,7 +264,12 @@ With prefix arg open a new equake tab."
   (define-key sh-mode-map (kbd "C-c C-y") 'copy-to-equake))
 
 ;;* capf-autosuggest
-(add-hook 'comint-mode-hook #'capf-autosuggest-mode)
+(defun maybe-capf-autosuggest-mode ()
+  "Enable `capf-autosuggest-mode' unless we're in a remote directory."
+  (unless (file-remote-p default-directory)
+    (capf-autosuggest-mode 1)))
+
+(add-hook 'comint-mode-hook #'maybe-capf-autosuggest-mode)
 
 (with-eval-after-load 'capf-autosuggest
   (setq capf-autosuggest-dwim-next-line nil)
