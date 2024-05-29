@@ -1917,6 +1917,34 @@ the cursor to the new position as well."
         (and (listp buffer-invisibility-spec)
              (null (assoc invisible buffer-invisibility-spec))))))
 
+;;** fix dispatch help for multi-character keys (e.g. M-w)
+(defun avy-show-dispatch-help-override ()
+  "Display action shortucts in echo area."
+  (message
+   (apply
+    #'concat
+    (loop for func in avy-dispatch-alist
+          collect (format "%s: %s "
+                          (propertize
+                           (key-description (vector (car func)))
+                           'face 'aw-key-face)
+                          (string-trim (symbol-name (cdr func))
+                                       "avy-action-"))))))
+(advice-add 'avy-show-dispatch-help :override #'avy-show-dispatch-help-override)
+
+;;** TODO avy-action-mc
+;;(defun avy-action-mc (pt)
+;;  "Create a cursor at pt."
+;;  (let ((existing (mc/fake-cursor-at-point pt)))
+;;    (if existing
+;;        (mc/remove-fake-cursor existing)
+;;      (save-excursion
+;;       (goto-char pt)
+;;       (mc/create-fake-cursor-at-point)
+;;       (mc/maybe-multiple-cursors-mode)))))
+
+;;(setf (alist-get (aref (kbd "C-;") 0) avy-dispatch-alist) #'avy-action-mc)
+
 ;;** TODO avy + edebug (avy-action-toggle-breakpoint or smth)
 
 ;;* embark (trying it out)
