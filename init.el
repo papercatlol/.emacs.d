@@ -2350,6 +2350,15 @@ immediately, prompt for a todo keyword to use."
     (evil-set-initial-state 'spray-mode 'emacs))
   (setq spray-wpm 500))
 
+;;* elfeed-tube
+;; FIXME Doesn't work with `with-eval-after-load'. Autoload?
+(when (require 'elfeed-tube nil t)
+  (elfeed-tube-setup)
+
+  (define-key elfeed-show-mode-map (kbd "C-c RET") 'elfeed-tube-mpv)
+  (define-key elfeed-show-mode-map (kbd "C-c C-l") 'elfeed-tube-mpv-follow-mode)
+  (define-key elfeed-show-mode-map (kbd "C-c C-w") 'elfeed-tube-mpv-where))
+
 ;;* ebook support: calibredb + nov.el + nov-xwidget
 ;; https://github.com/chenyanming/calibredb.el
 ;; https://github.com/chenyanming/nov-xwidget
@@ -2501,6 +2510,7 @@ immediately, prompt for a todo keyword to use."
 (define-key dired-mode-map (kbd "C-w") 'dired-up-directory)
 (define-key dired-mode-map (kbd "C-t") 'avy-goto-word-or-subword-1)
 (define-key dired-mode-map (kbd "<tab>") 'dired-subtree-toggle)
+(define-key dired-mode-map (kbd "<backtab>") 'dired-subtree-cycle)
 (define-key dired-mode-map (kbd "i") 'dired-toggle-read-only)
 (define-key dired-mode-map (kbd "I") 'dired-subtree-remove)
 (define-key dired-mode-map (kbd "M-z") nil)
