@@ -2350,6 +2350,26 @@ immediately, prompt for a todo keyword to use."
     (evil-set-initial-state 'spray-mode 'emacs))
   (setq spray-wpm 500))
 
+;;* ebook support: calibredb + nov.el + nov-xwidget
+;; https://github.com/chenyanming/calibredb.el
+;; https://github.com/chenyanming/nov-xwidget
+;; https://depp.brause.cc/nov.el/
+(setq calibredb-root-dir (expand-file-name "~/books/calibre/"))
+(setq calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
+
+(with-eval-after-load 'calibredb
+  (when (fboundp 'evil-mode)
+    (evil-set-initial-state 'calibredb-show-mode 'emacs)
+    (evil-set-initial-state 'calibredb-search-mode 'emacs)))
+
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+
+(with-eval-after-load 'nov
+  (define-key nov-mode-map (kbd "o") 'nov-xwidget-view)
+  (add-hook 'nov-mode-hook 'nov-xwidget-inject-all-files)
+
+  (add-hook 'nov-mode-hook 'olivetti-mode))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
