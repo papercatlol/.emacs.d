@@ -372,13 +372,15 @@
 ;; We don't use `frame-title-format' because it doesn't work for
 ;; frames in i3wm title layout for some reason(because they aren't visible?).
 (defun set-frame-title-fn ()
-  (let* ((window-names
-           (cl-loop for w in (window-list)
-                 for b = (window-buffer w)
-                 unless (minibufferp b)
-                   collect (format "[%s]" (buffer-name b))))
-         (title (string-join window-names " ")))
-    (set-frame-parameter nil 'title title)))
+  ;; TODO handle the case when number of windows goes from >1 to 1
+  (when (cdr (window-list))
+    (let* ((window-names
+             (cl-loop for w in (window-list)
+                      for b = (window-buffer w)
+                      unless (minibufferp b)
+                      collect (format "[%s]" (buffer-name b))))
+           (title (string-join window-names " ")))
+      (set-frame-parameter nil 'title title))))
 
 (add-hook 'window-configuration-change-hook #'set-frame-title-fn)
 
@@ -1608,6 +1610,32 @@ enable `hydra-flyspell'."
   (define-word word service))
 
 (global-set-key (kbd "H-d") 'define-word-dwim)
+
+;;** define-word-emacslient
+;; emacsclient -a "" -c -n -F "((name . \"(floating) *define word*\"))" -e "(define-word-emacsclient)"
+(defun define-word-emacsclient (&optional word)
+  (unless word (setq word (gui-get-primary-selection)))
+  (setq-local mode-line-format nil)
+  (set-frame-parameter nil 'width 80)
+  (set-frame-parameter nil 'height 20)
+  (toggle-word-wrap 1)
+  (cl-letf (((symbol-function 'define-word-displayfn)
+              (lambda (service)
+                (declare (ignore service))
+                #'define-word-insert)))
+    (switch-to-buffer (get-buffer-create "*define word*"))
+    (condition-case err
+      (let ((word (read-string "Define word: " (string-trim word))))
+        (setq-local header-line-format word)
+        (define-word word
+          define-word-default-service))
+      (quit (delete-frame)))))
+
+(defun define-word-insert (text)
+  (erase-buffer)
+  (insert text)
+  (evil-emacs-state)
+  (local-set-key "q" 'delete-frame))
 
 ;;* dumb-jump
 (require 'dumb-jump)
