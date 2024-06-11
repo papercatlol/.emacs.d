@@ -1092,6 +1092,8 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 ;;*
 (define-key package-menu-mode-map (kbd "j") 'next-line)
 (define-key package-menu-mode-map (kbd "k") 'previous-line)
+(define-key package-menu-mode-map (kbd "h") 'backward-char)
+(define-key package-menu-mode-map (kbd "l") 'forward-char)
 
 ;;* iedit
 ;; TODO: hydra-iedit
@@ -2628,6 +2630,7 @@ immediately, prompt for a todo keyword to use."
 (global-set-key (kbd "H-;") 'pp-eval-expression)
 (global-set-key (kbd "<H-return>") 'eval-expression)
 (global-set-key (kbd "H-w") 'org-store-link)
+(global-set-key (kbd "H-D") 'shortdoc-display-group)
 
 ;;** comint
 (define-key comint-mode-map (kbd "C-c C-x") nil)
@@ -2645,6 +2648,7 @@ immediately, prompt for a todo keyword to use."
 (define-key Info-mode-map "l" 'forward-char)
 ;;(define-key Info-mode-map (kbd "C-w") 'Info-backward-node)
 (define-key Info-mode-map (kbd "C-w") 'Info-up)
+(define-key Info-mode-map (kbd "H") 'Info-history-back)
 (define-key Info-mode-map (kbd "<mouse-8>") 'Info-history-back)
 (define-key Info-mode-map (kbd "<mouse-9>") 'Info-history-forward)
 

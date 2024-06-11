@@ -433,6 +433,9 @@ to ACTION and execute BODY forms."
        prepend)))
  t)
 
+;;* TODO setup org-speed-keys; defaults make no sense
+;;(setq org-use-speed-commands t)
+
 ;; random keybindings
 (define-key org-mode-map (kbd "C-c C-8") 'org-ctrl-c-star)
 (define-key org-mode-map (kbd "C-c SPC") nil)

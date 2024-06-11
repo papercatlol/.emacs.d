@@ -10,7 +10,7 @@ For new imports uses
  Prompts for nickname to use if there are any."
   ;; TODO: Support :shadowing-import-from.
   ;; MAYBE: Some control over package nicknames when printing fully
-  ;; quialified symbols e.g. alexandria:if-let vs alexandria.1.0.0:if-let
+  ;; qualified symbols e.g. alexandria:if-let vs alexandria.1.0.0:if-let
   (save-excursion
    (slime-goto-package-source-definition (slime-current-package))
    (let ((buf (current-buffer))

@@ -117,6 +117,7 @@ when cursor is directly inside the in-package form."
     (%copy-indent '-let 'let)
     (%copy-indent 'rx-let 'let)
     (%copy-indent 'transient-append-suffix 'defun)
+    (%copy-indent 'condition-case 'case)
     (put 'pretty-hydra-define 'common-lisp-indent-function 2)))
 
 ;;** documentation
@@ -567,6 +568,7 @@ active, kill fully qualified symbol-at-point/region."
             (cl:setf (cl:gethash symbol symbols) t)))
         (cl:with-standard-io-syntax
           (cl:maphash (cl:lambda (symbol _)
+                        (cl:declare (cl:ignore _))
                         (cl:push (cl:string-downcase (cl:prin1-to-string symbol)) names))
                       symbols))
         names)
