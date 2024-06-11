@@ -146,7 +146,7 @@ When called second time consecutively, call `helpful-symbol' for SYMBOL."
                        (documentation-property symbol 'variable-documentation))))
       (setq *elisp-documentation-last-symbol* symbol)
       ;; TODO: truncate docs that are more that a page long
-      (display-truncated-message (format "%s" doc)))))
+      (display-truncated-message "%s" doc))))
 
 (define-key emacs-lisp-mode-map (kbd "C-c C-d") 'elisp-documentation)
 (define-key read-expression-map (kbd "C-c C-d") 'elisp-documentation)

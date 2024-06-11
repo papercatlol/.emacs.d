@@ -787,7 +787,7 @@ Else narrow-to-defun."
                        (integer max-mini-window-height)
                        (t 40)))
          (str (apply #'format format-string args)))
-    (message (string-truncate-height str max-height))))
+    (message "%s" (string-truncate-height str max-height))))
 
 
 ;;* dired
