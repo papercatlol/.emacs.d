@@ -31,17 +31,24 @@
 (custom-theme-set-faces
  'quasi-monochrome
  ;;'(default ((t (:family "Iosevka Custom Terminus"
- ;;               ;;:width normal
- ;;               :width expanded
- ;;               :weight light
- ;;               ;;:weight normal
+ ;;               :width normal
+ ;;               ;;:width expanded
+ ;;               ;;:weight light
+ ;;               :weight normal
  ;;               :background "black"
  ;;               :foreground "light gray"
- ;;               :height 110
+ ;;               :height 120
  ;;               :inverse-video nil))))
  '(default ((t (:font "-ADBO-Source Code Pro-normal-normal-normal-*-23-*-*-*-m-0-iso10646-1"
                 :background "black"
                 :foreground "light gray"))))
+ '(default ((t (:font "-AX86-Terminess Nerd Font Mono-bold-normal-normal-*-28-*-*-*-m-0-iso10646-1"
+                ;;:weight regular
+                :background "black"
+                :foreground "light gray"))))
+ ;;'(default ((t (:font "-UKWN-iA Writer Mono S-normal-normal-normal-*-22-*-*-*-*-0-iso10646-1"
+ ;;              :background "black"
+ ;;              :foreground "light gray"))))
  ;;'(default ((t (:font "-ADBO-SourceCodeVF-light-normal-normal-*-27-*-*-*-m-0-iso10646-1"
  ;;               :background "black"
  ;;               :foreground "light gray"))))
@@ -66,7 +73,8 @@
  ;;'(variable-pitch ((t (:family "Input Sans Narrow" :height 110))))
  ;;'(variable-pitch ((t (:family "Fira Code 11" :height 150))))
  ;;'(variable-pitch ((t (:family "Input Sans Condensed" :height 150))))
- '(variable-pitch ((t (:family "Bookerly" :height 150))))
+ '(variable-pitch ((t (:family "Bookerly" :height 200
+                       :foreground "grey"))))
  ;;'(fixed-pitch ((t (:family "Fira Code 11" :height 110))))
  ;;'(fixed-pitch ((t (:family "Input Sans Narrow" :height 110))))
  '(fixed-pitch ((t (:family "Input Sans Condensed" :height 110))))
@@ -81,23 +89,28 @@
  '(eldoc-highlight-function-argument ((t (:inherit default :weight bold))))
  '(escape-glyph ((t (:foreground "light gray"))))
  '(font-lock-builtin-face ((t (:foreground "#9090a0"
-                                           ;; #d3d3d3
-                                           ))))
+                               ;; #d3d3d3
+                               ))))
  '(font-lock-comment-delimiter-face ((t (:inherit (font-lock-comment-face)))))
  '(font-lock-comment-face ((t (:background "gray20" :foreground "gray60" :extend t))))
  '(hl-todo ((t (:inherit font-lock-comment-face :weight extrabold :foreground "#cc9393"))))
- '(font-lock-constant-face ((t (:weight normal :foreground "light gray"))))
+ '(font-lock-constant-face ((t (;;:weight normal
+                                :foreground "light gray"))))
  '(font-lock-doc-face ((t (:inherit (font-lock-string-face)))))
- '(font-lock-function-name-face ((t (:foreground "white" :weight normal))))
- '(font-lock-keyword-face ((t (:weight normal :foreground "white"))))
+ '(font-lock-function-name-face ((t (:foreground "white" ;;:weight normal
+                                     ))))
+ '(font-lock-keyword-face ((t (;;:weight normal
+                               :foreground "white"))))
  '(font-lock-negation-char-face ((t nil)))
  '(font-lock-preprocessor-face ((t (:inherit (font-lock-builtin-face)))))
  '(font-lock-regexp-grouping-backslash ((t (:inherit (bold)))))
  '(font-lock-regexp-grouping-construct ((t (:inherit (bold)))))
  '(font-lock-string-face ((((class color) (type tty)) (:foreground "magenta")) (t (:foreground "dim gray"))))
- '(font-lock-type-face ((t (:foreground "light gray" :weight normal))))
+ '(font-lock-type-face ((t (:foreground "light gray" ;;:weight normal
+                            ))))
  '(font-lock-variable-name-face ((t (:foreground "light gray"))))
- '(font-lock-warning-face ((t (:foreground "gold2" :weight normal))))
+ '(font-lock-warning-face ((t (:foreground "gold2" ;;:weight normal
+                               ))))
  '(fringe ((t (:background "black"))))
  '(highlight ((t (:background "gray20"))))
  '(isearch ((t (:background "dark red" :foreground "black" :weight normal))))
@@ -107,7 +120,8 @@
  '(isearch-fail ((t (:background "red4"))))
  '(link ((t (:underline (:color foreground-color :style line)))))
  '(link-visited ((t (:underline (:color foreground-color :style line) :foreground "light gray"))))
- '(minibuffer-prompt ((t (:weight normal :foreground "light gray"))))
+ '(minibuffer-prompt ((t (;;:weight normal
+                          :foreground "light gray"))))
  '(completions-annotations ((t (:inherit font-lock-string-face))))
  ;; vertical window separator
  '(vertical-border ((t (:foreground "gray60"))))
@@ -123,7 +137,8 @@
  '(header-line ((t (:background "#1f2f2f"
                     :foreground "white"
                     :overline nil
-                    :weight normal))))
+                    ;;:weight normal
+                    ))))
  ;; '(mode-line ((t (:box nil :foreground "black" :background "gray60"))))
  ;; '(mode-line-buffer-id ((t (:weight normal))))
  ;; '(mode-line-emphasis ((t (:weight normal))))
@@ -141,7 +156,8 @@
  '(idle-highlight ((t (:inherit region :weight extra-bold))))
  '(dired-directory ((t (:inherit font-lock-function-name-face :underline t))))
  ;; '(success ((t (:foreground "white" :weight normal))))
- '(success ((t (:foreground "gray40" :weight normal :underline t))))
+ '(success ((t (:foreground "gray40" ;;:weight normal
+                :underline t))))
  '(compilation-line-number ((t (:foreground "gray30" :weight normal))))
  '(show-paren-mismatch ((t (:background "firebrick3" :foreground "white" :weight extra-bold))))
  '(popup-tip-face ((t (:inherit font-lock-comment-face))))
@@ -166,7 +182,8 @@
  '(swiper-match-face-3 ((t (:inherit swiper-match-face-1))))
  '(swiper-match-face-4 ((t (:inherit swiper-match-face-1))))
  ;; avy
- '(avy-lead-face ((t (:foreground "black" :background "LimeGreen" :weight normal))))
+ '(avy-lead-face ((t (:foreground "black" :background "LimeGreen" ;;:weight normal
+                      ))))
  '(avy-lead-face-0 ((t (:inherit avy-lead-face))))
  '(avy-lead-face-1 ((t (:inherit avy-lead-face))))
  '(avy-lead-face-2 ((t (:inherit avy-lead-face))))
@@ -193,10 +210,10 @@
                                      :underline nil))))
  '(magit-section-highlight ((t (:background  "grey10"))))
  '(magit-section-heading ((t (:foreground "#43666b" :underline t :weight bold))))
- '(magit-filename ((t (:weight normal :inherit font-lock-string-face))))
+ '(magit-filename ((t (;;:weight normal
+                       :inherit font-lock-string-face))))
  '(magit-diff-file-heading ((t (:extend t :weight bold
-                                :inherit font-lock-keyword-face
-                                :weight normal))))
+                                :inherit font-lock-keyword-face))))
  '(magit-tag ((t (:foreground "salmon"))))
  '(magit-branch-local ((t (:foreground "LightSkyBlue2"))))
  '(magit-branch-remote ((t (:foreground "DarkSeaGreen3"))))
@@ -209,7 +226,8 @@
  ;; '(org-default ((t (:inherit default :height 140))))
  '(org-default ((t (:inherit default))))
  '(org-level-1 ((t (:inherit outline-1))))
- '(org-level-2 ((t (:inherit org-level-1 :weight normal))))
+ '(org-level-2 ((t (:inherit org-level-1 ;;:weight normal
+                    ))))
  '(org-level-3 ((t (:inherit org-level-2))))
  '(org-level-4 ((t (:inherit org-default))))
  '(org-date ((t (:inherit font-lock-string-face :weight normal))))
@@ -232,7 +250,7 @@
  '(ediff-current-diff-B ((t (:inherit diff-added))))
  '(ediff-fine-diff-A ((t (:inherit diff-refine-removed))))
  '(ediff-fine-diff-B ((t (:inherit diff-refine-added))))
- '(ediff-current-diff-C ((t (:background "DarkGoldenrod4"))))
+ '(ediff-current-diff-C ((t (:background "#7a3002"))))
  '(ediff-fine-diff-C ((t (:background "DarkGoldenrod"))))
 
  '(ediff-diff-base ((t (:foreground "cadet blue" :background "grey10"))))
@@ -314,6 +332,9 @@
  '(sldb-restartable-frame-line-face ((t (:inherit bold :foreground "light slate gray"))))
  '(sldb-restartable-frame-line-face ((t (:inherit bold :foreground "gray60"))))
  ;;'(sldb-restartable-frame-line-face ((t (:inherit 'default))))
+ ;; transient
+ '(transient-argument ((t (:inherit font-lock-string-face :weight bold
+                           :foreground "lime green"))))
  )
 
 (provide-theme 'quasi-monochrome)
