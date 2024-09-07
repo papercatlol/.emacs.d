@@ -564,6 +564,13 @@ double quote kill sexp at point."
   "O" (evil-with-insert-state org-meta-return)
   (kbd "<tab>") 'org-cycle)
 
+;;** visual/motion object shortcuts
+(define-key evil-visual-state-map (kbd "w") 'evil-a-symbol)
+(define-key evil-motion-state-map (kbd "w") 'evil-a-symbol)
+(define-key evil-visual-state-map (kbd "\"") 'evil-a-double-quote)
+(define-key evil-motion-state-map (kbd "\"") 'evil-a-double-quote)
+(define-key evil-motion-state-map (kbd "v") 'er/expand-region)
+
 ;;** unbind
 (define-key evil-normal-state-map (kbd "M-.") nil)
 (define-key evil-normal-state-map (kbd "M-,") nil)
@@ -712,5 +719,22 @@ double quote kill sexp at point."
 (setq undo-tree-visualizer-relative-timestamps t)
 
 (global-undo-tree-mode 1)
+
+;;* TODO evil-mark-double-quote
+;; TODO debug some weird behavior
+;; MAYBE make it work with single quotes as well
+(defun evil-mark-double-quote ()
+  (interactive)
+  (unless (or (evil-motion-state-p) (evil-visual-state-p))
+    (evil-visual-state))
+  (if (or (looking-at "\"")
+          (looking-back "\""))
+      (call-interactively #'evil-a-double-quote)
+    (call-interactively #'evil-inner-double-quote)))
+
+(define-key evil-normal-state-map "6" 'evil-mark-double-quote)
+(define-key evil-visual-state-map "6" 'evil-mark-double-quote)
+(define-key evil-motion-state-map "6" 'evil-mark-double-quote)
+
 
 (provide 'configure-evil)
