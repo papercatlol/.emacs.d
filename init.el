@@ -1413,6 +1413,7 @@ and it's faster to rewrite it."
 
 ;;** scroll-other-window
 (setq next-screen-context-lines 41)       ; originally 2
+(setq next-screen-context-lines 2)       ; originally 2
 (global-set-key (kbd "C-M-j") 'scroll-other-window)
 (global-set-key (kbd "C-M-k") 'scroll-other-window-down)
 
@@ -2444,6 +2445,12 @@ immediately, prompt for a todo keyword to use."
 
 (with-eval-after-load 'nov
   (define-key nov-mode-map (kbd "o") 'nov-xwidget-view)
+  (define-key nov-mode-map (kbd "l") 'forward-char)
+  (define-key nov-mode-map (kbd "h") 'backward-char)
+  (define-key nov-mode-map (kbd "SPC") 'nov-scroll-up)
+  (define-key nov-mode-map (kbd "C-SPC") 'nov-scroll-down)
+  (define-key nov-mode-map (kbd "S-SPC") 'nov-scroll-down)
+
   (add-hook 'nov-mode-hook 'nov-xwidget-inject-all-files)
 
   (add-hook 'nov-mode-hook 'olivetti-mode))
