@@ -272,6 +272,42 @@
                 last-kbd-macro
                 kmacro-ring
                 shell-command-history)))
+
+;;*** persistent registers
+(defvar register-alist-printable nil)
+
+(defun savehist-fix-register-alist ()
+  "Replace unprintable values in `register-alist' before saving."
+  (setq register-alist-printable
+        (loop for (register . val) in register-alist
+              ;; See `register-val-jump-to'.
+              when
+              (cond
+                ((frame-configuration-p (car-safe val))
+                 ;; TODO
+                 nil)
+                ((window-configuration-p (car-safe val))
+                 ;; TODO
+                 nil)
+                ((markerp val)
+                 ;; See `register-swap-out'.
+                 (cons register (list 'file-query
+                                      (buffer-file-name (marker-buffer val))
+                                      (marker-position val))))
+                ((or (eq (car-safe val) 'file)
+                     (eq (car-safe val) 'file-query)
+                     (stringp val))
+                 (cons register val)))
+              collect it)))
+
+(add-hook 'savehist-save-hook 'savehist-fix-register-alist)
+(add-to-list 'savehist-additional-variables 'register-alist-printable)
+
+(with-eval-after-load savehist-file
+  (when (and register-alist-printable (null register-alist))
+    (setq register-alist register-alist-printable)))
+
+;; Load `savehist-file' after all the hooks.
 (savehist-mode)
 
 ;;** backups & tmp files
@@ -1192,6 +1228,9 @@ current entry."
       (format "\\(%s\\)\\|\\(%s\\)"
               vc-ignore-dir-regexp
               tramp-file-name-regexp))
+
+;; Use Control* options from ssh config. Should speedup magit.
+(setq tramp-use-ssh-controlmaster-options nil)
 
 ;; eshell-tramp module
 (require 'em-tramp)
@@ -2691,45 +2730,6 @@ otherwise forward to `point-to-register'."
 
 (define-key global-map (kbd "H-`") 'save-to-register-dwim)
 (define-key global-map (kbd "H--") 'counsel-register)
-
-;;*** persistent registers
-(defvar register-alist-printable nil)
-
-(defun savehist-fix-register-alist ()
-  "Replace unprintable values in `register-alist' before saving."
-  (setq register-alist-printable
-        (loop for (register . val) in register-alist
-              ;; See `register-val-jump-to'.
-              when
-              (cond
-                ((frame-configuration-p (car-safe val))
-                 ;; TODO
-                 nil)
-                ((window-configuration-p (car-safe val))
-                 ;; TODO
-                 nil)
-                ((markerp val)
-                 ;; See `register-swap-out'.
-                 (cons register (list 'file-query
-                                      (buffer-file-name (marker-buffer val))
-                                      (marker-position val))))
-                ((or (eq (car-safe val) 'file)
-                     (eq (car-safe val) 'file-query)
-                     (stringp val))
-                 (cons register val)))
-              collect it)))
-
-(savehist-fix-register-alist)
-
-(loop for (register . val) in register-alist
-      collect (cons register (type-of val)))
-
-(add-hook 'savehist-save-hook 'savehist-fix-register-alist)
-(add-to-list 'savehist-additional-variables 'register-alist-printable)
-
-(eval-after-load savehist-file
-  (when (and register-alist-printable (null register-alist))
-    (setq register-alist register-alist-printable)))
 
 ;;*** quick registers
 (defmacro define-quick-key-register (map key register)
