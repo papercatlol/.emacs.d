@@ -382,6 +382,29 @@
                                 vc-mode)
     ""))
 
+(defface mode-line-buffer-remote-face
+    '((t (:inherit mode-line-buffer-id :foreground "#7B6BFF")))
+  "Modeline face for names of buffer opened remotely."
+  :group 'basic-faces)
+
+(defface mode-line-buffer-sudo-face
+    '((t (:inherit mode-line-buffer-id :foreground "OrangeRed")))
+  "Modeline face for names of buffer opened as root."
+  :group 'basic-faces)
+
+(defun mode-line-rich-buffer-name ()
+  "Colorize buffer names opened as root or remotely."
+  (list
+   (propertize "%b" 'face
+               (cond ((when-let ((buf (buffer-file-name)))
+                        ;; FIXME There must be a better way to check this:
+                        (or (tramp-sudoedit-file-name-p buf)
+                            (string-prefix-p "/su" (file-remote-p buf))))
+                      'mode-line-buffer-sudo-face)
+                     ((file-remote-p default-directory)
+                      'mode-line-buffer-remote-face)
+                     (t 'mode-line-buffer-id)))))
+
 (require 'org-clock)
 (setq-default mode-line-format
               (list "%e"
@@ -389,9 +412,8 @@
                     mode-line-mule-info
                     mode-line-client
                     mode-line-modified
-                    mode-line-remote
                     '(:eval (ace-window-path-lighter))
-                    (list (propertize "%b" 'face 'mode-line-buffer-id))
+                    '(:eval (mode-line-rich-buffer-name))
                     ":%l %p "
                     '(:eval (string-trim (or evil-mode-line-tag "")))
                     '(:eval (when slime-mode (concat " " (slime-current-package))))
