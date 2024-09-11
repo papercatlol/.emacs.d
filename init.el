@@ -61,6 +61,21 @@
 (setq-default fill-column 80)
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 
+;;* nicer warning symbol
+(setq icon-preference '(image symbol text emoji))
+
+(define-icon warnings-suppress button
+  `((emoji "⛔")
+    ;; Many MS-Windows console fonts don't have good glyphs for U+25A0.
+    (symbol ,(if (and (eq system-type 'windows-nt)
+                      (null window-system))
+                 " » "
+               " [!] "))
+    (text " stop "))
+  "Suppress warnings."
+  :version "29.1"
+  :help-echo "Click to suppress this warning type")
+
 ;;* use deprecated CL lib because I cba to rename everything at the moment
 (require 'cl)
 
