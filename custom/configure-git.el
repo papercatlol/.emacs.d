@@ -60,9 +60,8 @@
         (let ((line (line-number-at-pos))
               (col (current-column))
               (args (car (magit-diff-arguments))))
-          (with-current-buffer
-              (magit-diff-setup-buffer nil nil args (list file) magit-diff-buffer-file-locked)
-            (magit-diff--goto-position file line col))))
+          (magit-diff-unstaged args (list file))
+          (magit-diff--goto-position file line col)))
     (user-error "Buffer isn't visiting a file")))
 
 ;;** diff helper functions
@@ -135,7 +134,7 @@ already narrowed, widen."
 ;;* ediff
 (setq ediff-split-window-function 'split-window-horizontally)
 (setq-default ediff-ignore-similar-regions t)
-(setq-default ediff-highlight-all-diffs nil)
+(setq-default ediff-highlight-all-diffs t)
 
 (defun ediff-scroll-down ()
   (interactive)
@@ -456,6 +455,9 @@ original command."
   ("d" #'magit-diff :exit t)
   ("D" #'vc-ediff :exit t)
   ("e" #'magit-ediff :exit t)
+  ;; TODO if there is a diff buffer visible, scroll it to current position.
+  ;; I.e. if looking at *unstaged* changes for current file, calling
+  ;; `magit-diff-buffer-file' (includes staged) is probably not desired.
   ("SPC" #'magit-diff-buffer-file-no-select)
 
   ("f" #'magit-find-current-file-other-window :exit t)
@@ -554,6 +556,8 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
   (magit-blame--refresh))
 
 ;; keybindings
+(define-key magit-mode-map (kbd "SPC") 'avy-goto-char-2-special)
+
 (define-key magit-blame-mode-map (kbd "j") 'magit-blame-next-chunk)
 (define-key magit-blame-mode-map (kbd "k") 'magit-blame-previous-chunk)
 (define-key magit-blame-mode-map (kbd "C-M-j") 'magit-blame-next-chunk-same-commit)
@@ -627,10 +631,10 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 (define-key magit-log-mode-map (kbd "C-c C-f") 'magit-flyspell-hydra)
 
 ;;* magit-go-forward/backward
-(define-key magit-mode-map (kbd "C-c f") 'magit-go-forward)
-(define-key magit-mode-map (kbd "C-{") 'magit-go-forward)
-(define-key magit-mode-map (kbd "C-c b") 'magit-go-backward)
-(define-key magit-mode-map (kbd "C-}") 'magit-go-backward)
+(define-key magit-mode-map (kbd "C-{") 'magit-go-backward)
+(define-key magit-mode-map (kbd "C-}") 'magit-go-forward)
+(define-key magit-mode-map (kbd "C-c C-b") 'magit-go-backward)
+(define-key magit-mode-map (kbd "C-c C-f") 'magit-go-forward)
 
 ;;* git-rebase-mode
 (with-eval-after-load 'git-rebase
@@ -709,5 +713,18 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 ;;* orgtbl-mode when editing commit messages
 (add-hook 'git-commit-mode-hook 'orgtbl-mode)
 
+;;* [disabled] git-timemachine
+;; Tbh `magit-blob-previous'/`magit-blob-next' are good enough.
+;;(define-key git-timemachine-mode-map (kbd "C-d") 'git-timemachine-help)
+
+;;(transient-append-suffix
+;; 'git-timemachine-help
+;; "p"
+;; `("k" "show previous revision" git-timemachine-show-previous-revision))
+
+;;(transient-append-suffix
+;; 'git-timemachine-help
+;; "n"
+;; `("j" "show previous revision" git-timemachine-show-previous-revision))
 
 (provide 'configure-git)
