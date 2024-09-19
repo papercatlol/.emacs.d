@@ -567,6 +567,8 @@ double quote kill sexp at point."
 ;;** visual/motion object shortcuts
 (define-key evil-visual-state-map (kbd "w") 'evil-a-symbol)
 (define-key evil-motion-state-map (kbd "w") 'evil-a-symbol)
+(define-key evil-visual-state-map (kbd "W") 'evil-a-WORD)
+(define-key evil-motion-state-map (kbd "W") 'evil-a-WORD)
 (define-key evil-visual-state-map (kbd "\"") 'evil-a-double-quote)
 (define-key evil-motion-state-map (kbd "\"") 'evil-a-double-quote)
 (define-key evil-motion-state-map (kbd "v") 'er/expand-region)

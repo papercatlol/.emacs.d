@@ -64,17 +64,18 @@
 ;;* nicer warning symbol
 (setq icon-preference '(image symbol text emoji))
 
-(define-icon warnings-suppress button
-  `((emoji "⛔")
-    ;; Many MS-Windows console fonts don't have good glyphs for U+25A0.
-    (symbol ,(if (and (eq system-type 'windows-nt)
-                      (null window-system))
-                 " » "
-               " [!] "))
-    (text " stop "))
-  "Suppress warnings."
-  :version "29.1"
-  :help-echo "Click to suppress this warning type")
+(when (require 'icons nil t)
+  (define-icon warnings-suppress button
+    `((emoji "⛔")
+ ;; Many MS-Windows console fonts don't have good glyphs for U+25A0.
+      (symbol ,(if (and (eq system-type 'windows-nt)
+                        (null window-system))
+                   " » "
+                 " [!] "))
+      (text " stop "))
+    "Suppress warnings."
+    :version "29.1"
+    :help-echo "Click to suppress this warning type"))
 
 ;;* use deprecated CL lib because I cba to rename everything at the moment
 (require 'cl)
@@ -236,7 +237,7 @@
       initial-major-mode 'emacs-lisp-mode
       ;;
       use-dialog-box nil
-      comint-buffer-maximum-size 8192
+      comint-buffer-maximum-size 4096
       ;; fringe-mode '((4 . 4))
       fringe-mode '(8 . 0)
       read-process-output-max (* 1024 1024)
@@ -773,7 +774,7 @@ if there is a sole window."
 
 ;;** tab key hacks
 (setq tab-always-indent 'complete)
-(setq tab-first-completion 'word-or-paren)
+(setq tab-first-completion nil)
 
 ;; Distinguish C-i and keyboard tab key
 (define-key input-decode-map (kbd "C-i") [C-i])
@@ -1567,7 +1568,9 @@ If called interactively, quote and insert it."
   (interactive)
   (let ((key (key-description (read-key-sequence "Key Sequence: "))))
     (if (interactive-p)
-        (insert (format "\"%s\"" key))
+        (insert (if (nth 3 (syntax-ppss)) ; inside string
+                    key
+                  (format "\"%s\"" key)))
       key)))
 
 (global-set-key (kbd "H-k") 'kbd-helper)
@@ -1589,10 +1592,11 @@ the whole buffer otherwise."
 (setq flyspell-issue-message-flag nil)
 (setq ispell-silently-savep t)          ; Save personal dict w/o confirmation
 
-(define-key flyspell-mode-map (kbd "C-.") nil)
-(define-key flyspell-mode-map (kbd "C-,") nil)
-(define-key flyspell-mode-map (kbd "C-;") nil)
-(define-key flyspell-mode-map (kbd "C-M-i") nil)
+(with-eval-after-load 'flyspell
+  (define-key flyspell-mode-map (kbd "C-.") nil)
+  (define-key flyspell-mode-map (kbd "C-,") nil)
+  (define-key flyspell-mode-map (kbd "C-;") nil)
+  (define-key flyspell-mode-map (kbd "C-M-i") nil))
 
 ;; Need `evil' for `evil-prev-flyspell-error'. If you don't use `evil',
 ;; you will have to define that function manually.
@@ -1652,7 +1656,8 @@ enable `hydra-flyspell'."
   (advice-add 'hydra-flyspell/flyspell-auto-correct-word :around
               #'hydra-flyspell--flyspell-auto-correct-word-advice)
 
-  (define-key flyspell-mode-map (kbd "C-c C-f") 'hydra-flyspell/body)
+  (with-eval-after-load 'flyspell
+    (define-key flyspell-mode-map (kbd "C-c C-f") 'hydra-flyspell/body))
   (define-key prog-mode-map (kbd "C-c C-f") 'flyspell-hydra)
   (define-key markdown-mode-map (kbd "C-c C-f") 'flyspell-hydra)
   (define-key org-mode-map (kbd "C-c C-f") 'flyspell-hydra))
@@ -2055,7 +2060,8 @@ the cursor to the new position as well."
 ;;** TODO avy + edebug (avy-action-toggle-breakpoint or smth)
 
 ;;* embark (trying it out)
-(require 'configure-embark)
+;; MAYBE fix after upgrade to emacs29
+;;(require 'configure-embark)
 
 ;;* highlight-tabs-mode
 (defun highlight-tabs-mode ()
@@ -2606,7 +2612,7 @@ immediately, prompt for a todo keyword to use."
 (global-set-key (kbd "C-:") 'mc/mark-all-dwim)
 (global-set-key (kbd "C-x m l") 'mc/edit-lines)
 (global-set-key (kbd "C-x m b") 'mc/edit-beginnings-of-lines)
-(global-set-key (kbd "C-x m e") 'mc/edit-beginnings-of-lines)
+(global-set-key (kbd "C-x m e") 'mc/edit-ends-of-lines)
 (global-set-key (kbd "C-x m r") 'mc/mark-all-in-region-regexp)
 (global-set-key (kbd "C-x m SPC") 'set-rectangular-region-anchor)
 (global-set-key (kbd "C-x m h") 'mc-hide-unmatched-lines-mode)
@@ -2889,3 +2895,5 @@ EVENT."
 (define-key ctl-x-map (kbd "x w") 'toggle-word-wrap)
 (define-key ctl-x-map (kbd "x s") 'toggle-scroll-bar)
 (define-key ctl-x-map (kbd "x m") 'toggle-enable-multibyte-characters)
+
+;;* TODO bind something to "C-'"
