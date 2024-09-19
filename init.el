@@ -2498,6 +2498,25 @@ immediately, prompt for a todo keyword to use."
 
   (add-hook 'nov-mode-hook 'olivetti-mode))
 
+;;* blimp (imagemagic interface)
+(add-hook 'image-mode-hook 'blimp-mode)
+
+;;* frog-jump-buffer
+(defun frog-jump-buffer-filter-redundand (buf)
+  "Filters buffers that can be easily accessed elsewhere. E.g.
+current-buffer, visible buffers, user-init-file, *scratch*."
+  (unless (or (eq buf (current-buffer))
+              (get-buffer-window buf)
+              (equal (buffer-file-name buf) user-init-file)
+              (eq buf (get-buffer "*scratch*")))
+    t))
+
+(setq frog-jump-buffer-default-filter 'frog-jump-buffer-filter-redundand)
+
+(global-set-key (kbd "C-<f16>") 'frog-jump-buffer)
+(global-set-key (kbd "C-M-v") 'frog-jump-buffer)
+
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-/") 'hippie-expand)
