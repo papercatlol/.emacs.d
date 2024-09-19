@@ -2800,6 +2800,18 @@ otherwise forward to `point-to-register'."
 (define-key global-map (kbd "H-`") 'save-to-register-dwim)
 (define-key global-map (kbd "H--") 'counsel-register)
 
+(defun delete-register (register)
+  (setf (alist-get register register-alist nil t) nil))
+
+(defun ivy-action--delete-register (ivy-item)
+  (when-let ((register (get-text-property 0 'register ivy-item)))
+    (delete-register register)))
+
+(with-eval-after-load 'counsel
+  (ivy-add-actions
+   'counsel-register
+   '(("d" ivy-action--delete-register "delete register"))))
+
 ;;*** quick registers
 (defmacro define-quick-key-register (map key register)
   (let* ((str (string register))
@@ -2840,29 +2852,30 @@ otherwise forward to `point-to-register'."
   "Jumps to next register that contains a buffer position.
 With prefix arg clear `last-visited-register' instead."
   (interactive "P")
-  (if clear-last-visited
-      (if (null last-visited-register)
-          (message "last-visited-register is nil")
-        (setf (alist-get last-visited-register register-alist nil 'remove)
-              nil)
-        (message "Cleared register %s" (char-to-string last-visited-register))
-        ;; MAYBE set `last-visited-register' to the one before last.
-        (setq last-visited-register nil))
-    (let* ((found (null last-visited-register))
-           (register
-             (loop for (register . val) in register-alist
-                   do (cond ((eq register last-visited-register)
-                             (setq found t))
-                            ((and found
-                                  (or (markerp val)
-                                      (eq (car-safe val) 'file-query)))
-                             (setq last-visited-register register)
-                             (return register))))))
-      (if register
-          (progn (message "Register %s" (char-to-string register))
-                 (jump-to-register register))
-        (setq last-visited-register nil)
-        (jump-to-next-register)))))
+  (when register-alist
+    (if clear-last-visited
+        (if (null last-visited-register)
+            (message "last-visited-register is nil")
+          (setf (alist-get last-visited-register register-alist nil 'remove)
+                nil)
+          (message "Cleared register %s" (char-to-string last-visited-register))
+          ;; MAYBE set `last-visited-register' to the one before last.
+          (setq last-visited-register nil))
+      (let* ((found (null last-visited-register))
+             (register
+               (loop for (register . val) in register-alist
+                     do (cond ((eq register last-visited-register)
+                               (setq found t))
+                              ((and found
+                                    (or (markerp val)
+                                        (eq (car-safe val) 'file-query)))
+                               (setq last-visited-register register)
+                               (return register))))))
+        (if register
+            (progn (message "Register %s" (char-to-string register))
+                   (jump-to-register register))
+          (setq last-visited-register nil)
+          (jump-to-next-register))))))
 
 (global-set-key (kbd "<f16>") 'jump-to-next-register)
 
