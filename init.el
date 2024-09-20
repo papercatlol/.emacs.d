@@ -1697,29 +1697,49 @@ enable `hydra-flyspell'."
 
 ;;** define-word-emacslient
 ;; emacsclient -a "" -c -n -F "((name . \"(floating) *define word*\"))" -e "(define-word-emacsclient)"
+(defvar define-word-emacslient-backend 'define-word-popup)
+
 (defun define-word-emacsclient (&optional word)
+  "Define a word using a popup frame."
   (unless word (setq word (gui-get-primary-selection)))
-  (setq-local mode-line-format nil)
   (set-frame-parameter nil 'width 80)
   (set-frame-parameter nil 'height 20)
-  (toggle-word-wrap 1)
-  (cl-letf (((symbol-function 'define-word-displayfn)
-              (lambda (service)
-                (declare (ignore service))
-                #'define-word-insert)))
-    (switch-to-buffer (get-buffer-create "*define word*"))
-    (condition-case err
-      (let ((word (read-string "Define word: " (string-trim word))))
-        (setq-local header-line-format word)
-        (define-word word
-          define-word-default-service))
-      (quit (delete-frame)))))
+  (funcall define-word-emacslient-backend word))
 
 (defun define-word-insert (text)
   (erase-buffer)
   (insert text)
   (evil-emacs-state)
-  (local-set-key "q" 'delete-frame))
+  (local-set-key "q" 'delete-frame)
+  (local-set-key "<return>" 'define-word)
+  (local-set-key "RET" 'define-word)
+  (local-set-key "m" 'define-word-popup))
+
+(defun define-word-popup (&optional word choose-service)
+  "Same as `define-word', but insert the definition in the current buffer."
+  (interactive (list "" current-prefix-arg))
+  (cl-letf (((symbol-function 'define-word-displayfn)
+              (lambda (service)
+                (declare (ignore service))
+                #'define-word-insert)))
+    (switch-to-buffer (get-buffer-create "*define word*"))
+    (toggle-word-wrap 1)
+    (setq-local mode-line-format nil)
+    (condition-case err
+      (let ((word (read-string "Define word: " (and word (string-trim word)))))
+        (setq-local header-line-format word)
+        (define-word word define-word-default-service choose-service))
+      (quit (delete-frame)))))
+
+;;* dictionary
+(setq dictionary-server "localhost")
+(setq dictionary-default-dictionary "wn")
+(setq dictionary-use-single-buffer t)
+(setq dictionary-post-buffer-hook 'delete-other-windows)
+
+(define-key dictionary-mode-map (kbd "q") 'delete-frame)
+
+(setq define-word-emacslient-backend 'dictionary-search)
 
 ;;* dumb-jump
 (require 'dumb-jump)
@@ -1795,6 +1815,8 @@ windows)."
     (beginning-of-defun)
     (font-lock-ensure (point) (line-end-position))
     (buffer-substring (point) (line-end-position)))))
+
+;;(add-to-list 'which-func-functions 'show-toplevel)
 
 (define-key prog-mode-map (kbd "C-c w") 'show-toplevel)
 (define-key markdown-mode-map (kbd "C-c w") 'show-toplevel)
