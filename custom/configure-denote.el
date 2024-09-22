@@ -140,14 +140,21 @@ normally. With prefix argument, prompt for file type first."
   ("d" #'denote-directory-dired "Visit denote-directory in Dired")
   ("r" #'denote-dired-rename-file-dwim "Rename"))
 
-;;(global-set-key (kbd "<f6>") 'hydra-denote/body)
-(global-set-key (kbd "<f6>") 'denote-dwim)
-
 (defun denote-directory-dired ()
   "Visit `denote-directory' in Dired."
   (interactive)
   (dired (denote-directory)))
 
+(global-set-key (kbd "C-<f6>") 'hydra-denote/body)
+(global-set-key (kbd "<f6>") 'denote-dwim)
+
+;;* denote-emacsclient
+(defun denote-emacsclient ()
+  "emacsclient -a \"\" -c -n -F \"((name . \\\"(floating) denote\\\"))\" -e '(denote-emacsclient)'"
+  (dired denote-directory)
+  (delete-other-windows)
+  ;; MAYBE wrap with condition-case and delete-frame on 'quit
+  (denote-dwim))
 
 ;;* migrating from org-roam
 (defun org-roam-convert-to-denote (files dir)
@@ -177,8 +184,8 @@ normally. With prefix argument, prompt for file type first."
       (let* ((date (match-string 1 filename))
              (time (match-string 2 filename))
              (title (or ;; Try to get title with spaces.
-                        (denote-retrieve--value-title file)
-                        (replace-regexp-in-string "_" " " (match-string 3 filename))))
+                     (denote-retrieve--value-title file)
+                     (replace-regexp-in-string "_" " " (match-string 3 filename))))
              (decoded-time (date-to-time (concat date "T" time)))
              (id (format-time-string denote--id-format decoded-time))
              ;; Code from `org-roam-tag-add'.
