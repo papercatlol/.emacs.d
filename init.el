@@ -1256,8 +1256,8 @@ current entry."
 ;;* tramp
 (setq-default tramp-verbose 5)
 
-(setq tramp-default-method "ssh" ; "ssh"/"scp"
-      )
+(setq tramp-default-method "ssh") ; "ssh"/"scp"
+(setq tramp-default-remote-shell "/bin/bash")
 
 ;; Try to speed things up
 (setq remote-file-name-inhibit-cache nil)

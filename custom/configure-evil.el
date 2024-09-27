@@ -738,5 +738,9 @@ double quote kill sexp at point."
 (define-key evil-visual-state-map "6" 'evil-mark-double-quote)
 (define-key evil-motion-state-map "6" 'evil-mark-double-quote)
 
+;;* vterm
+(evil-define-key '(insert) vterm-mode-map
+  (kbd "C-w") 'vterm-send-meta-backspace)
+
 
 (provide 'configure-evil)

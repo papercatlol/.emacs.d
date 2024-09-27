@@ -27,31 +27,27 @@
 (define-key equake-mode-map (kbd "C-M-_") 'nil)
 (define-key equake-mode-map (kbd "C-M-+") 'nil)
 
-;;* modeline colors
-(face-spec-set 'equake-tab-inactive '((t (:foreground "gray70"))))
-(face-spec-set 'equake-tab-active '((t (:foreground "black" :background "gray70" :weight bold))))
-(face-spec-set 'equake-shell-type-eshell '((t (:foreground "white" :background "black"))))
-(face-spec-set 'equake-shell-type-term '((t (:foreground "white" :background "black"))))
-(face-spec-set 'equake-shell-type-rash '((t (:foreground "white" :background "black"))))
-(face-spec-set 'equake-shell-type-shell '((t (:foreground "white" :background "black"))))
-
 ;;* equake-pop
 (setq equake-default-shell 'shell)
 
 (defun equake-pop (&optional new-tab initial-input)
-  "Pop to equake buffer. With prefix arg open a new equake tab."
+  "Pop to equake buffer. With prefix arg open a new equake tab.
+With double prefix arg override the default shell type with vterm."
   (interactive "P")
-  (if (or new-tab (null (equake-find-buffer)))
-      (equake-new-tab)
-    (if-let ((buf (or (equake-find-visible-buffer)
-                      (equake-find-buffer))))
-        (pop-to-buffer buf)
-      (when-let* ((dir default-directory)
-                  (tab (equake-find-buffer
-                        (lambda (buf)
-                          (string= (buffer-local-value 'default-directory buf)
-                                   dir)))))
-        (pop-to-buffer tab))))
+  (cond ((= 16 (prefix-numeric-value current-prefix-arg))
+         (equake-new-tab 'vterm))
+        ((or new-tab (null (equake-find-buffer)))
+         (equake-new-tab))
+        (t
+         (if-let ((buf (or (equake-find-visible-buffer)
+                           (equake-find-buffer))))
+             (pop-to-buffer buf)
+           (when-let* ((dir default-directory)
+                       (tab (equake-find-buffer
+                             (lambda (buf)
+                               (string= (buffer-local-value 'default-directory buf)
+                                        dir)))))
+             (pop-to-buffer tab)))))
   (when initial-input
     (goto-char (point-max))
     (insert initial-input)))
@@ -112,8 +108,15 @@ With prefix arg open a new equake tab."
             (buffer-local-value 'default-directory tab)))
           (tab-active-p (eq tab (current-buffer)))
           ;; TODO make inactive tabs change bg with (in)active modeline
-          (face (if tab-active-p 'equake-tab-active 'equake-tab-inactive)))
-    (propertize (concat "[" tab-name "]") 'font-lock-face face)))
+          (face (if tab-active-p 'equake-tab-active 'equake-tab-inactive))
+          (shell-type (let* ((mode (buffer-local-value 'major-mode tab))
+                             (shell-name (string-remove-suffix
+                                          "-mode" (symbol-name mode))))
+                        ;; HACK: This relies on the convention that SHELLNAME
+                        ;; buffers will be in SHELLNAME-mode major mode.
+                        (if (equal (symbol-name equake-default-shell) shell-name)
+                            "" (concat shell-name ":")))))
+         (propertize (concat "[" shell-type tab-name "]") 'font-lock-face face)))
 
 (advice-add 'equake--format-tab :override #'equake--format-tab-override)
 
@@ -126,11 +129,9 @@ With prefix arg open a new equake tab."
                      (format "%s: %s" monitor tabs-part)
                    tabs-part)))
     (when (fboundp 'ace-window)
-      (setq format
-            (list `(:eval (ace-window-path-lighter))
-                  "(" '(:eval mode-name) ") "
-                  format)))
-    (setq mode-line-format format)
+      (setq format (list `(:eval (ace-window-path-lighter)) format)))
+    (setq header-line-format format)
+    (setq mode-line-format nil)
     (force-mode-line-update)))
 
 (advice-add 'equake--update-mode-line :override #'equake--update-mode-line-override)
@@ -276,5 +277,10 @@ With prefix arg open a new equake tab."
 
   (capf-autosuggest-define-partial-accept-cmd capf-autosuggest-lispy-move-end-of-line lispy-move-end-of-line)
   (define-key capf-autosuggest-active-mode-map (kbd "C-e") 'capf-autosuggest-lispy-move-end-of-line))
+
+;;* vterm
+(with-eval-after-load 'vterm
+  (define-key vterm-mode-map (kbd "C-h") 'vterm-send-backspace))
+
 
 (provide 'configure-equake)

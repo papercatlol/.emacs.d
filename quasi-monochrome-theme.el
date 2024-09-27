@@ -269,6 +269,15 @@
  '(frog-menu-candidates-face ((t (:foreground "white"))))
  ;; equake
  '(equake-shell-type-shell ((t (:foreground "white"))))
+ '(equake-tab-active ((t (:background "gray70" :foreground "black"
+                          :weight bold))))
+ '(equake-tab-inactive ((t (:inherit mode-line-inactive
+                            :foreground "gray70"))))
+ '(equake-shell-type-eshell ((t (:foreground "white" :background "black"))))
+ '(equake-shell-type-term ((t (:foreground "white" :background "black"))))
+ '(equake-shell-type-rash ((t (:foreground "white" :background "black"))))
+ '(equake-shell-type-shell ((t (:foreground "white" :background "black"))))
+
  '(sh-heredoc ((t (:inherit font-lock-string-face))))
  '(comint-highlight-input ((t (:weight bold :box "green4"))))
  ;; loccur
