@@ -39,12 +39,15 @@
  ;;               :foreground "light gray"
  ;;               :height 120
  ;;               :inverse-video nil))))
- '(default ((t (:font "-ADBO-Source Code Pro-normal-normal-normal-*-23-*-*-*-m-0-iso10646-1"
-                :background "black"
-                :foreground "light gray"))))
+ ;;'(default ((t (:font "-ADBO-Source Code Pro-normal-normal-normal-*-23-*-*-*-m-0-iso10646-1"
+ ;;               :background "black"
+ ;;               :foreground "light gray"))))
  '(default ((t (:font "-AX86-Terminess Nerd Font Mono-bold-normal-normal-*-28-*-*-*-m-0-iso10646-1"
                 ;;:weight regular
-                :background "black"
+                ;;:background "black"
+                ;;:background "#160510"
+                ;;:background "#130207"
+                :background "#080103"
                 :foreground "light gray"))))
  ;;'(default ((t (:font "-UKWN-iA Writer Mono S-normal-normal-normal-*-22-*-*-*-*-0-iso10646-1"
  ;;              :background "black"
@@ -75,9 +78,9 @@
  ;;'(variable-pitch ((t (:family "Input Sans Condensed" :height 150))))
  '(variable-pitch ((t (:family "Bookerly" :height 200
                        :foreground "grey"))))
- ;;'(fixed-pitch ((t (:family "Fira Code 11" :height 110))))
+ '(fixed-pitch ((t (:family "Fira Code 11" :height 160))))
  ;;'(fixed-pitch ((t (:family "Input Sans Narrow" :height 110))))
- '(fixed-pitch ((t (:family "Input Sans Condensed" :height 110))))
+ ;;'(fixed-pitch ((t (:family "Input Sans Condensed" :height 180))))
  ;;'(fixed-pitch-serif ((t (:family "Fira Code" :height 110))))
  '(fixed-pitch-serif ((t (:family "Input Serif Narrow" :height 110))))
  '(button ((t (:inherit (link)))))
@@ -126,10 +129,9 @@
  ;; vertical window separator
  '(vertical-border ((t (:foreground "gray60"))))
  ;; mode-line
- '(mode-line ((t (:background "black" :foreground "#c5c9c0" :bold nil
+ '(mode-line ((t (:background "#133e07" :foreground "#c5c9c0"
                   :box (:line-width 1 :color "gray70")))))
- '(mode-line-inactive ((t (:background "gray10" :foreground "#41544B"
-			   :overline "gray70"))))
+ '(mode-line-inactive ((t (:background "gray10" :foreground "#41544B"))))
  '(mode-line-buffer-id ((t (:background nil :foreground "white"))))
  '(mode-line-highlight ((t (:foreground "aquamarine3" :box t))))
  '(mode-line-emphasis ((t (:foreground "aquamarine3"))))
@@ -344,6 +346,13 @@
  ;; transient
  '(transient-argument ((t (:inherit font-lock-string-face :weight bold
                            :foreground "lime green"))))
+ ;;
+ '(help-key-binding ((t (:inherit default :background "grey19" :foreground "LightBlue"
+                         :box (:line-width (-1 . -1) :color "grey35")))))
+ ;; dictionary
+ '(dictionary-word-definition-face ((t (:inherit default))))
+ '(dictionary-reference-face ((t (:inherit dictionary-word-definition-face
+                                  :inherit link))))
  )
 
 (provide-theme 'quasi-monochrome)
