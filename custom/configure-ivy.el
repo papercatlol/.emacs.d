@@ -481,6 +481,7 @@ buffer will be opened(current window, other window, other frame)."
         (t (dired d))))))
 
 (defun counsel-buffers-action (item &optional where)
+  (require 'ffap)
   ;; (message "%s %s %s" item where (counsel-buffers--buffer-type item))
   (case (counsel-buffers--buffer-type item)
     (:buffer (visit-buffer item where))
@@ -588,7 +589,7 @@ buffer will be opened(current window, other window, other frame)."
 (defun ivy--predicate-repl-buffers (c)
   (string-match-p (rx bol "*" (* any)
                       (or (and "repl" word-end)
-                          "ielm" "shell" "equake" "compilation"
+                          "ielm" "shell" "equake" "compilation" "vterm" "*term"
                           "inferior-"))
                   c))
 
@@ -672,13 +673,20 @@ otherwise eval ELSE and stay."
 
 (define-key ivy-minibuffer-map (kbd "C-v") nil)
 
-(ivy-enable-caller-switching ivy-minibuffer-map
-  #'counsel-find-file
-  #'counsel-files
-  #'counsel-buffers
-  #'counsel-describe-variable
-  #'counsel-describe-function
-  #'counsel-describe-symbol)
+(ivy-enable-caller-switching
+ ivy-minibuffer-map
+ #'counsel-find-file
+ #'counsel-files
+ #'counsel-buffers
+ #'counsel-describe-variable
+ #'counsel-describe-function
+ #'counsel-describe-symbol
+ #'counsel-rg)
+
+(ivy-enable-caller-switching
+ swiper-map
+ #'swiper-all
+ #'counsel-rg)
 
 ;;* toggle-symbol-start/end
 (defvar symbol-start-regex (rx symbol-start))

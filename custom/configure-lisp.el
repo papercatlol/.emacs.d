@@ -1302,6 +1302,23 @@ If there was an active region, insert it into repl."
 
 (define-key slime-inspector-mode-map (kbd "m") 'slime-inspector-copy-down-to-repl-other-window)
 
+;;* TODO <f8> slime hydra
+(dolist (lisp '("sbcl" "ecl"))
+  (when (executable-find lisp)
+    (pushnew (list (intern lisp)
+                   (list lisp)
+                   ;;:init slime-init-command
+                   )
+             slime-lisp-implementations)))
+
+(defun slime* ()
+  "Same as `slime' with a negative prefix argument."
+  (interactive)
+  (let ((current-prefix-arg '-))
+    (call-interactively #'slime)))
+
+(define-key global-map (kbd "<f8>") 'slime*)
+
 ;;* KEYS
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation-minibuffer)

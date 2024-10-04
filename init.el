@@ -531,6 +531,7 @@
 ;;* windows
 ;;** display-buffer-alist
 ;; Inspired by: https://protesilaos.com/codelog/2020-01-07-emacs-display-buffer/
+(setq switch-to-buffer-obey-display-actions t)
 (progn
   ;; bottom side window
   (setf
@@ -1739,9 +1740,10 @@ enable `hydra-flyspell'."
 (setq dictionary-use-single-buffer t)
 (setq dictionary-post-buffer-hook 'delete-other-windows)
 
-(define-key dictionary-mode-map (kbd "q") 'delete-frame)
+(with-eval-after-load 'dictionary
+ (define-key dictionary-mode-map (kbd "q") 'delete-frame)
 
-(setq define-word-emacslient-backend 'dictionary-search)
+ (setq define-word-emacslient-backend 'dictionary-search))
 
 ;;* dumb-jump
 (require 'dumb-jump)

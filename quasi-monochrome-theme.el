@@ -253,7 +253,7 @@
  '(ediff-fine-diff-A ((t (:inherit diff-refine-removed))))
  '(ediff-fine-diff-B ((t (:inherit diff-refine-added))))
  '(ediff-current-diff-C ((t (:background "#7a3002"))))
- '(ediff-fine-diff-C ((t (:background "DarkGoldenrod"))))
+ '(ediff-fine-diff-C ((t (:background "#5a1002"))))
 
  '(ediff-diff-base ((t (:foreground "cadet blue" :background "grey10"))))
  '(ediff-even-diff-A ((t (:inherit ediff-even-diff-base))))

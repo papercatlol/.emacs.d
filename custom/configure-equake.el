@@ -130,8 +130,8 @@ With prefix arg open a new equake tab."
                    tabs-part)))
     (when (fboundp 'ace-window)
       (setq format (list `(:eval (ace-window-path-lighter)) format)))
-    (setq header-line-format format)
-    (setq mode-line-format nil)
+    ;;(setq header-line-format format)
+    (setq mode-line-format format)
     (force-mode-line-update)))
 
 (advice-add 'equake--update-mode-line :override #'equake--update-mode-line-override)
