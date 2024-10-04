@@ -155,13 +155,13 @@
 (require 'smtpmail)
 
 ;;set up queue for offline email
-;;use mu mkdir  /home/il/Maildir/acc/queue to set up first
+;;use mu mkdir  ~/Maildir/acc/queue to set up first
 (setq smtpmail-queue-mail nil)  ;; start in normal mode
 
 ;;* saving attachments
 ;; TODO: something clever with choosing where to save attachments
 (setq mu4e-save-multiple-attachments-without-asking t)
-(setq mu4e-attachment-dir "/home/il/Downloads/mu4e")
+(setq mu4e-attachment-dir (expand-file-name "~/Downloads/mu4e"))
 
 (defun mu4e-choose-attachment-dir ()
   "Read and create a directory path relative to
@@ -219,11 +219,11 @@
             (mu4e-inbox-dir . "/Papercatlol/INBOX")
 	    ;; (mu4e-compose-signature . "-Papercatlol")
 	    (mu4e-compose-format-flowed . t)
-	    (smtpmail-queue-dir . "/home/il/mail/Papercatlol/queue")
+	    (smtpmail-queue-dir . (expand-file-name "~/mail/Papercatlol/queue"))
 	    (message-send-mail-function . smtpmail-send-it)
 	    (smtpmail-smtp-user . "papercatlol@gmail.com")
 	    (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
-	    (smtpmail-auth-credentials . (expand-file-name "/home/il/.authinfo.gpg"))
+	    (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
 	    (smtpmail-default-smtp-server . "smtp.gmail.com")
 	    (smtpmail-smtp-server . "smtp.gmail.com")
 	    (smtpmail-smtp-service . 587)

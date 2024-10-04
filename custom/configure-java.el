@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t -*-
 
 ;;* lsp
-(defvar lsp-java-home "/home/il/work/java-lsp/plugins/org.eclipse.equinox.launcher_1.6.100.v20201223-0822.jar")
+(defvar lsp-java-home "~/work/java-lsp/plugins/org.eclipse.equinox.launcher_1.6.100.v20201223-0822.jar")
 
 (let ((class-path (getenv "CLASSPATH")))
   (when (and (file-exists-p lsp-java-home)
@@ -12,7 +12,8 @@
 
 (require 'configure-lsp)
 
-(add-hook 'java-mode-hook 'configure-lsp:init)
+;;(add-hook 'java-mode-hook 'configure-lsp:init)
+(remove-hook 'java-mode-hook 'configure-lsp:init)
 
 ;;(add-hook 'java-mode-hook 'eglot-ensure)
 

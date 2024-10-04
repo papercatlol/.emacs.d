@@ -278,7 +278,7 @@ If there was an active region, insert it into repl."
 ;;*** hyperspec
 
 ;; local hyperspec
-(load "/home/il/quicklisp/clhs-use-local.el" t)
+(load "~/quicklisp/clhs-use-local.el" t)
 
 ;; browse hyperspec in eww
 (defun hyperspec-lookup-advice (func &rest args)
