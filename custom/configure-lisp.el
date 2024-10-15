@@ -8,6 +8,10 @@
 
 (add-to-list 'auto-mode-alist '("\\.cl\\'" . common-lisp-mode))
 
+;;* slime repl history
+(setq slime-repl-history-size 4096)
+(setq slime-repl-history-file (expand-file-name "~/.slime/slime-history.eld"))
+
 ;;* slime-contribs
 (setq slime-contribs '(slime-repl
                        slime-autodoc
@@ -54,6 +58,13 @@ when cursor is directly inside the in-package form."
   (save-excursion (beginning-of-line)
                   (slime-search-buffer-package)))
 (setq slime-find-buffer-package-function #'slime-search-buffer-package+)
+
+;;* slime fasl dir
+(let ((dir "/tmp/slime-fasls/"))
+  (unless (file-exists-p dir)
+    (make-directory dir))
+  (when (file-exists-p dir)
+    (setf (plist-get slime-compile-file-options :fasl-directory) dir)))
 
 ;;* Paredit
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
@@ -1323,6 +1334,8 @@ If there was an active region, insert it into repl."
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation-minibuffer)
   (define-key keymap (kbd "C-c C-d d") 'slime-documentation)
+  (define-key keymap (kbd "C-c C-d C-g") nil)
+  (define-key keymap (kbd "C-c C-d g") 'common-lisp-hyperspec-glossary-term)
   (define-key keymap [remap slime-edit-definition] 'slime-edit-definition-ivy)
   (define-key keymap [remap slime-edit-definition-other-window] 'slime-edit-definition-other-window-ivy)
   (define-key keymap [remap slime-edit-definition-other-frame] 'slime-edit-definition-other-frame-ivy))
