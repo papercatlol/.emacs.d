@@ -153,8 +153,8 @@
  '(tooltip ((t (:inherit (variable-pitch) :foreground "black" :background "lightyellow"))))
  '(trailing-whitespace ((t (:inherit style-warning-face))))
  '(whitespace-tab ((t (:inherit trailing-whitespace))))
- '(show-paren-match ((t (:foreground "white" :background "black"
-                         :weight ultrabold))))
+ '(show-paren-match ((t (:foreground "DarkOrchid1" :background "black"
+                         :weight extra-bold))))
  '(idle-highlight ((t (:inherit region :weight extra-bold))))
  '(dired-directory ((t (:inherit font-lock-function-name-face :underline t))))
  ;; '(success ((t (:foreground "white" :weight normal))))
