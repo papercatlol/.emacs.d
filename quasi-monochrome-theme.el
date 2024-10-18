@@ -108,7 +108,7 @@
  '(font-lock-preprocessor-face ((t (:inherit (font-lock-builtin-face)))))
  '(font-lock-regexp-grouping-backslash ((t (:inherit (bold)))))
  '(font-lock-regexp-grouping-construct ((t (:inherit (bold)))))
- '(font-lock-string-face ((((class color) (type tty)) (:foreground "magenta")) (t (:foreground "dim gray"))))
+ '(font-lock-string-face ((t (:inherit default :foreground "dim gray"))))
  '(font-lock-type-face ((t (:foreground "light gray" ;;:weight normal
                             ))))
  '(font-lock-variable-name-face ((t (:foreground "light gray"))))
@@ -129,7 +129,9 @@
  ;; vertical window separator
  '(vertical-border ((t (:foreground "gray60"))))
  ;; mode-line
- '(mode-line ((t (:background "#133e07" :foreground "#c5c9c0"
+ '(mode-line ((t (:background "#0000000056aa" :foreground "#c5c9c0"
+                  ;; "#0000000073c2"
+                  ;; :background "#bdbdbd" :foreground "#010101"
                   :box (:line-width 1 :color "gray70")))))
  '(mode-line-inactive ((t (:background "gray10" :foreground "#41544B"))))
  '(mode-line-buffer-id ((t (:background nil :foreground "white"))))
@@ -273,15 +275,14 @@
  '(equake-shell-type-shell ((t (:foreground "white"))))
  '(equake-tab-active ((t (:background "gray70" :foreground "black"
                           :weight bold))))
- '(equake-tab-inactive ((t (:inherit mode-line-inactive
-                            :foreground "gray70"))))
+ '(equake-tab-inactive ((t (:inherit mode-line :foreground "gray70"))))
  '(equake-shell-type-eshell ((t (:foreground "white" :background "black"))))
  '(equake-shell-type-term ((t (:foreground "white" :background "black"))))
  '(equake-shell-type-rash ((t (:foreground "white" :background "black"))))
  '(equake-shell-type-shell ((t (:foreground "white" :background "black"))))
 
  '(sh-heredoc ((t (:inherit font-lock-string-face))))
- '(comint-highlight-input ((t (:weight bold :box "green4"))))
+ '(comint-highlight-input ((t (:weight bold :underline "green4" :extend t))))
  ;; loccur
  '(loccur-face ((t (:inherit match :underline (:color "DarkViolet")))))
  ;; which-key
