@@ -1511,12 +1511,15 @@ and it's faster to rewrite it."
 ;; https://www.reddit.com/r/emacs/comments/cgbpvl/opening_media_files_straight_from_gnu_emacs_dired/
 (defun xdg-open-file (file)
   (interactive "fxdg-open: ")
-  (let ((process-connection-type nil))
+  (let ((process-connection-type nil)
+        (open-script (cond ((executable-find "mimeopen") "mimeopen")
+                           ((executable-find "xdg-open") "xdg-open")
+                           (t (user-error "xdg-open not in PATH.")))))
     (start-process
      "" nil shell-file-name
      shell-command-switch
-     (format "nohup 1>/dev/null 2>/dev/null xdg-open %s"
-             (shell-quote-argument (expand-file-name file))))))
+     (format "nohup 1>/dev/null 2>/dev/null %s %s"
+             open-script (shell-quote-argument (expand-file-name file))))))
 
 (defun dired-xdg-open-file ()
   (interactive)
