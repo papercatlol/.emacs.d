@@ -1,9 +1,14 @@
 ;; -*- lexical-binding: t -*-
 (require 'ace-window)
 
-(setq aw-background nil
-      aw-ignore-current nil
-      aw-char-position 'top-left)
+(setq aw-ignore-current nil
+      aw-char-position 'top-left
+      ;; ace-window
+      aw-scope 'frame
+      aw-background (display-graphic-p)
+      ;;aw-keys '(32 ?c ?f ?v ?d ?s)
+      aw-keys '(32 ?c ?j ?n ?b ?m ?k)
+      )
 
 ;;* Keep track of selected window for modeline.
 ;;  https://emacs.stackexchange.com/questions/26222

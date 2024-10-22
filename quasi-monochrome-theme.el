@@ -194,7 +194,7 @@
  '(avy-goto-char-timer-face ((t (:underline (:color "LimeGreen")))))
  ;; ace-window
  '(aw-leading-char-face ((t (:inherit avy-lead-face :box nil :height 200))))
- '(aw-mode-line-face ((t (:foreground "white" :weight extra-bold))))
+ '(aw-mode-line-face ((t (:foreground "#00a0ff" :weight extra-bold :underline t))))
  '(aw-key-face ((t (:foreground "white" :weight extra-bold))))
  ;; diff
  '(diff-removed ((t (:background "#3f0001"))))

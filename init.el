@@ -211,10 +211,6 @@
       window-min-width 60
       split-width-threshold 80
       split-height-threshold nil
-      ;; ace-window
-      aw-scope 'frame
-      aw-background (display-graphic-p)
-      aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
       ;; avy
       ;; I'd like to use 'all-frames, but this doesn't work properly with
       ;; i3wm tabbed layout.
@@ -425,12 +421,12 @@
 
 (require 'org-clock)
 (setq-default mode-line-format
-              (list "%e"
+              (list '(:eval (ace-window-path-lighter))
+                    "%e"
                     mode-line-front-space
                     mode-line-mule-info
                     mode-line-client
                     mode-line-modified
-                    '(:eval (ace-window-path-lighter))
                     '(:eval (mode-line-rich-buffer-name))
                     ":%l %p "
                     '(:eval (string-trim (or evil-mode-line-tag "")))
