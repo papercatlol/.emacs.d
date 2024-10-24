@@ -4,7 +4,44 @@
 (require 'slime-autoloads)
 
 
-(setq inferior-lisp-program (getenv "LISP_BINARY"))
+;;* lisp ampersand completion
+(defvar lisp-lambda-list-keyword-alist
+  '((t "&optional" "&rest")
+    (emacs-lisp-mode "&optional" "&rest"
+     ;; cl-defun/defun* only (see (cl) Argument Lists):
+     "&key" "&aux" "&body")
+    (lisp-mode
+     ;; (eww-open-file "~/quicklisp/HyperSpec/Body/03_d.htm")
+     "&allow-other-keys" "&environment" "&rest" "&aux" "&key" "&whole"
+     "&body" "&optional"))
+  "Alist MODE or T -> list of keywords as strings.")
+
+(defun lisp-complete-lambda-list-keyword ()
+  "Try to complete a lambda-list keyword (&optional &rest etc)."
+  (let* ((amp? nil)
+         (beg (save-excursion
+               (backward-sexp 1)
+               (setq amp? (= ?& (char-after)))
+               (point))))
+    (when amp?
+      (list beg (point)
+            (completion-table-dynamic
+             (lambda (&rest _)
+               (or (alist-get major-mode lisp-lambda-list-keyword-alist)
+                   (alist-get t lisp-lambda-list-keyword-alist))))
+            :exclusive 'no))))
+
+(defun lisp-enable-lambda-list-keywords-completion ()
+  (add-hook 'completion-at-point-functions
+            #'lisp-complete-lambda-list-keyword nil 'local))
+
+;; NOTE if using slime, add `lisp-complete-lambda-list-keyword' to
+;; `slime-completion-at-point-functions' instead.
+(dolist (hook '(emacs-lisp-mode-hook lisp-mode-hook))
+  (add-hook hook 'lisp-enable-lambda-list-keywords-completion))
+
+;;* cl
+(setq inferior-lisp-program (or (getenv "LISP_BINARY") "sbcl"))
 
 (add-to-list 'auto-mode-alist '("\\.cl\\'" . common-lisp-mode))
 
@@ -553,7 +590,8 @@ active, kill fully qualified symbol-at-point/region."
 (defun slime-completion-stage-1 ()
   (list (slime-symbol-start-pos) (point) slime-completion-table-stage-1 :exclusive 'no))
 (setq slime-completion-at-point-functions-old slime-completion-at-point-functions)
-(setq slime-completion-at-point-functions (list #'slime-completion-stage-1))
+(setq slime-completion-at-point-functions (list #'lisp-complete-lambda-list-keyword
+                                                #'slime-completion-stage-1))
 
 ;;** slime-visible-symbols
 (defun slime-visible-symbols ()
