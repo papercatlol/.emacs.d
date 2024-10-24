@@ -1,5 +1,6 @@
 # -*- mode: snippet -*-
 # name: interactive
 # key: i
+# MAYBE: add a completion menu with interactive options.
 # --
-(interactive$1)$0
+`($op)`interactive$1`($cp)`$0

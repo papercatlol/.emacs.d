@@ -1003,12 +1003,13 @@ $0`(yas-escape-text yas-selected-text)`"))
 (defun $cp ()
   (when yas--need-closing-paren-p ")"))
 
-;;* hippie-expand
-(require 'hippie-exp)
-
 ;;** use hippie-expand instead of TAB
 (define-key yas-minor-mode-map (kbd "<tab>") nil)
 (define-key yas-minor-mode-map (kbd "TAB") nil)
+
+
+;;* hippie-expand
+(require 'hippie-exp)
 
 ;;** try-functions-list
 (setq hippie-expand-try-functions-list
@@ -1116,6 +1117,18 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
        (backward-delete-char 1)))
 
 (advice-add #'he-substitute-string :after #'he-paredit-fix)
+
+;;** hydra-hippie-expand
+(defhydra hydra-hippie-expand (:hint nil)
+  "Hippie expand"
+  ("w" #'hippie-expand)
+  ("e" #'hippie-expand-completion :color blue)
+  ("u" #'undo-tree-undo)
+  ("q" nil))
+
+(hydra-set-property 'hydra-hippie-expand :verbosity 0)
+
+(global-set-key (kbd "M-/") 'hydra-hippie-expand/hippie-expand)
 
 ;; TODO: figure out how to add snippets to completion candidates
 ;; and how `completion-extra-properties' work
@@ -2544,7 +2557,6 @@ current-buffer, visible buffers, user-init-file, *scratch*."
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
-(global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
 
 ;;** image
