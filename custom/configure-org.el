@@ -450,4 +450,9 @@ to ACTION and execute BODY forms."
 
 ;;* TODO slime-link (should do slime-xref on a symbol)
 
+;;* org-bulletproof
+(when (require 'org-bulletproof nil 'noerror)
+  (setq org-bulletproof-unordered-cycle '("-" "+"))
+  (global-org-bulletproof-mode 1))
+
 (provide 'configure-org)
