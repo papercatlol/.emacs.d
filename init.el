@@ -2554,6 +2554,33 @@ current-buffer, visible buffers, user-init-file, *scratch*."
 (global-set-key (kbd "C-<f16>") 'frog-jump-buffer)
 (global-set-key (kbd "C-M-v") 'frog-jump-buffer)
 
+;;* re-builder
+(with-eval-after-load 're-builder
+  (defhydra hydra-re-builder (:hint nil)
+    "[0-9]: highlight subexpression"
+    ("0" #'reb-display-subexp)
+    ("1" #'reb-display-subexp)
+    ("2" #'reb-display-subexp)
+    ("3" #'reb-display-subexp)
+    ("4" #'reb-display-subexp)
+    ("5" #'reb-display-subexp)
+    ("6" #'reb-display-subexp)
+    ("7" #'reb-display-subexp)
+    ("8" #'reb-display-subexp)
+    ("9" #'reb-display-subexp)
+    ("j" #'reb-next-match "next match")
+    ("k" #'reb-prev-match "prev match")
+    ("u" #'reb-force-update "update")
+    ("s" #'reb-quit-subexp-mode "quit subexp mode")
+    ("c" #'reb-toggle-case "toggle case")
+    ("b" #'reb-change-target-buffer "change buffer")
+    ("i" #'reb-change-syntax "change syntax")
+    ("w" #'reb-copy "copy")
+    ("q" nil "quit" :color blue))
+
+  (define-key reb-mode-map (kbd "C-c C-e") 'hydra-re-builder/body)
+  (define-key reb-mode-map (kbd "C-c C-C") 'hydra-re-builder/body))
+
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
