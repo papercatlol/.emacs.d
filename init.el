@@ -450,7 +450,9 @@
              (cl-loop for w in (window-list)
                       for b = (window-buffer w)
                       unless (minibufferp b)
-                      collect (format "[%s]" (buffer-name b))))
+                      collect (format "[%s]" (truncate-string-to-width
+                                              (buffer-name b)
+                                              30))))
            (title (string-join window-names " ")))
       (set-frame-parameter nil 'title title))))
 
@@ -1396,6 +1398,7 @@ and it's faster to rewrite it."
 
 ;;* page-break-lines
 (when (fboundp 'page-break-lines-mode)
+  (add-to-list 'page-break-lines-modes 'emacs-news-mode)
   (global-page-break-lines-mode))
 
 ;;* rename-buffer
@@ -1747,15 +1750,14 @@ enable `hydra-flyspell'."
       (quit (delete-frame)))))
 
 ;;* dictionary
+(require 'dictionary)
 (setq dictionary-server "localhost")
 (setq dictionary-default-dictionary "wn")
 (setq dictionary-use-single-buffer t)
 (setq dictionary-post-buffer-hook 'delete-other-windows)
-
-(with-eval-after-load 'dictionary
- (define-key dictionary-mode-map (kbd "q") 'delete-frame)
-
- (setq define-word-emacslient-backend 'dictionary-search))
+;; TODO only delete floating frames, otherwise bury-buffer.
+(define-key dictionary-mode-map (kbd "q") 'delete-frame)
+(setq define-word-emacslient-backend 'dictionary-search)
 
 ;;* dumb-jump
 (require 'dumb-jump)
