@@ -2595,6 +2595,19 @@ current-buffer, visible buffers, user-init-file, *scratch*."
   (define-key reb-mode-map (kbd "C-c C-e") 'hydra-re-builder/body)
   (define-key reb-mode-map (kbd "C-c C-C") 'hydra-re-builder/body))
 
+;;* contract-region-or-select-something
+(defun contract-region-or-select-something ()
+  "If there is no region to contract, select the closest enclosing
+THING around point, where THING is one of:
+Outer sexp, outer string, comment, org code block, html tag."
+  (interactive)
+  (if (and (region-active-p) er/history)
+      (call-interactively #'er/contract-region)
+    (let ((er/try-expand-list '(er/mark-outside-quotes er/mark-outside-pairs
+                                er/mark-comment er/mark-org-code-block
+                                er/mark-outer-tag)))
+      (call-interactively #'er/expand-region))))
+(global-set-key (kbd "C-,") 'contract-region-or-select-something)
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
@@ -2668,7 +2681,6 @@ current-buffer, visible buffers, user-init-file, *scratch*."
 
 (global-set-key (kbd "C-?") 'er/expand-region)
 (global-set-key (kbd "C-.") 'er/expand-region)
-(global-set-key (kbd "C-,") 'er/contract-region)
 
 (global-set-key (kbd "C-S-SPC") 'avy-goto-char-timer)
 (global-set-key (kbd "M-SPC") 'smooth-scroll/scroll-up-16)

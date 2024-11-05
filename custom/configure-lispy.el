@@ -136,7 +136,7 @@ ARG can extend the bounds to the current defun."
 (define-key lispy-mode-map (kbd "M-k") nil)
 (define-key lispy-mode-map (kbd "M-.") nil)
 (define-key lispy-mode-map (kbd ".") nil)
-(define-key lispy-mode-map (kbd "C-,") 'er/contract-region)
+(define-key lispy-mode-map (kbd "C-,") 'contract-region-or-select-something)
 
 ;;* 'special' bindings
 ;; (these make more sense to me)
