@@ -216,13 +216,12 @@
       ;; i3wm tabbed layout.
       avy-all-windows t
       avy-style 'pre ;; 'de-bruijn
-      avy-keys (list ?f ?c ?d ?g ?s ?a ?e ?v ?q ?w ?z ?x ?r ?b
+      avy-keys (list 32 ?f ?c ?d ?g ?s ?a ?e ?v ?q ?w ?z ?x ?r ?b
                      ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\( ?- ?\;
                      ?1 ?2 ?3 ?4 ?5
                      ?F ?C ?D ?G ?S ?A ?E ?V ?Q ?W ?Z ?X ?R
                      ?J ?N ?K ?H ?L ?O ?I ?U ?P ?B ?M ?T ?\[ ?\]
-                     ?/ ?? 32
-                     ;;?6 ?7 ?8 ?9 ?0
+                     ?/ ;;?? ?6 ?7 ?8 ?9 ?0
                      )
       ;;
       comment-padding ""
@@ -1931,24 +1930,29 @@ else insert the face name as well."
                       input-1
                     (avy-read-char "Char 1: ")))
          (input-2 (unless (cl-second input-1)
-                    (avy-read-char "Char 2: ")))
+                    (avy-read-char (if skip-input-1 "Char: " "Char 2: "))))
          (avy-all-windows (if all-frames 'all-frames t))
+         ;; Positions for `avy-jump' pred.
+         (prev-line-beg (save-excursion (forward-line -1)
+                                        (line-beginning-position)))
+         (next-line-end (save-excursion (forward-line 1)
+                                        (line-end-position)))
          ;; HACK prevent avy from flipping `avy-all-windows'
          (current-prefix-arg nil)
          ;; HACK prevent avy-with from overriding `avy-action'
          (avy-default-action avy-action))
     (avy-with avy-goto-char-2-special
-      ;; TODO Make avy-jump filter out some obvious candidates
-      ;; (current/prev/next line, beginning/end of defun/list, etc).
       (let ((avy-action (or avy-default-action avy-action)))
         (avy-jump
-         (regexp-quote (concatenate 'string input-1 input-2)))))))
+         (regexp-quote (concatenate 'string input-1 input-2))
+         :pred (lambda ()
+                 (let ((pos (point)))
+                   (not (or
+                         ;; Skip prev/current/next line.
+                         (< prev-line-beg pos next-line-end))))))))))
 
 (setf (alist-get 'avy-goto-char-2 avy-styles-alist) 'pre)
 (setf (alist-get 'avy-goto-char-2-special avy-styles-alist) 'pre)
-
-(global-set-key (kbd "C-r") 'avy-goto-char-2-special)
-(define-key minibuffer-local-map (kbd "C-r") 'avy-goto-char-2-special)
 
 ;;*** evil
 (with-eval-after-load 'evil
@@ -1958,6 +1962,14 @@ else insert the face name as well."
     :jump t :keep-visual t
     (interactive "<c>")
     (evil-without-repeat (call-interactively 'avy-goto-char-2-special))))
+
+;;** avy-goto-sexp-1
+(defun avy-goto-sexp-1 (&optional all-frames)
+  "Goto a sexp."
+  (interactive "P")
+  (avy-goto-char-2-special all-frames (list (string-to-char "("))))
+(global-set-key (kbd "C-r") 'avy-goto-sexp-1)
+(define-key minibuffer-local-map (kbd "C-r") 'avy-goto-sexp-1)
 
 ;;** avy-yank-sexp-1
 (defun avy-yank-sexp-1 (&optional all-frames)
@@ -2659,7 +2671,8 @@ current-buffer, visible buffers, user-init-file, *scratch*."
 (global-set-key (kbd "C-,") 'er/contract-region)
 
 (global-set-key (kbd "C-S-SPC") 'avy-goto-char-timer)
-(global-set-key (kbd "M-SPC") 'avy-goto-char-timer)
+(global-set-key (kbd "M-SPC") 'smooth-scroll/scroll-up-16)
+(global-set-key (kbd "M-S-SPC") 'smooth-scroll/scroll-down-16)
 (global-set-key (kbd "H-SPC") 'avy-goto-char-2-special)
 (global-set-key (kbd "C-x C-SPC") 'avy-goto-char-timer)
 (global-set-key (kbd "<f13>") 'avy-goto-char-timer)
@@ -2756,10 +2769,10 @@ current-buffer, visible buffers, user-init-file, *scratch*."
   ("k" #'helpful-key "Describe key")
   ("K" #'free-keys "Free keys in current buffer")
   ("l" #'org-store-link "Org store link")
-  ("L" #'display-line-numbers-mode "Display line numbers mode")
   ("m" #'mu4e "mu4e")
   ("M" #'mu4e-compose-new "mu4e compose")
   ("M-m" #'memory-report "Memory report")
+  ("n" #'display-line-numbers-mode "Display line numbers mode")
   ("o" #'helpful-symbol "Describe symbol")
   ("O" #'org-web-tools-read-url-as-org "Read url in org")
   ("p" #'counsel-package "counsel-package")
