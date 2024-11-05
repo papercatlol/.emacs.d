@@ -27,6 +27,7 @@
 (add-hook 'sly-repl-mode-hook #'lispy-mode)
 (add-hook 'string-edit-regexp-mode-hook #'lispy-mode)
 (add-hook 'eval-expression-minibuffer-setup-hook #'lispy-mode)
+(add-hook 'ielm-mode-hook #'lispy-mode)
 
 (defun eval-expression-enable-lispy ()
   (when (or (eq this-command 'eval-expression)
@@ -51,9 +52,10 @@
   (define-key lispy-mode-map (kbd "C-c d") 'lispy-describe-inline))
 
 ;;* lispy-ace-bind-variable
-(defun lispy-ace-bind-variable ()
-  "Use `avy' to select a sexp to append to current let bindings."
-  (interactive)
+(defun lispy-ace-bind-variable (&optional atomp)
+  "Use `avy' to select a sexp to append to current let bindings.
+With prefix arg select a symbol instead."
+  (interactive "P")
   (let* ((inhibit-message t)
          (let-bounds (lispy--let-bounds))
          (beg (move-marker (make-marker) (car let-bounds)))
@@ -66,12 +68,18 @@
     (lispy-newline-and-indent-plain)
     (insert "()")
     (backward-char 1)
-    (lispy-ace-paren-inner 1 #'avy-action-yank (1+ beg) (1- end))
+    (if atomp
+        (let ((avy-action-oneshot #'avy-action-yank))
+          (avy-goto-word-1 (read-char "bind: ") nil beg end t)
+          (setq avy-action-oneshot nil))
+      (lispy-ace-paren-inner 1 #'avy-action-yank (1+ beg) (1- end)))
+    (if atomp (lispy-mark-symbol) (lispy-mark))
     (lispy-clone 1)
+    (lispy-down 1)
     (iedit-start (regexp-quote (lispy--string-dwim)) beg end)
     (iedit-toggle-selection)
     (iedit-prev-occurrence 1)
-    (lispy-mark)))
+    (if atomp (lispy-mark-symbol) (lispy-mark))))
 
 (defhydra+ hydra-lispy-x (:exit t :hint 0.3 :columns 3)
   ("b" lispy-ace-bind-variable "ace bind variable"))

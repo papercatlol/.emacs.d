@@ -2029,7 +2029,7 @@ the cursor to the new position as well."
 (setf (alist-get ?m avy-dispatch-alist) #'avy-action-donate)
 
 ;;** avy-goto-symbol-in-defun
-(defun avy-goto-symbol-in-defun (&optional full-window)
+(defun avy-goto-symbol-in-defun (&optional full-window action)
   "Jump to a visible symbol in current defun (with prefix arg - current window)."
   (interactive "P")
   (let* ((avy-all-windows nil)
@@ -2048,7 +2048,8 @@ the cursor to the new position as well."
       (avy-jump (rx symbol-start any)
                 :beg beg
                 :end end
-                :pred (lambda () (not (member (point) redundant)))))))
+                :pred (lambda () (not (member (point) redundant)))
+                :action action))))
 
 (global-set-key (kbd "C-t") 'avy-goto-symbol-in-defun)
 (setf (alist-get 'avy-goto-symbol-in-defun avy-styles-alist) 'pre)
