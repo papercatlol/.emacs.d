@@ -234,9 +234,12 @@ Also add the value to the front of the list in the variable `values'."
          (or expression
              (read--expression
               "Eval: "
-              (when (region-active-p)
-                (buffer-substring-no-properties
-                 (region-beginning) (region-end))))))
+              (cond ((region-active-p)
+                     (buffer-substring-no-properties
+                      (region-beginning) (region-end)))
+                    ;; HACK
+                    ((= (string-to-char ")") (preceding-char))
+                     (cl-prin1-to-string (elisp--preceding-sexp)))))))
         (out-buffer-name "*Pp Eval Output*")
         (temp-buffer-show-function #'pop-to-buffer))
     (message "Evaluating...")
@@ -245,6 +248,8 @@ Also add the value to the front of the list in the variable `values'."
     ;; TODO extract this to somewhere, maybe create a pp-result-mode
     (with-output-to-temp-buffer out-buffer-name
       (pp expression)
+      (princ (format ";; =>\n"))
+      (pp (car values))
       (with-current-buffer standard-output
         (emacs-lisp-mode)
         (setq buffer-read-only nil)
@@ -255,6 +260,14 @@ Also add the value to the front of the list in the variable `values'."
 
 (global-set-key (kbd "C-x M-e") 'pp-eval-dwim)
 (define-key emacs-lisp-mode-map (kbd "C-c M-e") 'pp-eval-dwim)
+
+;;** eval-sexp-at-point
+(defun eval-sexp-at-point ()
+  (interactive)
+  (save-excursion
+   (up-list)
+   (call-interactively #'eros-eval-last-sexp)))
+(define-key ctl-x-map (kbd "e") 'eval-sexp-at-point)
 
 ;;** elisp-slime-nav
 (require 'elisp-slime-nav)
