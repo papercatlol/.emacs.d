@@ -112,7 +112,7 @@
   ("b" js2-display-error-list)
   ("q" nil))
 
-(define-key js2-mode-map (kbd "C-c C-x") 'hydra-js2-refactor/body)
+(define-key js2-mode-map (kbd "C-c C-x C-x") 'hydra-js2-refactor/body)
 
 
 ;;* xref-js2

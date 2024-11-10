@@ -108,7 +108,7 @@ when cursor is directly inside the in-package form."
 (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
 ;; We use lispy in eval-expression minibuffer.
 ;;(add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-(add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+;;(add-hook 'ielm-mode-hook             #'enable-paredit-mode)
 (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
 (add-hook 'slime-repl-mode-hook       #'enable-paredit-mode)
 (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
@@ -167,6 +167,12 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'transient-append-suffix 'defun)
     (%copy-indent 'condition-case 'case)
     (put 'pretty-hydra-define 'common-lisp-indent-function 2)))
+
+;;** font-lock
+(font-lock-add-keywords
+ 'emacs-lisp-mode
+ (list
+  `(,(rx "(" (group "assert") symbol-end) 1 'font-lock-warning-face)))
 
 ;;** documentation
 (defvar *elisp-documentation-last-symbol* nil

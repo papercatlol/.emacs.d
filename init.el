@@ -245,6 +245,7 @@
       mark-ring-max 32
       global-mark-ring-max 256
       vc-follow-symlinks t
+      ffap-machine-p-known 'reject
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
@@ -528,7 +529,7 @@
 ;;* windows
 ;;** display-buffer-alist
 ;; Inspired by: https://protesilaos.com/codelog/2020-01-07-emacs-display-buffer/
-(setq switch-to-buffer-obey-display-actions t)
+(setq switch-to-buffer-obey-display-actions nil)
 (progn
   ;; bottom side window
   (setf
@@ -1477,6 +1478,7 @@ and it's faster to rewrite it."
 
 ;;* eww
 (with-eval-after-load 'eww
+  (setq eww-auto-rename-buffer 'title)
   (define-key eww-mode-map (kbd "C-c C-n") 'eww-next-url)
   (define-key eww-mode-map (kbd "C-c C-p") 'eww-previous-url)
   (define-key eww-mode-map (kbd "n") nil)
@@ -2253,15 +2255,16 @@ mosey was first called with prefix arg."
 (with-eval-after-load 'lispy
   (global-set-key (kbd "C-e") 'lispy-move-end-of-line))
 
-;;* puni (soft deletion/paredit-like commands for non-lisp buffers)
-(add-hook 'prog-mode-hook #'puni-mode)
-(define-key puni-mode-map (kbd "C-h") 'puni-backward-delete-char)
-(define-key puni-mode-map (kbd "M-r") 'puni-raise)
-(define-key puni-mode-map (kbd "M-9") 'puni-wrap-round)
-(define-key puni-mode-map (kbd "M-?") 'puni-convolute)
-(define-key puni-mode-map (kbd "C-M->") 'puni-slurp-forward)
-(define-key puni-mode-map (kbd "C-M-<") 'puni-barf-forward)
-(define-key puni-mode-map (kbd "C-c s") 'puni-split)
+;;* [DISABLED] puni (soft deletion/paredit-like commands for non-lisp buffers)
+;; TODO remove or make less annoying
+;;(add-hook 'prog-mode-hook #'puni-mode)
+;;(define-key puni-mode-map (kbd "C-h") 'puni-backward-delete-char)
+;;(define-key puni-mode-map (kbd "M-r") 'puni-raise)
+;;(define-key puni-mode-map (kbd "M-9") 'puni-wrap-round)
+;;(define-key puni-mode-map (kbd "M-?") 'puni-convolute)
+;;(define-key puni-mode-map (kbd "C-M->") 'puni-slurp-forward)
+;;(define-key puni-mode-map (kbd "C-M-<") 'puni-barf-forward)
+;;(define-key puni-mode-map (kbd "C-c s") 'puni-split)
 ;;(define-key puni-mode-map (kbd "") 'puni-slurp-backward)
 ;;(define-key puni-mode-map (kbd "") 'puni-barf-backward)
 ;;(define-key puni-mode-map (kbd "") 'puni-splice)
@@ -2297,7 +2300,7 @@ mosey was first called with prefix arg."
 (defun switch-to-favourite-buffer-1 (override)
   (interactive "P")
   (switch-to-favourite-buffer 0 nil override))
-(global-set-key (kbd "M-1") 'switch-to-favourite-buffer-1)
+;;(global-set-key (kbd "M-1") 'switch-to-favourite-buffer-1)
 
 (defun switch-to-favourite-buffer-2 (override)
   (interactive "P")
@@ -2611,6 +2614,10 @@ current-buffer, visible buffers, user-init-file, *scratch*."
 
   (define-key reb-mode-map (kbd "C-c C-e") 'hydra-re-builder/body)
   (define-key reb-mode-map (kbd "C-c C-C") 'hydra-re-builder/body))
+
+;;* tree-sitter
+(setq treesit-language-source-alist
+      '((zig "https://github.com/tree-sitter-grammars/tree-sitter-zig" nil nil nil nil)))
 
 ;;* contract-region-or-select-something
 (defun contract-region-or-select-something ()
