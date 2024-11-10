@@ -282,5 +282,9 @@ With prefix arg open a new equake tab."
 (with-eval-after-load 'vterm
   (define-key vterm-mode-map (kbd "C-h") 'vterm-send-backspace))
 
+;;* highlight undefined commands
+(setq shell-highlight-undef-aliases
+      '(".." "..." "...." "....." "ll" "la" "xk"))
+(setq shell-highlight-undef-enable t)
 
 (provide 'configure-equake)

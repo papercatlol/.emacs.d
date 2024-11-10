@@ -280,6 +280,8 @@
  '(equake-shell-type-term ((t (:foreground "white" :background "black"))))
  '(equake-shell-type-rash ((t (:foreground "white" :background "black"))))
  '(equake-shell-type-shell ((t (:foreground "white" :background "black"))))
+ ;; shell
+ '(shell-highlight-undef-undefined-face ((t (:inherit 'style-warning-face))))
 
  '(sh-heredoc ((t (:inherit font-lock-string-face))))
  '(comint-highlight-input ((t (:weight bold :underline "green4" :extend t))))
