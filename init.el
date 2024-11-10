@@ -216,8 +216,8 @@
       ;; i3wm tabbed layout.
       avy-all-windows t
       avy-style 'pre ;; 'de-bruijn
-      avy-keys (list 32 ?f ?c ?d ?g ?s ?a ?e ?v ?q ?w ?z ?x ?r ?b
-                     ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\( ?- ?\;
+      avy-keys (list ?\s ?f ?c ?d ?g ?s ?a ?e ?v ?q ?w ?t ?z ?x ?r ?b
+                     ?j ?n ?k ?h ?l ?o ?i ?u ?m ?p ?y ?\( ?- ?\;
                      ?1 ?2 ?3 ?4 ?5
                      ?F ?C ?D ?G ?S ?A ?E ?V ?Q ?W ?Z ?X ?R
                      ?J ?N ?K ?H ?L ?O ?I ?U ?P ?B ?M ?T ?\[ ?\]
@@ -1893,26 +1893,42 @@ else insert the face name as well."
 
 ;;* avy
 ;;TODO move avy-related configuration to a separate file
+;;** remap avy actions
+(setf (alist-get ?t avy-dispatch-alist nil 'remove) nil)
+(setf (alist-get (aref (kbd "C-t") 0) avy-dispatch-alist) #'avy-action-teleport)
+
+(setf (alist-get ?y avy-dispatch-alist nil 'remove) nil)
+(setf (alist-get (aref (kbd "C-y") 0) avy-dispatch-alist) #'avy-action-yank)
+
+(setf (alist-get ?n avy-dispatch-alist nil 'remove) nil)
+(setf (alist-get (aref (kbd "M-w") 0) avy-dispatch-alist) #'avy-action-copy)
+
+(setf (alist-get ?x avy-dispatch-alist nil 'remove) nil)
+(setf (alist-get ?X avy-dispatch-alist nil 'remove) nil)
+
+(setf (alist-get ?i avy-dispatch-alist nil 'remove) nil)
+(setf (alist-get ?$ avy-dispatch-alist) #'avy-action-ispell)
+
 ;;** avy-goto-char-2-special hacks
 (defvar avy-key-translations
   (cl-loop for (key translation)
-        ;; TODO allow regexps & shorter input
-        in '(("C-r" "(")
-             ;; Lisp common keywords.
-             ("C-d" "(def")
-             ("C-i" "(if")
-             ("C-w" "(when")
-             ("C-s" "(set")
-             ("C-l" "(let")
-             ("C-t" "then")
-             ("C-e" "else")
-             ;; RET = no char. Useful when you want to search for 1 char only.
-             ("RET")
-             ("SPC")
-             ;; TODO ("SPC" "\b")
-             )
-        collect (cons (string-to-char (kbd key))
-                      (listify-key-sequence translation))))
+           ;; TODO allow regexps & shorter input
+           in '(("C-r" "(")
+                ;; Lisp common keywords.
+                ("C-d" "(def")
+                ("C-i" "(if")
+                ("C-w" "(when")
+                ("C-s" "(set")
+                ("C-l" "(let")
+                ("C-t" "then")
+                ("C-e" "else")
+                ;; RET = no char. Useful when you want to search for 1 char only.
+                ("RET")
+                ("SPC")
+                ;; TODO ("SPC" "\b")
+                )
+           collect (cons (string-to-char (kbd key))
+                         (listify-key-sequence translation))))
 
 (defun avy-read-char (prompt)
   (let* ((char (read-char prompt))
@@ -1997,7 +2013,6 @@ else insert the face name as well."
   (setq unread-command-events (listify-key-sequence (kbd "M-."))))
 
 (setf (alist-get ?. avy-dispatch-alist) #'avy-action-goto-definition)
-(setf (alist-get ?  avy-dispatch-alist) #'avy-action-goto-definition)
 
 ;;** fix evil + avy-goto-char-timer
 ;; Don't wrap with `evil-enclose-avy-for-motion' to allow movement between
@@ -2026,7 +2041,7 @@ the cursor to the new position as well."
     (avy-forward-item)
     (insert text)))
 
-(setf (alist-get ?m avy-dispatch-alist) #'avy-action-donate)
+(setf (alist-get (aref (kbd "RET") 0) avy-dispatch-alist) #'avy-action-donate)
 
 ;;** avy-goto-symbol-in-defun
 (defun avy-goto-symbol-in-defun (&optional full-window action)
@@ -2067,11 +2082,12 @@ the cursor to the new position as well."
               (looking-back (rx (or symbol-end "]" ")" "}"))))
       (insert " "))
     (yank)
+    ;; TODO either ignore current line or don't repeat the search at all.
+    ;; Currently all the avy labels keep changing because a new one appears
+    ;; after each yank.
     (avy-resume)))
 
-(setf (alist-get (aref (kbd "C-y") 0) avy-dispatch-alist) #'avy-action-yank-multiple)
-;; Default binding is ?n, which I'd rather add to avy-keys.
-(setf (alist-get (aref (kbd "M-w") 0) avy-dispatch-alist) #'avy-action-copy)
+(setf (alist-get (aref (kbd "C-M-y") 0) avy-dispatch-alist) #'avy-action-yank-multiple)
 
 ;;** invisible overlays fix
 ;; TODO merge into avy.el
