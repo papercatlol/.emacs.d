@@ -235,20 +235,22 @@ With prefix arg open a new equake tab."
 (define-key dired-mode-map (kbd "C-c C-d") 'dired-shell-cd)
 
 
-;;* coterm (terminal emulation for comint)
-(coterm-mode)
-(add-hook 'coterm-mode-hook 'coterm-auto-char-mode)
+;;* DISABLED coterm (terminal emulation for comint)
+;; Coterm lags emacs out on \r progress bars (e.g. pamac).
+;; TODO either debug coterm or migrate to eshell+eat or something.
+;;(coterm-mode)
+;;(add-hook 'coterm-mode-hook 'coterm-auto-char-mode)
 
-(with-eval-after-load 'comint
-  (defun coterm-char-mode-cycle-and-echo ()
-    (interactive)
-    (coterm-char-mode-cycle)
-    (message "Coterm: %s."
-             (cond (coterm-auto-char-mode 'coterm-auto-char-mode)
-                   (coterm-char-mode 'coterm-char-mode)
-                   (t "default mode"))))
+;;(with-eval-after-load 'comint
+;;  (defun coterm-char-mode-cycle-and-echo ()
+;;    (interactive)
+;;    (coterm-char-mode-cycle)
+;;    (message "Coterm: %s."
+;;             (cond (coterm-auto-char-mode 'coterm-auto-char-mode)
+;;                   (coterm-char-mode 'coterm-char-mode)
+;;                   (t "default mode"))))
 
-  (define-key comint-mode-map (kbd "<f11>") 'coterm-char-mode-cycle-and-echo))
+;;  (define-key comint-mode-map (kbd "<f11>") 'coterm-char-mode-cycle-and-echo))
 
 ;;* copy-to-equake
 (defun copy-to-equake (text)
