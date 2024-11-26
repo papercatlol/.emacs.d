@@ -398,17 +398,37 @@ double quote kill sexp at point."
 ;;** `lispyville'
 (with-eval-after-load 'lispyville
   (evil-define-command lispyville-open-round-below-list (count)
-    "Same as `lispyville-open-below-list', but insert () afterwards.
-     Defined as a separate function because of undo problems."
+    "Exit current list/string/comment and insert a newline and ()."
     (interactive "<c>")
-    (when (lispyville--out-forward (or count 1))
-      (newline-and-indent)
-      (when (lispyville--top-level-p)
-        (insert "\n"))
-      (insert "()")
-      (forward-char -1)
-      (pulse-cursor)
-      (evil-change-state lispyville-preferred-state)))
+    ;; If we're at (>|<) e.g. after calling this function, remove the parens
+    ;; before proceeding. This makes the function spammable.
+    (when (and (eq (string-to-char "(") (char-before))
+               (eq (string-to-char ")") (char-after)))
+      (forward-char)
+      (backward-delete-char 2)
+      ;; Delete blank line.
+      (save-excursion
+       (beginning-of-line)
+       (when (looking-at (rx (* space) eol))
+         (delete-region (1- (point)) (line-end-position)))))
+
+    (cond
+      ((setq bounds (lispy--bounds-string))
+       (goto-char (cdr bounds))
+       ;; If there is code on the same line as the string, insert an extra \n.
+       (when (looking-at (rx (group (* space)) (not ")")))
+         (save-excursion (newline-and-indent))))
+      ((setq bounds (lispy--bounds-comment))
+       (goto-char (cdr bounds)))
+      (t (lispyville--out-forward (or count 1))))
+    (newline-and-indent)
+    (when (and (lispyville--top-level-p)
+               (looking-back (rx ")\n" (* space))))
+      (insert "\n"))
+    (insert "()")
+    (forward-char -1)
+    (pulse-cursor)
+    (evil-change-state lispyville-preferred-state))
 
   ;; MAYBE: do the same thing for `lispyville-insert-at-beginning-of-list'
   (evil-define-command lispyville-insert-at-end-of-list* (count)
