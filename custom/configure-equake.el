@@ -273,6 +273,7 @@ With prefix arg open a new equake tab."
     (capf-autosuggest-mode 1)))
 
 (add-hook 'comint-mode-hook #'maybe-capf-autosuggest-mode)
+(add-hook 'eshell-mode-hook #'maybe-capf-autosuggest-mode)
 
 (with-eval-after-load 'capf-autosuggest
   (setq capf-autosuggest-dwim-next-line nil)
@@ -289,4 +290,6 @@ With prefix arg open a new equake tab."
       '(".." "..." "...." "....." "ll" "la" "xk"))
 (setq shell-highlight-undef-enable t)
 
+;;* eshell
+(add-hook 'eshell-mode-hook #'eat-eshell-mode)
 (provide 'configure-equake)
