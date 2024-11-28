@@ -1,29 +1,20 @@
 ;;; -*- lexical-binding: t -*-
 
-(require 'configure-lsp)
-(require 'configure-go)
-(require 'lsp-show-doc)
-;; (require 'dap-mode)
 
+;; Don't highlight symbol at point.
+(pushnew :documentHighlightProvider eglot-ignored-server-capabilities)
 
+(add-hook 'go-mode-hook 'eglot-ensure)
+(add-hook 'go-mode-hook 'electric-pair-local-mode)
 
-(defun go-lsp-init ()
-  (when-let ((lsp-bin (go-lsp--get-gopls-binary)))
-    (message "Found gopls bin: %s" lsp-bin)
-    (setq lsp-gopls-server-path lsp-bin
-          lsp-gopls-experimental-complete-unimported t)
-    (configure-lsp:init)))
+;;* keys
+(define-key go-mode-map (kbd "M-.") 'xref-find-definitions)
+(define-key go-mode-map (kbd "C-c C-c") 'eglot-code-actions)
+(define-key go-mode-map (kbd "C-c t") 'eglot-find-typeDefinition)
+(define-key go-mode-map (kbd "C-c C-r") 'eglot-rename)
+(define-key go-mode-map (kbd "C-c C-d") 'eldoc-display-full-doc)
 
-(defun go-lsp--get-gopls-binary ()
-  (let* ((gopath (shell-command-to-string "go env GOPATH"))
-         (gopath (file-name-as-directory (string-trim-right gopath "\n")))
-         (gopls (concat gopath "bin/gopls")))
-    (when (file-exists-p gopls)
-      gopls)))
-
-(define-key go-mode-map (kbd "C-c C-d") 'lsp-show-doc)
-
-(add-hook 'go-mode-hook 'go-lsp-init)
+;; TODO link-hint support for markdown links in lsp documentation.
 
 
 (provide 'configure-go-lsp)

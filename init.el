@@ -134,8 +134,12 @@
 ;;** lisp (CL + Elisp)
 (require 'configure-lisp)
 
+;;** eglot
+(with-eval-after-load 'eglot
+  (require 'configure-eglot))
+
 ;;** go
-;; (require 'configure-go-lsp)
+(require 'configure-go-lsp)
 
 ;;** python
 (require 'configure-python)
@@ -866,6 +870,27 @@ Else narrow-to-defun."
          (str (apply #'format format-string args)))
     (message "%s" (string-truncate-height str max-height))))
 
+;;** quit-windows-on? - same as `quit-windows', but return T if it did anything
+(defun quit-windows-on? (&optional buffer-or-name kill frame)
+  "Quit all windows showing BUFFER-OR-NAME. Return T if at least one
+window has been quit. Return NIL if BUFFER-OR-NAME is not a live
+buffer. See `quit-windows-on' for documentation on arguments."
+  (interactive "bQuit windows on (buffer):\nP")
+  (when-let* ((buffer (if (null buffer-or-name)
+                          (current-buffer)
+                        (with-demoted-errors (get-buffer buffer-or-name))))
+              (livep (buffer-live-p buffer)))
+    (let (;; Handle the "inverted" meaning of the FRAME argument wrt other
+          ;; `window-list-1' based function.
+          (all-frames (cond ((not frame) t) ((eq frame t) nil) (t frame)))
+          (did-quit? nil))
+      (dolist (window (window-list-1 nil nil all-frames))
+        (if (not (eq (window-buffer window) buffer))
+            ;; If a window doesn't show BUFFER, unrecord BUFFER in it.
+            (unrecord-window-buffer window buffer)
+          (quit-window kill window)
+          (setq did-quit? t)))
+      did-quit?)))
 
 ;;* dired
 (setq dired-do-revert-buffer t)
@@ -2636,6 +2661,21 @@ Outer sexp, outer string, comment, org code block, html tag."
                                 er/mark-outer-tag)))
       (call-interactively #'er/expand-region))))
 (global-set-key (kbd "C-,") 'contract-region-or-select-something)
+
+;;* eldoc
+(defun eldoc-display-full-doc ()
+  "Display full docstring for thing at point in the minibuffer. Call
+again to call `eldoc-doc-buffer'."
+  (interactive)
+  (eldoc-print-current-symbol-info nil)
+  (cond ((eq this-command last-command)
+         (call-interactively #'eldoc-doc-buffer)
+         (pop-to-buffer (eldoc-doc-buffer)))
+        (t
+         (with-current-buffer (eldoc-doc-buffer)
+           (message (format "%s" (buffer-string)))))))
+
+(define-key prog-mode-map (kbd "C-c C-d") 'eldoc-display-full-doc)
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))

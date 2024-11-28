@@ -33,11 +33,11 @@
   "
  Flymake
  ---------------------------------------------------------------------------------
- _j_:   ^^next error          _b_: diagnostics buffer
- _k_:   ^^prev error          _l_: log buffer
- _a_,_s_: ace-flymake       _C-k_: stop all syntax checks
- _SPC_: ^^diplay msg          _q_: quit
- _RET_: code actions
+ _j_:   ^^next error          _b_: buffer diagnostics
+ _k_:   ^^prev error          _p_: project diagnostics
+ _a_,_s_: ace-flymake         _l_: log buffer
+ _SPC_: ^^diplay msg        _C-k_: stop all syntax checks
+ _RET_: ^^code actions        _q_: quit
 "
   ("q" nil)
   ("k" #'flymake-goto-prev-error)
@@ -47,7 +47,8 @@
   ("SPC" #'display-local-help)
   ("RET" #'flymake-lsp-code-action)
   ("C-c C-c" #'eglot-code-actions)
-  ("b" #'flymake-show-diagnostics-buffer :color blue)
+  ("b" #'flymake-toggle-buffer-diagnostics :color blue)
+  ("p" #'flymake-toggle-project-diagnostics :color blue)
   ("l" #'flymake-switch-to-log-buffer :color blue)
   ("C-k" #'flymake-proc-stop-all-syntax-checks)
 
@@ -60,6 +61,20 @@
 (define-key flymake-mode-map (kbd "C-c a") 'hydra-flymake/ace-flymake)
 
 ;;* flymake-diagnostics-buffer
+(defun flymake-toggle-buffer-diagnostics ()
+  "Toggle showing flymake diagnostics for current buffer."
+  (interactive)
+  (or (quit-windows-on? (flymake--diagnostics-buffer-name))
+      (flymake-show-buffer-diagnostics)))
+
+(defun flymake-toggle-project-diagnostics ()
+  "Toggle showing flymake diagnostics for current project."
+  (interactive)
+  (when-let* ((project (project-current))
+              (root (project-root project)))
+    (or (quit-windows-on? (flymake--project-diagnostics-buffer root))
+        (flymake-show-project-diagnostics))))
+
 (defun flymake-diagnostics-buffer-show-next-diagnostic ()
   "Show location of next flymake diagnostic."
   (interactive)
@@ -80,14 +95,17 @@
   (call-interactively #'flymake-show-diagnostic))
 
 (let ((m flymake-diagnostics-buffer-mode-map))
+  (define-key m (kbd "SPC") nil)
   (define-key m (kbd "j") 'next-line)
   (define-key m (kbd "k") 'previous-line)
   (define-key m (kbd "C-j") 'flymake-diagnostics-buffer-show-next-diagnostic)
   (define-key m (kbd "C-k") 'flymake-diagnostics-buffer-show-prev-diagnostic)
   (define-key m (kbd "m") 'flymake-show-diagnostic)
   (define-key m (kbd "f") 'flymake-show-diagnostic)
+  (define-key m (kbd "o") 'flymake-show-diagnostic)
   (define-key m (kbd "C-q") 'bury-buffer)
   (define-key m (kbd "C-f") 'flymake-show-diagnostic-avy)
+  (define-key m (kbd "t") 'flymake-show-diagnostic-avy)
   )
 
 
