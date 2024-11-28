@@ -1291,11 +1291,15 @@ current entry."
 (defvar link-hint-avy-all-windows t)
 (defvar link-hint-avy-all-windows-alt 'all-frames)
 
-(defun link-hint-open-link-wrapper ()
-  "Bind some avy variables, then forward to `link-hint-open-link'."
+(defun link-hint-open-link-wrapper (&optional in-emacs)
+  "Bind some avy variables, then forward to `link-hint-open-link'.
+With prefix arg, open the link in emacs using `eww'."
   ;; TODO custom dispatch alist (e.g. with copy-link)
-  (interactive)
-  (let ((avy-single-candidate-jump nil))
+  (interactive "P")
+  (let ((avy-single-candidate-jump nil)
+        (browse-url-browser-function (if in-emacs
+                                         #'eww-browse-url
+                                       browse-url-browser-function)))
     (call-interactively #'link-hint-open-link)))
 
 (global-set-key (kbd "C-c C-SPC") 'link-hint-open-link-wrapper)
