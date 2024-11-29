@@ -221,11 +221,11 @@
       avy-all-windows t
       avy-style 'pre ;; 'de-bruijn
       avy-keys (list ?\s ?f ?c ?d ?g ?s ?a ?e ?v ?q ?w ?t ?z ?x ?r ?b
-                     ?j ?n ?k ?h ?l ?o ?i ?u ?m ?p ?y ?\( ?- ?\;
+                     ?j ?n ?k ?h ?l ?i ?u ?m ?p ?y ?\( ?- ?\;
                      ?1 ?2 ?3 ?4 ?5
                      ?F ?C ?D ?G ?S ?A ?E ?V ?Q ?W ?Z ?X ?R
                      ?J ?N ?K ?H ?L ?O ?I ?U ?P ?B ?M ?T ?\[ ?\]
-                     ?/ ;;?? ?6 ?7 ?8 ?9 ?0
+                     ?/ ?o;;?? ?6 ?7 ?8 ?9 ?0
                      )
       ;;
       comment-padding ""
@@ -981,6 +981,9 @@ buffer. See `quit-windows-on' for documentation on arguments."
 
 (yas-global-mode)
 
+(define-key yas-keymap (kbd "TAB") nil)
+(define-key yas-keymap (kbd "C-<tab>") 'yas-next-field-or-maybe-expand)
+
 ;;** helpful new snippet template
 ;; Inspired by: https://mjdiloreto.github.io/posts/yasnippet-helpful-buffer/
 (setq yas-new-snippet-default
@@ -1291,7 +1294,7 @@ current entry."
 
 (define-key hs-minor-mode-map (kbd "C-<tab>") 'hs-toggle-hiding)
 ;;* tramp
-(setq-default tramp-verbose 5)
+(setq-default tramp-verbose 2)
 
 (setq tramp-default-method "ssh") ; "ssh"/"scp"
 (setq tramp-default-remote-shell "/bin/bash")
@@ -1301,10 +1304,11 @@ current entry."
 (setq tramp-completion-reread-directory-timeout nil)
 
 ;; we use magit anyway, so this shouldn't change anything in theory(?)
-(setq vc-ignore-dir-regexp
-      (format "\\(%s\\)\\|\\(%s\\)"
-              vc-ignore-dir-regexp
-              tramp-file-name-regexp))
+;;(setq vc-ignore-dir-regexp locate-dominating-stop-dir-regexp)
+;;(setq vc-ignore-dir-regexp
+;;      (format "\\(%s\\)\\|\\(%s\\)"
+;;              vc-ignore-dir-regexp
+;;              tramp-file-name-regexp))
 
 ;; Use Control* options from ssh config. Should speedup magit.
 (setq tramp-use-ssh-controlmaster-options nil)
@@ -1426,7 +1430,7 @@ and it's faster to rewrite it."
   (add-to-list 'link-hint-types 'link-hint-bug-reference-button))
 
 ;;* page-break-lines
-(when (fboundp 'page-break-lines-mode)
+(when (require 'page-break-lines nil 'noerror)
   (add-to-list 'page-break-lines-modes 'emacs-news-mode)
   (global-page-break-lines-mode))
 
@@ -1554,7 +1558,7 @@ and it's faster to rewrite it."
 (defun xdg-open-file (file)
   (interactive "fxdg-open: ")
   (let ((process-connection-type nil)
-        (open-script (cond ((executable-find "mimeopen") "mimeopen")
+        (open-script (cond ((executable-find "mimeopen") "mimeopen -n")
                            ((executable-find "xdg-open") "xdg-open")
                            (t (user-error "xdg-open not in PATH.")))))
     (start-process
@@ -2662,6 +2666,13 @@ Outer sexp, outer string, comment, org code block, html tag."
       (call-interactively #'er/expand-region))))
 (global-set-key (kbd "C-,") 'contract-region-or-select-something)
 
+;;* godot
+(when (require 'gdscript-mode nil 'noerror)
+  (add-hook 'gdscript-mode 'eglot-ensure)
+  ;; Offline docs: https://github.com/godotengine/godot-docs/
+  (setq gdscript-docs-local-path "~/projects/godot-docs-html-stable/")
+  )
+
 ;;* eldoc
 (defun eldoc-display-full-doc ()
   "Display full docstring for thing at point in the minibuffer. Call
@@ -2898,6 +2909,7 @@ again to call `eldoc-doc-buffer'."
 (global-set-key (kbd "<H-return>") 'eval-expression)
 (global-set-key (kbd "H-w") 'org-store-link)
 (global-set-key (kbd "H-D") 'shortdoc-display-group)
+(global-set-key (kbd "H-C") 'list-colors-display)
 
 ;;** comint
 (define-key comint-mode-map (kbd "C-c C-x") nil)

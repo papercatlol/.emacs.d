@@ -139,7 +139,10 @@ double quote kill sexp at point."
              (when-let ((bounds (bounds-of-thing-at-point 'sexp)))
                (kill-region (car bounds) (cdr bounds))
                t))
-        (evil-delete-backward-word))))
+        ;; `evil-delete-backward-word' deletes '-' and leaves the rest of the
+        ;; word, e.g. 'foo-' -> 'foo', so we use the built-in function. MAYBE
+        ;; move to init.el if it doesn't depend of evil anymore.
+        (backward-kill-word 1))))
 
 (define-key evil-insert-state-map (kbd "C-w") 'C-w-dwim)
 (define-key minibuffer-local-map (kbd "C-w") 'C-w-dwim)
@@ -245,9 +248,6 @@ double quote kill sexp at point."
   (call-interactively #'forward-symbol))
 
 (add-to-list 'avy-styles-alist '(avy-goto-symbol-in-line . at))
-(add-to-list 'avy-keys-alist
-             (cons 'avy-goto-symbol-in-line (list ?f ?c ?d ?g ?s ?a  ?e ?v ?q ?w ?z ?x ?r
-                                                  ?j ?n ?k ?h ?l ?o ?i ?u ?p ?\;)))
 
 ;; TODO: avy-action-xref, avy-action-documentation
 

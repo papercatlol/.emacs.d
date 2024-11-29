@@ -21,7 +21,8 @@
       org-edit-src-content-indentation 0
       org-edit-src-persistent-message nil
       org-src-window-setup 'current-window
-      org-archive-reversed-order t
+      ;;org-archive-reversed-order t ;; REMOVED?
+      org-reverse-note-order '((".*_archive$" . t))
       )
 
 

@@ -290,6 +290,31 @@ With prefix arg open a new equake tab."
       '(".." "..." "...." "....." "ll" "la" "xk"))
 (setq shell-highlight-undef-enable t)
 
+;;* FIXME does this actually help?
+;; fix shell progress bars
+;; https://oremacs.com/2019/03/24/shell-apt/
+;;(defun ansi-color-apply-on-region--handle-backspace (begin end)
+;;  "Fix progress bars for e.g. apt(8).
+;;Display progress in the minibuffer instead."
+;;  (let ((end-marker (copy-marker end))
+;;        mb)
+;;    (save-excursion
+;;     (goto-char (copy-marker begin))
+;;     (while (re-search-forward "\0337" end-marker t)
+;;       (setq mb (match-beginning 0))
+;;       (when (re-search-forward "\0338" end-marker t)
+;;         (message
+;;          (replace-regexp-in-string
+;;           "%" "%%"
+;;           (substring-no-properties
+;;            (delete-and-extract-region mb (point))
+;;            2 -2))))))))
+
+;;(advice-add
+;; 'ansi-color-apply-on-region
+;; :before 'ansi-color-apply-on-region--handle-backspace)
+
 ;;* eshell
 (add-hook 'eshell-mode-hook #'eat-eshell-mode)
+
 (provide 'configure-equake)
