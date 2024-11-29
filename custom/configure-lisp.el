@@ -187,7 +187,8 @@ When called second time consecutively, call `helpful-symbol' for SYMBOL."
   (if (and (eq this-command last-command)
            *elisp-documentation-last-symbol*
            (fboundp 'helpful-symbol))
-      (helpful-symbol *elisp-documentation-last-symbol*)
+      (elisp-slime-nav-describe-elisp-thing-at-point
+       (symbol-name *elisp-documentation-last-symbol*))
     (when-let* ((symbol (or symbol
                             (if prompt
                                 (intern (completing-read "Show documentation for: "
@@ -195,10 +196,18 @@ When called second time consecutively, call `helpful-symbol' for SYMBOL."
                                                          (when-let ((s (symbol-at-point)))
                                                            (symbol-name s))))
                               (symbol-at-point))))
-                (doc (if (or (functionp symbol)
-                             (macrop symbol))
-                         (documentation symbol)
-                       (documentation-property symbol 'variable-documentation))))
+                (doc (cond ((fboundp symbol)
+                            (documentation symbol))
+                           ((facep symbol)
+                            ;; HACK Get face description text.
+                            (save-window-excursion
+                             (let ((display-buffer-alist
+                                     '((t . (display-buffer-same-window)))))
+                               (describe-face symbol)
+                               (with-current-buffer (help-buffer)
+                                 (buffer-string)))))
+                           (t
+                            (documentation-property symbol 'variable-documentation)))))
       (setq *elisp-documentation-last-symbol* symbol)
       ;; TODO: truncate docs that are more that a page long
       (display-truncated-message "%s" doc))))

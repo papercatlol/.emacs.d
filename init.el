@@ -855,7 +855,7 @@ Else narrow-to-defun."
     (insert str)
     (if (> (count-screen-lines) height)
         (string-trim
-         (buffer-substring-no-properties
+         (buffer-substring
           (point-min)
           (progn (goto-char (point-min)) (forward-visible-line height)
                  (backward-char) (point))))
@@ -864,7 +864,7 @@ Else narrow-to-defun."
 (defun display-truncated-message (format-string &rest args)
   "Like `message', but truncate displayed string if it doesn't fit."
   (let* ((max-height (cl-typecase max-mini-window-height
-                       (float (* (frame-height) max-mini-window-height))
+                       (float (floor (* (frame-height) max-mini-window-height)))
                        (integer max-mini-window-height)
                        (t 40)))
          (str (apply #'format format-string args)))
