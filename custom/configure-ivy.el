@@ -388,7 +388,11 @@ If the input is empty, insert active region or symbol-at-point."
              (propertize str counsel-buffers--prop prop)))
     (let ((buffers
             (cl-loop for b in (internal-complete-buffer "" nil t)
-                  unless (get-buffer-window b) ; exclude visible windows
+                     unless (or (get-buffer-window b) ; exclude visible windows
+                                ;; Exclude some buffers that have quicker
+                                ;; keybinds. TODO Refactor this at some point.
+                                (equal "*scratch*" b)
+                                (equal (file-name-nondirectory user-init-file) b))
                     collect (%cand b :buffer)))
           (recent-files (cl-loop for f in recentf-list
                               collect (%cand f :recentf)))
