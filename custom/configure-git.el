@@ -713,6 +713,25 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 ;;* orgtbl-mode when editing commit messages
 (add-hook 'git-commit-mode-hook 'orgtbl-mode)
 
+;;* vc.el - the built-in version-control package
+(when (and (require 'vc nil 'noerror)
+           (require 'vc-dir nil 'noerror)
+           (require 'log-view nil 'noerror))
+  (dolist (map (list log-view-mode-map vc-dir-mode-map diff-mode-shared-map))
+    (define-key map (kbd "j") 'next-line)
+    (define-key map (kbd "k") 'previous-line)
+    (define-key map (kbd "h") 'backward-char)
+    (define-key map (kbd "l") 'forward-char)
+    (define-key map (kbd "w") 'forward-word)
+    (define-key map (kbd "b") 'backward-word)
+    (define-key map (kbd "TAB") 'log-view-toggle-entry-display)
+    (define-key map (kbd "i") 'log-view-toggle-entry-display))
+
+  (define-key diff-mode-shared-map (kbd "C-k") 'diff-hunk-kill)
+
+  (define-key vc-dir-mode-map (kbd "M-m") 'vc-dir-find-file)
+  (define-key vc-dir-mode-map (kbd "RET") 'vc-diff))
+
 ;;* [disabled] git-timemachine
 ;; Tbh `magit-blob-previous'/`magit-blob-next' are good enough.
 ;;(define-key git-timemachine-mode-map (kbd "C-d") 'git-timemachine-help)
