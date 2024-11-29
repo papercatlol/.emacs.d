@@ -422,8 +422,11 @@ positive and after if negative."
 (defun lispy-slime-space ()
   "Like `lispy-space', but do slime autodoc magic as well."
   (interactive)
-  (call-interactively #'lispy-space)
-  (when-let ((doc (slime-autodoc)))
+  ;; HACK for edebug-read-expression
+  (let ((edebug-active (unless (innermost-minibuffer-p)
+                         edebug-active)))
+    (call-interactively #'lispy-space))
+  (when-let ((doc (and (slime-connected-p) (slime-autodoc))))
     (eldoc-message doc)))
 
 (eldoc-add-command 'lispy-slime-space)

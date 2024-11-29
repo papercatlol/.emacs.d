@@ -310,6 +310,8 @@ If there was an active region, insert it into repl."
 
 ;;* TODO: edebug-mode: make compatible with evil-mode, add hydra
 (define-key edebug-mode-map (kbd "C-c C-d") nil)
+(define-key edebug-mode-map (kbd "SPC") nil)
+(define-key edebug-mode-map (kbd "RET") 'edebug-step-mode)
 
 ;;** debugger-mode
 (with-eval-after-load 'debug
