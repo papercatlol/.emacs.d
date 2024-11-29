@@ -13,11 +13,11 @@
 
 ;;* *rg* results buffer style
 (setq rg-show-columns nil)
+(setq rg-group-result nil)
 (setq rg-align-line-column-separator ":")
 (setq rg-align-position-content-separator ": ")
 ;; These two actually mean "min length"
-(setq rg-align-line-number-field-length 1)
-(setq rg-align-column-number-field-length 1)
+(setq rg-align-position-numbers nil)
 
 ;; Aggressively simplified `rg-perform-position-numbers-alignment'.
 (defun rg-perform-position-numbers-alignment--override
@@ -59,8 +59,8 @@
   (evil-set-initial-state 'rg-mode 'normal))
 
 (define-key rg-mode-map (kbd "<tab>") 'compilation-next-error)
-(define-key rg-mode-map (kbd "k") 'compilation-previous-error)
-(define-key rg-mode-map (kbd "j") 'compilation-next-error)
+(define-key rg-mode-map (kbd "k") 'previous-line)
+(define-key rg-mode-map (kbd "j") 'forward-line)
 (define-key rg-mode-map (kbd "h") 'backward-char)
 (define-key rg-mode-map (kbd "l") 'forward-char)
 (define-key rg-mode-map (kbd "m") 'compilation-display-error)

@@ -13,6 +13,11 @@
     (interactive "p")
     (compilation-display-next-error (- n)))
 
+  (defun recompile-edit (&optional no-edit-command)
+    "Like `recompile' but with the meaning of the prefix argument reversed."
+    (interactive "P")
+    (recompile (not no-edit-command)))
+
   (with-eval-after-load 'ace-link
     (setq ace-link--compilation-action-fn #'compilation-display-error))
 
@@ -22,10 +27,23 @@
   (define-key compilation-mode-map (kbd "M-m") 'compilation-display-error)
   (define-key compilation-mode-map (kbd "C-j") 'compilation-display-next-error)
   (define-key compilation-mode-map (kbd "C-k") 'compilation-display-previous-error)
-  (define-key compilation-mode-map (kbd "k") 'compilation-previous-error)
-  (define-key compilation-mode-map (kbd "j") 'compilation-next-error)
+  (define-key compilation-mode-map (kbd "k") 'previous-line)
+  (define-key compilation-mode-map (kbd "j") 'forward-line)
   (define-key compilation-mode-map (kbd "h") 'backward-char)
-  (define-key compilation-mode-map (kbd "l") 'forward-char))
+  (define-key compilation-mode-map (kbd "l") 'forward-char)
+
+  ;; TODO decide which bindings to keep
+  (global-set-key (kbd "H-c") 'recompile)
+  (global-set-key (kbd "C-8") 'recompile)
+  (define-key compilation-mode-map (kbd "1") 'recompile-edit)
+  (define-key compilation-mode-map (kbd "2") 'recompile)
+  (define-key compilation-minor-mode-map (kbd "1") 'recompile-edit)
+  (define-key compilation-minor-mode-map (kbd "2") 'recompile)
+
+  (when (fboundp 'evil-mode)
+    (define-key evil-normal-state-map (kbd "1") 'recompile-edit)
+    (define-key evil-normal-state-map (kbd "2") 'recompile))
+  )
 
 
 (with-eval-after-load 'comint
