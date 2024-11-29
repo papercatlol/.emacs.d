@@ -76,20 +76,22 @@
  ;;'(variable-pitch ((t (:family "Input Sans Narrow" :height 110))))
  ;;'(variable-pitch ((t (:family "Fira Code 11" :height 150))))
  ;;'(variable-pitch ((t (:family "Input Sans Condensed" :height 150))))
- '(variable-pitch ((t (:family "Bookerly" :height 200
-                       :foreground "grey"))))
+ ;;'(variable-pitch ((t (:family "Bookerly" :height 200
+ ;;                      :foreground "grey"))))
+ '(variable-pitch ((t (:family "Atkinson Hyperlegible" :height 130
+                       :weight regular :foreground "grey"))))
  '(fixed-pitch ((t (:family "Fira Code 11" :height 160))))
  ;;'(fixed-pitch ((t (:family "Input Sans Narrow" :height 110))))
  ;;'(fixed-pitch ((t (:family "Input Sans Condensed" :height 180))))
  ;;'(fixed-pitch-serif ((t (:family "Fira Code" :height 110))))
  '(fixed-pitch-serif ((t (:family "Input Serif Narrow" :height 110))))
  '(button ((t (:inherit (link)))))
- '(cursor ((t (:background "DarkOrange3"))))
+ '(cursor ((t (:background "#de6921"))))
  ;; '(region ((t (:background "DarkGreen" :foreground "black" :weight normal))))
  '(region ((t (:foreground "LightSalmon3" :background "gray10"))))
  ;; '(region ((t (:inherit magit-diff-file-heading-selection))))
  '(bold ((t (:inherit (default) :weight semi-bold))))
- '(eldoc-highlight-function-argument ((t (:inherit default :weight bold))))
+ '(eldoc-highlight-function-argument ((t (:inherit default :foreground "DarkOrchid1"))))
  '(escape-glyph ((t (:foreground "light gray"))))
  '(font-lock-builtin-face ((t (:foreground "#9090a0"
                                ;; #d3d3d3
@@ -108,7 +110,7 @@
  '(font-lock-preprocessor-face ((t (:inherit (font-lock-builtin-face)))))
  '(font-lock-regexp-grouping-backslash ((t (:inherit (bold)))))
  '(font-lock-regexp-grouping-construct ((t (:inherit (bold)))))
- '(font-lock-string-face ((t (:inherit default :foreground "dim gray"))))
+ '(font-lock-string-face ((t (:foreground "dim gray"))))
  '(font-lock-type-face ((t (:foreground "light gray" ;;:weight normal
                             ))))
  '(font-lock-variable-name-face ((t (:foreground "light gray"))))
@@ -133,7 +135,8 @@
                   ;; "#0000000073c2"
                   ;; :background "#bdbdbd" :foreground "#010101"
                   :box (:line-width 1 :color "gray70")))))
- '(mode-line-inactive ((t (:background "gray10" :foreground "#41544B"))))
+ '(mode-line-inactive ((t (:background "gray10" :foreground "#41544B"
+                           :box "gray60"))))
  '(mode-line-buffer-id ((t (:background nil :foreground "white"))))
  '(mode-line-highlight ((t (:foreground "aquamarine3" :box t))))
  '(mode-line-emphasis ((t (:foreground "aquamarine3"))))
@@ -356,6 +359,12 @@
  '(dictionary-word-definition-face ((t (:inherit default))))
  '(dictionary-reference-face ((t (:inherit dictionary-word-definition-face
                                   :inherit link))))
+ ;; eglot
+ '(eglot-inlay-hint-face ((t (:inherit shadow :box t :foreground "grey30"))))
+ '(eglot-parameter-hint-face ((t (:inherit eglot-inlay-hint-face))))
+ ;; vc.el
+ '(log-view-file ((t (:inherit dired-marked))))
+ 
  )
 
 (provide-theme 'quasi-monochrome)
