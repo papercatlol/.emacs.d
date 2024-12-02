@@ -2688,6 +2688,30 @@ again to call `eldoc-doc-buffer'."
 
 (define-key prog-mode-map (kbd "C-c C-d") 'eldoc-display-full-doc)
 
+;;* 0x0-dwim
+(defun 0x0-dwim ()
+  "Upload a region or whole buffer to https://0x0.st"
+  (interactive)
+  (let* ((buffer-file (buffer-file-name))
+         (file
+           (or
+            (when-let ((bounds (cond ((region-active-p)
+                                      (list (region-beginning) (region-end)))
+                                     ((null buffer-file)
+                                      (list (point-min) (point-max)))))
+                       (temp-file
+                        (make-temp-file "0x0" nil
+                                        (when buffer-file
+                                          (concat "." (file-name-extension
+                                                       buffer-file))))))
+              (write-region (first bounds) (second bounds) temp-file)
+              temp-file)
+            buffer-file)))
+    (with-temp-buffer
+      (call-process "curl" nil t nil
+                    "-s" "-F" (format "file=@%s" file) "https://0x0.st")
+      (kill-new (buffer-string)))))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
