@@ -1,6 +1,9 @@
 ;; -*- lexical-binding: t -*-
 (require 'configure-flymake)
 
+;; Don't highlight symbol at point.
+(pushnew :documentHighlightProvider eglot-ignored-server-capabilities)
+
 ;;* hydra-eglot (mimicking `eglot-menu')
 (pretty-hydra-define hydra-eglot (:quit-key "q")
   ("Flymake"

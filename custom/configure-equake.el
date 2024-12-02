@@ -35,7 +35,13 @@
 With double prefix arg override the default shell type with vterm."
   (interactive "P")
   (cond ((= 16 (prefix-numeric-value current-prefix-arg))
-         (equake-new-tab 'vterm))
+         (equake-new-tab 'eshell))
+        ((= 64 (prefix-numeric-value current-prefix-arg))
+         (equake-new-tab (intern
+                          (completing-read "Choose shell: "
+                                           equake-available-shells
+                                           nil t nil nil
+                                           (symbol-name equake-default-shell)))))
         ((or new-tab (null (equake-find-buffer)))
          (equake-new-tab))
         (t
@@ -316,5 +322,8 @@ With prefix arg open a new equake tab."
 
 ;;* eshell
 (add-hook 'eshell-mode-hook #'eat-eshell-mode)
+
+(with-eval-after-load 'em-hist
+  (define-key eshell-hist-mode-map (kbd "M-r") 'counsel-esh-history))
 
 (provide 'configure-equake)

@@ -166,6 +166,8 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'rx-let 'let)
     (%copy-indent 'transient-append-suffix 'defun)
     (%copy-indent 'condition-case 'case)
+    (%copy-indent 'minibuffer-with-setup-hook 'when)
+    (%copy-indent 'with-temp-buffer 'progn)
     (put 'pretty-hydra-define 'common-lisp-indent-function 2)))
 
 ;;** font-lock

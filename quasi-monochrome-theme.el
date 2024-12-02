@@ -364,7 +364,8 @@
  '(eglot-parameter-hint-face ((t (:inherit eglot-inlay-hint-face))))
  ;; vc.el
  '(log-view-file ((t (:inherit dired-marked))))
- 
+ ;; edebug
+ '(edebug-enabled-breakpoint ((t (:box "red"))))
  )
 
 (provide-theme 'quasi-monochrome)

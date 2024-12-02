@@ -1836,6 +1836,7 @@ enable `hydra-flyspell'."
 
 (setq dumb-jump-prefer-searcher 'rg)
 (setq xref-search-program 'ripgrep)
+(setq xref-show-definitions-function #'xref-show-definitions-completing-read)
 
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
@@ -2140,6 +2141,10 @@ the cursor to the new position as well."
                 :action action))))
 
 (global-set-key (kbd "C-t") 'avy-goto-symbol-in-defun)
+(with-eval-after-load 'evil
+  (evil-define-key '(normal visual) global-map
+    "gt" 'avy-goto-symbol-in-defun))
+
 (setf (alist-get 'avy-goto-symbol-in-defun avy-styles-alist) 'pre)
 
 ;;** avy-action-yank-multiple

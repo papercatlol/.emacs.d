@@ -1,8 +1,5 @@
 ;;; -*- lexical-binding: t -*-
-
-
-;; Don't highlight symbol at point.
-(pushnew :documentHighlightProvider eglot-ignored-server-capabilities)
+(require 'go-mode)
 
 (add-hook 'go-mode-hook 'eglot-ensure)
 (add-hook 'go-mode-hook 'electric-pair-local-mode)
