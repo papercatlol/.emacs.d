@@ -892,6 +892,36 @@ buffer. See `quit-windows-on' for documentation on arguments."
           (setq did-quit? t)))
       did-quit?)))
 
+;;** read-char-value: select a value by pressing a character
+(defvar read-char-value-use-posframe t)
+
+(defun read-char-value (keys->values)
+  "Choose a value by pressing a corresponding key."
+  (let ((res nil)
+        (help-message
+          (string-join
+           (loop for (key . val) in keys->values
+                 collect (let ((hint (propertize (string key)
+                                                 'face 'help-key-binding)))
+                           (format "%s: %s" hint val)))
+           "\n"))
+        (posframe-buffer "*read-char-value*")
+        (posframe-border-color "grey20"))
+    (when read-char-value-use-posframe
+      (posframe-show posframe-buffer :string help-message
+                                     :border-width 1
+                                     :border-color posframe-border-color))
+    (unwind-protect
+         (while (not res)
+           (unless read-char-value-use-posframe
+             (message "Choose: %s" help-message))
+           (if-let* ((key (read-char-exclusive))
+                     (val (alist-get key keys->values)))
+               (setq res val)
+             (message "Unknown key: %s" (string key))))
+      (when read-char-value-use-posframe (posframe-hide posframe-buffer)))
+    res))
+
 ;;* dired
 (setq dired-do-revert-buffer t)
 
@@ -1032,6 +1062,12 @@ $0`(yas-escape-text yas-selected-text)`"))
 
 (defun $cp ()
   (when yas--need-closing-paren-p ")"))
+
+(defun yas-read-char-value (keys->values)
+  "Yas wrapper around `read-char-value'."
+  (unless (or yas-moving-away-p
+              yas-modified-p)
+    (read-char-value keys->values)))
 
 ;;** use hippie-expand instead of TAB
 (define-key yas-minor-mode-map (kbd "<tab>") nil)
@@ -1618,12 +1654,14 @@ and it's faster to rewrite it."
   "Read a key sequence and return it in a format suitable for `kbd'.
 If called interactively, quote and insert it."
   (interactive)
-  (let ((key (key-description (read-key-sequence "Key Sequence: "))))
-    (if (interactive-p)
-        (insert (if (nth 3 (syntax-ppss)) ; inside string
-                    key
-                  (format "\"%s\"" key)))
-      key)))
+  (unless (or yas-moving-away-p
+              yas-modified-p)
+    (let ((key (key-description (read-key-sequence "Key Sequence: "))))
+      (if (interactive-p)
+          (insert (if (nth 3 (syntax-ppss)) ; inside string
+                      key
+                    (format "\"%s\"" key)))
+        key))))
 
 (global-set-key (kbd "H-k") 'kbd-helper)
 
