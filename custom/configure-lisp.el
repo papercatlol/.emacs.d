@@ -938,10 +938,11 @@ otherwise insert a saved presentation."
   `(,(rx symbol-start (? ":") "else" symbol-end) 0 'font-lock-builtin-face)
   `(,(rx symbol-start (? ":") "elseif" symbol-end) 0 'font-lock-builtin-face)
   ;; highlight keywords with colons as errors because code style
-  `(,(rx symbol-start ":then" symbol-end) 0 'style-warning-face prepend)
-  `(,(rx symbol-start ":thenret" symbol-end) 0 'style-warning-face prepend)
-  `(,(rx symbol-start ":else" symbol-end) 0 'style-warning-face prepend)
-  `(,(rx symbol-start ":elseif" symbol-end) 0 'style-warning-face prepend)))
+  ;;`(,(rx symbol-start ":then" symbol-end) 0 'style-warning-face prepend)
+  ;;`(,(rx symbol-start ":thenret" symbol-end) 0 'style-warning-face prepend)
+  ;;`(,(rx symbol-start ":else" symbol-end) 0 'style-warning-face prepend)
+  ;;`(,(rx symbol-start ":elseif" symbol-end) 0 'style-warning-face prepend)
+  ))
 
 ;;* Code refactoring utils
 ;;** `lisp-toggle-*-form'
@@ -1414,6 +1415,8 @@ If there was an active region, insert it into repl."
 (define-key slime-parent-map (kbd "C-4 C-.") 'slime-edit-definition-other-window-ivy)
 (define-key slime-parent-map (kbd "C-5 .") 'slime-edit-definition-other-frame-ivy)
 (define-key slime-parent-map (kbd "C-5 C-.") 'slime-edit-definition-other-frame-ivy)
+(define-key slime-parent-map (kbd "C-c C-c t") nil)
+(define-key slime-parent-map (kbd "C-c C-c") 'slime-compile-defun)
 
 (dolist (keymap (list sldb-mode-map slime-inspector-mode-map slime-trace-dialog-mode-map slime-xref-mode-map))
   (define-key keymap (kbd "k") 'previous-line)
