@@ -495,8 +495,15 @@
 (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode)
 
 ;;* exec-path-from-shell
+;; rg config path is only for eshell
+;; FIXME I don't remember why I needed ssh stuff here..
+(dolist (var '("SSH_AGENT_PID" "SSH_AUTH_SOCK" "RIPGREP_CONFIG_PATH"))
+  (pushnew var exec-path-from-shell-variables))
+
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
+
+(exec-path-from-shell-copy-env "SSH_AUTH_SOCK")
 
 ;;* explain-pause-mode
 (add-to-list 'load-path (expand-file-name "custom/explain-pause-mode/" user-emacs-directory))
@@ -522,6 +529,7 @@
 (global-set-key (kbd "C-h k") #'helpful-key)
 (global-set-key (kbd "<f2>") #'helpful-key)
 (define-key help-map (kbd "M-k") #'describe-keymap)
+(define-key help-map (kbd "SPC") #'display-local-help)
 
 ;;** override default describe functions
 (advice-add 'describe-function :override #'helpful-function)
@@ -1548,6 +1556,7 @@ and it's faster to rewrite it."
 ;;* eww
 (with-eval-after-load 'eww
   (setq eww-auto-rename-buffer 'title)
+  (setq shr-use-colors nil)
   (define-key eww-mode-map (kbd "C-c C-n") 'eww-next-url)
   (define-key eww-mode-map (kbd "C-c C-p") 'eww-previous-url)
   (define-key eww-mode-map (kbd "n") nil)
