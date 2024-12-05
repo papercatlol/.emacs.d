@@ -2777,6 +2777,25 @@ again to call `eldoc-doc-buffer'."
                     "-s" "-F" (format "file=@%s" file) "https://0x0.st")
       (kill-new (buffer-string)))))
 
+;;* quickrun
+(setq quickrun-focus-p nil)
+
+(defun quickrun-dwim (force-buffer)
+  "Show output of `quickrun' in echo area. With prefix arg call
+`quickrun' normally. In Dired mode `quickrun' file at point."
+  (interactive (list current-prefix-arg))
+  (let ((quickrun-option-outputter (unless force-buffer 'message)))
+    (if (eq major-mode 'dired-mode)
+        (with-current-buffer (find-file-noselect (dired-get-filename))
+          (let ((quickrun-option-outputter (unless force-buffer 'message)))
+            (call-interactively #'quickrun)))
+      (call-interactively #'quickrun))))
+
+(global-set-key (kbd "C-\\") 'quickrun-dwim)
+
+(with-eval-after-load 'evil
+  (evil-define-key '(normal visual) quickrun--mode-map "q" 'quit-window))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
