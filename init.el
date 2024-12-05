@@ -935,6 +935,14 @@ buffer. See `quit-windows-on' for documentation on arguments."
 
 (add-hook 'dired-mode-hook 'hl-line-mode)
 
+(defun dired--enable-auto-revert ()
+  "Enable silent `auto-revert-mode' unless the directory is remote."
+  (unless (file-remote-p default-directory)
+    (setq-local auto-revert-verbose nil)
+    (auto-revert-mode 1)))
+
+(add-hook 'dired-mode-hook 'dired--enable-auto-revert)
+
 ;;** dired-jump-other-frame
 (defun dired-jump-other-frame (&optional file-name)
   "Like \\[dired-jump] (`dired-jump') but in other frame."
