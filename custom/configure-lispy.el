@@ -42,7 +42,8 @@
 ;; FIXME this is a temporary solution. Ideally both magit-blame and lispy
 ;; keybindings should be available either via a hydra-magit-blame, higher
 ;; priority for magit-blame or some special keybind magic.
-(add-to-list 'magit-blame-disable-modes 'lispy-mode)
+(with-eval-after-load 'magit
+  (add-to-list 'magit-blame-disable-modes 'lispy-mode))
 
 ;;* lispy inline documentation + slime
 (with-eval-after-load 'slime

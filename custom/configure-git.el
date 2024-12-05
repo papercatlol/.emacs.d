@@ -557,6 +557,7 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 
 ;; keybindings
 (define-key magit-mode-map (kbd "SPC") 'avy-goto-char-2-special)
+(define-key magit-diff-mode-map (kbd "SPC") 'avy-goto-char-2-special)
 
 (define-key magit-blame-mode-map (kbd "j") 'magit-blame-next-chunk)
 (define-key magit-blame-mode-map (kbd "k") 'magit-blame-previous-chunk)

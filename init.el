@@ -2616,6 +2616,7 @@ immediately, prompt for a todo keyword to use."
 
 ;;* epg
 ;; Prompt for password in the minibuffer instead of GUI.
+;; No gui when asking for gpg password.
 (setq epg-pinentry-mode 'loopback)
 
 ;;* fast-reading mode (rsvp) spray.el

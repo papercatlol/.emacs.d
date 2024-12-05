@@ -7,6 +7,7 @@
       evil-move-beyond-eol t
       evil-want-integration t
       evil-want-keybinding t
+      evil-respect-visual-line-mode t
       lispy-avy-style-paren 'pre)
 
 (require 'evil)

@@ -137,7 +137,7 @@
                   :box (:line-width 1 :color "gray70")))))
  '(mode-line-inactive ((t (:background "gray10" :foreground "#41544B"
                            :box "gray60"))))
- '(mode-line-buffer-id ((t (:background nil :foreground "white"))))
+ '(mode-line-buffer-id ((t (:foreground "white"))))
  '(mode-line-highlight ((t (:foreground "aquamarine3" :box t))))
  '(mode-line-emphasis ((t (:foreground "aquamarine3"))))
  ;; header-line
@@ -278,7 +278,7 @@
  '(equake-shell-type-shell ((t (:foreground "white"))))
  '(equake-tab-active ((t (:background "gray70" :foreground "black"
                           :weight bold))))
- '(equake-tab-inactive ((t (:inherit mode-line :foreground "gray70"))))
+ '(equake-tab-inactive ((t (:foreground "gray70"))))
  '(equake-shell-type-eshell ((t (:foreground "white" :background "black"))))
  '(equake-shell-type-term ((t (:foreground "white" :background "black"))))
  '(equake-shell-type-rash ((t (:foreground "white" :background "black"))))
