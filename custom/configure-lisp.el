@@ -1375,6 +1375,41 @@ If there was an active region, insert it into repl."
                   (line-end-position))))))
     (narrow-to-region start end)))
 
+;;* common lisp abbrevs
+(add-hook 'lisp-mode-hook #'abbrev-mode)
+
+;;** automatically turn loop macro clauses into keyword form
+(defun abbrev--expand-common-lisp-loop-macro-keyword? ()
+  "Return T if outer s-expression starts with '(loop' and symbol at
+point is not a keyword already."
+  (save-excursion
+   (and (looking-back common-lisp-loop-macro-keywords-regex)
+        (progn (up-list -1)
+               (looking-at-p (rx "(loop"))))))
+
+(defvar common-lisp-loop-macro-keywords
+  '("do" "collect" "collecting" "append"
+    "appending" "nconc" "nconcing" "into" "count"
+    "counting" "sum" "summing" "maximize" "return"
+    "maximizing" "minimize" "minimizing" "doing"
+    "thereis" "always" "never" "if" "when"
+    "unless" "repeat" "while" "until"
+
+    "=" "and" "it" "else" "end" "from" "upfrom"
+    "above" "below" "to" "upto" "downto" "downfrom"
+    "in" "on" "then" "across" "being" "each" "the" "hash-key"
+    "hash-keys" "of" "using" "hash-value" "hash-values"
+    "symbol" "symbols" "present-symbol"
+    "present-symbols" "external-symbol"
+    "external-symbols" "fixnum" "float" "t" "nil" "of-type"))
+
+(defvar common-lisp-loop-macro-keywords-regex
+  (rx space (eval `(or ,@common-lisp-loop-macro-keywords))))
+
+(dolist (keyword common-lisp-loop-macro-keywords)
+  (define-abbrev lisp-mode-abbrev-table keyword (concat ":" keyword) nil
+    :enable-function #'abbrev--expand-common-lisp-loop-macro-keyword?))
+
 ;;* TODO slime-inspector-copy-down-to-repl-other-window
 ;; The problem is that the slime-eval-async is async and save-selected-window
 ;; can't handle that. Need to pass a different callback probably
