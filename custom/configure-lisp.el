@@ -1388,20 +1388,20 @@ point is not a keyword already."
                (looking-at-p (rx "(loop"))))))
 
 (defvar common-lisp-loop-macro-keywords
-  '("do" "collect" "collecting" "append"
+  '("for" "do" "collect" "collecting" "append"
     "appending" "nconc" "nconcing" "into" "count"
     "counting" "sum" "summing" "maximize" "return"
     "maximizing" "minimize" "minimizing" "doing"
     "thereis" "always" "never" "if" "when"
     "unless" "repeat" "while" "until"
 
-    "=" "and" "it" "else" "end" "from" "upfrom"
+    "=" "and" "it" "else" "end" "from" "upfrom" "by"
     "above" "below" "to" "upto" "downto" "downfrom"
     "in" "on" "then" "across" "being" "each" "the" "hash-key"
     "hash-keys" "of" "using" "hash-value" "hash-values"
     "symbol" "symbols" "present-symbol"
     "present-symbols" "external-symbol"
-    "external-symbols" "fixnum" "float" "t" "nil" "of-type"))
+    "external-symbols" "fixnum" "float" "of-type"))
 
 (defvar common-lisp-loop-macro-keywords-regex
   (rx space (eval `(or ,@common-lisp-loop-macro-keywords))))
