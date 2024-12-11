@@ -2796,6 +2796,23 @@ again to call `eldoc-doc-buffer'."
 (with-eval-after-load 'evil
   (evil-define-key '(normal visual) quickrun--mode-map "q" 'quit-window))
 
+;;* rot13 emacsclient
+(defun rot13-emacsclient ()
+  "Rot13 selected text."
+  (interactive)
+  (with-current-buffer (get-buffer-create "*rot13*")
+    (page-break-lines-mode +1)
+    (goto-char (point-max))
+    (let ((inhibit-read-only t))
+      (newline)
+      (insert "")
+      (insert
+       (rot13-string (or (ignore-errors (gui-get-primary-selection))
+                         (ignore-errors (gui-get-selection))))))
+    (local-set-key "q" 'delete-frame)
+    (evil-emacs-state)
+    (switch-to-buffer (current-buffer))))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
