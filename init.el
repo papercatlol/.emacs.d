@@ -2792,10 +2792,11 @@ again to call `eldoc-doc-buffer'."
   (interactive)
   (with-current-buffer (get-buffer-create "*rot13*")
     (page-break-lines-mode +1)
+    (setq-local word-wrap t)
     (goto-char (point-max))
     (let ((inhibit-read-only t))
       (newline)
-      (insert "")
+      (insert "\n")
       (insert
        (rot13-string (or (ignore-errors (gui-get-primary-selection))
                          (ignore-errors (gui-get-selection))))))
@@ -2970,6 +2971,7 @@ again to call `eldoc-doc-buffer'."
 (define-key dired-mode-map (kbd "C-k") 'dired-do-kill-lines)
 (define-key dired-mode-map (kbd "C-c C-l") 'dired-do-load)
 (define-key dired-mode-map (kbd "C-c C-b") 'dired-do-byte-compile)
+(define-key dired-mode-map (kbd "E") 'dired-do-eww)
 
 (define-key dired-mode-map (kbd "j") 'dired-next-line)
 (define-key dired-mode-map (kbd "k") 'dired-previous-line)
@@ -3022,6 +3024,7 @@ again to call `eldoc-doc-buffer'."
   ("y" #'elfeed-tube-fetch "elfeed-tube-fetch")
   ("<tab>" #'untabify "untabify")
   ("C-o" #'xdg-open-file "open file external")
+  ("3" #'rot13-region "rot13 region")
   )
 
 (global-set-key (kbd "M-z") 'hydra-cantrips/body)
@@ -3240,5 +3243,8 @@ EVENT."
 (define-key ctl-x-map (kbd "x w") 'toggle-word-wrap)
 (define-key ctl-x-map (kbd "x s") 'toggle-scroll-bar)
 (define-key ctl-x-map (kbd "x m") 'toggle-enable-multibyte-characters)
+
+;;* clonk menu
+(define-key global-map (kbd "H-R") 'hydra-clonk-menu)
 
 ;;* TODO bind something to "C-'"

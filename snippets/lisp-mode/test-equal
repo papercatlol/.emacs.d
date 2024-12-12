@@ -27,4 +27,4 @@
 # name: test-equal
 # key: :te
 # --
-:test #'equal
+:test #'equal$0

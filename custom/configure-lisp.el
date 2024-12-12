@@ -1565,6 +1565,10 @@ point is not a keyword already."
 ;;** Global `lisp-mode' mapping
 (define-key global-map (kbd "C-c C-l") 'lisp-mode)
 
+;;** indentation
+(define-key lisp-mode-map (kbd "M-q") 'slime-reindent-defun)
+(define-key emacs-lisp-mode-map (kbd "M-q") 'slime-reindent-defun)
+
 ;;* lispy
 (require 'configure-lispy)
 

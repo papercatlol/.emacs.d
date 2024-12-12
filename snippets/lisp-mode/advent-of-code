@@ -27,12 +27,33 @@
 # name: advent-of-code
 # key: aoc
 # --
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (ql:quickload :cl-ppcre)
+  (ql:quickload :alexandria))
+
 (defpackage :day${1}
   (:use :cl :alexandria)
   (:import-from :alexandria
                 #:read-file-into-string)
   (:import-from :uiop/utility
-                #:split-string))
+                #:split-string)
+  (:import-from :uiop
+                #:read-file-lines)
+  (:import-from :aoc-utils
+                #:split-input
+                #:read-input
+                #:split-newline
+                #:parse-integers
+                #:log-error
+                #:log-debug
+                #:*log-level*
+                #:break-error
+                #:break-debug
+                #:get-char
+                #:set-char
+                #:copy-map
+                #:print-map
+                #:valid-pos-p))
 
 (in-package :day${1})
 
