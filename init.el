@@ -1200,17 +1200,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 
 (advice-add #'he-substitute-string :after #'he-paredit-fix)
 
-;;** hydra-hippie-expand
-(defhydra hydra-hippie-expand (:hint nil)
-  "Hippie expand"
-  ("w" #'hippie-expand)
-  ("e" #'hippie-expand-completion :color blue)
-  ("u" #'undo-tree-undo)
-  ("q" nil))
-
-(hydra-set-property 'hydra-hippie-expand :verbosity 0)
-
-(global-set-key (kbd "M-/") 'hydra-hippie-expand/hippie-expand)
+(global-set-key (kbd "M-/") 'hippie-expand)
 
 ;; TODO: figure out how to add snippets to completion candidates
 ;; and how `completion-extra-properties' work
