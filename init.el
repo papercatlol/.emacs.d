@@ -2803,6 +2803,33 @@ again to call `eldoc-doc-buffer'."
     (evil-emacs-state)
     (switch-to-buffer (current-buffer))))
 
+;;* line continuation fringe bitmaps (for `truncate-lines')
+(fringe-helper-define
+ 'down-right-arrow 'center
+ "........"
+ "........"
+ "........"
+ "..X....."
+ "..X....."
+ "..X..X.."
+ "..XXXXX."
+ ".....X..")
+
+(fringe-helper-define
+ 'down-left-arrow 'center
+ "........"
+ "........"
+ "........"
+ ".....X.."
+ ".....X.."
+ "..X..X.."
+ ".XXXXX.."
+ "..X.....")
+
+(setf (alist-get 'continuation fringe-indicator-alist)
+      '(down-right-arrow down-left-arrow))
+
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
