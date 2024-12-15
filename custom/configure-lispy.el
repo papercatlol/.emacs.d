@@ -31,12 +31,17 @@
 
 (defun eval-expression-enable-lispy ()
   (when (or (eq this-command 'eval-expression)
-            (eq this-command 'pp-eval-dwim)
-            ;; TODO: slime/sldb evals
-            )
+            (eq this-command 'pp-eval-dwim))
     (lispy-mode 1)))
 (add-hook 'minibuffer-setup-hook #'eval-expression-enable-lispy)
 (add-to-list 'lispy-no-indent-modes 'minibuffer-mode)
+
+;;** slime-minibuffer-setup-hook
+(defun slime-minibuffer-setup-hook--enable-lispy (old-fn &rest args)
+  (cons 'lispy-mode (apply old-fn args)))
+
+(advice-add 'slime-minibuffer-setup-hook :around
+            #'slime-minibuffer-setup-hook--enable-lispy)
 
 ;;* disable lispy in magit-blame
 ;; FIXME this is a temporary solution. Ideally both magit-blame and lispy
@@ -87,7 +92,7 @@ With prefix arg select a symbol instead."
 
 
 ;;** lispy--let-bounds
-(defvar lispy--let-regexp (rx "(" (or "let" "when-let" "bind")))
+(defvar lispy--let-regexp (rx "(" (or "let" "if-let" "when-let" "bind")))
 
 (defun lispy--let-bounds ()
   "Return closest outer let bounds."
@@ -403,7 +408,8 @@ positive and after if negative."
    (cl-loop repeat (abs arg)
          do (lispy-newline-and-indent))))
 
-(define-key lispy-mode-map [remap lispy-open-line] 'lispy-open-line-different)
+(define-key lispy-mode-map (kbd "C-<return>") 'lispy-open-line-different)
+(define-key lispy-mode-map (kbd "S-<return>") 'lispy-open-line)
 
 ;;** avy-action-lispy-x
 (defhydra+ hydra-lispy-x (:after-exit (lispy--x-restore-point))
@@ -459,6 +465,7 @@ positive and after if negative."
 (advice-add 'lispy-tick :around #'lispy-tick--no-space)
 
 ;;** other global bindings
+(define-key lispy-mode-map (kbd "M-q") nil) ; lispy-fill is kinda weird
 (define-key lispy-mode-map (kbd "<return>") 'lispy-right)
 (define-key lispy-mode-map (kbd "RET") 'lispy-newline-and-indent-plain)
 (define-key lispy-mode-map (kbd "M-<return>") 'lispy-alt-line)
@@ -469,8 +476,6 @@ positive and after if negative."
 (define-key slime-mode-map (kbd "C-c x") 'hydra-lispy-x/body)
 (define-key slime-repl-mode-map (kbd "C-c x") 'hydra-lispy-x/body)
 (define-key slime-mode-map (kbd "M-s") 'avy-goto-symbol-in-line)
-
-
 
 
 (provide 'configure-lispy)
