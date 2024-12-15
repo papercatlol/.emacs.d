@@ -147,6 +147,23 @@ ARG can extend the bounds to the current defun."
 (define-key lispy-mode-map (kbd ".") nil)
 (define-key lispy-mode-map (kbd "C-,") 'contract-region-or-select-something)
 
+;;* lispy-parens
+;;** don't insert a space after some common lisp reader macros
+;; complex numbers, arrays
+(pushnew "#[cCaA]" (alist-get 'lisp-mode lispy-parens-preceding-syntax-alist)
+         :test #'equal)
+;; vectors
+(pushnew "#" (alist-get 'lisp-mode lispy-parens-preceding-syntax-alist)
+         :test #'equal)
+
+;;** slime-repl-mode
+(setf (alist-get 'slime-repl-mode lispy-parens-preceding-syntax-alist)
+      (alist-get 'lisp-mode lispy-parens-preceding-syntax-alist))
+
+;;* lispy-eval in slime-repl-mode
+(setf (alist-get 'slime-repl-mode lispy-eval-alist)
+      (alist-get 'lisp-mode lispy-eval-alist))
+
 ;;* 'special' bindings
 ;; (these make more sense to me)
 ;;** w/b
