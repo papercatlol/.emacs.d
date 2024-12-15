@@ -1358,6 +1358,13 @@ If there was an active region, insert it into repl."
 
 (add-hook 'slime-repl-mode-hook #'slime-repl-activate-yasnippet)
 
+;;* abbrevs in slime-repl
+(defun slime-repl-activate-abbrev ()
+  (abbrev-mode 1)
+  (setq-local local-abbrev-table lisp-mode-abbrev-table))
+
+(add-hook 'slime-repl-mode-hook #'slime-repl-activate-abbrev)
+
 ;;* slime-repl-narrow-to-prompt
 (defun slime-repl-narrow-to-prompt ()
   "Narrow buffer to the prompt (and any following output) at point."

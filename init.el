@@ -1214,6 +1214,9 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 ;; (defun yas--completion-exit-function (string status)
 ;;   (yas-expand))
 
+;;* abbrev
+(setq save-abbrevs 'silently)
+
 ;;* copy for reddit
 (defun copy-for-reddit ()
   "Copy and indent active region or current defun with 4 spaces."
