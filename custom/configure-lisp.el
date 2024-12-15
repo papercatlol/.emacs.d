@@ -1391,7 +1391,8 @@ If there was an active region, insert it into repl."
 point is not a keyword already."
   (save-excursion
    (and (looking-back common-lisp-loop-macro-keywords-regex)
-        (progn (up-list -1)
+        ;; FIXME should check that we're not in a comment/string
+        (progn (ignore-errors (up-list -1))
                (looking-at-p (rx "(loop"))))))
 
 (defvar common-lisp-loop-macro-keywords
