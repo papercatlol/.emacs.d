@@ -24,43 +24,8 @@
 # | yas-choose-value | user chooses from a list of options                     |
 # | yas-verify-value | Verify that the current field value is in POSSIBILITIES |
 #
-# name: advent-of-code
-# key: aoc
+# name: loop-below
+# key: be
 # --
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (ql:quickload :cl-ppcre)
-  (ql:quickload :alexandria))
-
-(defpackage :day${1}
-  (:use :cl :alexandria)
-  (:import-from :alexandria
-                #:read-file-into-string)
-  (:import-from :uiop/utility
-                #:split-string)
-  (:import-from :uiop
-                #:read-file-lines)
-  (:import-from :aoc-utils
-                #:split-input
-                #:read-input
-                #:split-newline
-                #:parse-integers
-                #:log-error
-                #:log-debug
-                #:*log-level*
-                #:break-error
-                #:break-debug
-                #:get-char
-                #:set-char
-                #:copy-map
-                #:print-map
-                #:valid-pos-p
-                #:ensure-aoc-input))
-
-(in-package :day${1})
-
-
-;;(defvar *input* (read-file-into-string (ensure-aoc-input ${1})))
-
-(defvar *t1* "")
-(defvar *t2* "")
-(defvar *t3* "")
+:for ${1:i} :below $3
+$0

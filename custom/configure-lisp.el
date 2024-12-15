@@ -945,6 +945,15 @@ otherwise insert a saved presentation."
   ;;`(,(rx symbol-start ":elseif" symbol-end) 0 'style-warning-face prepend)
   ))
 
+;;** fix for yasnippet expansions in slime-repl
+(defun slime-presentations-around-point--yas-fix (orig-fn &rest args)
+  (save-restriction
+   (widen)
+   (apply orig-fn args)))
+
+(advice-add 'slime-presentation-around-point :around
+            #'slime-presentations-around-point--yas-fix)
+
 ;;* Code refactoring utils
 ;;** `lisp-toggle-*-form'
 (defvar lisp-keywords-with-*-variant nil

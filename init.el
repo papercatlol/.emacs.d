@@ -1029,6 +1029,19 @@ buffer. See `quit-windows-on' for documentation on arguments."
 
 (define-key yas-keymap (kbd "TAB") nil)
 (define-key yas-keymap (kbd "C-<tab>") 'yas-next-field-or-maybe-expand)
+(define-key yas-keymap (kbd "M-j") 'yas-next-field)
+(define-key yas-keymap (kbd "M-k") 'yas-prev-field)
+
+;;** yas-maybe-next-field - press SPC to skip current snippet field
+(defconst yas-maybe-next-field
+  '(menu-item "" yas-next-field
+    :filter yas--maybe-clear-field-filter)
+  "A conditional key definition.
+This can be used as a key definition in keymaps to bind a key to
+`yas-next-field' only when at the beginning of an
+unmodified snippet field.")
+
+(define-key yas-keymap (kbd "SPC") (yas-filtered-definition yas-maybe-next-field))
 
 ;;** helpful new snippet template
 ;; Inspired by: https://mjdiloreto.github.io/posts/yasnippet-helpful-buffer/
