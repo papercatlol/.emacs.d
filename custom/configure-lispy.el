@@ -63,20 +63,27 @@
 With prefix arg select a symbol instead."
   (interactive "P")
   (let* ((inhibit-message t)
-         (let-bounds (lispy--let-bounds))
+         (let-bounds (or (lispy--let-bounds t)
+                         (let ((m (make-marker)))
+                           (move-marker m (point))
+                           (lispy-wrap-round 1)
+                           (insert "let ()")
+                           (paredit-newline)
+                           (goto-char m)
+                           (bounds-of-thing-at-point 'sexp))))
          (beg (move-marker (make-marker) (car let-bounds)))
          (end (move-marker (make-marker) (cdr let-bounds))))
     (require 'iedit)
     (goto-char beg)
     (lispy-flow 1)
     (lispy-different)
-    (lispy-flow 1)
-    (lispy-newline-and-indent-plain)
+    (backward-char 1)
+    (when (looking-back ")") (lispy-newline-and-indent-plain))
     (insert "()")
     (backward-char 1)
     (if atomp
         (let ((avy-action-oneshot #'avy-action-yank))
-          (avy-goto-word-1 (read-char "bind: ") nil beg end t)
+          (avy-goto-word-1 (read-char "Char 1: ") nil beg end t)
           (setq avy-action-oneshot nil))
       (lispy-ace-paren-inner 1 #'avy-action-yank (1+ beg) (1- end)))
     (if atomp (lispy-mark-symbol) (lispy-mark))
@@ -85,7 +92,8 @@ With prefix arg select a symbol instead."
     (iedit-start (regexp-quote (lispy--string-dwim)) beg end)
     (iedit-toggle-selection)
     (iedit-prev-occurrence 1)
-    (if atomp (lispy-mark-symbol) (lispy-mark))))
+    (if atomp (lispy-mark-symbol) (lispy-mark))
+    (lispy-kill-at-point)))
 
 (defhydra+ hydra-lispy-x (:exit t :hint 0.3 :columns 3)
   ("b" lispy-ace-bind-variable "ace bind variable"))
@@ -94,7 +102,7 @@ With prefix arg select a symbol instead."
 ;;** lispy--let-bounds
 (defvar lispy--let-regexp (rx "(" (or "let" "if-let" "when-let" "bind")))
 
-(defun lispy--let-bounds ()
+(defun lispy--let-bounds (&optional noerror)
   "Return closest outer let bounds."
   (save-excursion
     (or (cl-loop repeat 50
@@ -102,7 +110,8 @@ With prefix arg select a symbol instead."
               do (return (lispy--bounds-dwim))
               until (looking-at-p "^(")
               do (lispy--out-backward 1))
-        (error "No let form found"))))
+        (unless noerror
+          (error "No let form found")))))
 
 ;;* lispy-ace-paren-inner
 ;; TODO same for outer parens (maybe bind inner/outer to q/Q)
@@ -222,6 +231,12 @@ ARG can extend the bounds to the current defun."
 (define-key lispy-mode-map (kbd "M-?") 'lispy-convolute)
 (define-key lispy-mode-map (kbd "M-(") 'lispy-wrap-round)
 (define-key lispy-mode-map (kbd "M-9") 'lispy-wrap-round)
+
+(with-eval-after-load 'evil
+  (defun evil-insert-state-vararg (&rest args)
+    (evil-insert-state))
+
+  (advice-add 'lispy-wrap-round :after 'evil-insert-state-vararg))
 
 ;;** avy-window-list-wrapper: add 'other option to avy-all-windows
 (defun avy-window-list-wrapper (fn)
