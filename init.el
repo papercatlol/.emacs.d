@@ -2054,12 +2054,10 @@ else insert the face name as well."
                     (avy-read-char (if skip-input-1 "Char: " "Char 2: "))))
          (avy-all-windows (if all-frames 'all-frames t))
          ;; Positions for `avy-jump' pred.
-         (prev-line-beg (save-excursion
-                         (line-move-visual -1 'noerror)
+         (line-beg (save-excursion
                          (beginning-of-visual-line)
                          (point)))
-         (next-line-end (save-excursion
-                         (line-move-visual 1 'noerror)
+         (line-end (save-excursion
                          (end-of-visual-line)
                          (point)))
          ;; HACK prevent avy from flipping `avy-all-windows'
@@ -2073,8 +2071,8 @@ else insert the face name as well."
          :pred (lambda ()
                  (let ((pos (point)))
                    (not (or
-                         ;; Skip prev/current/next line.
-                         (< prev-line-beg pos next-line-end))))))))))
+                         ;; Skip current visual line.
+                         (< line-beg pos line-end))))))))))
 
 (setf (alist-get 'avy-goto-char-2 avy-styles-alist) 'at)
 (setf (alist-get 'avy-goto-char-2-special avy-styles-alist) 'at)
