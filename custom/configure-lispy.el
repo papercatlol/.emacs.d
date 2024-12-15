@@ -409,7 +409,6 @@ positive and after if negative."
          do (lispy-newline-and-indent))))
 
 (define-key lispy-mode-map (kbd "C-<return>") 'lispy-open-line-different)
-(define-key lispy-mode-map (kbd "S-<return>") 'lispy-open-line)
 
 ;;** avy-action-lispy-x
 (defhydra+ hydra-lispy-x (:after-exit (lispy--x-restore-point))

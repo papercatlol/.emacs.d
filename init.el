@@ -1966,6 +1966,14 @@ else insert the face name as well."
 (global-set-key (kbd "M-SPC") 'space-after)
 (global-set-key (kbd "S-SPC") 'space-after)
 
+;;* newline-and-indent-after S-RET
+(defun newline-and-indent-after ()
+  "Newline and indent without moving the cursor."
+  (interactive)
+  (save-excursion
+   (newline-and-indent)))
+(global-set-key (kbd "S-<return>") 'newline-and-indent-after)
+
 ;;* previous/next-buffer
 ;; `this' means do not switch to a buffer shown on the frame that hosts the
 ;; window `switch-to-prev-buffer' is acting upon.
