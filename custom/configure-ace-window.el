@@ -135,10 +135,17 @@ if there are more than 2 of them."
 (ace-window-display-mode 1)
 
 ;;* ace-move-window
+(defun aw-move-window-and-show-previous-buffer (window)
+  "Like `aw-move-window' but switch the current window to `previous-buffer'."
+  (let ((buffer (current-buffer)))
+    (previous-buffer)
+    (aw-switch-to-window window)
+    (switch-to-buffer buffer)))
+
 (defun ace-move-window ()
   "Ace move window."
   (interactive)
-  (aw-select " Ace - Move Window" #'aw-move-window))
+  (aw-select " Ace - Move Window" #'aw-move-window-and-show-previous-buffer))
 
 (define-key ctl-x-map (kbd "C-m") 'ace-move-window)
 
