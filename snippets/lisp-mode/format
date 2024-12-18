@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
 # name: format
-# key: (f
+# key: f
 # --
-(format t "~&$0"
+`($op)`format t "~&$0"`($cp)`

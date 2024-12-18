@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
 # name: declare
-# key: declare
+# key: dec
 # --
-(declare ${1:(ignore ${2:})}$0)
+`($op)`declare (${1:ignore ${2:}})`($cp)`$0
