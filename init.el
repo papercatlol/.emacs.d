@@ -1806,8 +1806,6 @@ enable `hydra-flyspell'."
            define-word-default-service)))
   (define-word word service))
 
-(global-set-key (kbd "H-d") 'define-word-dwim)
-
 ;;** define-word-emacslient
 ;; emacsclient -a "" -c -n -F "((name . \"(floating) *define word*\"))" -e "(define-word-emacsclient)"
 (defvar define-word-emacslient-backend 'define-word-popup)
@@ -2863,6 +2861,29 @@ again to call `eldoc-doc-buffer'."
 (setf (alist-get 'continuation fringe-indicator-alist)
       '(down-right-arrow down-left-arrow))
 
+;;* extract-to-toplevel
+(defun extract-to-toplevel (bounds)
+  "Extract current region to toplevel. With no active region just
+insert (def) after current toplevel form."
+  (interactive (list (or (bounds-of-thing-at-point 'region)
+                         ;;(bounds-of-thing-at-point 'sexp)
+                         )))
+  (let ((str (when bounds
+               ;;(buffer-substring-no-properties (car bounds) (cdr bounds))
+               (delete-and-extract-region (car bounds) (cdr bounds)))))
+    (end-of-defun)
+    (newline)
+    ;; MAYBE do something for other modes
+    (when (or (derived-mode-p 'lisp-mode)
+              (derived-mode-p 'emacs-lisp-mode))
+      (insert "(def )"))
+    (newline)
+    (backward-char 2)
+    (when str
+      (save-excursion (insert str))
+      (backward-char))))
+
+(global-set-key (kbd "H-d") 'extract-to-toplevel)
 
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
