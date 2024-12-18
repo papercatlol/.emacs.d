@@ -2826,6 +2826,17 @@ again to call `eldoc-doc-buffer'."
     (evil-emacs-state)
     (switch-to-buffer (current-buffer))))
 
+(defun rot13-copy-region-or-line (beg end)
+  "Rot13 current region (if active) or line and save it to the kill ring."
+  (interactive (if (region-active-p)
+                   (list (region-beginning) (region-end))
+                 (list (line-beginning-position) (line-end-position))))
+  (cl-assert (and beg end))
+  (let* ((str (buffer-substring-no-properties beg end))
+         (rts (rot13-string str)))
+    (kill-new rts)
+    (message "Copied '%s' as '%s'." str rts)))
+
 ;;* line continuation fringe bitmaps (for `truncate-lines')
 (fringe-helper-define
  'down-right-arrow 'center
@@ -3046,7 +3057,7 @@ again to call `eldoc-doc-buffer'."
   ("y" #'elfeed-tube-fetch "elfeed-tube-fetch")
   ("<tab>" #'untabify "untabify")
   ("C-o" #'xdg-open-file "open file external")
-  ("3" #'rot13-region "rot13 region")
+  ("3" #'rot13-copy-region-or-line "rot13")
   )
 
 (global-set-key (kbd "M-z") 'hydra-cantrips/body)
