@@ -1118,8 +1118,8 @@ Also always use `kill-region' instead of `delete-region'."
           (slime-reload-system system)
         (slime-load-system system))))
 
-  (define-key slime-mode-map (kbd "C-c L") 'slime-load-system-dwim)
-  (define-key slime-repl-mode-map (kbd "C-c L") 'slime-load-system-dwim))
+  (define-key slime-mode-map (kbd "C-c l") 'slime-load-system-dwim)
+  (define-key slime-repl-mode-map (kbd "C-c l") 'slime-load-system-dwim))
 
 ;;** slime-edit-definition support for asdf components
 (defun slime-edit-asdf-component (name &optional where)

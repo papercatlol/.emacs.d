@@ -31,7 +31,7 @@
   (ql:quickload :cl-ppcre)
   (ql:quickload :alexandria))
 
-(defpackage :day${1}
+(defpackage :aoc2024/day${1}
   (:use :cl :alexandria)
   (:import-from :alexandria
                 #:read-file-into-string)
@@ -39,7 +39,7 @@
                 #:split-string)
   (:import-from :uiop
                 #:read-file-lines)
-  (:import-from :aoc-utils
+  (:import-from :aoc2024/aoc-utils
                 #:split-input
                 #:read-input
                 #:split-newline
@@ -56,7 +56,7 @@
                 #:valid-pos-p
                 #:ensure-aoc-input))
 
-(in-package :day${1})
+(in-package :aoc2024/day${1})
 
 
 ;;(defvar *input* (read-file-into-string (ensure-aoc-input ${1})))
