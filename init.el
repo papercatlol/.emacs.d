@@ -1049,6 +1049,7 @@ unmodified snippet field.")
   (concat
    (yas-escape-text "\
 # -*- mode: snippet -*-
+
 # http://joaotavora.github.io/yasnippet/snippet-development.html#org9801aa7
 
 ## Embed Emacs-Lisp code by using back-quotes (\\`).
@@ -2093,11 +2094,12 @@ else insert the face name as well."
 (define-key minibuffer-local-map (kbd "C-r") 'avy-goto-sexp-1)
 
 ;;** avy-yank-sexp-1
-(defun avy-yank-sexp-1 (&optional all-frames)
-  "Yank a sexp to current position."
+(defun avy-yank-sexp-1 (&optional kill)
+  "Yank a sexp to current position. With prefix arg kill it on its
+orig position too."
   (interactive "P")
-  (let ((avy-action #'avy-action-yank))
-    (avy-goto-char-2-special all-frames (list (string-to-char "(")))))
+  (let ((avy-action (if kill #'avy-action-teleport #'avy-action-yank)))
+    (avy-goto-char-2-special nil (list (string-to-char "(")))))
 (global-set-key (kbd "C-S-R") 'avy-yank-sexp-1)
 (global-set-key (kbd "C-M-y") 'avy-yank-sexp-1)
 

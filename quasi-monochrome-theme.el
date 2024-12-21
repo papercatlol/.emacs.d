@@ -80,9 +80,11 @@
  ;;                      :foreground "grey"))))
  '(variable-pitch ((t (:family "Atkinson Hyperlegible" :height 130
                        :weight regular :foreground "grey"))))
+ '(variable-pitch ((t (:family "B612" :height 130
+                       :weight regular :foreground "grey80"))))
  '(fixed-pitch ((t (:family "Fira Code 11" :height 160))))
- ;;'(fixed-pitch ((t (:family "Input Sans Narrow" :height 110))))
- ;;'(fixed-pitch ((t (:family "Input Sans Condensed" :height 180))))
+ '(fixed-pitch ((t (:family "Input Sans Narrow" :height 130))))
+ ;;'(fixed-pitch ((t (:family "Input Sans Condensed" :height 130))))
  ;;'(fixed-pitch-serif ((t (:family "Fira Code" :height 110))))
  '(fixed-pitch-serif ((t (:family "Input Serif Narrow" :height 110))))
  '(button ((t (:inherit (link)))))

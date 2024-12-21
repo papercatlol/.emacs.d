@@ -27,10 +27,6 @@
 # name: advent-of-code
 # key: aoc
 # --
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (ql:quickload :cl-ppcre)
-  (ql:quickload :alexandria))
-
 (defpackage :aoc2024/day${1}
   (:use :cl :alexandria)
   (:import-from :alexandria
@@ -49,11 +45,6 @@
                 #:*log-level*
                 #:break-error
                 #:break-debug
-                #:get-char
-                #:set-char
-                #:copy-map
-                #:print-map
-                #:valid-pos-p
                 #:ensure-aoc-input))
 
 (in-package :aoc2024/day${1})
