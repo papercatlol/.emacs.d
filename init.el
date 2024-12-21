@@ -1272,6 +1272,8 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
 
 ;;* iedit
 ;; TODO: hydra-iedit
+(setq iedit-auto-save-occurrence-in-kill-ring nil)
+
 (defun iedit-mode* ()
   "If iedit-mode is active, restrict to current region or defun,
 otherwise activate iedit-mode."
@@ -1280,7 +1282,11 @@ otherwise activate iedit-mode."
       (if (region-active-p)
           (iedit-restrict-region (region-beginning) (region-end))
         (iedit-restrict-function nil))
-    (iedit-mode)))
+    (if-let ((bnd (bounds-of-thing-at-point 'sexp)))
+        (iedit-start (regexp-quote (buffer-substring-no-properties
+                                    (car bnd) (cdr bnd)))
+                     (point-min) (point-max))
+      (iedit-mode))))
 
 (global-set-key (kbd "C-;") 'iedit-mode*)
 (with-eval-after-load 'iedit
