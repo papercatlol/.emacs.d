@@ -968,6 +968,11 @@ otherwise insert a saved presentation."
 (define-*-keywords lisp-mode "let" "do" "list" "prog")
 (define-*-keywords emacs-lisp-mode "let" "if-let" "when-let" "do" "list" "prog" "letf" "cl-letf")
 
+(setf (alist-get 'slime-repl-mode lisp-keywords-with-*-variant)
+      (alist-get 'lisp-mode lisp-keywords-with-*-variant))
+(setf (alist-get 'inferior-emacs-lisp-mode lisp-keywords-with-*-variant)
+      (alist-get 'emacs-lisp-mode lisp-keywords-with-*-variant))
+
 (defun lisp-toggle-*-form (arg)
   "Toggle * of ARGth nearest enclosing form that has a *-variant."
   (interactive "p")
@@ -1003,7 +1008,8 @@ otherwise insert a saved presentation."
                     (car (bounds-of-thing-at-point 'symbol)))))
     (toggle-char ?\' pos)))
 
-(dolist (map (list lisp-mode-map emacs-lisp-mode-map slime-mode-map))
+(dolist (map (list lisp-mode-map emacs-lisp-mode-map slime-mode-map
+                   slime-repl-mode-map))
   (define-key map (kbd "C-c C-8") 'lisp-toggle-*-form)
   (define-key map (kbd "C-c C-'") 'lisp-toggle-tick)
   (define-key map (kbd "C-c C-'") 'lisp-toggle-tick))
