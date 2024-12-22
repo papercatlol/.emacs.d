@@ -1454,6 +1454,32 @@ point is not a keyword already."
 
 (define-key global-map (kbd "<f8>") 'slime*)
 
+;;* hydra-slime-profile
+(defhydra hydra-slime-profile (:color blue)
+  "Slime profile:"
+  ("SPC" slime-toggle-profile-fdefinition "Toggle fdefinition")
+  ("p" slime-profile-package "Package")
+  ("r" slime-profile-report "Report")
+  ("s" slime-profile-by-substring "By substring")
+  ("l" slime-list-profiled-functions "List profiled functions")
+  ("G" slime-profile-reset "Reset")
+  ("u" slime-unprofile-all "Unprofile all"))
+
+(defun slime-list-profiled-functions ()
+  "Popup a buffer listing all profiled functions."
+  (interactive)
+  (let ((buf (get-buffer-create "*slime profiled functions*")))
+   (slime-eval-async
+    `(swank:profiled-functions)
+    (lambda (r)
+      (slime-with-popup-buffer ("*slime profiled functions*"
+                                :select t :mode 'lisp-mode)
+        (dolist (f r)
+         (insert (format "%s\n" f))))))))
+
+(define-key slime-mode-map (kbd "C-c P") 'hydra-slime-profile/body)
+(define-key slime-repl-mode-map (kbd "C-c P") 'hydra-slime-profile/body)
+
 ;;* KEYS
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation-minibuffer)
@@ -1566,6 +1592,13 @@ point is not a keyword already."
 ;;** slime-scratch
 (define-key slime-mode-map (kbd "C-c M-s") 'slime-scratch)
 (define-key slime-repl-mode-map (kbd "C-c M-s") 'slime-scratch)
+
+;;** slime popup buffers
+(define-key slime-popup-buffer-mode-map (kbd "q") 'quit-window)
+
+(with-eval-after-load 'evil
+  (evil-define-key (normal visual) slime-popup-buffer-mode-map
+    "q" 'quit-window))
 
 ;;** eval-in-repl
 (require 'eval-in-repl)
