@@ -451,9 +451,12 @@ to ACTION and execute BODY forms."
 
 ;;* TODO slime-link (should do slime-xref on a symbol)
 
-;;* org-bulletproof
+;;* org-bulletproof (Automatic plain list bullet cycling)
 (when (require 'org-bulletproof nil 'noerror)
   (setq org-bulletproof-unordered-cycle '("-" "+"))
   (global-org-bulletproof-mode 1))
+
+;;* org-mouse
+(require 'org-mouse)
 
 (provide 'configure-org)
