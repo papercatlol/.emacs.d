@@ -367,8 +367,9 @@ If there was an active region, insert it into repl."
     (apply func args)))
 
 (advice-add 'hyperspec-lookup :around #'hyperspec-lookup-advice)
-(advice-add 'hyperspec-lookup-reader-macro :around #'hyperspec-lookup-advice)
-(advice-add 'hyperspec-lookup-format :around #'hyperspec-lookup-advice)
+(advice-add 'common-lisp-hyperspec-lookup-reader-macro
+            :around #'hyperspec-lookup-advice)
+(advice-add 'common-lisp-hyperspec-format :around #'hyperspec-lookup-advice)
 
 ;;** edit definition(M-.)
 (defun slime--edit-definition-ivy (&optional symbol-name where)
