@@ -1578,6 +1578,9 @@ and it's faster to rewrite it."
 (with-eval-after-load 'eww
   (setq eww-auto-rename-buffer 'title)
   (setq shr-use-colors nil)
+  (setq shr-use-fonts nil)
+  (setq shr-width 75)
+  (setq shr-max-image-proportion 0.6)
   (define-key eww-mode-map (kbd "C-c C-n") 'eww-next-url)
   (define-key eww-mode-map (kbd "C-c C-p") 'eww-previous-url)
   (define-key eww-mode-map (kbd "n") nil)
@@ -1586,7 +1589,16 @@ and it's faster to rewrite it."
   (define-key eww-mode-map (kbd "h") nil)
   (define-key eww-mode-map (kbd "l") nil)
   ;; TODO: counsel-eww-list-histories
-  (define-key eww-mode-map (kbd "C-c h") 'eww-list-histories))
+  (define-key eww-mode-map (kbd "C-c h") 'eww-list-histories)
+  (define-key eww-mode-map (kbd "<f5>") 'eww-reload)
+
+  (defun eww-setup-for-reading ()
+    (setq truncate-lines t)
+    (setq word-wrap t)
+    (olivetti-mode 1)
+    (text-scale-increase 1))
+
+  (add-hook 'eww-mode-hook #'eww-setup-for-reading))
 
 ;;* which-key
 (setq which-key-lighter ""
