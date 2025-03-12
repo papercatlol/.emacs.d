@@ -320,6 +320,13 @@ With prefix arg open a new equake tab."
 ;; 'ansi-color-apply-on-region
 ;; :before 'ansi-color-apply-on-region--handle-backspace)
 
+;;* bash completion in shell buffers
+(autoload 'bash-completion-dynamic-complete
+          "bash-completion"
+          "BASH completion hook")
+(add-hook 'shell-dynamic-complete-functions
+          'bash-completion-dynamic-complete)
+
 ;;* eshell
 (add-hook 'eshell-mode-hook #'eat-eshell-mode)
 
