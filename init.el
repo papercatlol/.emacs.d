@@ -2719,6 +2719,28 @@ current-buffer, visible buffers, user-init-file, *scratch*."
 (global-set-key (kbd "C-<f16>") 'frog-jump-buffer)
 (global-set-key (kbd "C-M-v") 'frog-jump-buffer)
 
+;;* emms
+(require 'configure-emms)
+
+;;* ytdl
+(require 'ytdl)
+
+(setq ytdl-command "yt-dlp"
+      ytdl-music-folder (expand-file-name "~/Music")
+      ytdl-video-folder (expand-file-name "~/mov/yt")
+      ytdl-always-query-default-filename 'yes)
+
+(defun ytdl--get-download-type-wrapper (orig-fn &rest args)
+  "If there is only one type, return it without prompting."
+  (if (cdr ytdl-download-types)
+      (apply orig-fn args)
+    (car ytdl-download-types)))
+(advice-add 'ytdl--get-download-type :around #'ytdl--get-download-type-wrapper)
+
+(setq ytdl-download-types
+      '(;;("Music" "m" ytdl-music-folder ytdl-music-extra-args)
+        ("Videos" "v" ytdl-video-folder ytdl-video-extra-args)))
+
 ;;* re-builder
 (with-eval-after-load 're-builder
   (defhydra hydra-re-builder (:hint nil)
