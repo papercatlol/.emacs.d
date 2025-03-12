@@ -1278,6 +1278,7 @@ https://www.emacswiki.org/emacs/HippieExpand#toc9"
   "If iedit-mode is active, restrict to current region or defun,
 otherwise activate iedit-mode."
   (interactive)
+  (require 'iedit)
   (if (bound-and-true-p iedit-mode)
       (if (region-active-p)
           (iedit-restrict-region (region-beginning) (region-end))
@@ -1518,6 +1519,8 @@ and it's faster to rewrite it."
 (define-key compilation-mode-map (kbd "C-c RET") 'helm-make)
 
 ;;* scrolling
+(pixel-scroll-precision-mode 1)
+
 (require 'smooth-scroll)
 
 (setq smooth-scroll/vscroll-step-size 4)
@@ -3129,6 +3132,7 @@ insert (def) after current toplevel form."
 (global-set-key (kbd "H-w") 'org-store-link)
 (global-set-key (kbd "H-D") 'shortdoc-display-group)
 (global-set-key (kbd "H-C") 'list-colors-display)
+(global-set-key (kbd "H-F") 'counsel-fonts)
 
 ;;** comint
 (define-key comint-mode-map (kbd "C-c C-x") nil)
