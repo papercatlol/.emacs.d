@@ -42,11 +42,14 @@
  ;;'(default ((t (:font "-ADBO-Source Code Pro-normal-normal-normal-*-23-*-*-*-m-0-iso10646-1"
  ;;               :background "black"
  ;;               :foreground "light gray"))))
- '(default ((t (:font "-AX86-Terminess Nerd Font Mono-bold-normal-normal-*-28-*-*-*-m-0-iso10646-1"
-                ;;:weight regular
-                ;;:background "black"
-                ;;:background "#160510"
-                ;;:background "#130207"
+ ;;'(default ((t (:font "-AX86-Terminess Nerd Font Mono-bold-normal-normal-*-28-*-*-*-m-0-iso10646-1"
+ ;;               ;;:weight regular
+ ;;               ;;:background "black"
+ ;;               ;;:background "#160510"
+ ;;               ;;:background "#130207"
+ ;;               :background "#080103"
+ ;;               :foreground "light gray"))))
+ '(default ((t (:font "-ENVY-EnvyCodeR Nerd Font Mono-regular-normal-normal-*-26-*-*-*-m-0-iso10646-1"
                 :background "#080103"
                 :foreground "light gray"))))
  ;;'(default ((t (:font "-UKWN-iA Writer Mono S-normal-normal-normal-*-22-*-*-*-*-0-iso10646-1"
@@ -80,10 +83,10 @@
  ;;                      :foreground "grey"))))
  '(variable-pitch ((t (:family "Atkinson Hyperlegible" :height 130
                        :weight regular :foreground "grey"))))
- '(variable-pitch ((t (:family "B612" :height 130
+ '(variable-pitch ((t (:family "B612" :height 140
                        :weight regular :foreground "grey80"))))
  '(fixed-pitch ((t (:family "Fira Code 11" :height 160))))
- '(fixed-pitch ((t (:family "Input Sans Narrow" :height 130))))
+ '(fixed-pitch ((t (:family "Input Sans Narrow" :height 120))))
  ;;'(fixed-pitch ((t (:family "Input Sans Condensed" :height 130))))
  ;;'(fixed-pitch-serif ((t (:family "Fira Code" :height 110))))
  '(fixed-pitch-serif ((t (:family "Input Serif Narrow" :height 110))))
@@ -92,7 +95,7 @@
  ;; '(region ((t (:background "DarkGreen" :foreground "black" :weight normal))))
  '(region ((t (:foreground "LightSalmon3" :background "gray10"))))
  ;; '(region ((t (:inherit magit-diff-file-heading-selection))))
- '(bold ((t (:inherit (default) :weight semi-bold))))
+ '(bold ((t (:inherit (default) :weight bold))))
  '(eldoc-highlight-function-argument ((t (:inherit default :foreground "DarkOrchid1"))))
  '(escape-glyph ((t (:foreground "light gray"))))
  '(font-lock-builtin-face ((t (:foreground "#9090a0"
