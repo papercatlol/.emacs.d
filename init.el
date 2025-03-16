@@ -163,6 +163,10 @@
 (with-eval-after-load 'clojure-mode
   (require 'configure-clojure))
 
+;;** fennel
+(with-eval-after-load 'fennel-mode
+  (require 'configure-fennel))
+
 ;;* ./local-elisp - private/work configuration
 (add-to-list 'load-path (expand-file-name "local-elisp" user-emacs-directory))
 (require 'local-elisp-init)
