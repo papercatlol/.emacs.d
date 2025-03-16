@@ -169,6 +169,7 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'minibuffer-with-setup-hook 'when)
     (%copy-indent 'with-temp-buffer 'progn)
     (%copy-indent 'ignore-error 'when)
+    (%copy-indent 'cl-case 'case)
     (put 'pretty-hydra-define 'common-lisp-indent-function 2)))
 
 ;;** font-lock
@@ -311,7 +312,7 @@ If there was an active region, insert it into repl."
 (with-eval-after-load 'ielm
   (define-key inferior-emacs-lisp-mode-map (kbd "C-c C-z") 'quit-window))
 
-;;* TODO: edebug-mode: make compatible with evil-mode, add hydra
+;;** TODO: edebug-mode: make compatible with evil-mode, add hydra
 (define-key edebug-mode-map (kbd "C-c C-d") nil)
 (define-key edebug-mode-map (kbd "SPC") nil)
 (define-key edebug-mode-map (kbd "RET") 'edebug-step-mode)
@@ -324,6 +325,11 @@ If there was an active region, insert it into repl."
 ;;** hydras in imenu
 (add-hook 'emacs-lisp-mode-hook #'hydra-add-imenu)
 
+;;** yasnippet in eval-expression
+(defun eval-expression-activate-yasnippet ()
+  (yas-minor-mode 1)
+  (yas-activate-extra-mode 'emacs-lisp-mode))
+(add-hook 'eval-expression-minibuffer-setup-hook #'eval-expression-activate-yasnippet)
 
 ;;* slime hacks
 ;;** documentation

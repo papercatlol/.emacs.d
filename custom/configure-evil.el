@@ -583,6 +583,8 @@ double quote kill sexp at point."
   "H" 'org-metaleft
   "o" nil ;; (evil-with-insert-state org-insert-heading-respect-content)
   "O" (evil-with-insert-state org-meta-return)
+  (kbd "C-j") 'org-forward-element
+  (kbd "C-k") 'org-backward-element
   (kbd "<tab>") 'org-cycle)
 
 ;;** visual/motion object shortcuts
@@ -758,6 +760,7 @@ double quote kill sexp at point."
 (define-key evil-normal-state-map "6" 'evil-mark-double-quote)
 (define-key evil-visual-state-map "6" 'evil-mark-double-quote)
 (define-key evil-motion-state-map "6" 'evil-mark-double-quote)
+(global-set-key (kbd "C-6") 'evil-mark-double-quote)
 
 ;;* vterm
 (evil-define-key '(insert) vterm-mode-map

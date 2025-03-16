@@ -1876,6 +1876,13 @@ enable `hydra-flyspell'."
 (setq dictionary-post-buffer-hook 'delete-other-windows)
 ;; TODO only delete floating frames, otherwise bury-buffer.
 (define-key dictionary-mode-map (kbd "q") 'delete-frame)
+(define-key dictionary-mode-map (kbd "H") 'dictionary-previous)
+
+(with-eval-after-load 'evil
+  (evil-define-key '(normal motion) dictionary-mode-map
+    "q" 'delete-frame
+    "H" 'dictionary-previous))
+
 (setq define-word-emacslient-backend 'dictionary-search)
 
 ;;* dumb-jump
@@ -2596,8 +2603,9 @@ mosey was first called with prefix arg."
     (?f . "FIXME")
     (?k . "KLUDGE")
     (?n . "NOTE")
-    (?t . "TEMP")
-    (?b . "BUG"))
+    (?T . "TEMP")
+    (?b . "BUG")
+    (?h . "HACK"))
   "Alist CHAR -> KEYWORD for fast keyword selection in `newline-and-todo'.")
 
 (defun newline-and-todo ()
@@ -2925,12 +2933,11 @@ insert (def) after current toplevel form."
     ;; MAYBE do something for other modes
     (when (or (derived-mode-p 'lisp-mode)
               (derived-mode-p 'emacs-lisp-mode))
-      (insert "(def )"))
+      (insert "(def)"))
     (newline)
     (backward-char 2)
     (when str
-      (save-excursion (insert str))
-      (backward-char))))
+      (save-excursion (insert " ") (insert str)))))
 
 (global-set-key (kbd "H-d") 'extract-to-toplevel)
 
