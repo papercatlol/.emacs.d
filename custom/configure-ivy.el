@@ -99,13 +99,15 @@
               (ivy-rich-counsel-describe-symbol-docstring (:face font-lock-doc-face)))))
 
 ;;** counsel-buffers
-(cl-defun ivy-rich-counsel-buffers-dispatch (candidate &key buffer bookmark recentf ivy-view dired-recent)
+(cl-defun ivy-rich-counsel-buffers-dispatch (candidate &key buffer bookmark borgmark
+                                                         recentf ivy-view dired-recent)
   (cl-labels ((%call (fn arg)
                 (if fn (funcall fn arg) "")))
     (ecase (counsel-buffers--buffer-type candidate)
       (:buffer (%call buffer candidate))
       (:recentf (%call recentf candidate))
       (:bookmark (%call bookmark candidate))
+      (:borgmark (%call borgmark candidate))
       (:ivy-view (%call ivy-view candidate))
       (:dired-recent (%call dired-recent candidate)))))
 
@@ -154,6 +156,7 @@
    :buffer #'ivy-switch-buffer-transformer
    :recentf #'ivy-rich-counsel-buffers-recentf-filename
    :bookmark #'identity
+   :borgmark #'identity
    :ivy-view #'identity
    :dired-recent #'ivy-rich-counsel-buffers-dired-recent-dirname))
 
@@ -162,6 +165,7 @@
    candidate
    :buffer #'ivy-rich-switch-buffer-indicators
    :bookmark (constantly "BOOK")
+   :borgmark (constantly "BOOK")
    :recentf (constantly "REC")
    :ivy-view (constantly "VIEW")
    :dired-recent (constantly "DIR")))
@@ -171,6 +175,7 @@
    candidate
    :buffer #'ivy-rich-switch-buffer-major-mode
    :bookmark #'ivy-rich-bookmark-type
+   :borgmark nil
    :recentf #'ivy-rich-file-last-modified-time
    :dired-recent #'ivy-rich-file-last-modified-time
    :ivy-view #'ivy-rich-ivy-view-buffers-count))
@@ -180,6 +185,7 @@
    candidate
    :buffer #'ivy-rich-counsel-buffers-buffer-path
    :bookmark #'ivy-rich-bookmark-filename
+   :borgmark #'identity
    :recentf #'identity
    :dired-recent #'identity
    :ivy-view #'ivy-rich-ivy-view-buffers-list))
@@ -372,7 +378,7 @@ If the input is empty, insert active region or symbol-at-point."
     m)
   "Keymap for `counsel-buffers'.")
 
-(require 'bookmark)
+(require 'borgmark)
 (require 'recentf)
 
 (defvar counsel-buffers--prop :counsel-buffer-type)
@@ -395,17 +401,17 @@ If the input is empty, insert active region or symbol-at-point."
                                 (equal (file-name-nondirectory user-init-file) b))
                     collect (%cand b :buffer)))
           (recent-files (cl-loop for f in recentf-list
-                              collect (%cand f :recentf)))
-          (bookmarks (cl-loop for b in (bookmark-all-names)
-                           collect (%cand b :bookmark)))
+                                 collect (%cand f :recentf)))
+          (borgmarks (cl-loop for b in (borgmark-buffer-bookmarks)
+                              collect (%cand (car b) :borgmark)))
           (views (cl-loop for v in ivy-views
-                       collect (%cand (car v) :ivy-view)))
+                          collect (%cand (car v) :ivy-view)))
           (dired-recent (cl-loop for d in (or dired-recent-directories
-                                           (progn (dired-recent-load-list)
-                                                  dired-recent-directories))
-                              collect (%cand d :dired-recent))))
+                                              (progn (dired-recent-load-list)
+                                                     dired-recent-directories))
+                                 collect (%cand d :dired-recent))))
       (append buffers
-              bookmarks
+              borgmarks
               views
               ;; Remove open files from the list. Note that while
               ;; `get-file-buffer'doesn't detect renamed buffers, it
@@ -492,6 +498,9 @@ buffer will be opened(current window, other window, other frame)."
     (:recentf (visit-file item where))
     (:dired-recent (visit-directory item where))
     (:bookmark (visit-bookmark item where))
+    (:borgmark (when-let ((org-link (alist-get item (borgmark-buffer-bookmarks)
+                                               nil nil #'equal)))
+                 (borgmark-jump org-link)))
     (:ivy-view
      (case where
        (:frame
@@ -1102,6 +1111,9 @@ exit with that candidate, otherwise insert SPACE character as usual."
 
 (global-set-key (kbd "C-o") 'pop-mark+)
 
+;;* borkmark
+(global-set-key (kbd "C-c b") 'counsel-borgmark)
+
 ;;* KEYS
 (global-set-key (kbd "M-x") 'counsel-M-x)
 ;; (global-set-key (kbd "C-x b") 'counsel-buffers)
@@ -1120,7 +1132,6 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (with-eval-after-load 'sh-script
  (define-key sh-mode-map (kbd "C-c C-s") 'counsel-imenu-dwim))
 
-(global-set-key (kbd "C-c b") 'counsel-bookmark)
 (global-set-key (kbd "C-c C-v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
 (global-set-key [remap insert-char] 'counsel-unicode-char)

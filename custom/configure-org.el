@@ -23,6 +23,7 @@
       org-src-window-setup 'current-window
       ;;org-archive-reversed-order t ;; REMOVED?
       org-reverse-note-order '((".*_archive$" . t))
+      org-link-file-path-type 'noabbrev
       )
 
 
