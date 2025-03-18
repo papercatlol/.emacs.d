@@ -18,6 +18,9 @@
 (setf (alist-get 'fennel-proto-repl-mode lispy-eval-alist)
       '(lispy lisp-eval-string))
 
+;;* eglot
+(add-hook 'fennel-mode-hook #'eglot-ensure)
+
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs '(fennel-mode . ("fennel-ls"))))
 

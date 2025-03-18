@@ -249,6 +249,8 @@ double quote kill sexp at point."
   (call-interactively #'forward-symbol))
 
 (add-to-list 'avy-styles-alist '(avy-goto-symbol-in-line . at))
+(add-to-list 'avy-keys-alist '(avy-goto-symbol-in-line ?\s ?s ?f ?c ?d ?a ?v ?q
+                               ?w ?- ?\( ?x ?t ?r ?2 ?3))
 
 ;; TODO: avy-action-xref, avy-action-documentation
 

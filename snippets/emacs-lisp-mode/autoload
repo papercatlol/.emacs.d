@@ -25,6 +25,6 @@
 # | yas-verify-value | Verify that the current field value is in POSSIBILITIES |
 #
 # name: autoload
-# key: al
+# key: au
 # --
 ;;;###autoload
