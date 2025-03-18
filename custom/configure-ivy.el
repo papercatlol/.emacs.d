@@ -51,9 +51,11 @@
 
 ;;** counsel-find-file
 (defun ivy-rich-counsel-find-file-truename* (candidate)
-  (if (file-remote-p default-directory)
+  (if (or (file-remote-p candidate)
+          (file-remote-p default-directory))
       ""
-    (let ((type (car (file-attributes (directory-file-name (expand-file-name candidate ivy--directory))))))
+    (let ((file (expand-file-name candidate ivy--directory))
+          (type (car (file-attributes (directory-file-name (expand-file-name candidate ivy--directory))))))
       (if (stringp type)
           (concat "-> " (expand-file-name type ivy--directory))
         ""))))
@@ -139,6 +141,14 @@
   (or (buffer-file-name (get-buffer candidate))
       default-directory))
 
+(defun ivy-rich-file-last-modified-time-safe (candidate)
+  "Don't try to expand file name for remote files."
+  (if (or (file-remote-p candidate) (file-remote-p default-directory))
+      "?"
+    (let ((file (expand-file-name candidate ivy--directory)))
+        (format-time-string "%Y-%m-%d %H:%M:%S"
+                            (nth 5 (file-attributes file))))))
+
 (defun constantly (x)
   (lambda (&rest args)
     x))
@@ -176,8 +186,8 @@
    :buffer #'ivy-rich-switch-buffer-major-mode
    :bookmark #'ivy-rich-bookmark-type
    :borgmark nil
-   :recentf #'ivy-rich-file-last-modified-time
-   :dired-recent #'ivy-rich-file-last-modified-time
+   :recentf #'ivy-rich-file-last-modified-time-safe
+   :dired-recent #'ivy-rich-file-last-modified-time-safe
    :ivy-view #'ivy-rich-ivy-view-buffers-count))
 
 (defun ivy-rich-counsel-buffers-3 (candidate)
@@ -407,8 +417,7 @@ If the input is empty, insert active region or symbol-at-point."
           (views (cl-loop for v in ivy-views
                           collect (%cand (car v) :ivy-view)))
           (dired-recent (cl-loop for d in (or dired-recent-directories
-                                              (progn (dired-recent-load-list)
-                                                     dired-recent-directories))
+                                              (dired-recent-load-list))
                                  collect (%cand d :dired-recent))))
       (append buffers
               borgmarks
