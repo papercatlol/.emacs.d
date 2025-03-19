@@ -292,7 +292,7 @@
  '(shell-highlight-undef-undefined-face ((t (:inherit 'style-warning-face))))
 
  '(sh-heredoc ((t (:inherit font-lock-string-face))))
- '(comint-highlight-input ((t (:weight bold :underline "green4" :extend t))))
+ '(comint-highlight-input ((t (:weight bold :underline "grey70" :extend t))))
  ;; loccur
  '(loccur-face ((t (:inherit match :underline (:color "DarkViolet")))))
  ;; which-key

@@ -3166,6 +3166,8 @@ insert (def) after current toplevel form."
 (global-set-key (kbd "H-D") 'shortdoc-display-group)
 (global-set-key (kbd "H-C") 'list-colors-display)
 (global-set-key (kbd "H-F") 'counsel-fonts)
+(global-set-key (kbd "H-E") 'eww)
+
 
 ;;** comint
 (define-key comint-mode-map (kbd "C-c C-x") nil)

@@ -593,6 +593,7 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 
 ;;* diff-mode
 (define-key diff-mode-map (kbd "M-k") nil)
+(define-key diff-mode-map (kbd "M-j") nil)
 (define-key diff-mode-map (kbd "C-M-k") 'diff-hunk-prev)
 (define-key diff-mode-map (kbd "C-M-j") 'diff-hunk-next)
 

@@ -460,4 +460,82 @@ to ACTION and execute BODY forms."
 ;;* org-mouse
 (require 'org-mouse)
 
+;;* converting webpages to org (useful for storing manuals/references locally)
+;; First download:
+;; wget -p -r --adjust-extension --wait=3 https://fennel-lang.org/reference
+;; Then convert with pandoc:
+;; pandoc reference.htm -o fennel-reference.org
+;;(call-process-region nil 'whole-buffer "pandoc" nil "*pandoc*" t
+;;                     "-f" "html" "-t" "org")
+;; Then fix the resulting org document with `org-fix-after-pandoc'.
+
+(cl-defun org-fix-after-pandoc (html-file-name &optional remove-targets)
+  "Fix same-document links; remove whitespaces in links; remove <<targets>>."
+  (interactive (list
+                (read-file-name "Original html file: " nil nil nil
+                                (file-name-sans-extension
+                                 (or (buffer-file-name) "")))
+                current-prefix-arg))
+  (require 'ol)
+  (save-excursion
+   ;; fix links
+   (goto-char (point-min))
+   (let ((org-link--search-failed nil))
+     (with-undo-amalgamate
+         (loop until org-link--search-failed do
+           (org-next-link)
+           (let* ((link (org-element-context)))
+             (assert (org-element-type-p link 'link)
+                     "org-next-link jumped to a non-link")
+             (org--fix-pandoc-link-formatting link)
+             (when (file-exists-p html-file-name)
+               (org--fix-pandoc-link-target link html-file-name))))))
+   ;; remove <<targets>>
+   (when remove-targets
+     (goto-char (point-min))
+     (while (re-search-forward
+             (concat (rx "<<" (1+ (any alnum "-" "_")) ">>" (1+ space)) "\\\n")
+             nil t)
+       (replace-match "")))))
+
+(defun org--fix-pandoc-link-formatting (link)
+  "Remove newlines and =verbatim=."
+  (when-let* ((beg (org-element-property :contents-begin link))
+              (end (org-element-property :contents-end link))
+              (contents (buffer-substring-no-properties beg end))
+              (replacement
+               (when (find ?\n contents)
+                 (with-temp-buffer
+                   (insert contents)
+                   (goto-char (point-min))
+                   ;; newlines
+                   (while (re-search-forward "\\\n[[:space:]]*" nil t)
+                     (replace-match " "))
+                   ;; verbatim
+                   ;;(goto-char (point-min))
+                   ;;(while (re-search-forward (rx "=" (group (1+ (not "="))) "=") nil t)
+                   ;;  (replace-match (match-string 1)))
+                   (buffer-string)))))
+    (replace-region-contents
+     beg end
+     (lambda () replacement))))
+
+(defun org--fix-pandoc-link-target (link html-file-name)
+  "Replace same-file links file:HTML-FILE-NAME#XXX by heading links #XXX."
+  (when-let* ((raw (org-element-property :raw-link link))
+              (regexp (rx bol "file:" (literal html-file-name) "#"))
+              (replacement (with-temp-buffer
+                             (let ((found? nil))
+                               (insert raw)
+                               (goto-char (point-min))
+                               (while (re-search-forward regexp nil t)
+                                 (setq found? t)
+                                 (replace-match "#"))
+                               (when found? (buffer-string))))))
+    (replace-region-contents
+     (+ (org-element-property :begin link) 2) ; skip [[
+     (- (org-element-property :contents-begin link) 2) ; skip ][
+     (lambda () replacement))))
+
+
 (provide 'configure-org)
