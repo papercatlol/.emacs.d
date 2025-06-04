@@ -468,6 +468,16 @@ to ACTION and execute BODY forms."
 ;;(call-process-region nil 'whole-buffer "pandoc" nil "*pandoc*" t
 ;;                     "-f" "html" "-t" "org")
 ;; Then fix the resulting org document with `org-fix-after-pandoc'.
+(defun pandoc-html-to-org (&optional no-fix)
+  (interactive "P")
+  (let* ((html-file (buffer-file-name))
+         (org-file (format "%s.org" (file-name-sans-extension html-file)))
+         (org-buf (find-file-noselect org-file)))
+    (call-process-region nil 'whole-buffer "pandoc" nil org-buf t
+                         "-f" "html" "-t" "org")
+    (switch-to-buffer org-buf)
+    (unless no-fix
+      (org-fix-after-pandoc html-file))))
 
 (cl-defun org-fix-after-pandoc (html-file-name &optional remove-targets)
   "Fix same-document links; remove whitespaces in links; remove <<targets>>."

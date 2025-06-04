@@ -936,6 +936,7 @@ buffer. See `quit-windows-on' for documentation on arguments."
 
 ;;* dired
 (setq dired-do-revert-buffer t)
+(setq dired-mouse-drag-files t)
 
 (add-hook 'dired-mode-hook 'hl-line-mode)
 
@@ -1871,7 +1872,7 @@ enable `hydra-flyspell'."
 ;;* dictionary
 (require 'dictionary)
 (setq dictionary-server "localhost")
-(setq dictionary-default-dictionary "wn")
+(setq dictionary-default-dictionary "*")
 (setq dictionary-use-single-buffer t)
 (setq dictionary-post-buffer-hook 'delete-other-windows)
 ;; TODO only delete floating frames, otherwise bury-buffer.
@@ -2782,7 +2783,8 @@ current-buffer, visible buffers, user-init-file, *scratch*."
 
 ;;* tree-sitter
 (setq treesit-language-source-alist
-      '((zig "https://github.com/tree-sitter-grammars/tree-sitter-zig" nil nil nil nil)))
+      '((zig "https://github.com/tree-sitter-grammars/tree-sitter-zig" nil nil nil nil)
+        (go "https://github.com/tree-sitter/tree-sitter-go" "v0.23.4")))
 
 ;;* contract-region-or-select-something
 (defun contract-region-or-select-something ()

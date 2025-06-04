@@ -239,6 +239,7 @@ and kill tmp buffers on call and reset the
 ;;* keybindings
 ;; MAYBE: add hydra
 (global-set-key (kbd "C-x G") 'magit-file-dispatch)
+(global-set-key (kbd "H-g") 'magit-file-dispatch)
 
 (define-key magit-mode-map (kbd "C-c C-l") 'magit-toggle-buffer-lock)
 (define-key magit-mode-map (kbd "j") 'magit-forward-dwim)
