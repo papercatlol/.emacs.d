@@ -1,4 +1,5 @@
 # -*- mode: snippet -*-
+
 # http://joaotavora.github.io/yasnippet/snippet-development.html#org9801aa7
 
 ## Embed Emacs-Lisp code by using back-quotes (\`).
@@ -24,7 +25,8 @@
 # | yas-choose-value | user chooses from a list of options                     |
 # | yas-verify-value | Verify that the current field value is in POSSIBILITIES |
 #
-# name: multiple-value-bind
-# key: mv
+# name: defmethod
+# key: m
 # --
-`($op)`multiple-value-bind ($1) $0`($cp)`
+`($op)`defmethod `(yas-complete-defmethod)` ($1)
+$0`($cp)`

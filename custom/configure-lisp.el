@@ -1385,6 +1385,29 @@ If there was an active region, insert it into repl."
 
 (add-hook 'slime-repl-mode-hook #'slime-repl-activate-yasnippet)
 
+;;* yasnippet defmethod utils
+(defun slime-all-methods ()
+  (slime-eval `(cl:let ((all-methods nil)
+                        (visible-methods nil))
+                 (cl:labels ((%test (s)
+                               (cl:typep (cl:fboundp s)
+                                         'cl:standard-generic-function)))
+                  (cl:do-all-symbols (symbol)
+                    (cl:when (%test symbol)
+                      (cl:pushnew symbol all-methods)))
+                   (cl:do-symbols (symbol (cl:or (swank::guess-buffer-package
+                                                  ',(slime-current-package))
+                                                 'cl))
+                     (cl:when (%test symbol)
+                       (cl:pushnew (swank::unparse-symbol symbol) visible-methods))))
+                 (cl:append visible-methods all-methods))))
+
+(defun yas-complete-defmethod ()
+  (unless (or yas-moving-away-p
+              yas-modified-p)
+    (completing-read "defmethod: " (slime-all-methods))))
+;;TODO: fill in defmethod args
+
 ;;* abbrevs in slime-repl
 (defun slime-repl-activate-abbrev ()
   (abbrev-mode 1)
