@@ -59,6 +59,7 @@
                        ;; slime-fuzzy
                        slime-mdot-fu
                        slime-macrostep
+                       slime-media
                        slime-presentations
                        slime-package-fu
                        slime-scratch
@@ -102,6 +103,9 @@ when cursor is directly inside the in-package form."
     (make-directory dir))
   (when (file-exists-p dir)
     (setf (plist-get slime-compile-file-options :fasl-directory) dir)))
+
+;;* slime repl media inlining
+(setq slime-enable-evaluate-in-emacs t)
 
 ;;* Paredit
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
@@ -1311,7 +1315,8 @@ TODO: With prefix arg untrace all."
 (setf (alist-get 'ace-link-macrostep avy-styles-alist) 'pre)
 
 (with-eval-after-load 'macrostep
-  (define-key macrostep-keymap (kbd "C-f") 'ace-link-macrostep)
+  ;;(define-key macrostep-keymap (kbd "C-f") 'ace-link-macrostep)
+  (define-key macrostep-keymap (kbd "C-c f") 'ace-link-macrostep)
   (define-key macrostep-keymap (kbd "C-c C-q") 'macrostep-collapse-all)
 
   (when (fboundp 'evil-mode)
@@ -1501,7 +1506,9 @@ point is not a keyword already."
   (define-key keymap (kbd "C-c C-d g") 'common-lisp-hyperspec-glossary-term)
   (define-key keymap [remap slime-edit-definition] 'slime-edit-definition-ivy)
   (define-key keymap [remap slime-edit-definition-other-window] 'slime-edit-definition-other-window-ivy)
-  (define-key keymap [remap slime-edit-definition-other-frame] 'slime-edit-definition-other-frame-ivy))
+  (define-key keymap [remap slime-edit-definition-other-frame] 'slime-edit-definition-other-frame-ivy)
+  (define-key keymap (kbd "C-c C-u") 'slime-unqualify-symbol-at-point)
+  (define-key keymap (kbd "C-c U") 'slime-undefine-function))
 
 (define-key slime-parent-map (kbd "C-4 .") 'slime-edit-definition-other-window-ivy)
 (define-key slime-parent-map (kbd "C-4 C-.") 'slime-edit-definition-other-window-ivy)
