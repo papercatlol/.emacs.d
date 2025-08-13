@@ -435,6 +435,7 @@ original command."
  _<_: first hunk          _SPC_: diff(file)         _Fr_: rename file    _b_: blame dwim
  _>_: last hunk           _=s_: ediff staged        _Fc_: checkout file  _B_: magit-blame popup
  _R_: set start revision  _=w_: ediff worktree                         ^^_$_: magit process buffer
+                                                                   ^^^^^^_!_: magit run command
 "
   ("q" nil)
   ("<escape>" nil)
@@ -480,7 +481,8 @@ original command."
   ("r" #'vc-revert :exit t)
   ("b" #'magit-blame-dwim :exit t)
   ("B" #'magit-blame :exit t)
-  ("$" #'magit-process-buffer :exit t))
+  ("$" #'magit-process-buffer :exit t)
+  ("!" #'magit-run :exit t))
 
 (defun hydra-git-or-magit-status ()
   "If in a git-controlled file, call `hydra-git/body', otherwise
