@@ -1839,7 +1839,7 @@ enable `hydra-flyspell'."
 
 (defun define-word-emacsclient (&optional word)
   "Define a word using a popup frame."
-  (unless word (setq word (gui-get-primary-selection)))
+  (unless word (setq word (or (gui-get-primary-selection) "")))
   (set-frame-parameter nil 'width 80)
   (set-frame-parameter nil 'height 20)
   (funcall define-word-emacslient-backend word))

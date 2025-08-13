@@ -52,6 +52,9 @@
  '(default ((t (:font "-ENVY-EnvyCodeR Nerd Font Mono-regular-normal-normal-*-26-*-*-*-m-0-iso10646-1"
                 :background "#080103"
                 :foreground "light gray"))))
+ ;;'(default ((t (:font "-agrc-Agave Nerd Font Mono-regular-normal-normal-*-30-*-*-*-m-0-iso10646-1"
+ ;;               :background "#080103"
+ ;;               :foreground "light gray"))))
  ;;'(default ((t (:font "-UKWN-iA Writer Mono S-normal-normal-normal-*-22-*-*-*-*-0-iso10646-1"
  ;;              :background "black"
  ;;              :foreground "light gray"))))
@@ -81,10 +84,10 @@
  ;;'(variable-pitch ((t (:family "Input Sans Condensed" :height 150))))
  ;;'(variable-pitch ((t (:family "Bookerly" :height 200
  ;;                      :foreground "grey"))))
- '(variable-pitch ((t (:family "Atkinson Hyperlegible" :height 130
+ '(variable-pitch ((t (:family "Atkinson Hyperlegible" :height 160
                        :weight regular :foreground "grey"))))
- '(variable-pitch ((t (:family "B612" :height 140
-                       :weight regular :foreground "grey80"))))
+ ;;'(variable-pitch ((t (:family "B612" :height 140
+ ;;                      :weight regular :foreground "grey80"))))
  '(fixed-pitch ((t (:family "Fira Code 11" :height 160))))
  '(fixed-pitch ((t (:family "Input Sans Narrow" :height 120))))
  ;;'(fixed-pitch ((t (:family "Input Sans Condensed" :height 130))))
