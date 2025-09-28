@@ -2735,6 +2735,10 @@ current-buffer, visible buffers, user-init-file, *scratch*."
 ;;* emms
 (require 'configure-emms)
 
+;;* subed
+(with-eval-after-load 'subed
+  (require 'configure-subed))
+
 ;;* ytdl
 (require 'ytdl)
 
