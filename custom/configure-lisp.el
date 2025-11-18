@@ -174,6 +174,7 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'with-temp-buffer 'progn)
     (%copy-indent 'ignore-error 'when)
     (%copy-indent 'cl-case 'case)
+    (%copy-indent 'condition-case 'defun)
     (put 'pretty-hydra-define 'common-lisp-indent-function 2)))
 
 ;;** font-lock
@@ -1408,6 +1409,24 @@ If there was an active region, insert it into repl."
     (completing-read "defmethod: " (slime-all-methods))))
 ;;TODO: fill in defmethod args
 
+;;* yasnippet defclass slot utils
+(cl-defun yas-defclass-slot-accessor ()
+  (when-let ((slot (yas-field-value 1)))
+    (save-excursion
+     (save-restriction
+      (loop do
+        (progn
+          (condition-case error (up-list -1 t t)
+            (scan-error
+             (cl-return-from yas-defclass-slot-accessor slot)))
+          (when (looking-at "(defclass")
+            (forward-char)
+            (forward-sexp 2)
+            (cl-return-from yas-defclass-slot-accessor
+              (if-let ((class (symbol-at-point)))
+                  (format "%s-%s" class slot)
+                slot)))))))))
+
 ;;* abbrevs in slime-repl
 (defun slime-repl-activate-abbrev ()
   (abbrev-mode 1)
@@ -1444,13 +1463,14 @@ point is not a keyword already."
         ;; FIXME should check that we're not in a comment/string
         (progn (ignore-errors (up-list -1))
                (looking-at-p (rx "(loop"))))))
+(defalias 'abbrev--inside-lisp-loop-macro 'abbrev--expand-common-lisp-loop-macro-keyword?)
 
 (defvar common-lisp-loop-macro-keywords
   '("for" "do" "collect" "collecting" "append"
     "appending" "nconc" "nconcing" "into" "count"
     "counting" "sum" "summing" "maximize" "return"
     "maximizing" "minimize" "minimizing" "doing"
-    "thereis" "always" "never" "if" "when"
+    "thereis" "always" "never" "if" "when" "with"
     "unless" "repeat" "while" "until"
 
     "=" "and" "it" "else" "end" "from" "upfrom" "by"
