@@ -1032,6 +1032,20 @@ exit with that candidate, otherwise insert SPACE character as usual."
 (define-key swiper-map (kbd "C-x C-n") 'swiper-narrow)
 
 ;;* counsel-outline
+(defun counsel-outline-insert-as-org-link (cand)
+  "Insert a `counsel-outline' heading as a file local link."
+  (let ((outline (etypecase cand
+                   (cons (let ((pos (cdr cand)))
+                           (save-excursion
+                            (goto-char pos)
+                            (org-get-heading))))
+                   (string cand))))
+    (insert (format "[[%s]]" (substring-no-properties outline)))))
+
+(ivy-add-actions
+ 'counsel-outline
+ '(("l" counsel-outline-insert-as-org-link "insert as org link (file local)")))
+
 (global-set-key (kbd "H-s") 'counsel-outline)
 
 ;;* pretty-print face attributes action for counsel-faces
