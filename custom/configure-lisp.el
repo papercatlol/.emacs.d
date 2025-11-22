@@ -1541,6 +1541,50 @@ point is not a keyword already."
 (define-key slime-mode-map (kbd "C-c P") 'hydra-slime-profile/body)
 (define-key slime-repl-mode-map (kbd "C-c P") 'hydra-slime-profile/body)
 
+;;* hydra-function-args
+;; TODO `hydra-lisp-defun': docstring (d), declaim ftype (D/m/f/T), declare
+;; ignore/able (i/I), trace (t), export (e), new defun (n), new defvar (v),
+;; toggle comment (;), etc
+(defun goto-function-args ()
+  (beginning-of-defun-raw)
+  (down-list 2))
+
+(defun add-lisp-function-arg (&optional type prepend?)
+  "TYPE is &optional/&key/&rest etc."
+  (goto-function-args)
+  (let* ((args-beg (point))
+         (args-end (save-excursion (backward-char) (forward-sexp) (point)))
+         (type-pos (and type (re-search-forward type args-end t)))
+         (beg (or type-pos args-beg)))
+    (cond (prepend?
+           (goto-char (or type-pos args-beg)))
+          ((and type-pos (re-search-forward " &" args-end t))
+           (backward-char 2))
+          (t (goto-char (1- args-end))))
+    (when (and type (null type-pos))
+      (unless (looking-back "(" 1) (insert " "))
+      (insert type))
+    (unless (looking-back "[\([:space:]]" 1)
+      (insert " "))
+    (when (and (fboundp 'evil-mode) evil-mode (not (evil-emacs-state-p)))
+      (evil-insert-state))))
+
+(defhydra hydra-lisp-function-args (:color blue)
+  "Args"
+  ("SPC" (add-lisp-function-arg) "Append a new arg")
+  ("k" (add-lisp-function-arg "&key") "Append a new &key arg")
+  ("K" (add-lisp-function-arg "&key" t) "Prepend a new &key arg")
+  ("o" (add-lisp-function-arg "&optional") "Append a new &optional arg")
+  ("O" (add-lisp-function-arg "&optional" t) "Prepend a new &optional arg")
+  ("b" (add-lisp-function-arg "&body") "Append a new &body arg")
+  ("B" (add-lisp-function-arg "&body" t) "Prepend a new &body arg")
+  ("r" (add-lisp-function-arg "&rest") "Append a new &rest arg")
+  ("R" (add-lisp-function-arg "&rest" t) "Prepend a new &rest arg")
+  )
+
+(define-key lisp-mode-map (kbd "C-c C-7") 'hydra-lisp-function-args/body)
+(define-key emacs-lisp-mode-map (kbd "C-c C-7") 'hydra-lisp-function-args/body)
+
 ;;* KEYS
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation-minibuffer)

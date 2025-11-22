@@ -2943,7 +2943,9 @@ insert (def) after current toplevel form."
     (newline)
     (backward-char 2)
     (when str
-      (save-excursion (insert " ") (insert str)))))
+      (save-excursion (insert " ") (insert str)))
+    (when (and (fboundp 'evil-mode) evil-mode (not (evil-emacs-state-p)))
+      (evil-insert-state))))
 
 (global-set-key (kbd "H-d") 'extract-to-toplevel)
 
