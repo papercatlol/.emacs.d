@@ -240,6 +240,8 @@ and kill tmp buffers on call and reset the
 ;; MAYBE: add hydra
 (global-set-key (kbd "C-x G") 'magit-file-dispatch)
 (global-set-key (kbd "H-g") 'magit-file-dispatch)
+(global-set-key (kbd "H-G") 'magit-dispatch)
+(global-set-key (kbd "H-I") 'magit-init)
 
 (define-key magit-mode-map (kbd "C-c C-l") 'magit-toggle-buffer-lock)
 (define-key magit-mode-map (kbd "j") 'magit-forward-dwim)
@@ -561,6 +563,15 @@ proceed to `magit-status'. With prefix arg always call `magit-status'."
 ;; keybindings
 (define-key magit-mode-map (kbd "SPC") 'avy-goto-char-2-special)
 (define-key magit-diff-mode-map (kbd "SPC") 'avy-goto-char-2-special)
+
+;; "i" & "o"
+(define-key magit-mode-map (kbd "C-c o") 'magit-submodule)
+(define-key magit-mode-map (kbd "I") 'magit-gitignore)
+(define-key magit-mode-map (kbd "o") 'magit-diff-show-or-scroll-up)
+(define-key magit-mode-map (kbd "i") 'magit-diff-show-or-scroll-down)
+(define-key magit-diff-mode-map (kbd "o") 'magit-diff-visit-file-other-window)
+(define-key magit-diff-mode-map (kbd "C-4 RET") 'magit-diff-visit-file-other-window)
+(define-key magit-diff-mode-map (kbd "C-x 4 RET") 'magit-diff-visit-file-other-window)
 
 (define-key magit-blame-mode-map (kbd "j") 'magit-blame-next-chunk)
 (define-key magit-blame-mode-map (kbd "k") 'magit-blame-previous-chunk)
