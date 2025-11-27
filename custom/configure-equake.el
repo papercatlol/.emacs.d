@@ -35,7 +35,7 @@
 With double prefix arg override the default shell type with vterm."
   (interactive "P")
   (cond ((= 16 (prefix-numeric-value current-prefix-arg))
-         (equake-new-tab 'eshell))
+         (equake-new-tab 'vterm))
         ((= 64 (prefix-numeric-value current-prefix-arg))
          (equake-new-tab (intern
                           (completing-read "Choose shell: "

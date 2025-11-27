@@ -977,7 +977,7 @@ otherwise insert a saved presentation."
                          keywords)))
     `(setf (alist-get ',mode lisp-keywords-with-*-variant) (rx (or ,@regexps)))))
 
-(define-*-keywords lisp-mode "let" "do" "list" "prog")
+(define-*-keywords lisp-mode "let" "do" "list" "prog" "when-let" "if-let")
 (define-*-keywords emacs-lisp-mode "let" "if-let" "when-let" "do" "list" "prog" "letf" "cl-letf")
 
 (setf (alist-get 'slime-repl-mode lisp-keywords-with-*-variant)
