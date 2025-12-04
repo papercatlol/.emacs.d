@@ -1,4 +1,5 @@
 # -*- mode: snippet -*-
+
 # http://joaotavora.github.io/yasnippet/snippet-development.html#org9801aa7
 
 ## Embed Emacs-Lisp code by using back-quotes (\`).
@@ -24,34 +25,7 @@
 # | yas-choose-value | user chooses from a list of options                     |
 # | yas-verify-value | Verify that the current field value is in POSSIBILITIES |
 #
-# name: advent-of-code
-# key: aoc
+# name: iter
+# key: i
 # --
-(defpackage :aoc2025/day${1}
-  (:use :cl :alexandria :iterate)
-  (:import-from :alexandria
-                #:read-file-into-string)
-  (:import-from :uiop/utility
-                #:split-string)
-  (:import-from :uiop
-                #:read-file-lines)
-  (:import-from :aoc2025/aoc-utils
-                #:split-input
-                #:read-input
-                #:split-newline
-                #:parse-integers
-                #:log-error
-                #:log-debug
-                #:*log-level*
-                #:break-error
-                #:break-debug
-                #:ensure-aoc-input))
-
-(in-package :aoc2025/day${1})
-
-
-;;(defvar *input* (read-file-into-string (ensure-aoc-input ${1})))
-
-(defvar *t1* "")
-(defvar *t2* "")
-(defvar *t3* "")
+`($op)`iter ($0)`($cp)`
