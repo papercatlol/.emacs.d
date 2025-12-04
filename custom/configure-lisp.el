@@ -1499,13 +1499,13 @@ point is not a keyword already."
 (define-key slime-inspector-mode-map (kbd "m") 'slime-inspector-copy-down-to-repl-other-window)
 
 ;;* TODO <f8> slime hydra
-(dolist (lisp '("sbcl" "ecl"))
-  (when (executable-find lisp)
-    (pushnew (list (intern lisp)
-                   (list lisp)
-                   ;;:init slime-init-command
-                   )
-             slime-lisp-implementations)))
+(setq slime-lisp-implementations
+      `(,@(when (executable-find "sbcl")
+            `((sbcl ("sbcl"))
+              (vend-sbcl ("vend" "repl" "sbcl"))))
+        ,@(when (executable-find "ecl")
+            `((ecl ("ecl"))
+              (vend-ecl ("vend" "repl" "ecl"))))))
 
 (defun slime* ()
   "Same as `slime' with a negative prefix argument."
