@@ -1459,8 +1459,8 @@ If there was an active region, insert it into repl."
   "Return T if outer s-expression starts with '(loop' and symbol at
 point is not a keyword already."
   (save-excursion
-   (and (looking-back common-lisp-loop-macro-keywords-regex)
-        ;; FIXME should check that we're not in a comment/string
+   (and (not (in-string-or-comment-p))
+        (looking-back common-lisp-loop-macro-keywords-regex)
         (progn (ignore-errors (up-list -1))
                (looking-at-p (rx "(loop"))))))
 (defalias 'abbrev--inside-lisp-loop-macro 'abbrev--expand-common-lisp-loop-macro-keyword?)

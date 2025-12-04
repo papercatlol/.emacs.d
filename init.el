@@ -489,6 +489,10 @@
 
 ;;(global-set-key (kbd "H-SPC") 'switch-to-minibuffer)
 
+;;* in-string-or-comment-p
+(defmacro in-string-or-comment-p ()
+  `(nth 8 (syntax-ppss)))
+
 ;;* pdf-tools
 ;;(pdf-tools-install)
 
