@@ -25,6 +25,6 @@
 # | yas-verify-value | Verify that the current field value is in POSSIBILITIES |
 #
 # name: let
-# key: l
+# key: le
 # --
 `($op)`let (($1))$0`($cp)`
