@@ -1488,6 +1488,52 @@ point is not a keyword already."
   (define-abbrev lisp-mode-abbrev-table keyword (concat ":" keyword) nil
     :enable-function #'abbrev--expand-common-lisp-loop-macro-keyword?))
 
+;;** automatically turn iterate macro clauses into keyword form
+;; Generated with `collect-iterate-keywords-for-emacs.lisp'.
+(defvar common-lisp-iterate-clauses-alist
+  '((FOR :ON :BY)
+    (FOR :FROM :UPFROM :DOWNFROM :TO :DOWNTO :ABOVE :BELOW :BY :WITH-INDEX)
+    (FOR :IN :BY)
+    (FOR :IN-VECTOR :FROM :UPFROM :DOWNFROM :TO :DOWNTO :ABOVE :BELOW :BY
+                    :WITH-INDEX)
+    (FOR :INDEX-OF-VECTOR :FROM :UPFROM :DOWNFROM :TO :DOWNTO :ABOVE :BELOW :BY
+                          :WITH-INDEX)
+    (FOR :IN-SEQUENCE :FROM :UPFROM :DOWNFROM :TO :DOWNTO :ABOVE :BELOW :BY
+                      :WITH-INDEX)
+    (FOR :INDEX-OF-SEQUENCE :FROM :UPFROM :DOWNFROM :TO :DOWNTO :ABOVE :BELOW :BY
+                            :WITH-INDEX)
+    (FOR :IN-STRING :FROM :UPFROM :DOWNFROM :TO :DOWNTO :ABOVE :BELOW :BY
+                    :WITH-INDEX)
+    (FOR :INDEX-OF-STRING :FROM :UPFROM :DOWNFROM :TO :DOWNTO :ABOVE :BELOW :BY
+                          :WITH-INDEX)
+    (FOR :IN-HASHTABLE) (FOR :IN-PACKAGES :HAVING-ACCESS)
+    (FOR :IN-PACKAGE :EXTERNAL-ONLY) (FOR :IN-FILE :USING) (FOR :IN-STREAM :USING)
+    (FOR :NEXT) (FOR :DO-NEXT) (FOR :INITIALLY :THEN) (FOR :=) (FOR :FIRST :THEN)
+    (FOR :PREVIOUS :INITIALLY :BACK) (WITH :=) (COUNTING :INTO) (SUM :INTO)
+    (MULTIPLY :INTO) (REDUCING :BY :INITIAL-VALUE :INTO) (MAXIMIZE :INTO)
+    (MINIMIZE :INTO) (FINDING :SUCH-THAT :INTO :ON-FAILURE)
+    (FINDING :MAXIMIZING :INTO) (FINDING :MINIMIZING :INTO)
+    (COLLECT :INTO :AT :RESULT-TYPE) (ADJOINING :INTO :AT :TEST :RESULT-TYPE)
+    (NCONCING :INTO :AT) (APPENDING :INTO :AT) (UNIONING :INTO :AT :TEST)
+    (NUNIONING :INTO :AT :TEST) (ACCUMULATE :BY :INITIAL-VALUE :INTO)))
+
+(dolist (pair common-lisp-iterate-clauses-alist)
+  (let ((clause (car pair))
+        (keywords (cdr pair)))
+    (dolist (kw keywords)
+      (let* ((expansion (downcase (symbol-name kw)))
+             (kw-sans-colon (string-trim-left expansion ":"))
+             (kw-regexp (concat " " kw-sans-colon))
+             (clause-regexp (concat "(" (downcase (symbol-name clause)) " ")))
+        (define-abbrev lisp-mode-abbrev-table kw-sans-colon expansion nil
+          ;; MAYBE also go up list and make sure we're inside the `iter' macro.
+          :enable-function (lambda ()
+                             (save-excursion
+                              (and (not (in-string-or-comment-p))
+                                   (looking-back kw-regexp)
+                                   (progn (ignore-errors (up-list -1))
+                                          (looking-at-p clause-regexp))))))))))
+
 ;;* TODO slime-inspector-copy-down-to-repl-other-window
 ;; The problem is that the slime-eval-async is async and save-selected-window
 ;; can't handle that. Need to pass a different callback probably
