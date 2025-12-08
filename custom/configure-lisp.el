@@ -1631,6 +1631,22 @@ point is not a keyword already."
 (define-key lisp-mode-map (kbd "C-c C-7") 'hydra-lisp-function-args/body)
 (define-key emacs-lisp-mode-map (kbd "C-c C-7") 'hydra-lisp-function-args/body)
 
+;;* newline-before-sexp & delete-indentation-before-sexp
+(defun delete-indentation-before-sexp (&optional arg)
+  (interactive "p")
+  (save-excursion
+   (up-list (- arg) t t)
+   ;; MAYBE C-u = join forward line `delete-indentation' does?
+   (delete-indentation)))
+(define-key lisp-mode-map (kbd "C-c C-<backspace>") 'delete-indentation-before-sexp)
+
+(defun newline-before-sexp (&optional arg)
+  (interactive "p")
+  (save-excursion
+   (up-list (- arg) t t)
+   (newline-and-indent)))
+(define-key lisp-mode-map (kbd "C-c C-<return>") 'newline-before-sexp)
+
 ;;* KEYS
 (dolist (keymap (list slime-mode-map slime-repl-mode-map))
   (define-key keymap (kbd "C-c C-d C-d") 'slime-documentation-minibuffer)
