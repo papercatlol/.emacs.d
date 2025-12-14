@@ -27,4 +27,4 @@
 # name: for
 # key: for
 # --
-`($op)`iter (for $1 :in $2)`($cp)`
+`($op)`iter (for $1 :in $0)`($cp)`

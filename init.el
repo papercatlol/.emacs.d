@@ -563,8 +563,12 @@
   (setf
    (alist-get (rx (or (and (? "e") "shell") "vterm" "EQUAKE[" "*slime-repl") (* any))
               display-buffer-alist nil nil #'equal)
-   '((display-buffer-reuse-window display-buffer-pop-up-window)
+   '((display-buffer-reuse-window
+      display-buffer-reuse-mode-window
+      ;;display-buffer-in-direction
+      display-buffer-pop-up-window)
      (direction . right)
+     (mode shell-mode slime-repl-mode vterm-mode)
      ;;(window-height . 0.2)
      ;;(side . bottom)
      ;;(slot . 0)
@@ -1040,17 +1044,6 @@ buffer. See `quit-windows-on' for documentation on arguments."
 (define-key yas-keymap (kbd "C-<tab>") 'yas-next-field-or-maybe-expand)
 (define-key yas-keymap (kbd "M-j") 'yas-next-field)
 (define-key yas-keymap (kbd "M-k") 'yas-prev-field)
-
-;;** yas-maybe-next-field - press SPC to skip current snippet field
-(defconst yas-maybe-next-field
-  '(menu-item "" yas-next-field
-    :filter yas--maybe-clear-field-filter)
-  "A conditional key definition.
-This can be used as a key definition in keymaps to bind a key to
-`yas-next-field' only when at the beginning of an
-unmodified snippet field.")
-
-(define-key yas-keymap (kbd "SPC") (yas-filtered-definition yas-maybe-next-field))
 
 ;;** helpful new snippet template
 ;; Inspired by: https://mjdiloreto.github.io/posts/yasnippet-helpful-buffer/
@@ -1608,7 +1601,8 @@ and it's faster to rewrite it."
     (setq truncate-lines t)
     (setq word-wrap t)
     (olivetti-mode 1)
-    (text-scale-increase 1))
+    ;;(text-scale-increase 1)
+    )
 
   (add-hook 'eww-mode-hook #'eww-setup-for-reading))
 
