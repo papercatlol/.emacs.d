@@ -1545,10 +1545,16 @@ point is not a keyword already."
 (define-key slime-inspector-mode-map (kbd "m") 'slime-inspector-copy-down-to-repl-other-window)
 
 ;;* TODO <f8> slime hydra
+;; See (info "(slime) Loading Swank faster") for creating a custom core file.
 (setq slime-lisp-implementations
       `(,@(when (executable-find "sbcl")
-            `((sbcl ("sbcl"))
-              (vend-sbcl ("vend" "repl" "sbcl"))))
+            (let* ((core (expand-file-name "sbcl.core-for-slime"
+                                           user-emacs-directory))
+                   (core-args (when (file-exists-p core)
+                                (list "--core" core))))
+              `((sbcl ,(list* "sbcl" core-args))
+                (vend-sbcl
+                 ,(list* "vend" "repl" "sbcl" core-args)))))
         ,@(when (executable-find "ecl")
             `((ecl ("ecl"))
               (vend-ecl ("vend" "repl" "ecl"))))))
@@ -1768,6 +1774,11 @@ point is not a keyword already."
 (with-eval-after-load 'evil
   (evil-define-key (normal visual) slime-popup-buffer-mode-map
     "q" 'quit-window))
+
+;;** slime-thread-control-mode
+(define-key slime-thread-control-mode-map (kbd "k") 'previous-line)
+(define-key slime-thread-control-mode-map (kbd "C-k") 'slime-thread-kill)
+(define-key slime-thread-control-mode-map (kbd "j") 'next-line)
 
 ;;** eval-in-repl
 (require 'eval-in-repl)
