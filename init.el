@@ -397,13 +397,6 @@
                 mode))
           minor-mode-alist))
 
-(defun vc-mode-line-with-glyph ()
-  (if vc-mode
-      (replace-regexp-in-string (rx (1+ alnum) ":")
-                                (concat (char-to-string #xe0a0) ":")
-                                vc-mode)
-    ""))
-
 (defface mode-line-buffer-remote-face
     '((t (:inherit mode-line-buffer-id :foreground "#7B6BFF")))
   "Modeline face for names of buffer opened remotely."
@@ -439,7 +432,7 @@
                     ":%l %p "
                     '(:eval (string-trim (or evil-mode-line-tag "")))
                     '(:eval (when slime-mode (concat " " (slime-current-package))))
-                    '(vc-mode (:eval (vc-mode-line-with-glyph)))
+                    vc-mode
                     " ["
                     '(:eval mode-name)
                     "]"
