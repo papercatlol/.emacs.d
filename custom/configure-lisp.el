@@ -341,12 +341,37 @@ If there was an active region, insert it into repl."
 (defun slime-documentation-symbol (symbol-name)
   (slime-eval `(swank:documentation-symbol ,symbol-name)))
 
+;;*** slime-posframe
+(defvar slime--posframe-buffer " *slime-posframe*")
+
+(defun slime--posframe-show (string)
+  (with-current-buffer (get-buffer-create slime--posframe-buffer)
+    (setq-local word-wrap t))
+  (slime--posframe-hide)
+  (posframe-show slime--posframe-buffer
+                 :string string
+                 :width 60
+                 :left-fringe 8
+                 :right-fringe 8
+                 :border-color "white"
+                 :border-width 1)
+  (add-hook 'post-command-hook #'slime--posframe-hide-post-command))
+
+(defun slime--posframe-hide ()
+  (posframe-hide slime--posframe-buffer))
+
+(defun slime--posframe-hide-post-command ()
+  (unless (eq this-command 'slime-documentation-minibuffer)
+    (slime--posframe-hide)
+    (remove-hook 'post-command-hook #'slime--posframe-hide-post-command)))
+
 (defun slime-documentation-minibuffer ()
   "Display `swank:documentation-symbol' in the minibuffer"
   (interactive)
   (when-let* ((symbol-name (slime-read-symbol-name "Describe symbol: "))
               (doc (slime-documentation-symbol symbol-name)))
-    (display-truncated-message doc)))
+    ;;(display-truncated-message doc)
+    (slime--posframe-show doc)))
 
 ;; Slime documentation is opened in fundamental-mode by default. Force it to open
 ;; in help-mode instead. MAYBE: define slime-description-mode.
