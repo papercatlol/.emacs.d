@@ -1286,7 +1286,16 @@ otherwise activate iedit-mode."
 
 (global-set-key (kbd "C-;") 'iedit-mode*)
 (with-eval-after-load 'iedit
-  (define-key iedit-mode-keymap (kbd "C-h") nil))
+  (define-key iedit-mode-keymap (kbd "C-h") nil)
+
+  (defun iedit-deselect-and-next ()
+    "Deselect current occurence and move to the next one."
+    (interactive)
+    (iedit-toggle-selection)
+    (iedit-next-occurrence 1))
+
+  (define-key iedit-mode-keymap (kbd "M-;") 'iedit-deselect-and-next)
+  )
 
 ;;* outline-mode, bicycle-mode
 (require 'bicycle)
