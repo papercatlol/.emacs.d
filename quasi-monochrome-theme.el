@@ -356,6 +356,8 @@
  '(sldb-restartable-frame-line-face ((t (:foreground "lime green"))))
  '(sldb-restartable-frame-line-face ((t (:inherit bold :foreground "light slate gray"))))
  '(sldb-restartable-frame-line-face ((t (:inherit bold :foreground "gray60"))))
+ '(log4slime-package-face ((t (:inherit slime-repl-prompt-face :underline t))))
+ '(log4slime-level-face ((t (:inherit slime-repl-output-face :weight bold))))
  ;;'(sldb-restartable-frame-line-face ((t (:inherit 'default))))
  ;; transient
  '(transient-argument ((t (:inherit font-lock-string-face :weight bold

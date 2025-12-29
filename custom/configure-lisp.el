@@ -1125,7 +1125,7 @@ Also always use `kill-region' instead of `delete-region'."
 
 (advice-add 'slime-display-or-scroll-completions :override #'slime-display-completions-ivy)
 
-;;* sldb-fancy-break
+;;* slime: sldb-fancy-break
 ;; TODO: track/toggle breaks, highlight functions with breaks/traces etc
 ;; TODO: slime-read-function-name
 (defun sldb-fancy-break (name)
@@ -1135,6 +1135,14 @@ Also always use `kill-region' instead of `delete-region'."
     (lambda (msg) (message "%s" msg))))
 
 (define-key slime-parent-map (kbd "C-c B") 'sldb-fancy-break)
+
+;;* slime log4cl
+(with-eval-after-load 'slime
+  (when (file-exists-p "~/quicklisp/log4slime-setup.el")
+    (load "~/quicklisp/log4slime-setup.el")
+    (define-key log4slime-mode-map (kbd "C-c C-g") nil)
+    (define-key log4slime-mode-map (kbd "C-c g") 'log4slime-level-selection)
+    (global-log4slime-mode 1)))
 
 ;;* evaluation(eros)
 ;; Display overlays with evaluation results
