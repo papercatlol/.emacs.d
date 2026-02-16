@@ -49,7 +49,10 @@
  ;;               ;;:background "#130207"
  ;;               :background "#080103"
  ;;               :foreground "light gray"))))
- '(default ((t (:font "-ENVY-EnvyCodeR Nerd Font Mono-regular-normal-normal-*-26-*-*-*-m-0-iso10646-1"
+ ;;'(default ((t (:font "-ENVY-EnvyCodeR Nerd Font Mono-regular-normal-normal-*-26-*-*-*-m-0-iso10646-1"
+ ;;               :background "#080103"
+ ;;               :foreground "light gray"))))
+ '(default ((t (:font "-0x  -0xProto Nerd Font Mono-regular-normal-normal-*-24-*-*-*-m-0-iso10646-1"
                 :background "#080103"
                 :foreground "light gray"))))
  ;;'(default ((t (:font "-agrc-Agave Nerd Font Mono-regular-normal-normal-*-30-*-*-*-m-0-iso10646-1"
@@ -233,6 +236,18 @@
  '(magit-branch-local ((t (:foreground "LightSkyBlue2"))))
  '(magit-branch-remote ((t (:foreground "DarkSeaGreen3"))))
  '(magit-log-author ((t (:foreground "tomato" :slant normal :width normal))))
+ '(git-commit-comment-action ((t (:inherit git-commit-trailer-token
+                                  :weight bold))))
+ `(git-commit-trailer-token ((t (:inherit font-lock-keyword-face
+                                 :background ,(face-background
+                                               font-lock-comment-face)))))
+ `(git-commit-trailer-value ((t (:inherit font-lock-comment-face))))
+ `(git-commit-comment-branch-local ((t (:inherit magit-branch-local
+                                        :background ,(face-background
+                                                      font-lock-comment-face)))))
+ `(git-commit-comment-branch-remote ((t (:inherit magit-branch-remote
+                                        :background ,(face-background
+                                                      font-lock-comment-face)))))
  ;; '(magit-diff-removed-highlight ((t (:background "#663333"
  ;;                                     :foreground "#eecccc"
  ;;                                     :extend t))))
@@ -356,8 +371,11 @@
  '(sldb-restartable-frame-line-face ((t (:foreground "lime green"))))
  '(sldb-restartable-frame-line-face ((t (:inherit bold :foreground "light slate gray"))))
  '(sldb-restartable-frame-line-face ((t (:inherit bold :foreground "gray60"))))
- '(log4slime-package-face ((t (:inherit slime-repl-prompt-face :underline t))))
  '(log4slime-level-face ((t (:inherit slime-repl-output-face :weight bold))))
+ '(log4slime-package-face ((t (:inherit slime-repl-prompt-face :underline t))))
+ '(log4slime-function-face ((t (:inherit font-lock-function-name-face
+                                :underline t))))
+ '(log4slime-file-face ((t (:inherit log4slime-package-face))))
  ;;'(sldb-restartable-frame-line-face ((t (:inherit 'default))))
  ;; transient
  '(transient-argument ((t (:inherit font-lock-string-face :weight bold
@@ -375,7 +393,6 @@
  ;; vc.el
  '(log-view-file ((t (:inherit dired-marked))))
  ;; edebug
- '(edebug-enabled-breakpoint ((t (:box "red"))))
- )
+ '(edebug-enabled-breakpoint ((t (:box "red")))))
 
 (provide-theme 'quasi-monochrome)
