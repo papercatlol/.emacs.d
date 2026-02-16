@@ -28,4 +28,4 @@
 # name: with-output-to-string
 # key: wos
 # --
-`($op)`with-output-to-string (${1:s}) $0`($cp)`
+`($op)`with-output-to-string ($0)`($cp)`

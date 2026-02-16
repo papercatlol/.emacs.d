@@ -61,6 +61,7 @@
                        slime-macrostep
                        slime-media
                        slime-presentations
+                       slime-presentation-streams
                        slime-package-fu
                        slime-scratch
                        slime-references
@@ -73,7 +74,9 @@
                        slime-xref-browser
                        slime-c-p-c
                        inferior-slime
+                       slime-quicklisp
                        ;; slime-mrepl
+                       ;; slime-sprof
                        ))
 ;;** allegro hacks
 (when (require 'slime-allegro-hacks nil t)
@@ -175,6 +178,7 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'ignore-error 'when)
     (%copy-indent 'cl-case 'case)
     (%copy-indent 'condition-case 'defun)
+    (put 'iter 'common-lisp-indent-function '(&rest 2))
     (put 'pretty-hydra-define 'common-lisp-indent-function 2)))
 
 ;;** font-lock
@@ -395,6 +399,7 @@ If there was an active region, insert it into repl."
 ;;*** hyperspec
 
 ;; local hyperspec
+;; run in slime: (quicklisp:quickload :clhs)
 (load "~/quicklisp/clhs-use-local.el" t)
 
 ;; browse hyperspec in eww
@@ -1696,7 +1701,8 @@ point is not a keyword already."
   (define-key keymap [remap slime-edit-definition-other-window] 'slime-edit-definition-other-window-ivy)
   (define-key keymap [remap slime-edit-definition-other-frame] 'slime-edit-definition-other-frame-ivy)
   (define-key keymap (kbd "C-c C-u") 'slime-unqualify-symbol-at-point)
-  (define-key keymap (kbd "C-c U") 'slime-undefine-function))
+  (define-key keymap (kbd "C-c U") 'slime-undefine-function)
+  (define-key keymap (kbd "C-c C-;") 'slime-insert-balanced-comments))
 
 (define-key slime-parent-map (kbd "C-4 .") 'slime-edit-definition-other-window-ivy)
 (define-key slime-parent-map (kbd "C-4 C-.") 'slime-edit-definition-other-window-ivy)
