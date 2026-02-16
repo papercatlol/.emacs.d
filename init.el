@@ -2959,6 +2959,21 @@ insert (def) after current toplevel form."
 
 (global-set-key (kbd "H-d") 'extract-to-toplevel)
 
+;;* emacs-everywhere
+(with-eval-after-load 'emacs-everywhere
+  (setq emacs-everywhere-frame-name-format "(floating) Emacs Everywhere :: %s — %s")
+  (let ((w 800)
+        (h 420))
+    (setf (alist-get 'left emacs-everywhere-frame-parameters)
+          `(+ ,w))
+    (setf (alist-get 'top emacs-everywhere-frame-parameters)
+          `(- 20))
+    (setf (alist-get 'width emacs-everywhere-frame-parameters)
+          `(text-pixels . ,w))
+    (setf (alist-get 'height emacs-everywhere-frame-parameters)
+          `(text-pixels . ,h)))
+
+  (remove-hook 'emacs-everywhere-init-hooks #'emacs-everywhere-set-frame-position))
 
 ;;* flash
 (global-set-key (kbd "H-SPC") 'flash-jump)
