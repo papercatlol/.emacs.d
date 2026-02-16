@@ -2949,6 +2949,23 @@ insert (def) after current toplevel form."
 
 (global-set-key (kbd "H-d") 'extract-to-toplevel)
 
+
+;;* flash
+(global-set-key (kbd "H-SPC") 'flash-jump)
+(global-set-key (kbd "<f13>") 'flash-jump)
+
+(setq flash-labels avy-keys)
+(setq flash-backdrop nil)
+(setq flash-label-position 'overlay)
+
+(with-eval-after-load 'evil
+  (require 'flash-evil)
+  (flash-evil--define-motion)
+  (evil-global-set-key 'normal (kbd "<f13>") #'flash-evil-jump)
+  (evil-global-set-key 'visual (kbd "<f13>") #'flash-evil-jump)
+  (evil-global-set-key 'motion (kbd "<f13>") #'flash-evil-jump)
+  (evil-global-set-key 'operator (kbd "<f13>") #'flash-evil-jump))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
@@ -3025,9 +3042,7 @@ insert (def) after current toplevel form."
 (global-set-key (kbd "C-S-SPC") 'avy-goto-char-timer)
 (global-set-key (kbd "M-SPC") 'smooth-scroll/scroll-up-16)
 (global-set-key (kbd "M-S-SPC") 'smooth-scroll/scroll-down-16)
-(global-set-key (kbd "H-SPC") 'avy-goto-char-2-special)
 (global-set-key (kbd "C-x C-SPC") 'avy-goto-char-timer)
-(global-set-key (kbd "<f13>") 'avy-goto-char-timer)
 (global-set-key (kbd "M-<tab>") 'other-window)
 (global-set-key (kbd "<f15>") 'other-window)
 ;;(global-set-key (kbd "C-t") 'avy-goto-word-2)
@@ -3360,12 +3375,15 @@ EVENT."
  (define-key profiler-report-mode-map (kbd "j") 'profiler-report-next-entry)
  (define-key profiler-report-mode-map (kbd "k") 'profiler-report-previous-entry))
 
-;;* toggles
+;;** toggles
 (define-key ctl-x-map (kbd "x w") 'toggle-word-wrap)
 (define-key ctl-x-map (kbd "x s") 'toggle-scroll-bar)
 (define-key ctl-x-map (kbd "x m") 'toggle-enable-multibyte-characters)
 
-;;* clonk menu
+;;** clonk menu
 (define-key global-map (kbd "H-R") 'hydra-clonk-menu)
+
+;;** posframe
+(global-set-key (kbd "C-<escape>") 'posframe-hide-all)
 
 ;;* TODO bind something to "C-'"
