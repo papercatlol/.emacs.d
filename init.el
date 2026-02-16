@@ -1373,6 +1373,28 @@ current entry."
 (setq remote-file-name-inhibit-cache nil)
 (setq tramp-completion-reread-directory-timeout nil)
 
+;; https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
+(setq remote-file-name-inhibit-locks t
+      tramp-use-scp-direct-remote-copying t
+      remote-file-name-inhibit-auto-save-visited t)
+(setq tramp-copy-size-limit (* 1024 1024)) ;; 1MB
+
+;; direct async process
+(connection-local-set-profile-variables
+ 'remote-direct-async-process
+ '((tramp-direct-async-process . t)))
+
+(connection-local-set-profiles
+ '(:application tramp)
+ 'remote-direct-async-process)
+
+(setq magit-tramp-pipe-stty-settings 'pty)
+
+(with-eval-after-load 'tramp
+  (with-eval-after-load 'compile
+    (remove-hook 'compilation-mode-hook
+                 #'tramp-compile-disable-ssh-controlmaster-options)))
+
 ;; we use magit anyway, so this shouldn't change anything in theory(?)
 ;;(setq vc-ignore-dir-regexp locate-dominating-stop-dir-regexp)
 ;;(setq vc-ignore-dir-regexp
