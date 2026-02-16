@@ -2679,6 +2679,16 @@ immediately, prompt for a todo keyword to use."
     (evil-set-initial-state 'spray-mode 'emacs))
   (setq spray-wpm 500))
 
+;;* elfeed
+(with-eval-after-load 'elfeed
+  (when (fboundp 'evil-collection-elfeed-setup)
+    (evil-collection-elfeed-setup)))
+
+;;** elfeed-org
+(when (require 'elfeed-org nil t)
+  (elfeed-org)
+  (setq rmh-elfeed-org-files (list "~/org/elfeed.org")))
+
 ;;* elfeed-tube
 ;; FIXME Doesn't work with `with-eval-after-load'. Autoload?
 (when (require 'elfeed-tube nil t)
