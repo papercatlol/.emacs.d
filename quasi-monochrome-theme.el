@@ -271,7 +271,7 @@
  '(org-block-end-line ((t (:inherit org-block-begin-line
                            :underline nil :overline t))))
  '(org-block ((t (:inherit font-lock-comment-face :background "grey10"))))
- '(org-table ((t (:foreground "CadetBlue4"))))
+ '(org-table ((t (:foreground "#00b25f"))))
  '(org-formula ((t (:foreground "CadetBlue1"))))
  '(org-headline-done ((t (:inherit org-default))))
 

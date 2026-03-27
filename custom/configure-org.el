@@ -547,5 +547,12 @@ to ACTION and execute BODY forms."
      (- (org-element-property :contents-begin link) 2) ; skip ][
      (lambda () replacement))))
 
+;;* org-appear
+(add-hook 'org-mode-hook #'org-appear-mode)
+
+(setq org-hide-emphasis-markers t)
+;;(setq org-pretty-entities t)
+;;(setq org-hidden-keywords t)
+
 
 (provide 'configure-org)
