@@ -220,8 +220,32 @@ With prefix arg open a new equake tab."
     (comint-send-string proc (format "cd \"%s\"\n" (expand-file-name dir)))
     (shell-process-cd dir)))
 
+(defun shell-sync-dir-to-other-window ()
+  "Set shell cwd to that of other window. If there are multiple
+windows with different default-directories, use `ace-window' to
+choose one."
+  (interactive)
+  (labels ((%window-dir (w)
+             (buffer-local-value 'default-directory
+                                 (window-buffer w))))
+   (let ((windows
+           (cl-remove default-directory
+                      (remove-duplicates
+                       (window-list)
+                       :key #'%window-dir)
+                      :key #'%window-dir)))
+     (shell-change-dir
+      (%window-dir
+       (cond ((cdr windows)             ; >1 window with different dirs
+              (let ((win nil))
+                (aw-select "SYNC SHELL" (lambda (w) (setq win w)))
+                (unless win (user-error "Couldn't select the window."))
+                win))
+             (t (car windows))))))))
+
 (define-key shell-mode-map (kbd "C-c C-k") 'comint-send-eof) ; previous binding
 (define-key shell-mode-map (kbd "C-c C-d") 'shell-change-dir)
+(define-key shell-mode-map (kbd "C-c d") 'shell-sync-dir-to-other-window)
 
 ;;* dired-shell-cd
 (defun dired-shell-cd ()
