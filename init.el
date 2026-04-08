@@ -1433,6 +1433,9 @@ current entry."
 ;; eshell-tramp module
 (require 'em-tramp)
 
+;;** [EXPERIMENTAL] faster tramp using a custom rpc server
+(add-to-list 'load-path (expand-file-name "elpa/tramp-rpc/lisp/" user-emacs-directory))
+(require 'tramp-rpc)
 ;;* link-hint
 (defvar link-hint-avy-all-windows t)
 (defvar link-hint-avy-all-windows-alt 'all-frames)
