@@ -52,12 +52,12 @@
  ;;'(default ((t (:font "-ENVY-EnvyCodeR Nerd Font Mono-regular-normal-normal-*-26-*-*-*-m-0-iso10646-1"
  ;;               :background "#080103"
  ;;               :foreground "light gray"))))
- '(default ((t (:font "-0x  -0xProto Nerd Font Mono-regular-normal-normal-*-24-*-*-*-m-0-iso10646-1"
-                :background "#080103"
-                :foreground "light gray"))))
- ;;'(default ((t (:font "-agrc-Agave Nerd Font Mono-regular-normal-normal-*-30-*-*-*-m-0-iso10646-1"
+ ;;'(default ((t (:font "-0x  -0xProto Nerd Font Mono-regular-normal-normal-*-24-*-*-*-m-0-iso10646-1"
  ;;               :background "#080103"
  ;;               :foreground "light gray"))))
+ '(default ((t (:font "-agrc-Agave Nerd Font Mono-regular-normal-normal-*-29-*-*-*-m-0-iso10646-1"
+                :background "#080103"
+                :foreground "light gray"))))
  ;;'(default ((t (:font "-UKWN-iA Writer Mono S-normal-normal-normal-*-22-*-*-*-*-0-iso10646-1"
  ;;              :background "black"
  ;;              :foreground "light gray"))))
@@ -200,8 +200,7 @@
  '(swiper-match-face-3 ((t (:inherit swiper-match-face-1))))
  '(swiper-match-face-4 ((t (:inherit swiper-match-face-1))))
  ;; avy
- '(avy-lead-face ((t (:foreground "black" :background "LimeGreen" ;;:weight normal
-                      ))))
+ '(avy-lead-face ((t (:inherit flash-label))))
  '(avy-lead-face-0 ((t (:inherit avy-lead-face))))
  '(avy-lead-face-1 ((t (:inherit avy-lead-face))))
  '(avy-lead-face-2 ((t (:inherit avy-lead-face))))

@@ -542,8 +542,8 @@ double quote kill sexp at point."
 
 ;;(define-key evil-normal-state-map (kbd "SPC") leader-map)
 ;;(define-key evil-motion-state-map (kbd "SPC") leader-map)
-(define-key evil-normal-state-map (kbd "SPC") 'avy-goto-char-2-special)
-(define-key evil-motion-state-map (kbd "SPC") 'avy-goto-char-2-special)
+(define-key evil-normal-state-map (kbd "SPC") 'flash-jump)
+(define-key evil-motion-state-map (kbd "SPC") 'flash-jump)
 (define-key evil-normal-state-map (kbd "S-SPC") 'evil-avy-goto-char-timer)
 (define-key evil-motion-state-map (kbd "S-SPC") 'evil-avy-goto-char-timer)
 (define-key evil-motion-state-map (kbd "C-S-SPC") 'avy-resume)
