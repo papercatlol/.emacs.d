@@ -252,8 +252,15 @@
       ;; mark ring sizes
       mark-ring-max 32
       global-mark-ring-max 256
+      set-mark-command-repeat-pop t
       vc-follow-symlinks t
       ffap-machine-p-known 'reject
+      ;; disable bidirectional text scanning
+      bidi-paragraph-direction 'left-to-right
+      bidi-inhibit-bpa t
+      ;; might make scrolling smoother
+      redisplay-skip-fontification-on-input t
+      ;;
       hl-todo-keyword-faces '(("TODO" . "#cc9393")
                               ("FAIL" . "#8c5353")
                               ("NOTE" . "#d0bf8f")
@@ -328,6 +335,18 @@
 (with-eval-after-load savehist-file
   (when (and register-alist-printable (null register-alist))
     (setq register-alist register-alist-printable)))
+
+;;*** savehist-cleanup-strings
+(defun savehist-cleanup-strings ()
+  "Strip string properties from some variables before saving."
+  (labels ((%clean (list)
+             (loop for x in list
+                   when (stringp x)     ; you never know..
+                     collect (substring-no-properties x))))
+    (setq kill-ring (%clean kill-ring))
+    (setq ivy-history (%clean ivy-history))))
+
+(add-hook 'savehist-save-hook #'savehist-cleanup-strings)
 
 ;; Load `savehist-file' after all the hooks.
 (savehist-mode)
@@ -505,6 +524,10 @@
   (exec-path-from-shell-initialize))
 
 (exec-path-from-shell-copy-env "SSH_AUTH_SOCK")
+
+;;* auto-chmod scripts on save
+(add-hook 'after-save-hook
+          #'executable-make-buffer-file-executable-if-script-p)
 
 ;;* explain-pause-mode
 (add-to-list 'load-path (expand-file-name "custom/explain-pause-mode/" user-emacs-directory))
@@ -1004,6 +1027,8 @@ buffer. See `quit-windows-on' for documentation on arguments."
          (format "nohup xclip -selection clipboard -target image/png -loops 1 -i \"%s\" >/dev/null 2>&1" pathname))
     (message "Copied image: %s." pathname)))
 
+;; TODO: Check if this isn't being overriden by some dired extension package.
+;; Set it up in `dired-mode-hook' once if yes.
 (define-key dired-mode-map (kbd "I") 'dired-copy-image)
 
 ;; show rsync progress in modeline
@@ -3237,6 +3262,9 @@ insert (def) after current toplevel form."
 (global-set-key (kbd "H-C") 'list-colors-display)
 (global-set-key (kbd "H-F") 'counsel-fonts)
 (global-set-key (kbd "H-E") 'eww)
+(global-set-key (kbd "H-~") 'save-buffers-kill-emacs)
+(global-set-key (kbd "H-ʼ") 'save-buffers-kill-emacs)
+(global-set-key (kbd "H-Ё") 'save-buffers-kill-emacs)
 
 
 ;;** comint
