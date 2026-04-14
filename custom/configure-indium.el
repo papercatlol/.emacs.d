@@ -78,5 +78,31 @@ Adapted from `indium-repl-get-completions' with ugly hacks."
 (add-hook 'indium-repl-mode-hook #'indium-init)
 (add-hook 'indium-interaction-mode-hook #'indium-init)
 
+;;* evaluate css
+(cl-defun indium-inject-css (css &optional (id "indium-stylesheet") callback)
+  (indium-eval (format "{
+let sheet = document.getElementById('%s');
+if (sheet == null) {
+  sheet = document.createElement('style');
+  sheet.setAttribute('id', '%s');
+  document.body.append(sheet);
+}
+sheet.innerHTML = `%s`;
+}"
+                       id id css)
+               callback))
+
+(defun indium-eval-css-buffer (&optional buff)
+  "Append current stylesheet file to the document body."
+  (interactive (list (current-buffer)))
+  (unless (indium-client-process-live-p)
+    (user-error "Indium not connected."))
+  (indium-inject-css (with-current-buffer buff (buffer-string))
+                     (or (file-name-base (buffer-file-name buff))
+                         (buffer-name buff)
+                         "indium-stylesheet")
+                     (lambda (&rest args) (message "CSS applied."))))
+(define-key css-mode-map (kbd "C-c C-k") 'indium-eval-css-buffer)
+
 
 (provide 'configure-indium)
