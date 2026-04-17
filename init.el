@@ -3041,6 +3041,9 @@ insert (def) after current toplevel form."
   (evil-global-set-key 'motion (kbd "<f13>") #'flash-evil-jump)
   (evil-global-set-key 'operator (kbd "<f13>") #'flash-evil-jump))
 
+;;* elisp-demos
+(advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update)
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
