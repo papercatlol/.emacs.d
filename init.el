@@ -3044,6 +3044,14 @@ insert (def) after current toplevel form."
 ;;* elisp-demos
 (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update)
 
+;;* persistent-scratch
+(defun persistent-scratch-scratch-like-buffer-p ()
+  (string-prefix-p "*scratch" (buffer-name)))
+
+(setq persistent-scratch-scratch-buffer-p-function
+      #'persistent-scratch-scratch-like-buffer-p)
+(persistent-scratch-setup-default)
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
