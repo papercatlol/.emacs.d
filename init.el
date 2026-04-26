@@ -1436,6 +1436,7 @@ current entry."
 ;;** [EXPERIMENTAL] faster tramp using a custom rpc server
 (add-to-list 'load-path (expand-file-name "elpa/tramp-rpc/lisp/" user-emacs-directory))
 (require 'tramp-rpc)
+
 ;;* link-hint
 (defvar link-hint-avy-all-windows t)
 (defvar link-hint-avy-all-windows-alt 'all-frames)
@@ -3028,10 +3029,13 @@ insert (def) after current toplevel form."
 ;;* flash
 (global-set-key (kbd "H-SPC") 'flash-jump)
 (global-set-key (kbd "<f13>") 'flash-jump)
+(global-set-key (kbd "S-<f13>") 'flash-jump-continue)
 
 (setq flash-labels avy-keys)
 (setq flash-backdrop nil)
 (setq flash-label-position 'overlay)
+
+(flash-isearch-mode 1)
 
 (with-eval-after-load 'evil
   (require 'flash-evil)
@@ -3244,14 +3248,11 @@ insert (def) after current toplevel form."
   ("<tab>" #'untabify "untabify")
   ("C-o" #'xdg-open-file "open file external")
   ("3" #'rot13-copy-region-or-line "rot13")
+  ("6" #'base64-decode-region "base64 decode")
+  ("^" #'base64-encode-region "base64 encode")
   )
 
 (global-set-key (kbd "M-z") 'hydra-cantrips/body)
-
-;;** ace-link
-(ace-link-setup-default (kbd "C-f"))
-(dolist (keymap (list help-mode-map package-menu-mode-map compilation-mode-map grep-mode-map))
-  (define-key keymap (kbd "C-f") 'ace-link))
 
 ;;** C-h as Backspace
 (global-set-key (kbd "C-x h") 'help-command)
