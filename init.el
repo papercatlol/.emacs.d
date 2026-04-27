@@ -348,6 +348,9 @@
 
 (add-hook 'savehist-save-hook #'savehist-cleanup-strings)
 
+;;*** Info-mode history
+(add-to-list 'savehist-additional-variables 'Info-history-list)
+
 ;; Load `savehist-file' after all the hooks.
 (savehist-mode)
 
@@ -3301,6 +3304,8 @@ insert (def) after current toplevel form."
 (define-key Info-mode-map (kbd "H") 'Info-history-back)
 (define-key Info-mode-map (kbd "<mouse-8>") 'Info-history-back)
 (define-key Info-mode-map (kbd "<mouse-9>") 'Info-history-forward)
+
+(define-key help-map "H" 'Info-history)
 
 ;;** registers
 ;;*** dwim registers
