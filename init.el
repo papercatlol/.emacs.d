@@ -167,6 +167,10 @@
 (with-eval-after-load 'fennel-mode
   (require 'configure-fennel))
 
+;;** c
+(with-eval-after-load 'c-mode
+  (require 'configure-c))
+
 ;;* ./local-elisp - private/work configuration
 (add-to-list 'load-path (expand-file-name "local-elisp" user-emacs-directory))
 (require 'local-elisp-init)
