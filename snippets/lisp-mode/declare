@@ -2,4 +2,4 @@
 # name: declare
 # key: dec
 # --
-`($op)`declare (${1:ignore ${2:}})`($cp)`$0
+`($op)`declare (ignore $0)`($cp)`
