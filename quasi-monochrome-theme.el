@@ -245,8 +245,8 @@
                                         :background ,(face-background
                                                       font-lock-comment-face)))))
  `(git-commit-comment-branch-remote ((t (:inherit magit-branch-remote
-                                        :background ,(face-background
-                                                      font-lock-comment-face)))))
+                                         :background ,(face-background
+                                                       font-lock-comment-face)))))
  ;; '(magit-diff-removed-highlight ((t (:background "#663333"
  ;;                                     :foreground "#eecccc"
  ;;                                     :extend t))))
@@ -273,6 +273,8 @@
  '(org-table ((t (:foreground "#00b25f"))))
  '(org-formula ((t (:foreground "CadetBlue1"))))
  '(org-headline-done ((t (:inherit org-default))))
+ '(org-verbatim ((t (:inherit shadow :box t))))
+ '(org-code ((t (:inherit shadow :box t))))
 
  ;; ediff
  '(ediff-current-diff-A ((t (:inherit diff-removed))))

@@ -554,5 +554,8 @@ to ACTION and execute BODY forms."
 ;;(setq org-pretty-entities t)
 ;;(setq org-hidden-keywords t)
 
+;;* xdg-open org link
+(org-link-set-parameters "xdg-open" :follow #'xdg-open-file)
+
 
 (provide 'configure-org)
