@@ -168,6 +168,7 @@
   (require 'configure-fennel))
 
 ;;** c
+(add-hook 'c-mode-hook #'eglot-ensure)
 (with-eval-after-load 'c-mode
   (require 'configure-c))
 
@@ -232,7 +233,7 @@
                      ?j ?n ?k ?h ?l ?i ?u ?m ?p ?y ?\( ?- ?\;
                      ?1 ?2 ?3 ?4 ?5
                      ?F ?C ?D ?G ?S ?A ?E ?V ?Q ?W ?Z ?X ?R
-                     ?J ?N ?K ?H ?L ?O ?I ?U ?P ?B ?M ?T ?\[ ?\]
+                     ?J ?N ?K ?H ?L ?O ?I ?U ?P ?B ?M ?T ;;?\[ ?\]
                      ?/ ?o;;?? ?6 ?7 ?8 ?9 ?0
                      )
       ;;
@@ -631,6 +632,8 @@
 
 (add-hook 'help-mode-hook #'visual-line-mode)
 (add-hook 'Info-mode-hook #'visual-line-mode)
+(add-hook 'Info-mode-hook #'hl-line-mode)
+(add-hook 'Info-mode-hook #'olivetti-mode)
 (add-hook 'apropos-mode #'visual-line-mode)
 (add-hook 'custom-mode-hook #'visual-line-mode)
 (add-hook 'woman-mode-hook #'visual-line-mode)
@@ -964,6 +967,9 @@ buffer. See `quit-windows-on' for documentation on arguments."
              (message "Unknown key: %s" (string key))))
       (when read-char-value-use-posframe (posframe-hide posframe-buffer)))
     res))
+
+;;** never use `message-box'
+(advice-add 'message-box :override #'message)
 
 ;;* dired
 (setq dired-do-revert-buffer t)
@@ -2333,6 +2339,8 @@ the cursor to the new position as well."
 ;;* embark (trying it out)
 ;; MAYBE fix after upgrade to emacs29
 ;;(require 'configure-embark)
+;;(setq embark-prompter 'embark-keymap-prompter)
+(define-key global-map (kbd "H-a") 'embark-act)
 
 ;;* highlight-tabs-mode
 (defun highlight-tabs-mode ()
@@ -3034,7 +3042,7 @@ insert (def) after current toplevel form."
   (remove-hook 'emacs-everywhere-init-hooks #'emacs-everywhere-set-frame-position))
 
 ;;* flash
-(global-set-key (kbd "H-SPC") 'flash-jump)
+;;(global-set-key (kbd "H-SPC") 'flash-jump)
 (global-set-key (kbd "<f13>") 'flash-jump)
 (global-set-key (kbd "S-<f13>") 'flash-jump-continue)
 
@@ -3478,6 +3486,8 @@ EVENT."
 (define-key ctl-x-map (kbd "x w") 'toggle-word-wrap)
 (define-key ctl-x-map (kbd "x s") 'toggle-scroll-bar)
 (define-key ctl-x-map (kbd "x m") 'toggle-enable-multibyte-characters)
+(define-key ctl-x-map (kbd "x o") 'olivetti-mode)
+(define-key ctl-x-map (kbd "x l") 'hl-line-mode)
 
 ;;** clonk menu
 (define-key global-map (kbd "H-R") 'hydra-clonk-menu)

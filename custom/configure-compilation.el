@@ -13,11 +13,6 @@
     (interactive "p")
     (compilation-display-next-error (- n)))
 
-  (defun recompile-edit (&optional no-edit-command)
-    "Like `recompile' but with the meaning of the prefix argument reversed."
-    (interactive "P")
-    (recompile (not no-edit-command)))
-
   (with-eval-after-load 'ace-link
     (setq ace-link--compilation-action-fn #'compilation-display-error))
 
@@ -33,9 +28,9 @@
   (define-key compilation-mode-map (kbd "l") 'forward-char)
 
   ;; TODO decide which bindings to keep
-  (global-set-key (kbd "H-c") 'recompile)
+  ;;(global-set-key (kbd "H-c") 'recompile)
   (global-set-key (kbd "C-8") 'recompile)
-  (define-key compilation-mode-map (kbd "1") 'recompile-edit)
+  (define-key compilation-mode-map (kbd "1") 'compile)
   (define-key compilation-mode-map (kbd "2") 'recompile)
   (define-key compilation-minor-mode-map (kbd "1") 'recompile-edit)
   (define-key compilation-minor-mode-map (kbd "2") 'recompile)
