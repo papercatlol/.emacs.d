@@ -1076,6 +1076,8 @@ buffer. See `quit-windows-on' for documentation on arguments."
 (define-key yas-keymap (kbd "M-j") 'yas-next-field)
 (define-key yas-keymap (kbd "M-k") 'yas-prev-field)
 
+(define-key global-map (kbd "H-S") 'yas-new-snippet)
+
 ;;** helpful new snippet template
 ;; Inspired by: https://mjdiloreto.github.io/posts/yasnippet-helpful-buffer/
 (setq yas-new-snippet-default
@@ -1113,6 +1115,17 @@ buffer. See `quit-windows-on' for documentation on arguments."
 # key: ${2:${1:$(yas--key-from-desc yas-text)}}
 # --
 $0`(yas-escape-text yas-selected-text)`"))
+
+;;** just use snippet name as file name for new snippets
+(defun yas--snippet-before-save ()
+  (unless (buffer-file-name)
+    (when-let* ((template (save-excursion (yas--parse-template)))
+                (name (third template)))  ; how reliable is this?
+      (set-visited-file-name name 'no-query))))
+
+(defun yas--snippet-setup-before-save-hook ()
+  (add-hook 'before-save-hook #'yas--snippet-before-save 90 'local))
+(add-hook 'snippet-mode-hook #'yas--snippet-setup-before-save-hook)
 
 ;;** utils
 (defvar-local yas--need-closing-paren-p nil)
