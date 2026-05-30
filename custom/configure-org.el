@@ -326,7 +326,8 @@ to ACTION and execute BODY forms."
  'org-babel-load-languages
  '((lisp . t)
    (shell . t)
-   (python . t)))
+   (python . t)
+   (sql . t)))
 
 (defun org-special-ctrl-c-ctrl-y ()
   "A hack to copy current lisp src block to slime repl."
@@ -413,6 +414,7 @@ to ACTION and execute BODY forms."
 
 ;; TODO: combine with org-rich-yank and bind to C-M-y
 (define-key org-mode-map (kbd "C-c y") 'org-download-clipboard)
+;; MAYBE replace with `yank-media'
 
 ;;* timestamps
 ;; [C-u] to include time

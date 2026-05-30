@@ -3233,11 +3233,12 @@ insert (def) after current toplevel form."
 (global-set-key (kbd "<f5>") 'revert-buffer)
 
 ;;** hydra-cantrips with random useful commands.
-(defhydra hydra-cantrips (:columns 1 :exit t)
+(defhydra hydra-cantrips (:columns 2 :exit t)
   "cantrips"
   ("/" #'rg-dwim "rg-dwim")
   ("=" #'describe-char "describe-char")
   ("a" #'align-regexp "Align regexp")
+  ("A" #'artist-mode "Artist mode")
   ("b" #'counsel-descbinds "counsel-descbinds")
   ("c" #'counsel-colors-emacs "counsel-colors-emacs")
   ("C" #'rainbow-mode "rainbow-mode")
@@ -3301,7 +3302,7 @@ insert (def) after current toplevel form."
 (global-set-key (kbd "H-;") 'pp-eval-expression)
 (global-set-key (kbd "<H-return>") 'eval-expression)
 (global-set-key (kbd "H-w") 'org-store-link)
-(global-set-key (kbd "H-D") 'shortdoc-display-group)
+(global-set-key (kbd "H-D") 'docker)
 (global-set-key (kbd "H-C") 'list-colors-display)
 (global-set-key (kbd "H-F") 'counsel-fonts)
 (global-set-key (kbd "H-E") 'eww)
@@ -3507,5 +3508,11 @@ EVENT."
 
 ;;** posframe
 (global-set-key (kbd "C-<escape>") 'posframe-hide-all)
+
+;;** tablist
+(with-eval-after-load 'tablist
+  (define-key tablist-minor-mode-map (kbd "j") 'tablist-next-line)
+  (define-key tablist-minor-mode-map (kbd "k") 'tablist-previous-line)
+  (define-key tablist-minor-mode-map (kbd "C-k") 'tablist-do-kill-lines))
 
 ;;* TODO bind something to "C-'"

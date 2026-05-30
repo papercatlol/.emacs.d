@@ -1,4 +1,5 @@
 ;; -*- lexical-binding: t -*-
+(require 'indium)
 
 ;;* completion-at-point
 (defvar *indium-pending-completions* (make-hash-table :test #'equal)
@@ -51,6 +52,7 @@ Adapted from `indium-repl-get-completions' with ugly hacks."
                   (return-from indium-wait-for-completion result)))))
 
 (defun indium-enable-completion ()
+  (company-mode -1)
   (setq-local completion-at-point-functions
               (cons 'indium-completion-at-point completion-at-point-functions)))
 (add-hook 'indium-interaction-mode-hook #'indium-enable-completion)
@@ -102,7 +104,12 @@ sheet.innerHTML = `%s`;
                          (buffer-name buff)
                          "indium-stylesheet")
                      (lambda (&rest args) (message "CSS applied."))))
-(define-key css-mode-map (kbd "C-c C-k") 'indium-eval-css-buffer)
+
+(with-eval-after-load 'css-mode
+  (define-key css-mode-map (kbd "C-c C-k") 'indium-eval-css-buffer))
+
+;;* electric-pair
+(add-hook 'indium-repl-mode-hook #'electric-pair-local-mode)
 
 
 (provide 'configure-indium)

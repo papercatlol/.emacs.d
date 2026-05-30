@@ -4,9 +4,9 @@
 
 
 ;;* vars
-(setq rg-command-line-flags '("--max-columns=200")) ; rg.el
+(setq rg-command-line-flags '("--max-columns=400")) ; rg.el
 (setq rg-executable "rg") ; don't use `executable-find' because it fails on remote
-(setq rg-command "rg --no-heading --line-number --color never -M 200")
+(setq rg-command "rg --no-heading --line-number --color never -M 400")
 (setq counsel-rg-base-command (concat rg-command " --sort path %s"))
 (setq counsel-grep-base-command (concat rg-command " --no-filename %s %s"))
 (setf (alist-get 'counsel-grep ivy-more-chars-alist) 0)

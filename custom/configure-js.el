@@ -135,5 +135,9 @@
 ;; TODO don't enable for .json files
 ;;(add-hook 'js-mode-hook #'tern-mode)
 
+;;* indium
+(with-eval-after-load 'js
+  (require 'configure-indium))
+
 
 (provide 'configure-js)
