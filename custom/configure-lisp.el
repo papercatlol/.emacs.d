@@ -988,13 +988,14 @@ otherwise insert a saved presentation."
   ))
 
 ;;** fix for yasnippet expansions in slime-repl
-(defun slime-presentations-around-point--yas-fix (orig-fn &rest args)
-  (save-restriction
-   (widen)
-   (apply orig-fn args)))
+(defun slime--after-change-function-off ()
+  (remove-hook 'after-change-functions 'slime-after-change-function t))
 
-(advice-add 'slime-presentation-around-point :around
-            #'slime-presentations-around-point--yas-fix)
+(defun slime--after-change-function-on ()
+  (add-hook 'after-change-functions 'slime-after-change-function 'append t))
+
+(add-hook 'yas-before-expand-snippet-hook #'slime--after-change-function-off)
+(add-hook 'yas-after-exit-snippet-hook #'slime--after-change-function-on)
 
 ;;* Code refactoring utils
 ;;** `lisp-toggle-*-form'
