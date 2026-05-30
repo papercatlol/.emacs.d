@@ -61,7 +61,7 @@
                        slime-macrostep
                        slime-media
                        slime-presentations
-                       slime-presentation-streams
+                       ;;slime-presentation-streams
                        slime-package-fu
                        slime-scratch
                        slime-references
@@ -179,7 +179,11 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'cl-case 'case)
     (%copy-indent 'condition-case 'defun)
     (put 'iter 'common-lisp-indent-function '(&rest 2))
-    (put 'pretty-hydra-define 'common-lisp-indent-function 2)))
+    (put 'pretty-hydra-define 'common-lisp-indent-function 2)
+    ;; ecl
+    (%copy-indent 'def-struct 'defstruct)
+    (%copy-indent 'c-progn 'when)
+    ))
 
 ;;** font-lock
 (font-lock-add-keywords
@@ -1762,6 +1766,8 @@ point is not a keyword already."
 (define-key slime-repl-mode-map (kbd "C-c n") 'slime-repl-next-prompt)
 (define-key slime-mode-map (kbd "C-c a") 'slime-autodoc-manually)
 (define-key slime-repl-mode-map (kbd "C-c a") 'slime-autodoc-manually)
+(define-key slime-repl-mode-map (kbd "C-{") 'slime-prev-connection)
+(define-key slime-repl-mode-map (kbd "C-}") 'slime-next-connection)
 
 ;;** slime-next/prev-location
 (define-key slime-editing-map (kbd "C-M-.") nil)
