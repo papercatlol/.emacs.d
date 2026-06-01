@@ -1038,7 +1038,7 @@ otherwise insert a saved presentation."
                              (return)))
         (scan-error nil)))))
 
-(defun toggle-char (char pos &optional after)
+(defun toggle-char (char pos &key after)
   "Toggle CHAR before POS. If AFTER is T, toggle after POS."
   (save-excursion
     (goto-char pos)
@@ -1050,10 +1050,12 @@ otherwise insert a saved presentation."
 (defun lisp-toggle-tick ()
   "Toggle ' at the start of current region(if active) or symbol."
   (interactive)
-  (when-let ((pos (if (region-active-p)
-                      (region-beginning)
-                    (car (bounds-of-thing-at-point 'symbol)))))
-    (toggle-char ?\' pos)))
+  (cond ((region-active-p)
+         (toggle-char ?\' (region-beginning)))
+        ((when-let ((beg (car (bounds-of-thing-at-point 'sexp))))
+           (toggle-char ?\' beg :after t)
+           t))
+        (t (message "No active region or sexp at point."))))
 
 (dolist (map (list lisp-mode-map emacs-lisp-mode-map slime-mode-map
                    slime-repl-mode-map))
