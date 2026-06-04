@@ -28,4 +28,4 @@
 # name: declaim-ftype
 # key: dft
 # --
-`($op)`declaim (ftype (function ($1) $2) $0)`($cp)`
+`($op)`declaim (ftype (function ($1) $2) ${0:`(yas--next-defun-name)`})`($cp)`

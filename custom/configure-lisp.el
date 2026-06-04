@@ -1472,6 +1472,16 @@ If there was an active region, insert it into repl."
                   (format "%s-%s" class slot)
                 slot)))))))))
 
+;;* yasnippet helper yas--next-defun-name
+(defun yas--next-defun-name ()
+  "Get the name of the next toplevel defun form or an empty string."
+  (save-excursion
+   (beginning-of-defun -1)
+   (if (looking-at (rx "(defun" (1+ space)
+                       (group symbol-start (1+ (not space)) symbol-end)))
+       (match-string-no-properties 1)
+     "")))
+
 ;;* abbrevs in slime-repl
 (defun slime-repl-activate-abbrev ()
   (abbrev-mode 1)
