@@ -3,6 +3,15 @@
 ;;* kill frames instead of hiding (otherwise they lose floating in i3wm)
 (setq equake-use-frame-hide nil)
 
+;;* HACK fix equake frame size and position
+(defun equake-set-frame-parameters ()
+  (set-frame-parameter nil 'width 162)
+  (set-frame-parameter nil 'height 10)
+  (set-frame-parameter nil 'left 0)
+  (set-frame-parameter nil 'top 0))
+
+(advice-add 'equake-invoke :after #'equake-set-frame-parameters)
+
 ;;* update modeline when default-directory changes
 (defun equake-default-directory-watcher (symbol new-value operation buf)
   (when (equake--tab-p buf)

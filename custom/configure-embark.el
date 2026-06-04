@@ -47,11 +47,11 @@
 
 ;;** remove unnecessary keymaps/finders
 (setq embark-target-finders
-      '(embark-target-top-minibuffer-completion
+      '(embark-target-top-minibuffer-candidate
         embark-target-active-region
         embark-target-text-heading-at-point
         embark-target-collect-candidate
-        embark-target-completion-at-point
+        embark-target-completion-list-candidate
         embark-target-bug-reference-at-point
         ;;embark-target-package-at-point
         ;;embark-target-email-at-point ; link-hint
@@ -59,7 +59,7 @@
         ;;embark-target-file-at-point
         ;;embark-target-custom-variable-at-point
         embark-target-identifier-at-point
-        embark-target-library-file-at-point
+        embark-target-file-at-point
         ;;embark-target-expression-at-point
         embark-target-sentence-at-point
         embark-target-paragraph-at-point

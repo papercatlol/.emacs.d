@@ -26,6 +26,6 @@
 # | yas-verify-value | Verify that the current field value is in POSSIBILITIES |
 #
 # name: unsigned-byte-8
-# key: u8
+# key: 8
 # --
 `($op)`unsigned-byte 8`($cp)`
