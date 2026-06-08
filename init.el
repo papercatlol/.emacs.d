@@ -3084,6 +3084,16 @@ insert (def) after current toplevel form."
       #'persistent-scratch-scratch-like-buffer-p)
 (persistent-scratch-setup-default)
 
+;;* docker container view columns
+(setq docker-container-columns
+      '((:name "Id" :width 2 :template "{{ json .ID }}" :sort nil :format nil)
+        (:name "Image" :width 20 :template "{{ json .Image }}" :sort nil :format nil)
+        (:name "Command" :width 40 :template "{{ json .Command }}" :sort nil :format nil)
+        (:name "Created" :width 23 :template "{{ json .CreatedAt }}" :sort nil :format (lambda (x) (format-time-string "%F %T" (date-to-time x))))
+        (:name "Status" :width 20 :template "{{ json .Status }}" :sort nil :format nil)
+        (:name "Ports" :width 10 :template "{{ json .Ports }}" :sort nil :format nil)
+        (:name "Names" :width 10 :template "{{ json .Names }}" :sort nil :format nil)))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
