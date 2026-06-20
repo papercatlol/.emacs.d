@@ -401,4 +401,33 @@ choose one."
 (with-eval-after-load 'em-hist
   (define-key eshell-hist-mode-map (kbd "M-r") 'counsel-esh-history))
 
+;;* bash-history completion
+(defvar bash-history-file
+  (expand-file-name "~/.bash_history"))
+
+(defvar bash-history-completion-history nil "History of history completion.")
+
+(defun bash-history ()
+  (unless (file-exists-p bash-history-file)
+    (error "Bash history file doesn't exist: %s" bash-history-file))
+  (let* ((buf-visiting (find-buffer-visiting bash-history-file))
+         (buf (or buf-visiting (find-file-noselect bash-history-file t t))))
+    (with-current-buffer buf
+      (when buf-visiting (revert-buffer-quick))
+      (goto-char (point-min))
+      (loop until (eobp)
+            collect (buffer-substring-no-properties
+                     (line-beginning-position) (line-end-position))
+            do (forward-line)))))
+
+(defun bash-history-completion (&optional initial-input)
+  (interactive)
+  (let ((history (bash-history)))
+    (unless history (user-error "Bash history is empty"))
+    (insert
+     (completing-read
+      "Bash history: " (bash-history) nil t initial-input
+      bash-history-completion-history))))
+
+
 (provide 'configure-equake)
