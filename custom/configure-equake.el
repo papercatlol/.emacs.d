@@ -3,6 +3,34 @@
 ;;* kill frames instead of hiding (otherwise they lose floating in i3wm)
 (setq equake-use-frame-hide nil)
 
+;;* ghostel
+(setq equake-available-shells
+      '("shell"
+        "ghostel"
+        "vterm"
+        "rash"
+        "ansi-term"
+        "term"
+        "eshell"))
+
+(defun equake--style-shell-type (mode)
+  "Style the shell-type indicator as per MODE."
+  (pcase mode
+    ((guard rash-mode)
+     (propertize "((rash))" 'font-lock-face 'equake-shell-type-rash))
+    ('vterm-mode
+     (propertize "((vterm))" 'font-lock-face 'equake-shell-type-vterm))
+    ('eshell-mode
+     (propertize "((eshell))" 'font-lock-face 'equake-shell-type-eshell))
+    ('term-mode
+     (propertize "((term))" 'font-lock-face 'equake-shell-type-term))
+    ('shell-mode
+     (propertize "((shell))" 'font-lock-face 'equake-shell-type-shell))
+    ('ghostel-mode
+     (propertize "((ghostel))" 'font-lock-face 'equake-shell-type-shell))))
+
+(require 'configure-ghostel)
+
 ;;* HACK fix equake frame size and position
 (defun equake-set-frame-parameters ()
   (set-frame-parameter nil 'width 162)
@@ -37,14 +65,14 @@
 (define-key equake-mode-map (kbd "C-M-+") 'nil)
 
 ;;* equake-pop
-(setq equake-default-shell 'shell)
+(setq equake-default-shell 'ghostel)
 
 (defun equake-pop (&optional new-tab initial-input)
   "Pop to equake buffer. With prefix arg open a new equake tab.
 With double prefix arg override the default shell type with vterm."
   (interactive "P")
   (cond ((= 16 (prefix-numeric-value current-prefix-arg))
-         (equake-new-tab 'vterm))
+         (equake-new-tab 'shell))
         ((= 64 (prefix-numeric-value current-prefix-arg))
          (equake-new-tab (intern
                           (completing-read "Choose shell: "
@@ -131,7 +159,7 @@ With prefix arg open a new equake tab."
                         ;; buffers will be in SHELLNAME-mode major mode.
                         (if (equal (symbol-name equake-default-shell) shell-name)
                             "" (concat shell-name ":")))))
-         (propertize (concat "[" shell-type tab-name "]") 'font-lock-face face)))
+         (propertize (concat "[" shell-type tab-name "]") 'face face)))
 
 (advice-add 'equake--format-tab :override #'equake--format-tab-override)
 
@@ -142,9 +170,12 @@ With prefix arg open a new equake tab."
          (tabs-part (mapconcat #'equake--format-tab etab-list separator))
          (format (if equake-show-monitor-in-mode-line
                      (format "%s: %s" monitor tabs-part)
-                   tabs-part)))
+                   tabs-part))
+         (format (if (derived-mode-p 'ghostel-mode)
+                     (list format "  " `(:eval mode-line-process))
+                   (list format))))
     (when (fboundp 'ace-window)
-      (setq format (list `(:eval (ace-window-path-lighter)) format)))
+      (setq format (cons `(:eval (ace-window-path-lighter)) format)))
     ;;(setq header-line-format format)
     (setq mode-line-format format)
     (force-mode-line-update)))
@@ -165,9 +196,11 @@ With prefix arg open a new equake tab."
               display-buffer-alist)))
       (let ((default-directory dir))
         ;; Equake tries to delete other windows when launching `shell'.
-        (if (eq launchshell 'shell)
-            (shell)
-          (funcall fn launchshell))))))
+        (case launchshell
+          (shell (shell))
+          (ghostel (when (require 'ghostel nil 'noerror)
+                     (ghostel 'fresh)))
+          (otherwise (funcall fn launchshell)))))))
 
 (advice-add 'equake--launch-shell :around #'equake--launch-shell-around)
 
@@ -229,6 +262,8 @@ With prefix arg open a new equake tab."
     (comint-send-string proc (format "cd \"%s\"\n" (expand-file-name dir)))
     (shell-process-cd dir)))
 
+(defvar-local shell-change-dir-function #'shell-change-dir)
+
 (defun shell-sync-dir-to-other-window ()
   "Set shell cwd to that of other window. If there are multiple
 windows with different default-directories, use `ace-window' to
@@ -237,20 +272,20 @@ choose one."
   (labels ((%window-dir (w)
              (buffer-local-value 'default-directory
                                  (window-buffer w))))
-   (let ((windows
-           (cl-remove default-directory
-                      (remove-duplicates
-                       (window-list)
-                       :key #'%window-dir)
-                      :key #'%window-dir)))
-     (shell-change-dir
-      (%window-dir
-       (cond ((cdr windows)             ; >1 window with different dirs
-              (let ((win nil))
-                (aw-select "SYNC SHELL" (lambda (w) (setq win w)))
-                (unless win (user-error "Couldn't select the window."))
-                win))
-             (t (car windows))))))))
+    (let ((windows
+            (cl-remove default-directory
+                       (remove-duplicates
+                        (window-list)
+                        :key #'%window-dir)
+                       :key #'%window-dir)))
+      (funcall shell-change-dir-function
+       (%window-dir
+        (cond ((cdr windows)            ; >1 window with different dirs
+               (let ((win nil))
+                 (aw-select "SYNC SHELL" (lambda (w) (setq win w)))
+                 (unless win (user-error "Couldn't select the window."))
+                 win))
+              (t (car windows))))))))
 
 (define-key shell-mode-map (kbd "C-c C-k") 'comint-send-eof) ; previous binding
 (define-key shell-mode-map (kbd "C-c C-d") 'shell-change-dir)
