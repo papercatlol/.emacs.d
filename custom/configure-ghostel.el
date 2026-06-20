@@ -10,10 +10,14 @@
 
 (add-hook 'ghostel-mode-hook #'ghostel--mode-init)
 
-(defun ghostel--start-process-after (&rest _)
+(cl-defun ghostel--start-process-after (&rest _)
   ;; HACK because we need to wait for the ghostty process..
   (sleep-for 0.1)
-  (ghostel-line-mode 'force))
+  (loop
+   (condition-case err
+       (progn (ghostel-line-mode 'force)
+              (return-from 'ghostel--start-process-after))
+     (user-error (sleep-for 0.1)))))
 
 (advice-add 'ghostel-line-mode :after #'evil-insert-state)
 (advice-add 'ghostel--start-process :after #'ghostel--start-process-after)
