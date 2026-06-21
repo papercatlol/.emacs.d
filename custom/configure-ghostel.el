@@ -1,26 +1,15 @@
 ;; -*- lexical-binding: t -*-
+(add-to-list 'load-path (expand-file-name "ghostel/lisp" package-user-dir))
 (require 'ghostel)
 
 (defun ghostel--mode-init ()
-  ;;(use-local-map ghostel-line-mode-map)
-  ;;(setq ghostel--input-mode 'line)
-  ;;(setq ghostel--mode-line-tag ":Line")
-  (evil-insert-state)
   (setq-local shell-change-dir-function 'ghostel-change-dir))
 
 (add-hook 'ghostel-mode-hook #'ghostel--mode-init)
 
-(cl-defun ghostel--start-process-after (&rest _)
-  ;; HACK because we need to wait for the ghostty process..
-  (sleep-for 0.1)
-  (loop
-   (condition-case err
-       (progn (ghostel-line-mode 'force)
-              (return-from 'ghostel--start-process-after))
-     (user-error (sleep-for 0.1)))))
-
 (advice-add 'ghostel-line-mode :after #'evil-insert-state)
-(advice-add 'ghostel--start-process :after #'ghostel--start-process-after)
+
+(setq ghostel-initial-input-mode 'line)
 
 ;;* don't move point when anchoring the window in line-mode
 ;; Still doesn't work if both the point and input can't fit on the screen at the
