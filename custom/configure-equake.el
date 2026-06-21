@@ -402,6 +402,7 @@ choose one."
   (define-key eshell-hist-mode-map (kbd "M-r") 'counsel-esh-history))
 
 ;;* bash-history completion
+;; TODO make this work with tramp, cache results if history didn't change.
 (defvar bash-history-file
   (expand-file-name "~/.bash_history"))
 
@@ -413,7 +414,7 @@ choose one."
   (let* ((buf-visiting (find-buffer-visiting bash-history-file))
          (buf (or buf-visiting (find-file-noselect bash-history-file t t))))
     (with-current-buffer buf
-      (when buf-visiting (revert-buffer-quick))
+      (when buf-visiting (revert-buffer nil t t))
       (goto-char (point-min))
       (loop until (eobp)
             collect (buffer-substring-no-properties
@@ -426,7 +427,7 @@ choose one."
     (unless history (user-error "Bash history is empty"))
     (insert
      (completing-read
-      "Bash history: " (bash-history) nil t initial-input
+      "Bash history: " history nil t initial-input
       bash-history-completion-history))))
 
 

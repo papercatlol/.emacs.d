@@ -51,10 +51,15 @@
           (when-let ((beg ghostel--line-input-start))
             (buffer-substring-no-properties
              beg (or ghostel--line-input-end (point-max))))))
-    (bash-history-completion initial-input)))
+    (let ((history (append ghostel--line-mode-history (bash-history))))
+      (insert
+       (completing-read
+        "History: " history nil t initial-input
+        bash-history-completion-history)))))
 
 (define-key ghostel-mode-map (kbd "M-r") 'ghostel-history-completion)
 
+(add-to-list 'savehist-additional-variables 'ghostel--line-mode-history)
 
 ;;* ghostel-change-dir
 (defun ghostel-change-dir (dir)
