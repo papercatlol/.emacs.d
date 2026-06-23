@@ -417,9 +417,11 @@ choose one."
       (when buf-visiting (revert-buffer nil t t))
       (goto-char (point-min))
       (loop until (eobp)
-            collect (buffer-substring-no-properties
-                     (line-beginning-position) (line-end-position))
-            do (forward-line)))))
+            do (push (buffer-substring-no-properties
+                      (line-beginning-position) (line-end-position))
+                     history)
+            do (forward-line))
+      history)))
 
 (defun bash-history-completion (&optional initial-input)
   (interactive)

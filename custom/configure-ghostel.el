@@ -11,25 +11,6 @@
 
 (setq ghostel-initial-input-mode 'line)
 
-;;* don't move point when anchoring the window in line-mode
-;; Still doesn't work if both the point and input can't fit on the screen at the
-;; same time.
-(defun ghostel--anchor-window-restore-point (fn &optional window)
-  (let* ((window (or window (selected-window)))
-         (buf (window-buffer window))
-         (input-mode (buffer-local-value 'ghostel--input-mode buf))
-         (saved-point (when (eq 'line input-mode) (window-point window))))
-    (prog1 (funcall fn window)
-      (when (and saved-point (/= saved-point (window-point window)))
-        ;;(message "restored point %s" saved-point)
-        (set-window-point window saved-point)
-        (with-current-buffer buf
-          (goto-char saved-point))))))
-
-(advice-add 'ghostel--anchor-window :around
-            #'ghostel--anchor-window-restore-point)
-
-
 ;;* general keybindings
 (define-key ghostel-semi-char-mode-map (kbd "C-s") 'swiper-dwim)
 
