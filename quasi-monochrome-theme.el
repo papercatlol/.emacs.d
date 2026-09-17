@@ -186,7 +186,8 @@
  '(popup-menu-selection-face ((t (:inherit popup-menu-face :inverse-video t :weight ultra-bold))))
  '(popup-menu-summary-face ((t (:inherit popup-menu-face :weight normal))))
  '(popup-tip-face ((t (:inherit font-lock-comment-face :weight normal))))
- '(error ((t (:foreground "firebrick" :weight bold))))
+ '(error ((t (:foreground "orange2" :weight regular))))
+ '(font-lock-warning-face ((t (:inherit error))))
  '(hl-line ((t (:background "#2c2c3c"))))
  '(ivy-current-match ((t (:inherit region
                           :background "SteelBlue4"

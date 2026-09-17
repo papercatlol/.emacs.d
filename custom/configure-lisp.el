@@ -1380,13 +1380,9 @@ TODO: With prefix arg untrace all."
       "<backtab>" 'macrostep-prev-macro)))
 
 ;;* outline
-(defvar lisp-outline-regexp (rx bol (or "(" ";;" "#|")))
-
 (with-eval-after-load 'counsel
-  (add-to-list 'counsel-outline-settings
-               `(lisp-mode
-                 :outline-regexp ,lisp-outline-regexp
-                 :display-style 'title)))
+  (setf (alist-get 'lisp-mode counsel-outline-settings)
+        (alist-get 'emacs-lisp-mode counsel-outline-settings)))
 
 (defun set-lisp-outline-regexp ()
   (setq-local outline-regexp lisp-outline-regexp))

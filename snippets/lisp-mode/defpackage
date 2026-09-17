@@ -28,8 +28,8 @@
 # name: defpackage
 # key: dp
 # --
-(defpackage :${1}
+(defpackage :$1
   (:use #:cl$2)
   $0)
 
-(in-package :${1})
+(in-package :$1)

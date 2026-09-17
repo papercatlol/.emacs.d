@@ -163,8 +163,8 @@ ARG can extend the bounds to the current defun."
 
 ;;* lispy-parens
 ;;** don't insert a space after some common lisp reader macros
-;; complex numbers, arrays
-(pushnew "#[cCaA]" (alist-get 'lisp-mode lispy-parens-preceding-syntax-alist)
+;; complex numbers, arrays, pathnames
+(pushnew "#[cCaApP]" (alist-get 'lisp-mode lispy-parens-preceding-syntax-alist)
          :test #'equal)
 ;; vectors
 (pushnew "#" (alist-get 'lisp-mode lispy-parens-preceding-syntax-alist)
@@ -177,6 +177,12 @@ ARG can extend the bounds to the current defun."
 ;;* lispy-eval in slime-repl-mode
 (setf (alist-get 'slime-repl-mode lispy-eval-alist)
       (alist-get 'lisp-mode lispy-eval-alist))
+
+;;* try to fix 'i' fucking up reader macros
+(setf (alist-get "{"
+                 lispy--insert-replace-alist-clojure
+                 nil t #'equal)
+      nil)
 
 ;;* 'special' bindings
 ;; (these make more sense to me)

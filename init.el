@@ -3294,7 +3294,6 @@ insert (def) after current toplevel form."
 (global-set-key (kbd "M-z") 'hydra-cantrips/body)
 
 ;;** C-h as Backspace
-(global-set-key (kbd "C-x h") 'help-command)
 (global-set-key (kbd "C-h") 'backward-delete-char)
 ;;(define-key text-mode-map (kbd "C-h") 'backward-delete-char)
 ;;(define-key comint-mode-map (kbd "C-h") 'backward-delete-char)
@@ -3514,7 +3513,7 @@ EVENT."
 (define-key ctl-x-map (kbd "x l") 'hl-line-mode)
 
 ;;** clonk menu
-(define-key global-map (kbd "H-R") 'hydra-clonk-menu)
+(define-key global-map (kbd "H-R") 'hydra-clonk-menu/body)
 
 ;;** posframe
 (global-set-key (kbd "C-<escape>") 'posframe-hide-all)
