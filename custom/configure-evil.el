@@ -356,6 +356,7 @@ double quote kill sexp at point."
 (define-key evil-motion-state-map (kbd "C-o") 'pop-mark+)
 ;;(define-key evil-motion-state-map (kbd "<C-i>") 'evil-jump-forward-dwim)
 (define-key evil-motion-state-map (kbd "<tab>") 'tab-indent)
+(define-key evil-insert-state-map (kbd "<tab>") 'indent-for-tab-command)
 
 ;;** avy-goto-symbol-2
 (defun avy-goto-symbol-2 (char1 char2 &optional arg beg end word)
@@ -767,6 +768,14 @@ double quote kill sexp at point."
 ;;* vterm
 (evil-define-key '(insert) vterm-mode-map
   (kbd "C-w") 'vterm-send-meta-backspace)
+
+;;* eww
+(with-eval-after-load 'eww
+  (evil-define-key '(normal motion) eww-mode-map
+    (kbd "C-f") 'forward-char
+    "b" 'evil-backward-word-begin
+    "w" 'evil-a-symbol
+    (kbd "C-w") 'eww-copy-page-url))
 
 
 (provide 'configure-evil)

@@ -713,9 +713,6 @@ active, kill fully qualified symbol-at-point/region."
 
 (add-hook 'slime-connected-hook #'slime-maybe-refresh-all-symbols)
 
-(defvar slime-refresh-all-symbols-timer
-  (run-with-idle-timer 30 t #'slime-refresh-all-symbols))
-
 (define-key slime-mode-map (kbd "C-c <f5>") 'slime-refresh-all-symbols)
 (define-key slime-repl-mode-map (kbd "C-c <f5>") 'slime-refresh-all-symbols)
 
