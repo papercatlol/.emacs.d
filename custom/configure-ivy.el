@@ -105,7 +105,7 @@
                                                          recentf ivy-view dired-recent)
   (cl-labels ((%call (fn arg)
                 (if fn (funcall fn arg) "")))
-    (ecase (counsel-buffers--buffer-type candidate)
+    (cl-ecase (counsel-buffers--buffer-type candidate)
       (:buffer (%call buffer candidate))
       (:recentf (%call recentf candidate))
       (:bookmark (%call bookmark candidate))
@@ -117,7 +117,7 @@
   (let ((buffers))
     (cl-labels ((%flatten (tree)
                   (when (consp tree)
-                    (case (car tree)
+                    (cl-case (car tree)
                       (buffer (push (cl-second tree) buffers))
                       (file (push (file-name-nondirectory (cl-second tree)) buffers))
                       (t (mapc #'%flatten (cdr tree)))))))
@@ -389,6 +389,7 @@ If the input is empty, insert active region or symbol-at-point."
   "Keymap for `counsel-buffers'.")
 
 (require 'borgmark)
+(setq borgmark-insert-timestamp nil)
 (require 'recentf)
 
 (defvar counsel-buffers--prop :counsel-buffer-type)
@@ -412,8 +413,10 @@ If the input is empty, insert active region or symbol-at-point."
                     collect (%cand b :buffer)))
           (recent-files (cl-loop for f in recentf-list
                                  collect (%cand f :recentf)))
-          (borgmarks (cl-loop for b in (borgmark-buffer-bookmarks)
-                              collect (%cand (car b) :borgmark)))
+          (borgmarks (cl-loop for (name . link) in (borgmark-buffer-bookmarks)
+                              collect
+                              (%cand (propertize name :borgmark-link link)
+                                     :borgmark)))
           (views (cl-loop for v in ivy-views
                           collect (%cand (car v) :ivy-view)))
           (dired-recent (cl-loop for d in (or dired-recent-directories
@@ -469,7 +472,7 @@ buffer will be opened(current window, other window, other frame)."
     (counsel-buffers initial-input)))
 
 (defun visit-buffer (buffer &optional where)
-  (case where
+  (cl-case where
     (:window (switch-to-buffer-other-window buffer))
     (:frame (switch-to-buffer-other-frame buffer))
     (t (switch-to-buffer buffer))))
@@ -478,7 +481,7 @@ buffer will be opened(current window, other window, other frame)."
   (if-let ((buf (get-file-buffer path)))
       (visit-buffer buf where)
     (when (file-exists-p path)
-      (case where
+      (cl-case where
         (:window (find-file-other-window path))
         (:frame (find-file-other-frame path))
         (t (find-file path))))))
@@ -487,14 +490,14 @@ buffer will be opened(current window, other window, other frame)."
   (when name
     (bookmark-jump
      name
-     (case where
+     (cl-case where
        (:window #'switch-to-buffer-other-window)
        (:frame #'switch-to-buffer-other-frame)))))
 
 (defun visit-directory (dir &optional where)
   (when (stringp dir)
     (let ((d (list dir)))
-      (case where
+      (cl-case where
         (:window (dired-other-window d))
         (:frame (dired-other-frame d))
         (t (dired d))))))
@@ -502,19 +505,25 @@ buffer will be opened(current window, other window, other frame)."
 (defun counsel-buffers-action (item &optional where)
   (require 'ffap)
   ;; (message "%s %s %s" item where (counsel-buffers--buffer-type item))
-  (case (counsel-buffers--buffer-type item)
+  (cl-case (counsel-buffers--buffer-type item)
     (:buffer (visit-buffer item where))
     (:recentf (visit-file item where))
     (:dired-recent (visit-directory item where))
     (:bookmark (visit-bookmark item where))
-    (:borgmark (when-let ((org-link (alist-get item (borgmark-buffer-bookmarks)
-                                               nil nil #'equal)))
-                 (borgmark-jump org-link)))
+    (:borgmark (when-let ((org-link (get-text-property 0 :borgmark-link item)))
+                 ;; TODO: borgmark should handle this
+                 (when (eq :frame where)
+                   (select-frame-set-input-focus (make-frame)))
+                 (funcall
+                  (if (eq :window where)
+                      #'borgmark-jump-other-window
+                    #'borgmark-jump)
+                  org-link)))
     (:ivy-view
-     (case where
+     (cl-ecase where
        (:frame
         (select-frame-set-input-focus (make-frame)))
-       ('nil
+       ((nil)
         (delete-other-windows)))
      (ivy-set-view-recur (cl-second (assoc item ivy-views))))
     (t (cond ((string-prefix-p "{}" item)
@@ -943,7 +952,7 @@ enable `ivy-calling' by default and restore original position on exit."
 (setq avy-handler-function #'avy-handler-swiper)
 
 (defun avy-handler-swiper (char)
-  (case char
+  (cl-case char
     ;; hardcoded char since avy uses `read-char' instead of keymaps
     (?\C-s
      (avy-resume-swiper)

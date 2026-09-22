@@ -177,6 +177,7 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'with-temp-buffer 'progn)
     (%copy-indent 'ignore-error 'when)
     (%copy-indent 'cl-case 'case)
+    (%copy-indent 'cl-ecase 'ecase)
     (%copy-indent 'condition-case 'defun)
     (put 'iter 'common-lisp-indent-function '(&rest 2))
     (put 'pretty-hydra-define 'common-lisp-indent-function 2)
