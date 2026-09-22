@@ -439,9 +439,11 @@ If there was an active region, insert it into repl."
                                            (let* ((spec (downcase
                                                          (replace-regexp-in-string "[\n ]+" " " (slime-xref.dspec xref))))
                                                   (location (slime-xref.location xref))
-                                                  (file (cl-second (assoc :file location)))
+                                                  (file (cl-second (or (assoc :buffer-and-file location)
+                                                                       (assoc :file location))))
                                                   (position (cl-second (assoc :position location)))
-                                                  (line (with-current-buffer (find-file-noselect file)
+                                                  (line (with-current-buffer (or (find-buffer-visiting file)
+                                                                                 (find-file-noselect file))
                                                           (line-number-at-pos position))))
                                              (and spec file line location (list spec file line location)))))
                                        xrefs))
