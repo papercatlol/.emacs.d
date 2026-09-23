@@ -1356,8 +1356,12 @@ otherwise activate iedit-mode."
 (add-hook 'prog-mode-hook #'outline-minor-mode)
 
 ;; change ellipsis to something more distinct
-(defvar outline-ellipsis ;;" ↓" " ↳"
-  " ⌄"
+(defvar outline-ellipsis
+  ;; " ↳"
+  ;; " ⌄"
+  " ↓"
+  ;;" ↴"
+  ;;" ↲"
   "The ellipsis to use for outlines.")
 
 (set-display-table-slot standard-display-table
@@ -1371,8 +1375,10 @@ otherwise activate iedit-mode."
                             'selective-display
                             (string-to-vector outline-ellipsis))))
 
-(add-hook 'outline-mode-hook #'outline--set-ellipsis)
-(add-hook 'outline-minor-mode-hook #'outline--set-ellipsis)
+;; FIXME this doesn't seem to work. Display-table not ready yet or gets
+;; overwritten? For now works via a hack in `bicycle-cycle*' which see.
+;;(add-hook 'outline-mode-hook #'outline--set-ellipsis)
+;;(add-hook 'outline-minor-mode-hook #'outline--set-ellipsis)
 
 ;;
 (defun bicycle-cycle-body ()
@@ -1383,10 +1389,16 @@ otherwise activate iedit-mode."
     (outline-hide-body)
     (setq this-command 'outline-hide-body)))
 
+;; HACK because setting ellipsis with mode hook doesn't seem to work
+(defvar-local bicycle--outline-ellipsis-set? nil)
+
 (defun bicycle-cycle* (&optional global)
   "With prefix arg cycle function bodies, otherwise cycle
 current entry."
   (interactive "P")
+  (unless bicycle--outline-ellipsis-set?
+    (outline--set-ellipsis)
+    (setf bicycle--outline-ellipsis-set? t))
   (if global
       (bicycle-cycle-body)
     (save-excursion
