@@ -32,11 +32,11 @@
   (global-set-key (kbd "C-8") 'recompile)
   (define-key compilation-mode-map (kbd "1") 'compile)
   (define-key compilation-mode-map (kbd "2") 'recompile)
-  (define-key compilation-minor-mode-map (kbd "1") 'recompile-edit)
+  (define-key compilation-minor-mode-map (kbd "1") 'compile)
   (define-key compilation-minor-mode-map (kbd "2") 'recompile)
 
   (when (fboundp 'evil-mode)
-    (define-key evil-normal-state-map (kbd "1") 'recompile-edit)
+    (define-key evil-normal-state-map (kbd "1") 'compile)
     (define-key evil-normal-state-map (kbd "2") 'recompile))
   )
 

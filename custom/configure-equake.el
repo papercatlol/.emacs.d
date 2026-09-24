@@ -65,14 +65,14 @@
 (define-key equake-mode-map (kbd "C-M-+") 'nil)
 
 ;;* equake-pop
-(setq equake-default-shell 'ghostel)
+(setq equake-default-shell 'shell)
 
 (defun equake-pop (&optional new-tab initial-input)
   "Pop to equake buffer. With prefix arg open a new equake tab.
 With double prefix arg override the default shell type with vterm."
   (interactive "P")
   (cond ((= 16 (prefix-numeric-value current-prefix-arg))
-         (equake-new-tab 'shell))
+         (equake-new-tab 'ghostel))
         ((= 64 (prefix-numeric-value current-prefix-arg))
          (equake-new-tab (intern
                           (completing-read "Choose shell: "
@@ -412,7 +412,8 @@ choose one."
   (unless (file-exists-p bash-history-file)
     (error "Bash history file doesn't exist: %s" bash-history-file))
   (let* ((buf-visiting (find-buffer-visiting bash-history-file))
-         (buf (or buf-visiting (find-file-noselect bash-history-file t t))))
+         (buf (or buf-visiting (find-file-noselect bash-history-file t t)))
+         (history nil))
     (with-current-buffer buf
       (when buf-visiting (revert-buffer nil t t))
       (goto-char (point-min))
