@@ -23,7 +23,7 @@
       org-src-window-setup 'current-window
       ;;org-archive-reversed-order t ;; REMOVED?
       org-reverse-note-order '((".*_archive$" . t))
-      org-link-file-path-type 'noabbrev
+      org-link-file-path-type 'absolute
       )
 
 
@@ -558,6 +558,15 @@ to ACTION and execute BODY forms."
 
 ;;* xdg-open org link
 (org-link-set-parameters "xdg-open" :follow #'xdg-open-file)
+
+;;* ol-eww: handle ~/path/to/file links
+(defun org-eww-open-override (url _)
+  "Like `org-eww-open', but forward local filepaths to `eww-open-file'. Note that filepaths without ~ can be opened using the file:/// url schema, but I want my machine-independant filepaths and might as well handle regular filepaths too."
+  (if (file-readable-p url)
+      (eww-open-file url)
+    (eww url)))
+
+(advice-add 'org-eww-open :override #'org-eww-open-override)
 
 
 (provide 'configure-org)
