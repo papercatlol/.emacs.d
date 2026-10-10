@@ -1671,6 +1671,7 @@ and it's faster to rewrite it."
   (define-key ibuffer-mode-map (kbd "M-k") 'smooth-scroll/scroll-down-8))
 
 ;;* eww
+;; MAYBE do this for images https://github.com/thanhvg/emacs-hnreader#recommended-settings-for-eww
 (with-eval-after-load 'eww
   (setq eww-auto-rename-buffer 'title)
   (setq shr-use-colors nil)
@@ -1687,6 +1688,7 @@ and it's faster to rewrite it."
   ;; TODO: counsel-eww-list-histories
   (define-key eww-mode-map (kbd "C-c h") 'eww-list-histories)
   (define-key eww-mode-map (kbd "<f5>") 'eww-reload)
+  (define-key shr-map (kbd "w") 'forward-word)
 
   (defun eww-setup-for-reading ()
     (setq truncate-lines t)
@@ -3175,6 +3177,7 @@ insert (def) after current toplevel form."
 (define-key compilation-mode-map (kbd "C-x C-j") 'compilation-to-dired)
 (define-key ctl-x-4-map (kbd "j") 'dired-jump-other-window)
 (define-key ctl-x-5-map (kbd "j") 'dired-jump-other-frame)
+(define-key ctl-x-5-map (kbd "C-j") 'dired-jump-other-frame)
 
 (global-set-key (kbd "C-?") 'er/expand-region)
 (global-set-key (kbd "C-.") 'er/expand-region)
@@ -3525,7 +3528,8 @@ EVENT."
 (define-key ctl-x-map (kbd "x l") 'hl-line-mode)
 
 ;;** clonk menu
-(define-key global-map (kbd "H-R") 'hydra-clonk-menu/body)
+(require 'clonk-menu)
+(define-key global-map (kbd "H-R") 'hydra-clonk-menu)
 
 ;;** posframe
 (global-set-key (kbd "C-<escape>") 'posframe-hide-all)

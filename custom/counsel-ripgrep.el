@@ -80,6 +80,7 @@
 (define-key rg-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
 
 (global-set-key (kbd "M-g /") 'rg)
+(global-set-key (kbd "H-/") 'rg-menu)
 (global-set-key (kbd "M-g M-/") 'rg-menu)
 
 ;;* counsel-rg-dir
