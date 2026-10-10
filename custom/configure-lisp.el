@@ -910,6 +910,39 @@ otherwise insert a saved presentation."
     (with-current-buffer (slime-repl-buffer)
       (call-interactively #'yank))))
 
+(defun slime-all-presentations ()
+  "List (PRESENTATION-STRING ID)."
+  ;; MAYBE sort by ID?
+  (slime-eval `(cl:let ((presentations nil))
+                 (cl:maphash
+                  (cl:lambda (id pr)
+                    (cl:push (cl:list (cl:format nil "~a" pr) id)
+                             presentations))
+                  swank::*presentation-id-to-object*)
+                 presentations)))
+
+(defun counsel-slime-presentations--insert (x)
+  (destructuring-bind (str id) x
+    (slime-insert-presentation str id)))
+
+(defun counsel-slime-presentations--inspect (x)
+  (let ((resetp (eq major-mode 'slime-inspector-mode)))
+   (destructuring-bind (str id) x
+     (slime-eval-async `(swank:inspect-presentation ,id ,resetp)
+                       'slime-open-inspector))))
+
+(ivy-add-actions 'counsel-slime-presentations
+                 '(("i" counsel-slime-presentations--inspect "inspect")))
+
+(defun counsel-slime-presentations ()
+  (interactive)
+  (ivy-read "Insert presentation: " (slime-all-presentations)
+            :action #'counsel-slime-presentations--insert
+            :caller 'counsel-slime-presentations))
+
+(define-key slime-presentation-command-map (kbd "<C-i>") 'counsel-slime-presentations)
+
+;;* sync package
 (defun slime-repl-set-default-package ()
   (interactive)
   (slime-repl-set-package "cl-user"))
@@ -921,6 +954,7 @@ otherwise insert a saved presentation."
          (pkg (slime-eval `(swank:frame-package-name ,frame))))
     (slime-repl-set-package pkg)))
 
+;;* repl ivy completion
 (defun slime-repl-bury-buffer ()
   (interactive)
   (bury-buffer)
