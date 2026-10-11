@@ -178,12 +178,14 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'ignore-error 'when)
     (%copy-indent 'cl-case 'case)
     (%copy-indent 'cl-ecase 'ecase)
+    (%copy-indent 'cl-etypecase 'etypecase)
     (%copy-indent 'condition-case 'defun)
     (put 'iter 'common-lisp-indent-function '(&rest 2))
     (put 'pretty-hydra-define 'common-lisp-indent-function 2)
     ;; ecl
     (%copy-indent 'def-struct 'defstruct)
     (%copy-indent 'c-progn 'when)
+    (%copy-indent 'cl-loop 'loop)
     ))
 
 ;;** font-lock
@@ -642,12 +644,15 @@ active, kill fully qualified symbol-at-point/region."
                                               ,(slime-current-package)))))
     (when prefix
       (setq prefix (string-trim-left prefix ":")))
-    (cl-loop for arg in (cdr (member '&key (read args)))
-          until (= ?& (aref (symbol-name arg) 0))
-          for name = (symbol-name arg)
-          when (or (null prefix)
-                   (string-prefix-p prefix name))
-            collect (concat ":" (symbol-name arg)))))
+    (cl-loop for arg in (cdr (or (member '&KEY (read args))
+                                 (member '&key (read args))))
+       for name = (cl-etypecase arg
+                    (symbol (symbol-name arg))
+                    (list (symbol-name (car arg))))
+       until (= ?& (aref name 0))
+       when (or (null prefix)
+                (string-prefix-p prefix name))
+         collect (concat ":" (downcase name)))))
 
 (defun slime-complete-keyword-arg ()
   (when-let ((end (point))
@@ -1171,6 +1176,12 @@ Also always use `kill-region' instead of `delete-region'."
 
 (advice-add 'slime-display-or-scroll-completions :override #'slime-display-completions-ivy)
 
+(defun slime-completions-for-keyword--downcase-advice (orig-fn &rest args)
+  (destructuring-bind (completions prefix) (apply orig-fn args)
+    (list (mapcar #'downcase completions) prefix)))
+(advice-add 'slime-completions-for-keyword :around
+            #'slime-completions-for-keyword--downcase-advice)
+
 ;;* slime: sldb-fancy-break
 ;; TODO: track/toggle breaks, highlight functions with breaks/traces etc
 ;; TODO: slime-read-function-name
@@ -1178,7 +1189,7 @@ Also always use `kill-region' instead of `delete-region'."
   "Set a breakpoint at the start of the function NAME."
   (interactive (list (slime-read-symbol-name "Break on enter: " t)))
   (slime-eval-async `(swank:sldb-break ,name)
-    (lambda (msg) (message "%s" msg))))
+                    (lambda (msg) (message "%s" msg))))
 
 (define-key slime-parent-map (kbd "C-c B") 'sldb-fancy-break)
 
