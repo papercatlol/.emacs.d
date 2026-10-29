@@ -18,6 +18,9 @@
 (setq counsel-find-file-at-point t)
 (setf (alist-get 'counsel-find-file ivy-height-alist) 20)
 
+;; MAYBE: set this and add a sort func for `counsel-buffer'
+;; (setf (alist-get t ivy-sort-matches-functions-alist) 'ivy--shorter-matches-first)
+
 (ivy-mode 1)
 
 ;;* ivy-rich
@@ -423,7 +426,6 @@ If the input is empty, insert active region or symbol-at-point."
                                               (dired-recent-load-list))
                                  collect (%cand d :dired-recent))))
       (append buffers
-              borgmarks
               views
               ;; Remove open files from the list. Note that while
               ;; `get-file-buffer'doesn't detect renamed buffers, it
@@ -432,7 +434,8 @@ If the input is empty, insert active region or symbol-at-point."
               ;; Checking for existing dired buffers is very slow if some of the
               ;; directories are remote.
               ;; (cl-remove-if #'dired-find-buffer-nocreate dired-recent)
-              dired-recent))))
+              dired-recent
+              borgmarks))))
 
 ;; TODO: ivy-occur for this
 ;; MAYBE: show active frames as well as buffers
@@ -575,7 +578,7 @@ buffer will be opened(current window, other window, other frame)."
 (global-set-key (kbd "C-v") 'counsel-buffers)
 (define-key ctl-x-4-map (kbd "v") 'counsel-buffers-other-window)
 (define-key ctl-x-5-map (kbd "v") 'counsel-buffers-other-frame)
-(global-set-key (kbd "C-x b") (lambda () (interactive) (message "Use C-v")))
+(define-key ctl-x-map (kbd "b") 'counsel-buffers)
 (define-key counsel-buffers-map (kbd "C-v") 'counsel-buffer-cycle-action)
 
 ;;** switch to scratch

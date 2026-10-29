@@ -66,13 +66,14 @@
 
 ;;* equake-pop
 (setq equake-default-shell 'shell)
+(defvar equake-alt-shell 'ghostel)
 
 (defun equake-pop (&optional new-tab initial-input)
   "Pop to equake buffer. With prefix arg open a new equake tab.
 With double prefix arg override the default shell type with vterm."
   (interactive "P")
   (cond ((= 16 (prefix-numeric-value current-prefix-arg))
-         (equake-new-tab 'ghostel))
+         (equake-new-tab equake-alt-shell))
         ((= 64 (prefix-numeric-value current-prefix-arg))
          (equake-new-tab (intern
                           (completing-read "Choose shell: "

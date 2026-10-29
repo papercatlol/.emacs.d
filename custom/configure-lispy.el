@@ -278,6 +278,7 @@ is 'other."
 
 (lispy-define-key lispy-mode-map (kbd "t") 'lispy-ace-first-paren)
 (global-set-key (kbd "M-t") 'lispy-ace-first-paren)
+(global-set-key (kbd "H-SPC") 'lispy-ace-first-paren)
 (lispy-define-key lispy-mode-map (kbd "T") 'lispy-teleport)
 
 ;;** cC

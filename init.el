@@ -128,6 +128,7 @@
 (require 'configure-compilation)
 (require 'counsel-ripgrep)
 (require 'configure-w3m)
+(require 'configure-gdb)
 
 ;;* language-specific configs
 ;; TODO non-lisp configs when a specific mode is enabled for the first time
@@ -585,7 +586,7 @@
      (slot . 1)
      (window-parameters . ((no-other-window . nil)))))
   (setf
-   (alist-get (rx (or (and (? "e") "shell") "vterm" "EQUAKE[" "*slime-repl") (* any))
+   (alist-get (rx (or (and (? "e") "shell") "vterm" "ghostel" "EQUAKE[" "*slime-repl") (* any))
               display-buffer-alist nil nil #'equal)
    '((display-buffer-reuse-window
       display-buffer-reuse-mode-window
@@ -1591,6 +1592,7 @@ and it's faster to rewrite it."
 ;;* page-break-lines
 (when (require 'page-break-lines nil 'noerror)
   (add-to-list 'page-break-lines-modes 'emacs-news-mode)
+  (add-to-list 'page-break-lines-modes 'Info-mode)
   (global-page-break-lines-mode))
 
 ;;* rename-buffer

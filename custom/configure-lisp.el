@@ -182,6 +182,7 @@ when cursor is directly inside the in-package form."
     (%copy-indent 'condition-case 'defun)
     (put 'iter 'common-lisp-indent-function '(&rest 2))
     (put 'pretty-hydra-define 'common-lisp-indent-function 2)
+    (%copy-indent 'pcase 'case)
     ;; ecl
     (%copy-indent 'def-struct 'defstruct)
     (%copy-indent 'c-progn 'when)
@@ -1893,6 +1894,8 @@ point is not a keyword already."
 (define-key emacs-lisp-mode-map (kbd "C-c C-c") 'compile-defun)
 (define-key emacs-lisp-mode-map (kbd "C-c <return>") 'macrostep-expand)
 (define-key emacs-lisp-mode-map (kbd "C-c RET") 'macrostep-expand)
+(define-key emacs-lisp-mode-map (kbd "C-c C-t") 'trace-function)
+(define-key emacs-lisp-mode-map (kbd "C-c M-t") 'untrace-function)
 
 ;;** Global `lisp-mode' mapping
 (define-key global-map (kbd "C-c C-l") 'lisp-mode)
