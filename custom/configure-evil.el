@@ -777,5 +777,10 @@ double quote kill sexp at point."
     "w" 'evil-a-symbol
     (kbd "C-w") 'eww-copy-page-url))
 
+;;* evil-quickscope
+(when (require 'evil-quickscope nil t)
+  (setq evil-quickscope-cross-lines t)
+  (global-evil-quickscope-always-mode 1))
+
 
 (provide 'configure-evil)

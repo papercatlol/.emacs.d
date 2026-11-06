@@ -396,6 +396,9 @@
  ;; vc.el
  '(log-view-file ((t (:inherit dired-marked))))
  ;; edebug
- '(edebug-enabled-breakpoint ((t (:box "red")))))
+ '(edebug-enabled-breakpoint ((t (:box "red"))))
+ '(evil-quickscope-first-face ((t (:underline (:position 2)
+                                   :weight regular))))
+ '(evil-quickscope-second-face ((t (:weight regular)))))
 
 (provide-theme 'quasi-monochrome)
