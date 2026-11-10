@@ -758,49 +758,6 @@ always insert at point."
         (backward-delete-char (length regex))
       (insert regex))))
 
-;;* ivy-fast-keys
-;; TODO: make it into a package, allow custom keys and stuff
-(defface ivy-fast-keys-face
-  '((t :inherit font-lock-comment-face :background "black"))
-  "Face for `ivy' fast keys hint.")
-
-;; TODO: use ivy-state-display-transformer-fn instead
-(defun ivy-format-function-fast-keys (cands)
-  (let ((i 0))
-    (ivy--format-function-generic
-     (lambda (str)
-       (concat "  " (ivy--add-face str 'ivy-current-match)))
-     (lambda (str)
-       (concat (propertize (number-to-string (incf i))
-                           'face 'ivy-fast-keys-face)
-               " "
-               str))
-     cands
-     "\n")))
-
-(add-to-list 'ivy-format-functions-alist '((t . ivy-format-function-fast-keys)))
-
-(cl-defun ivy--make-fast-keys-action (n &optional (action #'ivy--done))
-  (lambda ()
-    (interactive)
-    (when (and (numberp n) (plusp n) (<= n ivy-height))
-      (let ((delta (- (if (>= ivy--window-index n) (1- n) n)
-                      ivy--window-index)))
-        (ivy-set-index (+ ivy--index delta))
-        (ivy--exhibit)
-        (ivy-done)
-        (ivy-call)))))
-
-(define-key ivy-minibuffer-map (kbd "M-1") (ivy--make-fast-keys-action 1))
-(define-key ivy-minibuffer-map (kbd "M-2") (ivy--make-fast-keys-action 2))
-(define-key ivy-minibuffer-map (kbd "M-3") (ivy--make-fast-keys-action 3))
-(define-key ivy-minibuffer-map (kbd "M-4") (ivy--make-fast-keys-action 4))
-(define-key ivy-minibuffer-map (kbd "M-5") (ivy--make-fast-keys-action 5))
-(define-key ivy-minibuffer-map (kbd "M-6") (ivy--make-fast-keys-action 6))
-(define-key ivy-minibuffer-map (kbd "M-7") (ivy--make-fast-keys-action 7))
-(define-key ivy-minibuffer-map (kbd "M-8") (ivy--make-fast-keys-action 8))
-(define-key ivy-minibuffer-map (kbd "M-9") (ivy--make-fast-keys-action 9))
-
 ;;* ivy-calling
 (defvar ivy--initial-pos-marker nil "Position before ivy invocation.")
 
@@ -1260,6 +1217,10 @@ exit with that candidate, otherwise insert SPACE character as usual."
 
 (define-key ivy-minibuffer-map (kbd "C-c w") 'ivy-minibuffer-show-toplevel)
 
+
+;;* ivy-flash
+(when (require 'ivy-flash nil t)
+  (ivy-flash-mode 1))
 
 
 (provide 'configure-ivy)
