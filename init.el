@@ -329,9 +329,10 @@
                  (cons register (list 'file-query
                                       (buffer-file-name (marker-buffer val))
                                       (marker-position val))))
-                ((or (eq (car-safe val) 'file)
-                     (eq (car-safe val) 'file-query)
-                     (stringp val))
+                ((cl-typecase val
+                   (cons (or (eq (car val) 'file)
+                             (eq (car val) 'file-query)))
+                   (string t))
                  (cons register val)))
               collect it)))
 
@@ -1045,7 +1046,7 @@ buffer. See `quit-windows-on' for documentation on arguments."
 ;; Set it up in `dired-mode-hook' once if yes.
 (define-key dired-mode-map (kbd "I") 'dired-copy-image)
 
-;; show rsync progress in modeline
+;;** show rsync progress in modeline
 (with-eval-after-load 'dired+
   (defun diredp-rsync-in-mode-name ()
     (unless (cl-member '(:eval dired-rsync-modeline-status) mode-name :test #'equal)
@@ -3110,6 +3111,12 @@ insert (def) after current toplevel form."
         (:name "Ports" :width 10 :template "{{ json .Ports }}" :sort nil :format nil)
         (:name "Names" :width 10 :template "{{ json .Names }}" :sort nil :format nil)))
 
+;;* no-scope
+(when (require 'no-scope nil t)
+  (global-no-scope-mode 1)
+  (define-key global-map (kbd "C-'") 'no-scope-jump)
+  (define-key global-map (kbd "M-SPC") 'no-scope-jump))
+
 ;;* keybindings
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
@@ -3185,8 +3192,8 @@ insert (def) after current toplevel form."
 (global-set-key (kbd "C-.") 'er/expand-region)
 
 (global-set-key (kbd "C-S-SPC") 'avy-goto-char-timer)
-(global-set-key (kbd "M-SPC") 'smooth-scroll/scroll-up-16)
-(global-set-key (kbd "M-S-SPC") 'smooth-scroll/scroll-down-16)
+;;(global-set-key (kbd "M-SPC") 'smooth-scroll/scroll-up-16)
+;;(global-set-key (kbd "M-S-SPC") 'smooth-scroll/scroll-down-16)
 (global-set-key (kbd "C-x C-SPC") 'avy-goto-char-timer)
 (global-set-key (kbd "M-<tab>") 'other-window)
 (global-set-key (kbd "<f15>") 'other-window)
