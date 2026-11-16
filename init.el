@@ -235,7 +235,7 @@
                      ?1 ?2 ?3 ?4 ?5
                      ?F ?C ?D ?G ?S ?A ?E ?V ?Q ?W ?Z ?X ?R
                      ?J ?N ?K ?H ?L ?O ?I ?U ?P ?B ?M ?T ;;?\[ ?\]
-                     ?/ ?o;;?? ?6 ?7 ?8 ?9 ?0
+                     ?/ ?o ?0 ?- ?.
                      )
       ;;
       comment-padding ""
@@ -2350,6 +2350,89 @@ the cursor to the new position as well."
                           (string-trim (symbol-name (cdr func))
                                        "avy-action-"))))))
 (advice-add 'avy-show-dispatch-help :override #'avy-show-dispatch-help-override)
+
+;;** avy-goto-symbol-0
+(defun avy-goto-symbol-0 (arg &optional beg end)
+  "Jump to a symbol start.
+The window scope is determined by `avy-all-windows'.
+When ARG is non-nil, do the opposite of `avy-all-windows'.
+BEG and END narrow the scope where candidates are searched."
+  (interactive "P")
+  (avy-with avy-goto-symbol-0
+    (avy-jump (rx symbol-start word)
+              :window-flip (not arg)
+              :beg beg
+              :end end)))
+
+(setf (alist-get 'avy-goto-symbol-0 avy-styles-alist) 'at-full)
+
+(global-set-key (kbd "H-v") 'avy-goto-symbol-0)
+
+;;** HACK avy-tree for (sometimes) nicer labels
+(defvar avy-keys-lh (list ?s ?f ?c ?d ?g ?a ?e))
+(defvar avy-keys-rh (list ?j ?u ?i ?o ?p ?k ?l))
+(defvar avy-keys-prefixes (list ?\s ?v ?b ?n))
+
+(defun avy-tree-hardcoded (cands _)
+  (let* ((num-cands (length cands))
+         (num-keys (length avy-keys))
+         (num-pairs (* (length avy-keys-lh) (length avy-keys-rh)))
+         (num-keys-and-pairs
+           (+ num-keys (- num-pairs (length avy-keys-lh) (length avy-keys-rh))))
+         (num-prefixes (length avy-keys-prefixes))
+         (keys
+           (labels ((%pairs ()
+                      (let ((single-keys (copy-list avy-keys))
+                            (num-needed (- num-cands num-keys))
+                            (pairs nil)
+                            (leaves nil))
+                        (labels ((%add (first-key second-keys)
+                                   (setq single-keys
+                                         (delete first-key single-keys))
+                                   (push (cons first-key second-keys) pairs)
+                                   (decf num-needed (length second-keys)))
+                                 (%add-all (first-keys second-keys)
+                                   (loop for first-key in first-keys
+                                         unless (plusp num-needed)
+                                           return t
+                                         do (%add first-key second-keys))))
+                          (or (%add-all avy-keys-lh avy-keys-rh)
+                              (%add-all avy-keys-rh avy-keys-lh)))
+                        (list single-keys (nreverse pairs)))))
+             (cond
+               ((<= num-cands num-keys) avy-keys)
+               ((<= num-cands num-keys-and-pairs) (apply #'append (%pairs)))
+               ((<= num-cands (+ (* num-prefixes (- num-keys num-prefixes))
+                                 num-keys-and-pairs))
+                (destructuring-bind (single-keys lr-pairs) (%pairs)
+                  (let ((num-needed (- num-cands num-keys-and-pairs))
+                        (prefix-pairs nil))
+                    (labels ((%add-prefix (prefix-key)
+                               (setq single-keys
+                                     (delete prefix-key single-keys))
+                               (push (cons prefix-key avy-keys) prefix-pairs)
+                               (decf num-needed (1- num-keys))))
+                      (loop for prefix-key in avy-keys-prefixes
+                            while (plusp num-needed)
+                            do (%add-prefix prefix-key))
+                      (append single-keys
+                              prefix-pairs
+                              lr-pairs)))))
+               (t (user-error "Too many candidates"))))))
+    (loop for key in keys
+          while cands
+          collect (labels ((%leaf (key)
+                             `(,key leaf . ,(pop cands))))
+                    (etypecase key
+                      (character (%leaf key))
+                      (cons
+                       (cons (car key)
+                             (loop for second-key in (cdr key)
+                                   while cands
+                                   collect (%leaf second-key)))))))))
+
+(advice-add 'avy-tree :override #'avy-tree-hardcoded)
+;;(advice-remove 'avy-tree #'avy-tree-hardcoded)
 
 ;;** TODO avy-action-mc
 ;;(defun avy-action-mc (pt)
