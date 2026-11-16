@@ -8,6 +8,9 @@
 ;;* no lispy-colon magic (might revisit this later)
 (setq lispy-colon-p nil)
 
+;;* don't jump to narnia after commenting a sexp
+(setq lispy-move-after-commenting nil)
+
 ;;* lispy-x hydra
 (setq lispy-x-default-verbosity 0)
 
@@ -276,6 +279,7 @@ is 'other."
                                candidates)))))))
       (avy-process candidates))))
 
+(setf (alist-get 'lispy-ace-first-paren avy-styles-alist) 'at)
 (lispy-define-key lispy-mode-map (kbd "t") 'lispy-ace-first-paren)
 (global-set-key (kbd "M-t") 'lispy-ace-first-paren)
 (global-set-key (kbd "H-SPC") 'lispy-ace-first-paren)
