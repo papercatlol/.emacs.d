@@ -44,5 +44,70 @@
 (define-key ghostel-mode-map (kbd "C-c C-d") 'ghostel-change-dir)
 (define-key ghostel-mode-map (kbd "C-c d") 'shell-sync-dir-to-other-window)
 
+;;* C-k and C-w hacks
+(defvar ghostel--kill-ring-update-timeout 0.1)
+(defvar-local ghostel--kill-ring-update-timer nil)
+
+(defun ghostel-C-k ()
+  (interactive)
+  (labels ((%rest-of-input (pos)
+             (buffer-substring-no-properties pos (point-max)))
+           (%kill-handler (pos input-old)
+             (lambda ()
+               (let ((input-new (%rest-of-input pos)))
+                 (if (string-empty-p input-new)
+                     (kill-new input-old)
+                   (if-let ((idx (search input-new input-old :from-end t)))
+                       (kill-new (substring input-old 0 idx))
+                     (message "ghostel-C-k: failed to add text to kill-ring")))))))
+    (let* ((pos (point))
+           (input-old (%rest-of-input pos)))
+      (ghostel--send-encoded "k" "ctrl")
+      (run-with-timer ghostel--kill-ring-update-timeout nil
+                      (%kill-handler pos input-old)))))
+
+(define-key ghostel-semi-char-mode-map (kbd "C-k") 'ghostel-C-k)
+
+(defun ghostel-C-w ()
+  (interactive)
+  (labels ((%rest-of-input ()
+             (when-let* ((end ghostel--cursor-char-pos)
+                         (beg (ghostel-input-start-point))
+                         ((<= beg end)))
+               (buffer-substring-no-properties beg end)))
+           (%kill-handler (input-old appendp)
+             (lambda ()
+               (if-let* ((input-new (%rest-of-input))
+                         (to-kill
+                          (if (string-empty-p input-new)
+                              input-old
+                            ;; Assume that C-w just removes some suffix from
+                            ;; INPUT-OLD.
+                            (when (string-prefix-p input-new input-old)
+                              (substring input-old (length input-new))))))
+                   (if appendp
+                       (kill-append to-kill 'before-p)
+                     (kill-new to-kill))
+                 (message "ghostel-C-w: failed to add text to kill-ring")))))
+
+    (let ((input-old (%rest-of-input)))
+      (ghostel--send-encoded "w" "ctrl")
+      (when (and (stringp input-old) (not (string-empty-p input-old)))
+        ;; HACK Buffer state isn't updated synchronously, so we schedule a
+        ;; function to update kill-ring. This will fail miserably on tramp
+        ;; connections with basically any amount of latency. I wonder if there
+        ;; is a good way to sync this. Maybe a hook in the redraw function?
+        (when (timerp ghostel--kill-ring-update-timer)
+          (cancel-timer ghostel--kill-ring-update-timer))
+        (setq ghostel--kill-ring-update-timer
+              (run-with-timer ghostel--kill-ring-update-timeout nil
+                              (%kill-handler input-old
+                                             (eq 'ghostel-C-w last-command))))))))
+
+(define-key ghostel-semi-char-mode-map (kbd "C-w") 'ghostel-C-w)
+
+(evil-define-key 'insert ghostel-semi-char-mode-map
+  (kbd "C-w") 'ghostel-C-w)
+
 
 (provide 'configure-ghostel)
