@@ -1875,7 +1875,7 @@ point is not a keyword already."
 (define-key slime-popup-buffer-mode-map (kbd "q") 'quit-window)
 
 (with-eval-after-load 'evil
-  (evil-define-key (normal visual) slime-popup-buffer-mode-map
+  (evil-define-key '(normal visual) slime-popup-buffer-mode-map
     "q" 'quit-window))
 
 ;;** slime-thread-control-mode

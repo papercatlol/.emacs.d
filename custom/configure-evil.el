@@ -74,7 +74,7 @@
 (with-eval-after-load 'evil-snipe
   ;; Use '-' instead of ';' since it is bound to Ctl via xcape in my setup.
   (define-key evil-snipe-parent-transient-map "-" 'evil-snipe-repeat)
-  (evil-define-key* 'motion evil-snipe-override-mode-map "-" #'evil-snipe-repeat)
+  (evil-define-key 'motion evil-snipe-override-mode-map "-" #'evil-snipe-repeat)
 
   ;; Experimental bindings. We will see if anything sticks.
   (global-set-key (kbd "M-F") 'evil-snipe-f)
