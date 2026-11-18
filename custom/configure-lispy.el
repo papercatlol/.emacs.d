@@ -101,6 +101,7 @@ With prefix arg select a symbol instead."
 (defhydra+ hydra-lispy-x (:exit t :hint 0.3 :columns 3)
   ("b" lispy-ace-bind-variable "ace bind variable"))
 
+(lispy-define-key lispy-mode-map (kbd "B") 'lispy-ace-bind-variable)
 
 ;;** lispy--let-bounds
 (defvar lispy--let-regexp (rx "(" (or "let" "if-let" "when-let" "bind")))
@@ -224,12 +225,6 @@ ARG can extend the bounds to the current defun."
 (define-key lispy-mode-map (kbd "M-s") 'lispy-goto-symbol-in-line)
 (define-key lispy-mode-map (kbd "C-c s") 'lispy-split)
 (define-key lispy-mode-map (kbd "C-c /") 'lispy-splice)
-
-;;** W is a matching command to B = `special-lispy-ediff-regions'
-;; MAYBE map to some ace-jump version of `w' instead
-;; MAYBE message some info about stored buffer/region for verbosity and/or
-;; highlight or blink stored region
-(lispy-define-key lispy-mode-map (kbd "W") 'lispy-store-region-and-buffer)
 
 ;; MAYBE use lispyville-drag-forward/backward instead
 (lispy-define-key lispy-mode-map (kbd "H") 'lispy-move-up)
