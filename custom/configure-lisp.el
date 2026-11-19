@@ -1737,6 +1737,23 @@ point is not a keyword already."
 (define-key lisp-mode-map (kbd "C-c C-7") 'hydra-lisp-function-args/body)
 (define-key emacs-lisp-mode-map (kbd "C-c C-7") 'hydra-lisp-function-args/body)
 
+;;* C-c ~ to insert format-related snippets
+(defun yas-lisp-tilde-snippents-prompt (_prompt choices &optional display-fn _completion-fn)
+  (let* ((formatted-choices
+           (if display-fn (mapcar display-fn choices) choices))
+         (chosen (completing-read "Insert snippet: " formatted-choices nil 'require-match "format-")))
+    (if display-fn
+        (nth (or (cl-position chosen formatted-choices :test #'string=) 0)
+             choices)
+      choices)))
+
+(defun yas-insert-common-lisp-tilde-snippet ()
+  (interactive)
+  (let ((yas-prompt-functions '(yas-lisp-tilde-snippents-prompt)))
+    (yas-insert-snippet)))
+(define-key lisp-mode-map (kbd "C-c ~") 'yas-insert-common-lisp-tilde-snippet)
+(define-key slime-mode-map (kbd "C-c ~") 'yas-insert-common-lisp-tilde-snippet)
+
 ;;* newline-before-sexp & delete-indentation-before-sexp
 (defun delete-indentation-before-sexp (&optional arg)
   (interactive "p")
